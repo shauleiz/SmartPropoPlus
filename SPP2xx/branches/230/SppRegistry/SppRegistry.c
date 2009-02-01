@@ -1,0 +1,541 @@
+/** SmartPropoPlus Registry Interface **/
+#include <windows.h>
+#include "SmartPropoPlus.h"
+#include "SppRegistry.h"
+
+#ifndef __SPPREGISTRY
+#define __SPPREGISTRY
+/*
+	Get default value of volume for a given source type
+	The source type is parameter SrcType
+	The volume value is put in parameter VolumeValue
+	Only if the value is valid then the function returns '1'
+*/
+int GetDefaultVolumeValueFromRegistry(unsigned long SrcType, unsigned long * VolumeValue)
+{
+
+	LONG res;
+	HKEY hkAud;
+	unsigned long  ValueDataSize = MAX_VAL_NAME;
+	const char * type;
+	int out;
+
+	/* Get the registry entry from source type */
+	if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE)
+		type = DEF_VOL_MIC;
+	else if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_LINE)
+		type = DEF_VOL_LIN;
+	else if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_AUXILIARY)
+		type = DEF_VOL_AUX;
+	else if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_ANALOG)
+		type = DEF_VOL_ANL;
+	else
+		type = DEF_VOL_UNK;
+
+	/* Open SPP Audio Sources key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_QUERY_VALUE , &hkAud);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	/* Get the default volume value */
+	res = RegQueryValueEx(hkAud, type, NULL, NULL, (unsigned char *)(VolumeValue),  &ValueDataSize);
+	if (res != ERROR_SUCCESS)
+		out =0;
+	else
+		out =1;
+
+	RegCloseKey(hkAud);
+	return out;
+}
+
+
+/*
+	Set default value of volume for a given source type 
+	The source type is parameter SrcType
+	The volume value is parameter VolumeValue
+	The function returns '1' if successful
+*/
+int SetDefaultVolumeValueToRegistry(unsigned long SrcType, unsigned long  VolumeValue)
+{
+
+	LONG res;
+	HKEY hkAud;
+	unsigned long  ValueDataSize = MAX_VAL_NAME;
+	const char * type;
+	int out;
+
+	/* Get the registry entry from source type */
+	if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE)
+		type = DEF_VOL_MIC;
+	else if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_LINE)
+		type = DEF_VOL_LIN;
+	else if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_AUXILIARY)
+		type = DEF_VOL_AUX;
+	else if (SrcType == MIXERLINE_COMPONENTTYPE_SRC_ANALOG)
+		type = DEF_VOL_ANL;
+	else
+		type = DEF_VOL_UNK;
+
+	/* Open SPP Audio Sources key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_ALL_ACCESS , &hkAud);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	/* Set the default volume value */
+	res = RegSetValueEx(hkAud, type,0, REG_DWORD, (const unsigned char *)&VolumeValue, 4);
+	if (res != ERROR_SUCCESS)
+		out =0;
+	else
+		out =1;
+
+	RegCloseKey(hkAud);
+	return out;
+}
+
+
+
+int GetCurrentAudioStateFromRegistry()
+{
+	LONG res;
+	HKEY hkSpp;
+	int Active;
+	unsigned long ValueDataSize;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP  key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_QUERY_VALUE , &hkSpp);
+	if (res != ERROR_SUCCESS)
+		return 1;
+
+	/* Get  data */	
+	ValueDataSize = 4;
+	res = RegQueryValueEx(hkSpp, AUDIO,  NULL, NULL, (unsigned char *)&Active,  &ValueDataSize);
+	if (res != ERROR_SUCCESS)
+		return 1;
+
+	RegCloseKey(hkSpp);
+	return Active;
+}
+
+
+/* Create an empty FMS registry key */
+int CreateEmptyFmsRegistry()
+{
+	LONG res;
+	HKEY hkFms;
+
+	res =  RegCreateKeyEx(HKEY_CURRENT_USER, REG_FMS, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL,&hkFms, NULL);		
+	if (res != ERROR_SUCCESS)
+		return 0;
+	RegCloseKey(hkFms);
+	return 1;
+}
+
+
+/* Create an empty Audio registry key */
+int CreateEmptyAudioRegistry()
+{
+	LONG res;
+	HKEY hkAudio;
+
+	res =  RegCreateKeyEx(HKEY_CURRENT_USER, REG_AUD, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL,&hkAudio, NULL);		
+	if (res != ERROR_SUCCESS)
+		return 0;
+	RegCloseKey(hkAudio);
+	return 1;
+}
+
+
+/* Create a default SPP registry key, subkeys and values */
+int CreateDefaultSppRegistry()
+{
+	LONG res;
+	HKEY hkSpp, hkMod;
+	const char *DefMods[] = MOD_DEF_STR;
+	int nMod = 0;
+	int AutoMode = 1;
+	int PositiveShift = 1;
+
+	/* Create the SPP key */
+	res =  RegCreateKeyEx(HKEY_CURRENT_USER, REG_SPP, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL,&hkSpp, NULL);		
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	/* Insert default shift values */
+	res =  RegSetValueEx(hkSpp, SHIFT_POS  ,0, REG_BINARY, (const BYTE* )&PositiveShift, 4);
+	res =  RegSetValueEx(hkSpp, SHIFT_AUTO ,0, REG_BINARY, (const BYTE* )&AutoMode, 4);
+
+
+	/* Create the Modulation-Types key */
+	res =  RegCreateKeyEx(HKEY_CURRENT_USER, REG_MOD, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL,&hkMod, NULL);		
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	/* Insert default modulation values */
+	while (DefMods[nMod*2])
+	{
+		RegSetValueEx(hkMod, DefMods[nMod*2],0, REG_SZ, (const BYTE* )DefMods[nMod*2 +1], 1+strlen(DefMods[nMod*2 +1]));
+		nMod++;
+	};
+
+	/* Mark the default ACTIVE modulation (PPM) */
+	RegSetValueEx(hkMod, MOD_ACTIVE ,0, REG_SZ, (const BYTE* )MOD_TYPE_PPM, 1+strlen(MOD_TYPE_PPM));
+
+	/* Create Shift related values */
+
+	RegCloseKey(hkSpp);
+	RegCloseKey(hkMod);
+	return 1;
+}
+
+
+void SetCurrentAudioStateToRegistry(int Active)
+{
+	LONG res;
+	HKEY hkMixer;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_ALL_ACCESS , &hkMixer);
+	if (res != ERROR_SUCCESS)
+		return ;
+
+	/* Set Active entry */
+	RegSetValueEx(hkMixer, AUDIO,0, REG_BINARY, (const unsigned char *)&Active, 4);
+	if (res != ERROR_SUCCESS)
+		return;
+
+	RegCloseKey(hkMixer);
+}
+
+
+char * GetCurrentMixerDeviceFromRegistry()
+{
+	LONG res;
+	HKEY hkSpp;
+	char Active[MAX_VAL_NAME] = "";
+	unsigned long ValueDataSize;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP  key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_QUERY_VALUE , &hkSpp);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+
+	/* Get  data */	
+	ValueDataSize = MAX_VAL_NAME;
+	res = RegQueryValueEx(hkSpp, MIXER_DEV,  NULL, NULL, (unsigned char *)&(Active[0]),  &ValueDataSize);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+
+	return strdup(Active);
+}
+
+
+/*
+	If the correct registry structure exists:
+	1. Get the current Mixer Device
+	2. Get the Input Line assosoated with this device
+*/
+int GetCurrentInputLineFromRegistry(unsigned int *SrcID)
+{
+	LONG res;
+	HKEY hkAud;
+	unsigned long  ValueDataSize = MAX_VAL_NAME;
+
+	char * mdName = GetCurrentMixerDeviceFromRegistry();
+	if (!mdName)
+		return 0;
+
+
+	/* Open SPP Audio Sources key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_QUERY_VALUE , &hkAud);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	
+	res = RegQueryValueEx(hkAud, mdName, NULL, NULL, (unsigned char *)SrcID,  &ValueDataSize);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	RegCloseKey(hkAud);
+	return 1;
+}
+
+
+
+void SetCurrentMixerDeviceToRegistry(const char * MixerName)
+{
+	LONG res;
+	HKEY hkMixer;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_ALL_ACCESS , &hkMixer);
+	if (res != ERROR_SUCCESS)
+		return ;
+
+	/* Set Active entry */
+	RegSetValueEx(hkMixer, MIXER_DEV,0, REG_SZ, (const unsigned char *)MixerName, 1+strlen(MixerName));
+
+	RegCloseKey(hkMixer);
+}
+
+
+void SetCurrentInputLineToRegistry(const char * MixerName, unsigned int SrcID)
+{
+	LONG res;
+	HKEY hkAudio;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	if (!isAudioRegistryExist())
+		CreateEmptyAudioRegistry();
+
+	/* Now create an entry with the inputs */
+	/* Open SPP key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_ALL_ACCESS , &hkAudio);
+	if (res != ERROR_SUCCESS)
+		return ;
+
+	/* Set Active entry */
+	RegSetValueEx(hkAudio, MixerName,0, REG_DWORD, (const unsigned char *)&SrcID, 4);
+
+	RegCloseKey(hkAudio);
+}
+
+
+/*
+	Set the current active modulation type in the registry
+*/
+int SetActiveModeToRegistry(const char * selected)
+{
+	LONG res;
+	HKEY hkResult;
+	const char *DefMods[] = MOD_DEF_STR;
+	int nMod=0;
+
+	/* Test if registry key exists */
+	if (!isSppRegistryExist())
+		return -1;
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_MOD, 0, KEY_ALL_ACCESS , &hkResult);
+	if (res != ERROR_SUCCESS)
+		return -1;
+
+	/* Convert Display Name to Internal Name */
+	while (DefMods[nMod*2])
+	{
+		if (strcmp(DefMods[1+nMod*2], selected))
+		{
+			nMod++;
+			continue;
+		};
+		break;
+	};
+
+	/* Test if entry exists */
+	res = RegQueryValueEx(hkResult, DefMods[nMod*2], NULL, NULL, NULL,  NULL);
+	if (res != ERROR_SUCCESS)
+		return -1;
+
+	/* Set Active entry */
+	RegSetValueEx(hkResult, MOD_ACTIVE,0, REG_SZ, (const BYTE* )DefMods[nMod*2], 1+strlen(DefMods[nMod*2]));
+
+	RegCloseKey(hkResult);
+	return nMod;
+}
+
+/*
+	Set the current shift auto-detect value in the registry
+*/
+void SetShiftAutoDetectToRegistry(const int sel)
+{
+	LONG res;
+	HKEY hkResult;
+
+	/* Test if registry key exists */
+	if (!isSppRegistryExist())
+		return;
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_ALL_ACCESS , &hkResult);
+	if (res != ERROR_SUCCESS)
+		return;
+
+	/* Insert default shift values */
+	res =  RegSetValueEx(hkResult, SHIFT_AUTO ,0, REG_BINARY, (const BYTE* )&sel, 4);
+	RegCloseKey(hkResult);
+}
+
+
+
+/*
+	Set the current shift polarity value in the registry
+*/
+void SetPositiveShiftToRegistry(const int sel)
+{
+	LONG res;
+	HKEY hkResult;
+
+	/* Test if registry key exists */
+	if (!isSppRegistryExist())
+		return;
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_ALL_ACCESS , &hkResult);
+	if (res != ERROR_SUCCESS)
+		return;
+
+	/* Insert default shift values */
+	res =  RegSetValueEx(hkResult, SHIFT_POS ,0, REG_BINARY, (const BYTE* )&sel, 4);
+	RegCloseKey(hkResult);
+}
+
+
+/*
+	Get modulation data from SPP registry keys
+	First test existence - if does not exist then create with default values
+	Then get shift-related data, active modulation and all existing modulation types
+	Exit with all these data in 'Modulation' structure
+*/
+struct Modulations * GetModulationFromRegistry(int Create)
+{
+	struct Modulation ** Mod;
+	struct Modulations * Out;
+	LONG res;
+	HKEY hkResult, hkSpp;
+	char ValueName[MAX_VAL_NAME];
+	unsigned long	ValueNameSize;
+	unsigned char	ValueData[MAX_VAL_NAME];
+	unsigned long	ValueDataSize;
+	unsigned int i=0, index=0;
+	int iActive = -1;
+	char Active[MAX_VAL_NAME] = "";
+	unsigned long nValues, MaxValueNameLength, MaxValueDataLength;
+	int ShiftAutoDetect, PositiveShift;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (Create && !isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (Create && !isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP  key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_QUERY_VALUE , &hkSpp);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+
+	/* Get Shift data */	
+	ValueDataSize = 4;
+	res = RegQueryValueEx(hkSpp, SHIFT_POS,  NULL, NULL, (unsigned char *)&PositiveShift,  &ValueDataSize);
+	res = RegQueryValueEx(hkSpp, SHIFT_AUTO, NULL, NULL, (unsigned char *)&ShiftAutoDetect,  &ValueDataSize);
+
+
+
+	/* Open SPP Modulation key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_MOD, 0, KEY_QUERY_VALUE , &hkResult);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+	res = RegQueryInfoKey(hkResult, NULL, NULL, NULL, NULL, NULL, NULL, &nValues, &MaxValueNameLength, &MaxValueDataLength, NULL, NULL);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+
+	/* Get the active modulation */
+	ValueDataSize = MaxValueDataLength+1;
+	res = RegQueryValueEx(hkResult, MOD_ACTIVE, NULL, NULL, (unsigned char *)Active,  &ValueDataSize);
+
+	Mod = (struct Modulation **)malloc(nValues*sizeof(struct Modulation *));
+	for (i=0 ; i<nValues ; i++)
+	{
+		if (res != ERROR_SUCCESS)
+			break;
+
+		/* Get next value */
+		ValueNameSize = MaxValueNameLength+1;
+		ValueDataSize = MaxValueDataLength+1;
+		res = RegEnumValue(hkResult, i, ValueName, &ValueNameSize, 0, NULL, ValueData, &ValueDataSize);
+		
+		/* Is this is value a normal entry?  */
+		if (strcmp(ValueName, MOD_ACTIVE))
+		{ /* Not "Active"  - normal entry */
+			Mod[index] = (struct Modulation *)malloc(sizeof(struct Modulation));
+			Mod[index]->ModTypeDisplay = strdup((const char *)ValueData);
+			Mod[index]->ModTypeInternal = strdup(ValueName);
+			Mod[index]->index = index;
+			if (!strcmp(Mod[index]->ModTypeInternal, &(Active[0])))
+				iActive = index;
+			index++;
+		};
+	};
+
+	Mod[index] = NULL; /* Final entry */
+
+	/* Pack data in structure */
+	Out = (struct Modulations *)malloc(sizeof(struct Modulations));
+	Out->ModulationList = Mod;
+	Out->Active = iActive;
+	Out->PositiveShift = PositiveShift;
+	Out->ShiftAutoDetect = ShiftAutoDetect;
+
+	RegCloseKey(hkResult);
+	return Out;
+}
+
+/* Test existence of SPP registry keys */
+int isSppRegistryExist()
+{
+	LONG res;
+	HKEY hkResult;
+
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_READ, &hkResult);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	RegCloseKey(hkResult);
+	return 1;
+
+}
+
+/* Test existence of Audio registry keys */
+int isAudioRegistryExist()
+{
+	LONG res;
+	HKEY hkResult;
+
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_READ, &hkResult);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	RegCloseKey(hkResult);
+	return 1;
+
+}
+
+
+#endif // __SPPREGISTRY
