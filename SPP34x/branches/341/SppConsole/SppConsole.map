@@ -1,6 +1,6 @@
  SppConsole
 
- Timestamp is 49831c91 (Fri Jan 30 17:28:17 2009)
+ Timestamp is 49860541 (Sun Feb 01 22:25:37 2009)
 
  Preferred load address is 00400000
 
@@ -230,271 +230,271 @@
  0001:00006df0       ?SetLedBright@CDynamicLED@@AAEHHH@Z 00407df0 f   DynamicLED.obj
  0001:00006ef0       ?SetPenBrush@CDynamicLED@@AAEXXZ 00407ef0 f   DynamicLED.obj
  0001:000070c0       ?DrawRoundLed@CDynamicLED@@AAEXVCRect@@@Z 004080c0 f   DynamicLED.obj
- 0001:000072d0       ?DrawSquareLed@CDynamicLED@@AAEXVCRect@@@Z 004082d0 f   DynamicLED.obj
- 0001:00007410       ??_GCDynamicLED@@UAEPAXI@Z 00408410 f i DynamicLED.obj
- 0001:00007410       ??_ECDynamicLED@@UAEPAXI@Z 00408410 f i DynamicLED.obj
- 0001:00007440       ??0CLogAudioHdrs@@QAE@XZ   00408440 f   LogAudioHdrs.obj
- 0001:00007490       ??1CLogAudioHdrs@@UAE@XZ   00408490 f   LogAudioHdrs.obj
- 0001:000074b0       ?UpdateControls@CLogAudioHdrs@@MAEXXZ 004084b0 f   LogAudioHdrs.obj
- 0001:00007590       ?PostMessageStop@CLogAudioHdrs@@MAEXXZ 00408590 f   LogAudioHdrs.obj
- 0001:000075c0       ?PostMessageStart@CLogAudioHdrs@@MAEXXZ 004085c0 f   LogAudioHdrs.obj
- 0001:000075f0       ?PostMessageCancel@CLogAudioHdrs@@MAEXXZ 004085f0 f   LogAudioHdrs.obj
- 0001:00007620       ?SppLoggerStop@CLogAudioHdrs@@MAEHXZ 00408620 f   LogAudioHdrs.obj
- 0001:00007630       ?SppLoggerStart@CLogAudioHdrs@@MAEHPAD@Z 00408630 f   LogAudioHdrs.obj
- 0001:00007650       ?SppLoggerStat@CLogAudioHdrs@@MAEHPAH@Z 00408650 f   LogAudioHdrs.obj
- 0001:00007670       ??_GCLogAudioHdrs@@UAEPAXI@Z 00408670 f i LogAudioHdrs.obj
- 0001:00007670       ??_ECLogAudioHdrs@@UAEPAXI@Z 00408670 f i LogAudioHdrs.obj
- 0001:000076a0       ??0CLogFmsConn@@QAE@XZ     004086a0 f   LogFmsConn.obj
- 0001:00007700       ??1CLogFmsConn@@UAE@XZ     00408700 f   LogFmsConn.obj
- 0001:00007720       ?UpdateControls@CLogFmsConn@@MAEXXZ 00408720 f   LogFmsConn.obj
- 0001:00007800       ?PostMessageStop@CLogFmsConn@@MAEXXZ 00408800 f   LogFmsConn.obj
- 0001:00007830       ?PostMessageStart@CLogFmsConn@@MAEXXZ 00408830 f   LogFmsConn.obj
- 0001:00007860       ?PostMessageCancel@CLogFmsConn@@MAEXXZ 00408860 f   LogFmsConn.obj
- 0001:00007890       ?SppLoggerStop@CLogFmsConn@@MAEHXZ 00408890 f   LogFmsConn.obj
- 0001:000078b0       ?SppLoggerStart@CLogFmsConn@@MAEHPAD@Z 004088b0 f   LogFmsConn.obj
- 0001:000078d0       ??_GCLogFmsConn@@UAEPAXI@Z 004088d0 f i LogFmsConn.obj
- 0001:000078d0       ??_ECLogFmsConn@@UAEPAXI@Z 004088d0 f i LogFmsConn.obj
- 0001:00007900       ??0CLogPulse@@QAE@XZ       00408900 f   LogPulses.obj
- 0001:00007950       ??1CLogPulse@@UAE@XZ       00408950 f   LogPulses.obj
- 0001:00007970       ?UpdateControls@CLogPulse@@MAEXXZ 00408970 f   LogPulses.obj
- 0001:00007a50       ?PostMessageStop@CLogPulse@@MAEXXZ 00408a50 f   LogPulses.obj
- 0001:00007a80       ?PostMessageStart@CLogPulse@@MAEXXZ 00408a80 f   LogPulses.obj
- 0001:00007ab0       ?PostMessageCancel@CLogPulse@@MAEXXZ 00408ab0 f   LogPulses.obj
- 0001:00007ae0       ?SppLoggerStop@CLogPulse@@MAEHXZ 00408ae0 f   LogPulses.obj
- 0001:00007af0       ?SppLoggerStart@CLogPulse@@MAEHPAD@Z 00408af0 f   LogPulses.obj
- 0001:00007b10       ?SppLoggerStat@CLogPulse@@MAEHPAH@Z 00408b10 f   LogPulses.obj
- 0001:00007b30       ??_ECLogPulse@@UAEPAXI@Z   00408b30 f i LogPulses.obj
- 0001:00007b30       ??_GCLogPulse@@UAEPAXI@Z   00408b30 f i LogPulses.obj
- 0001:00007b60       ??0CLogRawPulse@@QAE@XZ    00408b60 f   LogRawPulse.obj
- 0001:00007bc0       ??1CLogRawPulse@@UAE@XZ    00408bc0 f   LogRawPulse.obj
- 0001:00007be0       ?UpdateControls@CLogRawPulse@@MAEXXZ 00408be0 f   LogRawPulse.obj
- 0001:00007cc0       ?PostMessageStop@CLogRawPulse@@MAEXXZ 00408cc0 f   LogRawPulse.obj
- 0001:00007cf0       ?PostMessageStart@CLogRawPulse@@MAEXXZ 00408cf0 f   LogRawPulse.obj
- 0001:00007d20       ?PostMessageCancel@CLogRawPulse@@MAEXXZ 00408d20 f   LogRawPulse.obj
- 0001:00007d50       ?SppLoggerStop@CLogRawPulse@@MAEHXZ 00408d50 f   LogRawPulse.obj
- 0001:00007d60       ?SppLoggerStart@CLogRawPulse@@MAEHPAD@Z 00408d60 f   LogRawPulse.obj
- 0001:00007d80       ?SppLoggerStat@CLogRawPulse@@MAEHPAH@Z 00408d80 f   LogRawPulse.obj
- 0001:00007da0       ??_GCLogRawPulse@@UAEPAXI@Z 00408da0 f i LogRawPulse.obj
- 0001:00007da0       ??_ECLogRawPulse@@UAEPAXI@Z 00408da0 f i LogRawPulse.obj
- 0001:00007dd0       ?_GetBaseClass@CScanInputs@@KGPAUCRuntimeClass@@XZ 00408dd0 f   ScanInputs.obj
- 0001:00007de0       ?GetThisClass@CScanInputs@@SGPAUCRuntimeClass@@XZ 00408de0 f   ScanInputs.obj
- 0001:00007df0       ?GetRuntimeClass@CScanInputs@@UBEPAUCRuntimeClass@@XZ 00408df0 f   ScanInputs.obj
- 0001:00007e00       ??0CScanInputs@@QAE@PAVCWnd@@@Z 00408e00 f   ScanInputs.obj
- 0001:00007f60       ??1CScanInputs@@UAE@XZ     00408f60 f   ScanInputs.obj
- 0001:00007fc0       ?DoDataExchange@CScanInputs@@MAEXPAVCDataExchange@@@Z 00408fc0 f   ScanInputs.obj
- 0001:00007ff0       ?GetThisMessageMap@CScanInputs@@KGPBUAFX_MSGMAP@@XZ 00408ff0 f   ScanInputs.obj
- 0001:00008000       ?GetMessageMap@CScanInputs@@MBEPBUAFX_MSGMAP@@XZ 00409000 f   ScanInputs.obj
- 0001:00008010       ?OnBnClickedCancel@CScanInputs@@QAEXXZ 00409010 f   ScanInputs.obj
- 0001:000080b0       ?OnBnClickedScan@CScanInputs@@QAEXXZ 004090b0 f   ScanInputs.obj
- 0001:00008210       ?OnBnClickedSaveLog@CScanInputs@@QAEXXZ 00409210 f   ScanInputs.obj
- 0001:00008220       ?LogAudioLevel@CScanInputs@@IAEXHHH@Z 00409220 f   ScanInputs.obj
- 0001:000083c0       ?ScanModulationTypes@CScanInputs@@IAEHXZ 004093c0 f   ScanInputs.obj
- 0001:00008470       ?LogModulation@CScanInputs@@IAEXHH@Z 00409470 f   ScanInputs.obj
- 0001:000085b0       ??_ECScanInputs@@UAEPAXI@Z 004095b0 f i ScanInputs.obj
- 0001:000085b0       ??_GCScanInputs@@UAEPAXI@Z 004095b0 f i ScanInputs.obj
- 0001:000085e0       ??HATL@@YA?AV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@0@ABV10@0@Z 004095e0 f i ScanInputs.obj
- 0001:00008690       ?GetThisMessageMap@CSppConsoleApp@@KGPBUAFX_MSGMAP@@XZ 00409690 f   SppConsole.obj
- 0001:000086a0       ?GetMessageMap@CSppConsoleApp@@MBEPBUAFX_MSGMAP@@XZ 004096a0 f   SppConsole.obj
- 0001:000086b0       ??0CSppConsoleApp@@QAE@XZ  004096b0 f   SppConsole.obj
- 0001:000086e0       ?InitInstance@CSppConsoleApp@@UAEHXZ 004096e0 f   SppConsole.obj
- 0001:00008790       ?doStartIconified@CSppConsoleApp@@IAE_NXZ 00409790 f   SppConsole.obj
- 0001:000087f0       ?OnAbout@CSppConsoleApp@@QAEXXZ 004097f0 f   SppConsole.obj
- 0001:00008860       ??_ECSppConsoleApp@@UAEPAXI@Z 00409860 f i SppConsole.obj
- 0001:00008860       ??_GCSppConsoleApp@@UAEPAXI@Z 00409860 f i SppConsole.obj
- 0001:00008890       ??1CSppConsoleApp@@UAE@XZ  00409890 f i SppConsole.obj
- 0001:000088b0       ??1CSppConsoleDlg@@UAE@XZ  004098b0 f i SppConsole.obj
- 0001:00008940       ??0CSppConsoleDlg@@QAE@PAVCWnd@@@Z 00409940 f   SppConsoleDlg.obj
- 0001:00008ae0       ?DoDataExchange@CSppConsoleDlg@@MAEXPAVCDataExchange@@@Z 00409ae0 f   SppConsoleDlg.obj
- 0001:00008c50       ?GetThisMessageMap@CSppConsoleDlg@@KGPBUAFX_MSGMAP@@XZ 00409c50 f   SppConsoleDlg.obj
- 0001:00008c60       ?GetMessageMap@CSppConsoleDlg@@MBEPBUAFX_MSGMAP@@XZ 00409c60 f   SppConsoleDlg.obj
- 0001:00008c70       ?GetDllVersion@@YAKPBD@Z   00409c70 f   SppConsoleDlg.obj
- 0001:00008d00       ?ThreeBeeps@@YAXXZ         00409d00 f   SppConsoleDlg.obj
- 0001:00008d60       ?OneBeep@@YAXXZ            00409d60 f   SppConsoleDlg.obj
- 0001:00008d90       ?OnInitDialog@CSppConsoleDlg@@MAEHXZ 00409d90 f   SppConsoleDlg.obj
- 0001:00009230       ?OnDestroy@CSppConsoleDlg@@IAEXXZ 0040a230 f   SppConsoleDlg.obj
- 0001:000092e0       ?OnPaint@CSppConsoleDlg@@IAEXXZ 0040a2e0 f   SppConsoleDlg.obj
- 0001:00009420       ?OnQueryDragIcon@CSppConsoleDlg@@IAEPAUHICON__@@XZ 0040a420 f   SppConsoleDlg.obj
- 0001:00009440       ?SomethingChanged@CSppConsoleDlg@@QAEXXZ 0040a440 f   SppConsoleDlg.obj
- 0001:00009480       ?OnSelchangeModType@CSppConsoleDlg@@IAEXXZ 0040a480 f   SppConsoleDlg.obj
- 0001:000095d0       ?GetModeTypeCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040a5d0 f   SppConsoleDlg.obj
- 0001:000095f0       ?OnShiftAuto@CSppConsoleDlg@@IAEXXZ 0040a5f0 f   SppConsoleDlg.obj
- 0001:00009690       ?GetShiftAutoCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040a690 f   SppConsoleDlg.obj
- 0001:000096b0       ?OnShiftPos@CSppConsoleDlg@@IAEXXZ 0040a6b0 f   SppConsoleDlg.obj
- 0001:000096d0       ?GetShiftPosCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040a6d0 f   SppConsoleDlg.obj
- 0001:000096f0       ?OnShiftNeg@CSppConsoleDlg@@IAEXXZ 0040a6f0 f   SppConsoleDlg.obj
- 0001:00009710       ?OnHide@CSppConsoleDlg@@IAEXXZ 0040a710 f   SppConsoleDlg.obj
- 0001:00009740       ?OnShow@CSppConsoleDlg@@IAEXXZ 0040a740 f   SppConsoleDlg.obj
- 0001:00009770       ?PopulateModulation@CSppConsoleDlg@@IAEHXZ 0040a770 f   SppConsoleDlg.obj
- 0001:000098c0       ?ShowShiftRB@CSppConsoleDlg@@IAEX_N@Z 0040a8c0 f   SppConsoleDlg.obj
- 0001:00009970       ?TaskBarAddIcon@CSppConsoleDlg@@IAEHIPAUHICON__@@PAD@Z 0040a970 f   SppConsoleDlg.obj
- 0001:00009b50       ?TaskBarDelIcon@CSppConsoleDlg@@IAEHI@Z 0040ab50 f   SppConsoleDlg.obj
- 0001:00009bb0       ?TaskBarIconBaloon@CSppConsoleDlg@@IAEHIPBD0@Z 0040abb0 f   SppConsoleDlg.obj
- 0001:00009cd0       ?TaskBarIconToolTip@CSppConsoleDlg@@IAEHIPBD@Z 0040acd0 f   SppConsoleDlg.obj
- 0001:00009d60       ?StartIconified@CSppConsoleDlg@@QAEX_N@Z 0040ad60 f   SppConsoleDlg.obj
- 0001:00009d80       ?OnStatusAreaMessage@CSppConsoleDlg@@IAEJIJ@Z 0040ad80 f   SppConsoleDlg.obj
- 0001:00009de0       ?OnMixerLineChange@CSppConsoleDlg@@AAEJIJ@Z 0040ade0 f   SppConsoleDlg.obj
- 0001:00009df0       ?OnMixerControlChange@CSppConsoleDlg@@AAEJIJ@Z 0040adf0 f   SppConsoleDlg.obj
- 0001:00009e70       ?ShowTrayIconMenu@CSppConsoleDlg@@IAEXI@Z 0040ae70 f   SppConsoleDlg.obj
- 0001:00009fd0       ?OnWindowPosChanging@CSppConsoleDlg@@IAEXPAUtagWINDOWPOS@@@Z 0040afd0 f   SppConsoleDlg.obj
- 0001:0000a010       ?OnInterSppConsole@CSppConsoleDlg@@IAEJIJ@Z 0040b010 f   SppConsoleDlg.obj
- 0001:0000a040       ?OnInterSppApps@CSppConsoleDlg@@IAEJIJ@Z 0040b040 f   SppConsoleDlg.obj
- 0001:0000a4a0       ?OnOK@CSppConsoleDlg@@MAEXXZ 0040b4a0 f   SppConsoleDlg.obj
- 0001:0000a4f0       ?OnCancel@CSppConsoleDlg@@MAEXXZ 0040b4f0 f   SppConsoleDlg.obj
- 0001:0000a510       ?isDllActive@CSppConsoleDlg@@IAE_NXZ 0040b510 f   SppConsoleDlg.obj
- 0001:0000a560       ?GetStatusString@CSppConsoleDlg@@QAE?AV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@ATL@@XZ 0040b560 f   SppConsoleDlg.obj
- 0001:0000a860       ?OnToolTipNotify@CSppConsoleDlg@@IAEHIPAUtagNMHDR@@PAJ@Z 0040b860 f   SppConsoleDlg.obj
- 0001:0000a8d0       ?GetFmsStatusString@CSppConsoleDlg@@IAEHAAV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@ATL@@@Z 0040b8d0 f   SppConsoleDlg.obj
- 0001:0000ab40       ?PopulateAudioSource@CSppConsoleDlg@@IAEXXZ 0040bb40 f   SppConsoleDlg.obj
- 0001:0000ac30       ?GetMixerDeviceCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040bc30 f   SppConsoleDlg.obj
- 0001:0000ac50       ?PopulateInputLines@CSppConsoleDlg@@IAEXXZ 0040bc50 f   SppConsoleDlg.obj
- 0001:0000ad30       ?GetAudioLinesCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040bd30 f   SppConsoleDlg.obj
- 0001:0000ad50       ?OnSelchangeMixerdevice@CSppConsoleDlg@@IAEXXZ 0040bd50 f   SppConsoleDlg.obj
- 0001:0000ae20       ?OnSelchangeAudioSrc@CSppConsoleDlg@@IAEXXZ 0040be20 f   SppConsoleDlg.obj
- 0001:0000aef0       ?OnEnableAudio@CSppConsoleDlg@@IAEXXZ 0040bef0 f   SppConsoleDlg.obj
- 0001:0000af60       ?EnableAudio@CSppConsoleDlg@@IAEXH@Z 0040bf60 f   SppConsoleDlg.obj
- 0001:0000b0c0       ?GetCurrentMixerDevice@CSppConsoleDlg@@IAEHXZ 0040c0c0 f   SppConsoleDlg.obj
- 0001:0000b130       ?GetCurrentInputLine@CSppConsoleDlg@@IAEHXZ 0040c130 f   SppConsoleDlg.obj
- 0001:0000b170       ?GetSavedCurrentInputLine@CSppConsoleDlg@@IAE_NPAI@Z 0040c170 f   SppConsoleDlg.obj
- 0001:0000b1e0       ?GetCurrentInputLineFromSystem@CSppConsoleDlg@@IAE_NPAI@Z 0040c1e0 f   SppConsoleDlg.obj
- 0001:0000b240       ?SetCurrentMixerDevice@CSppConsoleDlg@@IAEXI@Z 0040c240 f   SppConsoleDlg.obj
- 0001:0000b290       ?SetCurrentInputLine@CSppConsoleDlg@@IAEXH@Z 0040c290 f   SppConsoleDlg.obj
- 0001:0000b310       ?GetCheckAudioCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040c310 f   SppConsoleDlg.obj
- 0001:0000b330       ?CheckAudioCB@CSppConsoleDlg@@IAEXXZ 0040c330 f   SppConsoleDlg.obj
- 0001:0000b360       ?OnSetCursor@CSppConsoleDlg@@IAEHPAVCWnd@@II@Z 0040c360 f   SppConsoleDlg.obj
- 0001:0000b3f0       ?HearTx@CSppConsoleDlg@@IAEX_N@Z 0040c3f0 f   SppConsoleDlg.obj
- 0001:0000b4c0       ?OnSelSrc@CSppConsoleDlg@@IAEXXZ 0040c4c0 f   SppConsoleDlg.obj
- 0001:0000b650       ?OnAudioDst@CSppConsoleDlg@@IAEXXZ 0040c650 f   SppConsoleDlg.obj
- 0001:0000b7e0       ?OnAudioVol@CSppConsoleDlg@@IAEXXZ 0040c7e0 f   SppConsoleDlg.obj
- 0001:0000b870       ?OnAudioPrint@CSppConsoleDlg@@IAEXXZ 0040c870 f   SppConsoleDlg.obj
- 0001:0000b990       ?PpJoyExShowCtrl@CSppConsoleDlg@@IAEXXZ 0040c990 f   SppConsoleDlg.obj
- 0001:0000b9d0       ?OnPpjoyex@CSppConsoleDlg@@IAEXXZ 0040c9d0 f   SppConsoleDlg.obj
- 0001:0000bad0       ?UpdateFilterMenu@CSppConsoleDlg@@IAEXXZ 0040cad0 f   SppConsoleDlg.obj
- 0001:0000bdb0       ?OnFilterSelect@CSppConsoleDlg@@IAEXI@Z 0040cdb0 f   SppConsoleDlg.obj
- 0001:0000bf30       ?OnHideMsg@CSppConsoleDlg@@AAEJIJ@Z 0040cf30 f   SppConsoleDlg.obj
- 0001:0000bf50       ?LocateDialogWindow@CSppConsoleDlg@@IAEHXZ 0040cf50 f   SppConsoleDlg.obj
- 0001:0000bfd0       ?StoreLocationDialogWindow@CSppConsoleDlg@@IAEHXZ 0040cfd0 f   SppConsoleDlg.obj
- 0001:0000c000       ?OnTimer@CSppConsoleDlg@@QAEXI@Z 0040d000 f   SppConsoleDlg.obj
- 0001:0000c110       ?InitJoyPosBars@CSppConsoleDlg@@IAEXXZ 0040d110 f   SppConsoleDlg.obj
- 0001:0000c1a0       ?SetJoyPosBars@CSppConsoleDlg@@IAEXPAH@Z 0040d1a0 f   SppConsoleDlg.obj
- 0001:0000c290       ?OnWaveRec@CSppConsoleDlg@@IAEXXZ 0040d290 f   SppConsoleDlg.obj
- 0001:0000c370       ?OnWaveRecStart@CSppConsoleDlg@@AAEJIJ@Z 0040d370 f   SppConsoleDlg.obj
- 0001:0000c3d0       ?OnWaveRecStop@CSppConsoleDlg@@AAEJIJ@Z 0040d3d0 f   SppConsoleDlg.obj
- 0001:0000c430       ?OnWaveRecCancel@CSppConsoleDlg@@AAEJIJ@Z 0040d430 f   SppConsoleDlg.obj
- 0001:0000c450       ?OnAdvancedJitter@CSppConsoleDlg@@QAEXXZ 0040d450 f   SppConsoleDlg.obj
- 0001:0000c470       ?InitJitterStatus@CSppConsoleDlg@@IAEXXZ 0040d470 f   SppConsoleDlg.obj
- 0001:0000c4d0       ?UpdateJitterStatus@CSppConsoleDlg@@IAEXHH@Z 0040d4d0 f   SppConsoleDlg.obj
- 0001:0000c6e0       ?UpdateFmsMenuItem@CSppConsoleDlg@@IAEXH@Z 0040d6e0 f   SppConsoleDlg.obj
- 0001:0000c800       ?OnRunFms@CSppConsoleDlg@@QAEXXZ 0040d800 f   SppConsoleDlg.obj
- 0001:0000c920       ?OnSysCommand@CSppConsoleDlg@@QAEXIJ@Z 0040d920 f   SppConsoleDlg.obj
- 0001:0000c950       ?OnLogAudioHdrs@CSppConsoleDlg@@QAEXXZ 0040d950 f   SppConsoleDlg.obj
- 0001:0000ca30       ?OnLogAudioHdrsCancel@CSppConsoleDlg@@AAEJIJ@Z 0040da30 f   SppConsoleDlg.obj
- 0001:0000ca50       ?OnLogPulse@CSppConsoleDlg@@QAEXXZ 0040da50 f   SppConsoleDlg.obj
- 0001:0000cb90       ?OnLogPulseCancel@CSppConsoleDlg@@AAEJIJ@Z 0040db90 f   SppConsoleDlg.obj
- 0001:0000cbb0       ?OnLogFmsConn@CSppConsoleDlg@@QAEXXZ 0040dbb0 f   SppConsoleDlg.obj
- 0001:0000ccd0       ?OnFmsConnStart@CSppConsoleDlg@@AAEJIJ@Z 0040dcd0 f   SppConsoleDlg.obj
- 0001:0000cf80       ?OnFmsConnStop@CSppConsoleDlg@@AAEJIJ@Z 0040df80 f   SppConsoleDlg.obj
- 0001:0000d0d0       ?OnFmsConnCancel@CSppConsoleDlg@@AAEJIJ@Z 0040e0d0 f   SppConsoleDlg.obj
- 0001:0000d0f0       ?OnLogRawPulse@CSppConsoleDlg@@QAEXXZ 0040e0f0 f   SppConsoleDlg.obj
- 0001:0000d210       ?OnRawPulseCancel@CSppConsoleDlg@@AAEJIJ@Z 0040e210 f   SppConsoleDlg.obj
- 0001:0000d230       ?OnBnClickedScandlg@CSppConsoleDlg@@QAEXXZ 0040e230 f   SppConsoleDlg.obj
- 0001:0000d300       ?GetAudioLevel@CSppConsoleDlg@@QAEHXZ 0040e300 f   SppConsoleDlg.obj
- 0001:0000d330       ?GetNumJoystickPos@CSppConsoleDlg@@QAEHXZ 0040e330 f   SppConsoleDlg.obj
- 0001:0000d370       ??_GCSppConsoleDlg@@UAEPAXI@Z 0040e370 f i SppConsoleDlg.obj
- 0001:0000d370       ??_ECSppConsoleDlg@@UAEPAXI@Z 0040e370 f i SppConsoleDlg.obj
- 0001:0000d3a0       ?GetWindowInfo@CWnd@@QBEHPAUtagWINDOWINFO@@@Z 0040e3a0 f i SppConsoleDlg.obj
- 0001:0000d3e0       ?_GetBaseClass@CStaticLink@@KGPAUCRuntimeClass@@XZ 0040e3e0 f   StatLink.obj
- 0001:0000d3f0       ?GetThisClass@CStaticLink@@SGPAUCRuntimeClass@@XZ 0040e3f0 f   StatLink.obj
- 0001:0000d400       ?GetRuntimeClass@CStaticLink@@UBEPAUCRuntimeClass@@XZ 0040e400 f   StatLink.obj
- 0001:0000d410       ?GetThisMessageMap@CStaticLink@@KGPBUAFX_MSGMAP@@XZ 0040e410 f   StatLink.obj
- 0001:0000d420       ?GetMessageMap@CStaticLink@@MBEPBUAFX_MSGMAP@@XZ 0040e420 f   StatLink.obj
- 0001:0000d430       ??0CStaticLink@@QAE@XZ     0040e430 f   StatLink.obj
- 0001:0000d4c0       ?CtlColor@CStaticLink@@QAEPAUHBRUSH__@@PAVCDC@@I@Z 0040e4c0 f   StatLink.obj
- 0001:0000d5e0       ?OnClicked@CStaticLink@@QAEXXZ 0040e5e0 f   StatLink.obj
- 0001:0000d690       ?SetDefaultCursor@CStaticLink@@QAEXXZ 0040e690 f   StatLink.obj
- 0001:0000d770       ?OnSetCursor@CStaticLink@@QAEHPAVCWnd@@II@Z 0040e770 f   StatLink.obj
- 0001:0000d7a0       ?SetLink@CStaticLink@@QAE?AV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@ATL@@V23@@Z 0040e7a0 f   StatLink.obj
- 0001:0000d890       ??_ECStaticLink@@UAEPAXI@Z 0040e890 f i StatLink.obj
- 0001:0000d890       ??_GCStaticLink@@UAEPAXI@Z 0040e890 f i StatLink.obj
- 0001:0000d8c0       ??0CTraceFileAndLineInfo@ATL@@QAE@PBDH@Z 0040e8c0 f i StatLink.obj
- 0001:0000d8f0       ??RCTraceFileAndLineInfo@ATL@@QBAXPBDZZ 0040e8f0 f i StatLink.obj
- 0001:0000d940       ?TraceV@CTrace@ATL@@QBAXPBDHKI0PAD@Z 0040e940 f i StatLink.obj
- 0001:0000d970       ??BCTraceCategory@ATL@@QBEKXZ 0040e970 f i StatLink.obj
- 0001:0000d980       ?GetEnvironmentVariableWThunk@ATL@@YGKPBGPAGK@Z 0040e980 f i StdAfx.obj
- 0001:0000d9c0       ?_AtlInstallStringThunk@ATL@@YAXPAPAXPAX1@Z 0040e9c0 f i StdAfx.obj
- 0001:0000da20       ?GetEnvironmentVariableWFake@ATL@@YGKPBGPAGK@Z 0040ea20 f i StdAfx.obj
- 0001:0000dc00       ?_AtlGetConversionACP@ATL@@YGIXZ 0040ec00 f i StdAfx.obj
- 0001:0000dc10       ?CompareStringWThunk@ATL@@YGHKKPBGH0H@Z 0040ec10 f i StdAfx.obj
- 0001:0000dc50       ?CompareStringWFake@ATL@@YGHKKPBGH0H@Z 0040ec50 f i StdAfx.obj
- 0001:0000de30       ?_AtlVerifyStackAvailable@_ATL_SAFE_ALLOCA_IMPL@ATL@@YA_NK@Z 0040ee30 f i StdAfx.obj
- 0001:0000ded0       ?AtlW2AHelper@@YGPADPADPBGHI@Z 0040eed0 f i StdAfx.obj
- 0001:0000dfa0       ?AtlThrow@ATL@@YGXJ@Z      0040efa0 f i StdAfx.obj
- 0001:0000e000       ??RCTraceFileAndLineInfo@ATL@@QBAXKIPBDZZ 0040f000 f i StdAfx.obj
- 0001:0000e040       ?GetStringTypeExWThunk@ATL@@YGHKKPBGHPAG@Z 0040f040 f i StdAfx.obj
- 0001:0000e080       ?GetStringTypeExWFake@ATL@@YGHKKPBGHPAG@Z 0040f080 f i StdAfx.obj
- 0001:0000e190       ?lstrcmpiWThunk@ATL@@YGHPBG0@Z 0040f190 f i StdAfx.obj
- 0001:0000e1c0       ?lstrcmpiWFake@ATL@@YGHPBG0@Z 0040f1c0 f i StdAfx.obj
- 0001:0000e2a0       ?CharLowerWThunk@ATL@@YGPAGPAG@Z 0040f2a0 f i StdAfx.obj
- 0001:0000e2d0       ?CharLowerWFake@ATL@@YGPAGPAG@Z 0040f2d0 f i StdAfx.obj
- 0001:0000e3c0       ?AtlA2WHelper@@YGPAGPAGPBDHI@Z 0040f3c0 f i StdAfx.obj
- 0001:0000e490       ?CharUpperWThunk@ATL@@YGPAGPAG@Z 0040f490 f i StdAfx.obj
- 0001:0000e4c0       ?CharUpperWFake@ATL@@YGPAGPAG@Z 0040f4c0 f i StdAfx.obj
- 0001:0000e5b0       ??_Estringdispid@CComTypeInfoHolder@ATL@@QAEPAXI@Z 0040f5b0 f i StdAfx.obj
- 0001:0000e620       ??1stringdispid@CComTypeInfoHolder@ATL@@QAE@XZ 0040f620 f i StdAfx.obj
- 0001:0000e640       ??1CComBSTR@ATL@@QAE@XZ    0040f640 f i StdAfx.obj
- 0001:0000e660       ??0?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAE@XZ 0040f660 f i StdAfx.obj
- 0001:0000e680       ?Allocate@?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAEPAXK@Z 0040f680 f i StdAfx.obj
- 0001:0000e6d0       ?Allocate@CCRTAllocator@ATL@@SAPAXI@Z 0040f6d0 f i StdAfx.obj
- 0001:0000e6f0       ??1?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAE@XZ 0040f6f0 f i StdAfx.obj
- 0001:0000e730       ?Free@CCRTAllocator@ATL@@SAXPAX@Z 0040f730 f i StdAfx.obj
- 0001:0000e750       ??0?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAE@XZ 0040f750 f i StdAfx.obj
- 0001:0000e770       ??1?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAE@XZ 0040f770 f i StdAfx.obj
- 0001:0000e790       ??B?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QBEPADXZ 0040f790 f i StdAfx.obj
- 0001:0000e7a0       ?Allocate@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAEPADI@Z 0040f7a0 f i StdAfx.obj
- 0001:0000e7c0       ??0?$CW2AEX@$0IA@@ATL@@QAE@PBG@Z 0040f7c0 f i StdAfx.obj
- 0001:0000e7f0       ??1?$CW2AEX@$0IA@@ATL@@QAE@XZ 0040f7f0 f i StdAfx.obj
- 0001:0000e820       ??B?$CW2AEX@$0IA@@ATL@@QBEPADXZ 0040f820 f i StdAfx.obj
- 0001:0000e830       ?AllocateBytes@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAEPADI@Z 0040f830 f i StdAfx.obj
- 0001:0000e890       ?FreeHeap@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@AAEXXZ 0040f890 f i StdAfx.obj
- 0001:0000e8b0       ?Init@?$CW2AEX@$0IA@@ATL@@AAEXPBGI@Z 0040f8b0 f i StdAfx.obj
- 0001:0000e940       ?AtlThrowLastWin32@ATL@@YGXXZ 0040f940 f i StdAfx.obj
- 0001:0000e990       ?GetData@CAtlSafeAllocBufferNode@?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAEPAXXZ 0040f990 f i StdAfx.obj
- 0001:0000e9b0       ?AllocateHeap@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@AAEXI@Z 0040f9b0 f i StdAfx.obj
- 0001:0000e9f0       ??0CAtlWinModule@ATL@@QAE@XZ 0040f9f0 f i StdAfx.obj
- 0001:0000ea30       ??0_ATL_WIN_MODULE70@ATL@@QAE@XZ 0040fa30 f i StdAfx.obj
- 0001:0000ea60       ??0CComCriticalSection@ATL@@QAE@XZ 0040fa60 f i StdAfx.obj
- 0001:0000ea80       ??0?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAE@XZ 0040fa80 f i StdAfx.obj
- 0001:0000eab0       ??1CAtlWinModule@ATL@@QAE@XZ 0040fab0 f i StdAfx.obj
- 0001:0000eb00       ?Term@CAtlWinModule@ATL@@QAEXXZ 0040fb00 f i StdAfx.obj
- 0001:0000eb20       ?GetModuleInstance@CAtlBaseModule@ATL@@QAEPAUHINSTANCE__@@XZ 0040fb20 f i StdAfx.obj
- 0001:0000eb40       ??1_ATL_WIN_MODULE70@ATL@@QAE@XZ 0040fb40 f i StdAfx.obj
- 0001:0000eb60       ?AtlWinModuleTerm@ATL@@YGJPAU_ATL_WIN_MODULE70@1@PAUHINSTANCE__@@@Z 0040fb60 f i StdAfx.obj
- 0001:0000ec00       ?Term@CComCriticalSection@ATL@@QAEJXZ 0040fc00 f i StdAfx.obj
- 0001:0000ec20       ??1?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAE@XZ 0040fc20 f i StdAfx.obj
- 0001:0000ec40       ?GetSize@?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QBEHXZ 0040fc40 f i StdAfx.obj
- 0001:0000ec60       ?RemoveAll@?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAEXXZ 0040fc60 f i StdAfx.obj
- 0001:0000ecc0       ??A?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAEAAGH@Z 0040fcc0 f i StdAfx.obj
- 0001:0000ed30       ?_AtlRaiseException@ATL@@YAXKK@Z 0040fd30 f i StdAfx.obj
- 0001:0000ed50       ?_GetBaseClass@CWaveRec@@KGPAUCRuntimeClass@@XZ 0040fd50 f   WaveRec.obj
- 0001:0000ed60       ?GetThisClass@CWaveRec@@SGPAUCRuntimeClass@@XZ 0040fd60 f   WaveRec.obj
- 0001:0000ed70       ?GetRuntimeClass@CWaveRec@@UBEPAUCRuntimeClass@@XZ 0040fd70 f   WaveRec.obj
- 0001:0000ed80       ??0CWaveRec@@QAE@PAVCWnd@@@Z 0040fd80 f   WaveRec.obj
- 0001:0000ee50       ??1CWaveRec@@UAE@XZ        0040fe50 f   WaveRec.obj
- 0001:0000eeb0       ?DoDataExchange@CWaveRec@@MAEXPAVCDataExchange@@@Z 0040feb0 f   WaveRec.obj
- 0001:0000eef0       ?GetThisMessageMap@CWaveRec@@KGPBUAFX_MSGMAP@@XZ 0040fef0 f   WaveRec.obj
- 0001:0000ef00       ?GetMessageMap@CWaveRec@@MBEPBUAFX_MSGMAP@@XZ 0040ff00 f   WaveRec.obj
- 0001:0000ef10       ?OnBnClickedRecStop@CWaveRec@@QAEXXZ 0040ff10 f   WaveRec.obj
- 0001:0000f030       ?OnBnClickedRecStart@CWaveRec@@QAEXXZ 00410030 f   WaveRec.obj
- 0001:0000f130       ?UpdateControls@CWaveRec@@MAEXXZ 00410130 f   WaveRec.obj
- 0001:0000f280       ?OnInitDialog@CWaveRec@@UAEHXZ 00410280 f   WaveRec.obj
- 0001:0000f330       ?PostMessageStop@CWaveRec@@MAEXXZ 00410330 f   WaveRec.obj
- 0001:0000f360       ?PostMessageStart@CWaveRec@@MAEXXZ 00410360 f   WaveRec.obj
- 0001:0000f390       ?PostMessageCancel@CWaveRec@@MAEXXZ 00410390 f   WaveRec.obj
- 0001:0000f3c0       ?PostMessagePlay@CWaveRec@@MAEXXZ 004103c0 f   WaveRec.obj
- 0001:0000f3f0       ?OnBnClickedCancel@CWaveRec@@QAEXXZ 004103f0 f   WaveRec.obj
- 0001:0000f490       ?RenameWaveFile@CWaveRec@@IAEXXZ 00410490 f   WaveRec.obj
- 0001:0000f5e0       ?GetWaveFileName@CWaveRec@@IAE_NXZ 004105e0 f   WaveRec.obj
- 0001:0000f6f0       ?OnTimer@CWaveRec@@QAEXI@Z 004106f0 f   WaveRec.obj
- 0001:0000f7c0       ?OnBnClickedRecPlay@CWaveRec@@QAEXXZ 004107c0 f   WaveRec.obj
+ 0001:000072c0       ?DrawSquareLed@CDynamicLED@@AAEXVCRect@@@Z 004082c0 f   DynamicLED.obj
+ 0001:00007400       ??_GCDynamicLED@@UAEPAXI@Z 00408400 f i DynamicLED.obj
+ 0001:00007400       ??_ECDynamicLED@@UAEPAXI@Z 00408400 f i DynamicLED.obj
+ 0001:00007430       ??0CLogAudioHdrs@@QAE@XZ   00408430 f   LogAudioHdrs.obj
+ 0001:00007480       ??1CLogAudioHdrs@@UAE@XZ   00408480 f   LogAudioHdrs.obj
+ 0001:000074a0       ?UpdateControls@CLogAudioHdrs@@MAEXXZ 004084a0 f   LogAudioHdrs.obj
+ 0001:00007580       ?PostMessageStop@CLogAudioHdrs@@MAEXXZ 00408580 f   LogAudioHdrs.obj
+ 0001:000075b0       ?PostMessageStart@CLogAudioHdrs@@MAEXXZ 004085b0 f   LogAudioHdrs.obj
+ 0001:000075e0       ?PostMessageCancel@CLogAudioHdrs@@MAEXXZ 004085e0 f   LogAudioHdrs.obj
+ 0001:00007610       ?SppLoggerStop@CLogAudioHdrs@@MAEHXZ 00408610 f   LogAudioHdrs.obj
+ 0001:00007620       ?SppLoggerStart@CLogAudioHdrs@@MAEHPAD@Z 00408620 f   LogAudioHdrs.obj
+ 0001:00007640       ?SppLoggerStat@CLogAudioHdrs@@MAEHPAH@Z 00408640 f   LogAudioHdrs.obj
+ 0001:00007660       ??_GCLogAudioHdrs@@UAEPAXI@Z 00408660 f i LogAudioHdrs.obj
+ 0001:00007660       ??_ECLogAudioHdrs@@UAEPAXI@Z 00408660 f i LogAudioHdrs.obj
+ 0001:00007690       ??0CLogFmsConn@@QAE@XZ     00408690 f   LogFmsConn.obj
+ 0001:000076f0       ??1CLogFmsConn@@UAE@XZ     004086f0 f   LogFmsConn.obj
+ 0001:00007710       ?UpdateControls@CLogFmsConn@@MAEXXZ 00408710 f   LogFmsConn.obj
+ 0001:000077f0       ?PostMessageStop@CLogFmsConn@@MAEXXZ 004087f0 f   LogFmsConn.obj
+ 0001:00007820       ?PostMessageStart@CLogFmsConn@@MAEXXZ 00408820 f   LogFmsConn.obj
+ 0001:00007850       ?PostMessageCancel@CLogFmsConn@@MAEXXZ 00408850 f   LogFmsConn.obj
+ 0001:00007880       ?SppLoggerStop@CLogFmsConn@@MAEHXZ 00408880 f   LogFmsConn.obj
+ 0001:000078a0       ?SppLoggerStart@CLogFmsConn@@MAEHPAD@Z 004088a0 f   LogFmsConn.obj
+ 0001:000078c0       ??_GCLogFmsConn@@UAEPAXI@Z 004088c0 f i LogFmsConn.obj
+ 0001:000078c0       ??_ECLogFmsConn@@UAEPAXI@Z 004088c0 f i LogFmsConn.obj
+ 0001:000078f0       ??0CLogPulse@@QAE@XZ       004088f0 f   LogPulses.obj
+ 0001:00007940       ??1CLogPulse@@UAE@XZ       00408940 f   LogPulses.obj
+ 0001:00007960       ?UpdateControls@CLogPulse@@MAEXXZ 00408960 f   LogPulses.obj
+ 0001:00007a40       ?PostMessageStop@CLogPulse@@MAEXXZ 00408a40 f   LogPulses.obj
+ 0001:00007a70       ?PostMessageStart@CLogPulse@@MAEXXZ 00408a70 f   LogPulses.obj
+ 0001:00007aa0       ?PostMessageCancel@CLogPulse@@MAEXXZ 00408aa0 f   LogPulses.obj
+ 0001:00007ad0       ?SppLoggerStop@CLogPulse@@MAEHXZ 00408ad0 f   LogPulses.obj
+ 0001:00007ae0       ?SppLoggerStart@CLogPulse@@MAEHPAD@Z 00408ae0 f   LogPulses.obj
+ 0001:00007b00       ?SppLoggerStat@CLogPulse@@MAEHPAH@Z 00408b00 f   LogPulses.obj
+ 0001:00007b20       ??_ECLogPulse@@UAEPAXI@Z   00408b20 f i LogPulses.obj
+ 0001:00007b20       ??_GCLogPulse@@UAEPAXI@Z   00408b20 f i LogPulses.obj
+ 0001:00007b50       ??0CLogRawPulse@@QAE@XZ    00408b50 f   LogRawPulse.obj
+ 0001:00007bb0       ??1CLogRawPulse@@UAE@XZ    00408bb0 f   LogRawPulse.obj
+ 0001:00007bd0       ?UpdateControls@CLogRawPulse@@MAEXXZ 00408bd0 f   LogRawPulse.obj
+ 0001:00007cb0       ?PostMessageStop@CLogRawPulse@@MAEXXZ 00408cb0 f   LogRawPulse.obj
+ 0001:00007ce0       ?PostMessageStart@CLogRawPulse@@MAEXXZ 00408ce0 f   LogRawPulse.obj
+ 0001:00007d10       ?PostMessageCancel@CLogRawPulse@@MAEXXZ 00408d10 f   LogRawPulse.obj
+ 0001:00007d40       ?SppLoggerStop@CLogRawPulse@@MAEHXZ 00408d40 f   LogRawPulse.obj
+ 0001:00007d50       ?SppLoggerStart@CLogRawPulse@@MAEHPAD@Z 00408d50 f   LogRawPulse.obj
+ 0001:00007d70       ?SppLoggerStat@CLogRawPulse@@MAEHPAH@Z 00408d70 f   LogRawPulse.obj
+ 0001:00007d90       ??_GCLogRawPulse@@UAEPAXI@Z 00408d90 f i LogRawPulse.obj
+ 0001:00007d90       ??_ECLogRawPulse@@UAEPAXI@Z 00408d90 f i LogRawPulse.obj
+ 0001:00007dc0       ?_GetBaseClass@CScanInputs@@KGPAUCRuntimeClass@@XZ 00408dc0 f   ScanInputs.obj
+ 0001:00007dd0       ?GetThisClass@CScanInputs@@SGPAUCRuntimeClass@@XZ 00408dd0 f   ScanInputs.obj
+ 0001:00007de0       ?GetRuntimeClass@CScanInputs@@UBEPAUCRuntimeClass@@XZ 00408de0 f   ScanInputs.obj
+ 0001:00007df0       ??0CScanInputs@@QAE@PAVCWnd@@@Z 00408df0 f   ScanInputs.obj
+ 0001:00007f50       ??1CScanInputs@@UAE@XZ     00408f50 f   ScanInputs.obj
+ 0001:00007fb0       ?DoDataExchange@CScanInputs@@MAEXPAVCDataExchange@@@Z 00408fb0 f   ScanInputs.obj
+ 0001:00007fe0       ?GetThisMessageMap@CScanInputs@@KGPBUAFX_MSGMAP@@XZ 00408fe0 f   ScanInputs.obj
+ 0001:00007ff0       ?GetMessageMap@CScanInputs@@MBEPBUAFX_MSGMAP@@XZ 00408ff0 f   ScanInputs.obj
+ 0001:00008000       ?OnBnClickedCancel@CScanInputs@@QAEXXZ 00409000 f   ScanInputs.obj
+ 0001:000080a0       ?OnBnClickedScan@CScanInputs@@QAEXXZ 004090a0 f   ScanInputs.obj
+ 0001:00008200       ?OnBnClickedSaveLog@CScanInputs@@QAEXXZ 00409200 f   ScanInputs.obj
+ 0001:00008210       ?LogAudioLevel@CScanInputs@@IAEXHHH@Z 00409210 f   ScanInputs.obj
+ 0001:000083b0       ?ScanModulationTypes@CScanInputs@@IAEHXZ 004093b0 f   ScanInputs.obj
+ 0001:00008460       ?LogModulation@CScanInputs@@IAEXHH@Z 00409460 f   ScanInputs.obj
+ 0001:000085a0       ??_ECScanInputs@@UAEPAXI@Z 004095a0 f i ScanInputs.obj
+ 0001:000085a0       ??_GCScanInputs@@UAEPAXI@Z 004095a0 f i ScanInputs.obj
+ 0001:000085d0       ??HATL@@YA?AV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@0@ABV10@0@Z 004095d0 f i ScanInputs.obj
+ 0001:00008680       ?GetThisMessageMap@CSppConsoleApp@@KGPBUAFX_MSGMAP@@XZ 00409680 f   SppConsole.obj
+ 0001:00008690       ?GetMessageMap@CSppConsoleApp@@MBEPBUAFX_MSGMAP@@XZ 00409690 f   SppConsole.obj
+ 0001:000086a0       ??0CSppConsoleApp@@QAE@XZ  004096a0 f   SppConsole.obj
+ 0001:000086d0       ?InitInstance@CSppConsoleApp@@UAEHXZ 004096d0 f   SppConsole.obj
+ 0001:00008780       ?doStartIconified@CSppConsoleApp@@IAE_NXZ 00409780 f   SppConsole.obj
+ 0001:000087e0       ?OnAbout@CSppConsoleApp@@QAEXXZ 004097e0 f   SppConsole.obj
+ 0001:00008850       ??_ECSppConsoleApp@@UAEPAXI@Z 00409850 f i SppConsole.obj
+ 0001:00008850       ??_GCSppConsoleApp@@UAEPAXI@Z 00409850 f i SppConsole.obj
+ 0001:00008880       ??1CSppConsoleApp@@UAE@XZ  00409880 f i SppConsole.obj
+ 0001:000088a0       ??1CSppConsoleDlg@@UAE@XZ  004098a0 f i SppConsole.obj
+ 0001:00008930       ??0CSppConsoleDlg@@QAE@PAVCWnd@@@Z 00409930 f   SppConsoleDlg.obj
+ 0001:00008ad0       ?DoDataExchange@CSppConsoleDlg@@MAEXPAVCDataExchange@@@Z 00409ad0 f   SppConsoleDlg.obj
+ 0001:00008c40       ?GetThisMessageMap@CSppConsoleDlg@@KGPBUAFX_MSGMAP@@XZ 00409c40 f   SppConsoleDlg.obj
+ 0001:00008c50       ?GetMessageMap@CSppConsoleDlg@@MBEPBUAFX_MSGMAP@@XZ 00409c50 f   SppConsoleDlg.obj
+ 0001:00008c60       ?GetDllVersion@@YAKPBD@Z   00409c60 f   SppConsoleDlg.obj
+ 0001:00008cf0       ?ThreeBeeps@@YAXXZ         00409cf0 f   SppConsoleDlg.obj
+ 0001:00008d50       ?OneBeep@@YAXXZ            00409d50 f   SppConsoleDlg.obj
+ 0001:00008d80       ?OnInitDialog@CSppConsoleDlg@@MAEHXZ 00409d80 f   SppConsoleDlg.obj
+ 0001:00009220       ?OnDestroy@CSppConsoleDlg@@IAEXXZ 0040a220 f   SppConsoleDlg.obj
+ 0001:000092d0       ?OnPaint@CSppConsoleDlg@@IAEXXZ 0040a2d0 f   SppConsoleDlg.obj
+ 0001:00009410       ?OnQueryDragIcon@CSppConsoleDlg@@IAEPAUHICON__@@XZ 0040a410 f   SppConsoleDlg.obj
+ 0001:00009430       ?SomethingChanged@CSppConsoleDlg@@QAEXXZ 0040a430 f   SppConsoleDlg.obj
+ 0001:00009470       ?OnSelchangeModType@CSppConsoleDlg@@IAEXXZ 0040a470 f   SppConsoleDlg.obj
+ 0001:000095c0       ?GetModeTypeCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040a5c0 f   SppConsoleDlg.obj
+ 0001:000095e0       ?OnShiftAuto@CSppConsoleDlg@@IAEXXZ 0040a5e0 f   SppConsoleDlg.obj
+ 0001:00009680       ?GetShiftAutoCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040a680 f   SppConsoleDlg.obj
+ 0001:000096a0       ?OnShiftPos@CSppConsoleDlg@@IAEXXZ 0040a6a0 f   SppConsoleDlg.obj
+ 0001:000096c0       ?GetShiftPosCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040a6c0 f   SppConsoleDlg.obj
+ 0001:000096e0       ?OnShiftNeg@CSppConsoleDlg@@IAEXXZ 0040a6e0 f   SppConsoleDlg.obj
+ 0001:00009700       ?OnHide@CSppConsoleDlg@@IAEXXZ 0040a700 f   SppConsoleDlg.obj
+ 0001:00009730       ?OnShow@CSppConsoleDlg@@IAEXXZ 0040a730 f   SppConsoleDlg.obj
+ 0001:00009760       ?PopulateModulation@CSppConsoleDlg@@IAEHXZ 0040a760 f   SppConsoleDlg.obj
+ 0001:000098b0       ?ShowShiftRB@CSppConsoleDlg@@IAEX_N@Z 0040a8b0 f   SppConsoleDlg.obj
+ 0001:00009960       ?TaskBarAddIcon@CSppConsoleDlg@@IAEHIPAUHICON__@@PAD@Z 0040a960 f   SppConsoleDlg.obj
+ 0001:00009b40       ?TaskBarDelIcon@CSppConsoleDlg@@IAEHI@Z 0040ab40 f   SppConsoleDlg.obj
+ 0001:00009ba0       ?TaskBarIconBaloon@CSppConsoleDlg@@IAEHIPBD0@Z 0040aba0 f   SppConsoleDlg.obj
+ 0001:00009cc0       ?TaskBarIconToolTip@CSppConsoleDlg@@IAEHIPBD@Z 0040acc0 f   SppConsoleDlg.obj
+ 0001:00009d50       ?StartIconified@CSppConsoleDlg@@QAEX_N@Z 0040ad50 f   SppConsoleDlg.obj
+ 0001:00009d70       ?OnStatusAreaMessage@CSppConsoleDlg@@IAEJIJ@Z 0040ad70 f   SppConsoleDlg.obj
+ 0001:00009dd0       ?OnMixerLineChange@CSppConsoleDlg@@AAEJIJ@Z 0040add0 f   SppConsoleDlg.obj
+ 0001:00009de0       ?OnMixerControlChange@CSppConsoleDlg@@AAEJIJ@Z 0040ade0 f   SppConsoleDlg.obj
+ 0001:00009e60       ?ShowTrayIconMenu@CSppConsoleDlg@@IAEXI@Z 0040ae60 f   SppConsoleDlg.obj
+ 0001:00009fc0       ?OnWindowPosChanging@CSppConsoleDlg@@IAEXPAUtagWINDOWPOS@@@Z 0040afc0 f   SppConsoleDlg.obj
+ 0001:0000a000       ?OnInterSppConsole@CSppConsoleDlg@@IAEJIJ@Z 0040b000 f   SppConsoleDlg.obj
+ 0001:0000a030       ?OnInterSppApps@CSppConsoleDlg@@IAEJIJ@Z 0040b030 f   SppConsoleDlg.obj
+ 0001:0000a490       ?OnOK@CSppConsoleDlg@@MAEXXZ 0040b490 f   SppConsoleDlg.obj
+ 0001:0000a4e0       ?OnCancel@CSppConsoleDlg@@MAEXXZ 0040b4e0 f   SppConsoleDlg.obj
+ 0001:0000a500       ?isDllActive@CSppConsoleDlg@@IAE_NXZ 0040b500 f   SppConsoleDlg.obj
+ 0001:0000a550       ?GetStatusString@CSppConsoleDlg@@QAE?AV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@ATL@@XZ 0040b550 f   SppConsoleDlg.obj
+ 0001:0000a850       ?OnToolTipNotify@CSppConsoleDlg@@IAEHIPAUtagNMHDR@@PAJ@Z 0040b850 f   SppConsoleDlg.obj
+ 0001:0000a8c0       ?GetFmsStatusString@CSppConsoleDlg@@IAEHAAV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@ATL@@@Z 0040b8c0 f   SppConsoleDlg.obj
+ 0001:0000ab30       ?PopulateAudioSource@CSppConsoleDlg@@IAEXXZ 0040bb30 f   SppConsoleDlg.obj
+ 0001:0000ac20       ?GetMixerDeviceCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040bc20 f   SppConsoleDlg.obj
+ 0001:0000ac40       ?PopulateInputLines@CSppConsoleDlg@@IAEXXZ 0040bc40 f   SppConsoleDlg.obj
+ 0001:0000ad20       ?GetAudioLinesCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040bd20 f   SppConsoleDlg.obj
+ 0001:0000ad40       ?OnSelchangeMixerdevice@CSppConsoleDlg@@IAEXXZ 0040bd40 f   SppConsoleDlg.obj
+ 0001:0000ae10       ?OnSelchangeAudioSrc@CSppConsoleDlg@@IAEXXZ 0040be10 f   SppConsoleDlg.obj
+ 0001:0000aee0       ?OnEnableAudio@CSppConsoleDlg@@IAEXXZ 0040bee0 f   SppConsoleDlg.obj
+ 0001:0000af50       ?EnableAudio@CSppConsoleDlg@@IAEXH@Z 0040bf50 f   SppConsoleDlg.obj
+ 0001:0000b0b0       ?GetCurrentMixerDevice@CSppConsoleDlg@@IAEHXZ 0040c0b0 f   SppConsoleDlg.obj
+ 0001:0000b120       ?GetCurrentInputLine@CSppConsoleDlg@@IAEHXZ 0040c120 f   SppConsoleDlg.obj
+ 0001:0000b160       ?GetSavedCurrentInputLine@CSppConsoleDlg@@IAE_NPAI@Z 0040c160 f   SppConsoleDlg.obj
+ 0001:0000b1d0       ?GetCurrentInputLineFromSystem@CSppConsoleDlg@@IAE_NPAI@Z 0040c1d0 f   SppConsoleDlg.obj
+ 0001:0000b230       ?SetCurrentMixerDevice@CSppConsoleDlg@@IAEXI@Z 0040c230 f   SppConsoleDlg.obj
+ 0001:0000b280       ?SetCurrentInputLine@CSppConsoleDlg@@IAEXH@Z 0040c280 f   SppConsoleDlg.obj
+ 0001:0000b300       ?GetCheckAudioCtrl@CSppConsoleDlg@@QAEPAVCWnd@@XZ 0040c300 f   SppConsoleDlg.obj
+ 0001:0000b320       ?CheckAudioCB@CSppConsoleDlg@@IAEXXZ 0040c320 f   SppConsoleDlg.obj
+ 0001:0000b350       ?OnSetCursor@CSppConsoleDlg@@IAEHPAVCWnd@@II@Z 0040c350 f   SppConsoleDlg.obj
+ 0001:0000b3e0       ?HearTx@CSppConsoleDlg@@IAEX_N@Z 0040c3e0 f   SppConsoleDlg.obj
+ 0001:0000b4b0       ?OnSelSrc@CSppConsoleDlg@@IAEXXZ 0040c4b0 f   SppConsoleDlg.obj
+ 0001:0000b640       ?OnAudioDst@CSppConsoleDlg@@IAEXXZ 0040c640 f   SppConsoleDlg.obj
+ 0001:0000b7d0       ?OnAudioVol@CSppConsoleDlg@@IAEXXZ 0040c7d0 f   SppConsoleDlg.obj
+ 0001:0000b860       ?OnAudioPrint@CSppConsoleDlg@@IAEXXZ 0040c860 f   SppConsoleDlg.obj
+ 0001:0000b980       ?PpJoyExShowCtrl@CSppConsoleDlg@@IAEXXZ 0040c980 f   SppConsoleDlg.obj
+ 0001:0000b9c0       ?OnPpjoyex@CSppConsoleDlg@@IAEXXZ 0040c9c0 f   SppConsoleDlg.obj
+ 0001:0000bac0       ?UpdateFilterMenu@CSppConsoleDlg@@IAEXXZ 0040cac0 f   SppConsoleDlg.obj
+ 0001:0000bda0       ?OnFilterSelect@CSppConsoleDlg@@IAEXI@Z 0040cda0 f   SppConsoleDlg.obj
+ 0001:0000bf20       ?OnHideMsg@CSppConsoleDlg@@AAEJIJ@Z 0040cf20 f   SppConsoleDlg.obj
+ 0001:0000bf40       ?LocateDialogWindow@CSppConsoleDlg@@IAEHXZ 0040cf40 f   SppConsoleDlg.obj
+ 0001:0000bfc0       ?StoreLocationDialogWindow@CSppConsoleDlg@@IAEHXZ 0040cfc0 f   SppConsoleDlg.obj
+ 0001:0000bff0       ?OnTimer@CSppConsoleDlg@@QAEXI@Z 0040cff0 f   SppConsoleDlg.obj
+ 0001:0000c100       ?InitJoyPosBars@CSppConsoleDlg@@IAEXXZ 0040d100 f   SppConsoleDlg.obj
+ 0001:0000c190       ?SetJoyPosBars@CSppConsoleDlg@@IAEXPAH@Z 0040d190 f   SppConsoleDlg.obj
+ 0001:0000c280       ?OnWaveRec@CSppConsoleDlg@@IAEXXZ 0040d280 f   SppConsoleDlg.obj
+ 0001:0000c360       ?OnWaveRecStart@CSppConsoleDlg@@AAEJIJ@Z 0040d360 f   SppConsoleDlg.obj
+ 0001:0000c3c0       ?OnWaveRecStop@CSppConsoleDlg@@AAEJIJ@Z 0040d3c0 f   SppConsoleDlg.obj
+ 0001:0000c420       ?OnWaveRecCancel@CSppConsoleDlg@@AAEJIJ@Z 0040d420 f   SppConsoleDlg.obj
+ 0001:0000c440       ?OnAdvancedJitter@CSppConsoleDlg@@QAEXXZ 0040d440 f   SppConsoleDlg.obj
+ 0001:0000c460       ?InitJitterStatus@CSppConsoleDlg@@IAEXXZ 0040d460 f   SppConsoleDlg.obj
+ 0001:0000c4c0       ?UpdateJitterStatus@CSppConsoleDlg@@IAEXHH@Z 0040d4c0 f   SppConsoleDlg.obj
+ 0001:0000c6d0       ?UpdateFmsMenuItem@CSppConsoleDlg@@IAEXH@Z 0040d6d0 f   SppConsoleDlg.obj
+ 0001:0000c7f0       ?OnRunFms@CSppConsoleDlg@@QAEXXZ 0040d7f0 f   SppConsoleDlg.obj
+ 0001:0000c910       ?OnSysCommand@CSppConsoleDlg@@QAEXIJ@Z 0040d910 f   SppConsoleDlg.obj
+ 0001:0000c940       ?OnLogAudioHdrs@CSppConsoleDlg@@QAEXXZ 0040d940 f   SppConsoleDlg.obj
+ 0001:0000ca20       ?OnLogAudioHdrsCancel@CSppConsoleDlg@@AAEJIJ@Z 0040da20 f   SppConsoleDlg.obj
+ 0001:0000ca40       ?OnLogPulse@CSppConsoleDlg@@QAEXXZ 0040da40 f   SppConsoleDlg.obj
+ 0001:0000cb80       ?OnLogPulseCancel@CSppConsoleDlg@@AAEJIJ@Z 0040db80 f   SppConsoleDlg.obj
+ 0001:0000cba0       ?OnLogFmsConn@CSppConsoleDlg@@QAEXXZ 0040dba0 f   SppConsoleDlg.obj
+ 0001:0000ccc0       ?OnFmsConnStart@CSppConsoleDlg@@AAEJIJ@Z 0040dcc0 f   SppConsoleDlg.obj
+ 0001:0000cf70       ?OnFmsConnStop@CSppConsoleDlg@@AAEJIJ@Z 0040df70 f   SppConsoleDlg.obj
+ 0001:0000d0c0       ?OnFmsConnCancel@CSppConsoleDlg@@AAEJIJ@Z 0040e0c0 f   SppConsoleDlg.obj
+ 0001:0000d0e0       ?OnLogRawPulse@CSppConsoleDlg@@QAEXXZ 0040e0e0 f   SppConsoleDlg.obj
+ 0001:0000d200       ?OnRawPulseCancel@CSppConsoleDlg@@AAEJIJ@Z 0040e200 f   SppConsoleDlg.obj
+ 0001:0000d220       ?OnBnClickedScandlg@CSppConsoleDlg@@QAEXXZ 0040e220 f   SppConsoleDlg.obj
+ 0001:0000d2f0       ?GetAudioLevel@CSppConsoleDlg@@QAEHXZ 0040e2f0 f   SppConsoleDlg.obj
+ 0001:0000d320       ?GetNumJoystickPos@CSppConsoleDlg@@QAEHXZ 0040e320 f   SppConsoleDlg.obj
+ 0001:0000d360       ??_GCSppConsoleDlg@@UAEPAXI@Z 0040e360 f i SppConsoleDlg.obj
+ 0001:0000d360       ??_ECSppConsoleDlg@@UAEPAXI@Z 0040e360 f i SppConsoleDlg.obj
+ 0001:0000d390       ?GetWindowInfo@CWnd@@QBEHPAUtagWINDOWINFO@@@Z 0040e390 f i SppConsoleDlg.obj
+ 0001:0000d3d0       ?_GetBaseClass@CStaticLink@@KGPAUCRuntimeClass@@XZ 0040e3d0 f   StatLink.obj
+ 0001:0000d3e0       ?GetThisClass@CStaticLink@@SGPAUCRuntimeClass@@XZ 0040e3e0 f   StatLink.obj
+ 0001:0000d3f0       ?GetRuntimeClass@CStaticLink@@UBEPAUCRuntimeClass@@XZ 0040e3f0 f   StatLink.obj
+ 0001:0000d400       ?GetThisMessageMap@CStaticLink@@KGPBUAFX_MSGMAP@@XZ 0040e400 f   StatLink.obj
+ 0001:0000d410       ?GetMessageMap@CStaticLink@@MBEPBUAFX_MSGMAP@@XZ 0040e410 f   StatLink.obj
+ 0001:0000d420       ??0CStaticLink@@QAE@XZ     0040e420 f   StatLink.obj
+ 0001:0000d4b0       ?CtlColor@CStaticLink@@QAEPAUHBRUSH__@@PAVCDC@@I@Z 0040e4b0 f   StatLink.obj
+ 0001:0000d5d0       ?OnClicked@CStaticLink@@QAEXXZ 0040e5d0 f   StatLink.obj
+ 0001:0000d680       ?SetDefaultCursor@CStaticLink@@QAEXXZ 0040e680 f   StatLink.obj
+ 0001:0000d760       ?OnSetCursor@CStaticLink@@QAEHPAVCWnd@@II@Z 0040e760 f   StatLink.obj
+ 0001:0000d790       ?SetLink@CStaticLink@@QAE?AV?$CStringT@DV?$StrTraitMFC_DLL@DV?$ChTraitsCRT@D@ATL@@@@@ATL@@V23@@Z 0040e790 f   StatLink.obj
+ 0001:0000d880       ??_ECStaticLink@@UAEPAXI@Z 0040e880 f i StatLink.obj
+ 0001:0000d880       ??_GCStaticLink@@UAEPAXI@Z 0040e880 f i StatLink.obj
+ 0001:0000d8b0       ??0CTraceFileAndLineInfo@ATL@@QAE@PBDH@Z 0040e8b0 f i StatLink.obj
+ 0001:0000d8e0       ??RCTraceFileAndLineInfo@ATL@@QBAXPBDZZ 0040e8e0 f i StatLink.obj
+ 0001:0000d930       ?TraceV@CTrace@ATL@@QBAXPBDHKI0PAD@Z 0040e930 f i StatLink.obj
+ 0001:0000d960       ??BCTraceCategory@ATL@@QBEKXZ 0040e960 f i StatLink.obj
+ 0001:0000d970       ?GetEnvironmentVariableWThunk@ATL@@YGKPBGPAGK@Z 0040e970 f i StdAfx.obj
+ 0001:0000d9b0       ?_AtlInstallStringThunk@ATL@@YAXPAPAXPAX1@Z 0040e9b0 f i StdAfx.obj
+ 0001:0000da10       ?GetEnvironmentVariableWFake@ATL@@YGKPBGPAGK@Z 0040ea10 f i StdAfx.obj
+ 0001:0000dbf0       ?_AtlGetConversionACP@ATL@@YGIXZ 0040ebf0 f i StdAfx.obj
+ 0001:0000dc00       ?CompareStringWThunk@ATL@@YGHKKPBGH0H@Z 0040ec00 f i StdAfx.obj
+ 0001:0000dc40       ?CompareStringWFake@ATL@@YGHKKPBGH0H@Z 0040ec40 f i StdAfx.obj
+ 0001:0000de20       ?_AtlVerifyStackAvailable@_ATL_SAFE_ALLOCA_IMPL@ATL@@YA_NK@Z 0040ee20 f i StdAfx.obj
+ 0001:0000dec0       ?AtlW2AHelper@@YGPADPADPBGHI@Z 0040eec0 f i StdAfx.obj
+ 0001:0000df90       ?AtlThrow@ATL@@YGXJ@Z      0040ef90 f i StdAfx.obj
+ 0001:0000dff0       ??RCTraceFileAndLineInfo@ATL@@QBAXKIPBDZZ 0040eff0 f i StdAfx.obj
+ 0001:0000e030       ?GetStringTypeExWThunk@ATL@@YGHKKPBGHPAG@Z 0040f030 f i StdAfx.obj
+ 0001:0000e070       ?GetStringTypeExWFake@ATL@@YGHKKPBGHPAG@Z 0040f070 f i StdAfx.obj
+ 0001:0000e180       ?lstrcmpiWThunk@ATL@@YGHPBG0@Z 0040f180 f i StdAfx.obj
+ 0001:0000e1b0       ?lstrcmpiWFake@ATL@@YGHPBG0@Z 0040f1b0 f i StdAfx.obj
+ 0001:0000e290       ?CharLowerWThunk@ATL@@YGPAGPAG@Z 0040f290 f i StdAfx.obj
+ 0001:0000e2c0       ?CharLowerWFake@ATL@@YGPAGPAG@Z 0040f2c0 f i StdAfx.obj
+ 0001:0000e3b0       ?AtlA2WHelper@@YGPAGPAGPBDHI@Z 0040f3b0 f i StdAfx.obj
+ 0001:0000e480       ?CharUpperWThunk@ATL@@YGPAGPAG@Z 0040f480 f i StdAfx.obj
+ 0001:0000e4b0       ?CharUpperWFake@ATL@@YGPAGPAG@Z 0040f4b0 f i StdAfx.obj
+ 0001:0000e5a0       ??_Estringdispid@CComTypeInfoHolder@ATL@@QAEPAXI@Z 0040f5a0 f i StdAfx.obj
+ 0001:0000e610       ??1stringdispid@CComTypeInfoHolder@ATL@@QAE@XZ 0040f610 f i StdAfx.obj
+ 0001:0000e630       ??1CComBSTR@ATL@@QAE@XZ    0040f630 f i StdAfx.obj
+ 0001:0000e650       ??0?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAE@XZ 0040f650 f i StdAfx.obj
+ 0001:0000e670       ?Allocate@?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAEPAXK@Z 0040f670 f i StdAfx.obj
+ 0001:0000e6c0       ?Allocate@CCRTAllocator@ATL@@SAPAXI@Z 0040f6c0 f i StdAfx.obj
+ 0001:0000e6e0       ??1?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAE@XZ 0040f6e0 f i StdAfx.obj
+ 0001:0000e720       ?Free@CCRTAllocator@ATL@@SAXPAX@Z 0040f720 f i StdAfx.obj
+ 0001:0000e740       ??0?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAE@XZ 0040f740 f i StdAfx.obj
+ 0001:0000e760       ??1?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAE@XZ 0040f760 f i StdAfx.obj
+ 0001:0000e780       ??B?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QBEPADXZ 0040f780 f i StdAfx.obj
+ 0001:0000e790       ?Allocate@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAEPADI@Z 0040f790 f i StdAfx.obj
+ 0001:0000e7b0       ??0?$CW2AEX@$0IA@@ATL@@QAE@PBG@Z 0040f7b0 f i StdAfx.obj
+ 0001:0000e7e0       ??1?$CW2AEX@$0IA@@ATL@@QAE@XZ 0040f7e0 f i StdAfx.obj
+ 0001:0000e810       ??B?$CW2AEX@$0IA@@ATL@@QBEPADXZ 0040f810 f i StdAfx.obj
+ 0001:0000e820       ?AllocateBytes@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@QAEPADI@Z 0040f820 f i StdAfx.obj
+ 0001:0000e880       ?FreeHeap@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@AAEXXZ 0040f880 f i StdAfx.obj
+ 0001:0000e8a0       ?Init@?$CW2AEX@$0IA@@ATL@@AAEXPBGI@Z 0040f8a0 f i StdAfx.obj
+ 0001:0000e930       ?AtlThrowLastWin32@ATL@@YGXXZ 0040f930 f i StdAfx.obj
+ 0001:0000e980       ?GetData@CAtlSafeAllocBufferNode@?$CAtlSafeAllocBufferManager@VCCRTAllocator@ATL@@@_ATL_SAFE_ALLOCA_IMPL@ATL@@QAEPAXXZ 0040f980 f i StdAfx.obj
+ 0001:0000e9a0       ?AllocateHeap@?$CTempBuffer@D$0IA@VCCRTAllocator@ATL@@@ATL@@AAEXI@Z 0040f9a0 f i StdAfx.obj
+ 0001:0000e9e0       ??0CAtlWinModule@ATL@@QAE@XZ 0040f9e0 f i StdAfx.obj
+ 0001:0000ea20       ??0_ATL_WIN_MODULE70@ATL@@QAE@XZ 0040fa20 f i StdAfx.obj
+ 0001:0000ea50       ??0CComCriticalSection@ATL@@QAE@XZ 0040fa50 f i StdAfx.obj
+ 0001:0000ea70       ??0?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAE@XZ 0040fa70 f i StdAfx.obj
+ 0001:0000eaa0       ??1CAtlWinModule@ATL@@QAE@XZ 0040faa0 f i StdAfx.obj
+ 0001:0000eaf0       ?Term@CAtlWinModule@ATL@@QAEXXZ 0040faf0 f i StdAfx.obj
+ 0001:0000eb10       ?GetModuleInstance@CAtlBaseModule@ATL@@QAEPAUHINSTANCE__@@XZ 0040fb10 f i StdAfx.obj
+ 0001:0000eb30       ??1_ATL_WIN_MODULE70@ATL@@QAE@XZ 0040fb30 f i StdAfx.obj
+ 0001:0000eb50       ?AtlWinModuleTerm@ATL@@YGJPAU_ATL_WIN_MODULE70@1@PAUHINSTANCE__@@@Z 0040fb50 f i StdAfx.obj
+ 0001:0000ebf0       ?Term@CComCriticalSection@ATL@@QAEJXZ 0040fbf0 f i StdAfx.obj
+ 0001:0000ec10       ??1?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAE@XZ 0040fc10 f i StdAfx.obj
+ 0001:0000ec30       ?GetSize@?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QBEHXZ 0040fc30 f i StdAfx.obj
+ 0001:0000ec50       ?RemoveAll@?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAEXXZ 0040fc50 f i StdAfx.obj
+ 0001:0000ecb0       ??A?$CSimpleArray@GV?$CSimpleArrayEqualHelper@G@ATL@@@ATL@@QAEAAGH@Z 0040fcb0 f i StdAfx.obj
+ 0001:0000ed20       ?_AtlRaiseException@ATL@@YAXKK@Z 0040fd20 f i StdAfx.obj
+ 0001:0000ed40       ?_GetBaseClass@CWaveRec@@KGPAUCRuntimeClass@@XZ 0040fd40 f   WaveRec.obj
+ 0001:0000ed50       ?GetThisClass@CWaveRec@@SGPAUCRuntimeClass@@XZ 0040fd50 f   WaveRec.obj
+ 0001:0000ed60       ?GetRuntimeClass@CWaveRec@@UBEPAUCRuntimeClass@@XZ 0040fd60 f   WaveRec.obj
+ 0001:0000ed70       ??0CWaveRec@@QAE@PAVCWnd@@@Z 0040fd70 f   WaveRec.obj
+ 0001:0000ee40       ??1CWaveRec@@UAE@XZ        0040fe40 f   WaveRec.obj
+ 0001:0000eea0       ?DoDataExchange@CWaveRec@@MAEXPAVCDataExchange@@@Z 0040fea0 f   WaveRec.obj
+ 0001:0000eee0       ?GetThisMessageMap@CWaveRec@@KGPBUAFX_MSGMAP@@XZ 0040fee0 f   WaveRec.obj
+ 0001:0000eef0       ?GetMessageMap@CWaveRec@@MBEPBUAFX_MSGMAP@@XZ 0040fef0 f   WaveRec.obj
+ 0001:0000ef00       ?OnBnClickedRecStop@CWaveRec@@QAEXXZ 0040ff00 f   WaveRec.obj
+ 0001:0000f020       ?OnBnClickedRecStart@CWaveRec@@QAEXXZ 00410020 f   WaveRec.obj
+ 0001:0000f120       ?UpdateControls@CWaveRec@@MAEXXZ 00410120 f   WaveRec.obj
+ 0001:0000f270       ?OnInitDialog@CWaveRec@@UAEHXZ 00410270 f   WaveRec.obj
+ 0001:0000f320       ?PostMessageStop@CWaveRec@@MAEXXZ 00410320 f   WaveRec.obj
+ 0001:0000f350       ?PostMessageStart@CWaveRec@@MAEXXZ 00410350 f   WaveRec.obj
+ 0001:0000f380       ?PostMessageCancel@CWaveRec@@MAEXXZ 00410380 f   WaveRec.obj
+ 0001:0000f3b0       ?PostMessagePlay@CWaveRec@@MAEXXZ 004103b0 f   WaveRec.obj
+ 0001:0000f3e0       ?OnBnClickedCancel@CWaveRec@@QAEXXZ 004103e0 f   WaveRec.obj
+ 0001:0000f480       ?RenameWaveFile@CWaveRec@@IAEXXZ 00410480 f   WaveRec.obj
+ 0001:0000f5d0       ?GetWaveFileName@CWaveRec@@IAE_NXZ 004105d0 f   WaveRec.obj
+ 0001:0000f6e0       ?OnTimer@CWaveRec@@QAEXI@Z 004106e0 f   WaveRec.obj
+ 0001:0000f7b0       ?OnBnClickedRecPlay@CWaveRec@@QAEXXZ 004107b0 f   WaveRec.obj
  0001:0000f930       ?SppLoggerStop@CWaveRec@@MAEHXZ 00410930 f   WaveRec.obj
  0001:0000f940       ?SppLoggerPlay@CWaveRec@@MAEHPAD@Z 00410940 f   WaveRec.obj
  0001:0000f960       ?SppLoggerStart@CWaveRec@@MAEHPAD@Z 00410960 f   WaveRec.obj
@@ -2557,11 +2557,11 @@
  0001:0001b94b       __ehhandler$?GetStringTypeExWFake@ATL@@YGHKKPBGHPAG@Z 0041c94b f   StdAfx.obj
  0001:0001b960       $L179918                   0041c960 f   StdAfx.obj
  0001:0001b968       __ehhandler$??1CAtlWinModule@ATL@@QAE@XZ 0041c968 f   StdAfx.obj
- 0001:0001b980       $L183107                   0041c980 f   WaveRec.obj
+ 0001:0001b980       $L183109                   0041c980 f   WaveRec.obj
  0001:0001b988       __ehhandler$??0CWaveRec@@QAE@PAVCWnd@@@Z 0041c988 f   WaveRec.obj
- 0001:0001b992       $L183120                   0041c992 f   WaveRec.obj
+ 0001:0001b992       $L183122                   0041c992 f   WaveRec.obj
  0001:0001b99a       __ehhandler$??1CWaveRec@@UAE@XZ 0041c99a f   WaveRec.obj
- 0001:0001b9a4       $L183148                   0041c9a4 f   WaveRec.obj
+ 0001:0001b9a4       $L183150                   0041c9a4 f   WaveRec.obj
  0001:0001b9ad       __ehhandler$?OnInitDialog@CWaveRec@@UAEHXZ 0041c9ad f   WaveRec.obj
  0001:0001b9c0       $L174902                   0041c9c0 f   mfcs71d:stdafx.obj
  0001:0001b9cb       $L174903                   0041c9cb f   mfcs71d:stdafx.obj
@@ -2628,615 +2628,615 @@
  0001:0001c040       _$E2                       0041d040 f   atlsd:Allocate.obj
  0001:0001c050       _$E2                       0041d050 f   atlsd:AtlTraceModuleManager.obj
 
-Line numbers for .\Debug\WaveRec.obj(c:\program files\microsoft visual studio .net 2003\vc7\include\tchar.h) segment .text
+Line numbers for .\debug\WaveRec.obj(c:\program files\microsoft visual studio .net 2003\vc7\include\tchar.h) segment .text
 
    843 0001:0000f9d0
 
-Line numbers for .\Debug\WaveRec.obj(c:\code\smartpropoplus\341\sppconsole\waverec.cpp) segment .text
+Line numbers for .\debug\WaveRec.obj(c:\code\smartpropoplus\341\sppconsole\waverec.cpp) segment .text
 
-    17 0001:0000ed50    17 0001:0000ed60    17 0001:0000ed70    23 0001:0000ed80
-    24 0001:0000edec    25 0001:0000edf3    26 0001:0000ee00    27 0001:0000ee0d
-    28 0001:0000ee1a    29 0001:0000ee27    32 0001:0000ee50    33 0001:0000ee7c
-    36 0001:0000eeb0    37 0001:0000eeb7    38 0001:0000eec3    39 0001:0000eedb
-    42 0001:0000eef0    42 0001:0000ef00    54 0001:0000ef10    56 0001:0000ef23
-    59 0001:0000ef35    62 0001:0000ef43    63 0001:0000ef59    64 0001:0000ef67
-    67 0001:0000ef6f    69 0001:0000ef7d    70 0001:0000ef8b    75 0001:0000efa1
-    76 0001:0000efab    77 0001:0000efb5    78 0001:0000efc3    79 0001:0000efd7
-    80 0001:0000eff3    83 0001:0000f00b    84 0001:0000f019    87 0001:0000f030
-    91 0001:0000f043    92 0001:0000f061    93 0001:0000f07d    94 0001:0000f07f
-    95 0001:0000f08c    98 0001:0000f09e   101 0001:0000f0ac   103 0001:0000f0c5
-   104 0001:0000f0cf   106 0001:0000f0d9   107 0001:0000f0db   110 0001:0000f0e5
-   111 0001:0000f0f3   114 0001:0000f107   115 0001:0000f121   119 0001:0000f130
-   120 0001:0000f139   121 0001:0000f149   122 0001:0000f14f   124 0001:0000f187
-   125 0001:0000f197   126 0001:0000f19d   128 0001:0000f1d5   129 0001:0000f1e5
-   130 0001:0000f1eb   132 0001:0000f223   133 0001:0000f233   134 0001:0000f239
-   135 0001:0000f271   138 0001:0000f280   139 0001:0000f29e   140 0001:0000f2ac
-   141 0001:0000f2bc   142 0001:0000f2d8   143 0001:0000f2f6   144 0001:0000f314
-   147 0001:0000f330   148 0001:0000f337   149 0001:0000f34f   152 0001:0000f360
-   153 0001:0000f367   154 0001:0000f37f   156 0001:0000f390   157 0001:0000f397
-   158 0001:0000f3af   160 0001:0000f3c0   161 0001:0000f3c7   162 0001:0000f3df
-   165 0001:0000f3f0   166 0001:0000f3f7   168 0001:0000f405   169 0001:0000f41b
-   172 0001:0000f41d   174 0001:0000f42b   175 0001:0000f441   178 0001:0000f443
-   181 0001:0000f451   182 0001:0000f45f   184 0001:0000f46d   185 0001:0000f478
-   186 0001:0000f480   190 0001:0000f490   192 0001:0000f4a9   196 0001:0000f4bb
-   199 0001:0000f4d9   200 0001:0000f4e8   201 0001:0000f4f2   202 0001:0000f4fc
-   203 0001:0000f508   204 0001:0000f512   205 0001:0000f51c   206 0001:0000f526
-   207 0001:0000f530   208 0001:0000f53a   209 0001:0000f54c   210 0001:0000f556
-   211 0001:0000f560   214 0001:0000f56a   215 0001:0000f57d   216 0001:0000f586
-   219 0001:0000f588   220 0001:0000f5a7   221 0001:0000f5b0   222 0001:0000f5ce
-   225 0001:0000f5e0   227 0001:0000f5f9   231 0001:0000f60b   234 0001:0000f629
-   235 0001:0000f638   236 0001:0000f642   237 0001:0000f64c   238 0001:0000f658
-   239 0001:0000f662   240 0001:0000f66c   241 0001:0000f676   242 0001:0000f680
-   243 0001:0000f68a   244 0001:0000f69c   245 0001:0000f6a6   246 0001:0000f6b0
-   249 0001:0000f6ba   250 0001:0000f6cd   251 0001:0000f6da   252 0001:0000f6dc
-   255 0001:0000f6f0   261 0001:0000f703   263 0001:0000f709   265 0001:0000f715
-   266 0001:0000f746   267 0001:0000f75e   268 0001:0000f76a   270 0001:0000f772
-   273 0001:0000f774   275 0001:0000f77a   276 0001:0000f786   277 0001:0000f792
-   278 0001:0000f79a   281 0001:0000f79c   282 0001:0000f7a8   288 0001:0000f7c0
-   290 0001:0000f7c9   293 0001:0000f7d7   294 0001:0000f7e7   295 0001:0000f7f1
-   296 0001:0000f80d   299 0001:0000f81b   300 0001:0000f831   302 0001:0000f840
-   303 0001:0000f856   304 0001:0000f864   305 0001:0000f87a   310 0001:0000f87f
-   312 0001:0000f898   313 0001:0000f8a2   315 0001:0000f8ac   317 0001:0000f8ae
-   318 0001:0000f8b8   319 0001:0000f8c6   324 0001:0000f8dc   325 0001:0000f8ea
-   328 0001:0000f8fe   331 0001:0000f911   333 0001:0000f928   337 0001:0000f930
-   338 0001:0000f940   339 0001:0000f960   340 0001:0000f980
+    17 0001:0000ed40    17 0001:0000ed50    17 0001:0000ed60    23 0001:0000ed70
+    24 0001:0000eddc    25 0001:0000ede3    26 0001:0000edf0    27 0001:0000edfd
+    28 0001:0000ee0a    29 0001:0000ee17    32 0001:0000ee40    33 0001:0000ee6c
+    36 0001:0000eea0    37 0001:0000eea7    38 0001:0000eeb3    39 0001:0000eecb
+    42 0001:0000eee0    42 0001:0000eef0    54 0001:0000ef00    56 0001:0000ef13
+    59 0001:0000ef25    62 0001:0000ef33    63 0001:0000ef49    64 0001:0000ef57
+    67 0001:0000ef5f    69 0001:0000ef6d    70 0001:0000ef7b    75 0001:0000ef91
+    76 0001:0000ef9b    77 0001:0000efa5    78 0001:0000efb3    79 0001:0000efc7
+    80 0001:0000efe3    83 0001:0000effb    84 0001:0000f009    87 0001:0000f020
+    91 0001:0000f033    92 0001:0000f051    93 0001:0000f06d    94 0001:0000f06f
+    95 0001:0000f07c    98 0001:0000f08e   101 0001:0000f09c   103 0001:0000f0b5
+   104 0001:0000f0bf   106 0001:0000f0c9   107 0001:0000f0cb   110 0001:0000f0d5
+   111 0001:0000f0e3   114 0001:0000f0f7   115 0001:0000f111   119 0001:0000f120
+   120 0001:0000f129   121 0001:0000f139   122 0001:0000f13f   124 0001:0000f177
+   125 0001:0000f187   126 0001:0000f18d   128 0001:0000f1c5   129 0001:0000f1d5
+   130 0001:0000f1db   132 0001:0000f213   133 0001:0000f223   134 0001:0000f229
+   135 0001:0000f261   138 0001:0000f270   139 0001:0000f28e   140 0001:0000f29c
+   141 0001:0000f2ac   142 0001:0000f2c8   143 0001:0000f2e6   144 0001:0000f304
+   147 0001:0000f320   148 0001:0000f327   149 0001:0000f33f   152 0001:0000f350
+   153 0001:0000f357   154 0001:0000f36f   156 0001:0000f380   157 0001:0000f387
+   158 0001:0000f39f   160 0001:0000f3b0   161 0001:0000f3b7   162 0001:0000f3cf
+   165 0001:0000f3e0   166 0001:0000f3e7   168 0001:0000f3f5   169 0001:0000f40b
+   172 0001:0000f40d   174 0001:0000f41b   175 0001:0000f431   178 0001:0000f433
+   181 0001:0000f441   182 0001:0000f44f   184 0001:0000f45d   185 0001:0000f468
+   186 0001:0000f470   190 0001:0000f480   192 0001:0000f499   196 0001:0000f4ab
+   199 0001:0000f4c9   200 0001:0000f4d8   201 0001:0000f4e2   202 0001:0000f4ec
+   203 0001:0000f4f8   204 0001:0000f502   205 0001:0000f50c   206 0001:0000f516
+   207 0001:0000f520   208 0001:0000f52a   209 0001:0000f53c   210 0001:0000f546
+   211 0001:0000f550   214 0001:0000f55a   215 0001:0000f56d   216 0001:0000f576
+   219 0001:0000f578   220 0001:0000f597   221 0001:0000f5a0   222 0001:0000f5be
+   225 0001:0000f5d0   227 0001:0000f5e9   231 0001:0000f5fb   234 0001:0000f619
+   235 0001:0000f628   236 0001:0000f632   237 0001:0000f63c   238 0001:0000f648
+   239 0001:0000f652   240 0001:0000f65c   241 0001:0000f666   242 0001:0000f670
+   243 0001:0000f67a   244 0001:0000f68c   245 0001:0000f696   246 0001:0000f6a0
+   249 0001:0000f6aa   250 0001:0000f6bd   251 0001:0000f6ca   252 0001:0000f6cc
+   255 0001:0000f6e0   261 0001:0000f6f3   263 0001:0000f6f9   265 0001:0000f705
+   266 0001:0000f736   267 0001:0000f74e   268 0001:0000f75a   270 0001:0000f762
+   273 0001:0000f764   275 0001:0000f76a   276 0001:0000f776   277 0001:0000f782
+   278 0001:0000f78a   281 0001:0000f78c   282 0001:0000f798   288 0001:0000f7b0
+   290 0001:0000f7b9   293 0001:0000f7c7   294 0001:0000f7d7   295 0001:0000f7e1
+   296 0001:0000f7fd   299 0001:0000f80b   300 0001:0000f81b   301 0001:0000f821
+   302 0001:0000f82b   304 0001:0000f840   305 0001:0000f856   306 0001:0000f864
+   307 0001:0000f87a   312 0001:0000f87f   314 0001:0000f898   315 0001:0000f8a2
+   317 0001:0000f8ac   319 0001:0000f8ae   320 0001:0000f8b8   321 0001:0000f8c6
+   326 0001:0000f8dc   327 0001:0000f8ea   330 0001:0000f8fe   333 0001:0000f911
+   335 0001:0000f928   339 0001:0000f930   340 0001:0000f940   341 0001:0000f960
+   342 0001:0000f980
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlsimpcoll.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlsimpcoll.h) segment .text
 
-    97 0001:0000ea80   100 0001:0000ec20   101 0001:0000ec27   102 0001:0000ec2f
-   135 0001:0000ec40   136 0001:0000ec47   137 0001:0000ec4d   173 0001:0000ec60
-   174 0001:0000ec69   176 0001:0000ec71   177 0001:0000ec8e   178 0001:0000ec90
-   179 0001:0000ec9f   181 0001:0000eca8   182 0001:0000ecb2   183 0001:0000ecbc
-   194 0001:0000ecc0   195 0001:0000ecc7   196 0001:0000ecfa   198 0001:0000ed0b
-   200 0001:0000ed17   201 0001:0000ed22
+    97 0001:0000ea70   100 0001:0000ec10   101 0001:0000ec17   102 0001:0000ec1f
+   135 0001:0000ec30   136 0001:0000ec37   137 0001:0000ec3d   173 0001:0000ec50
+   174 0001:0000ec59   176 0001:0000ec61   177 0001:0000ec7e   178 0001:0000ec80
+   179 0001:0000ec8f   181 0001:0000ec98   182 0001:0000eca2   183 0001:0000ecac
+   194 0001:0000ecb0   195 0001:0000ecb7   196 0001:0000ecea   198 0001:0000ecfb
+   200 0001:0000ed07   201 0001:0000ed12
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlcore.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlcore.h) segment .text
 
-   114 0001:0000ea60   116 0001:0000ea67   117 0001:0000ea77   206 0001:0000eb20
-   207 0001:0000eb27   208 0001:0000eb2d   147 0001:0000ec00   148 0001:0000ec07
-   149 0001:0000ec11   150 0001:0000ec13
+   114 0001:0000ea50   116 0001:0000ea57   117 0001:0000ea67   206 0001:0000eb10
+   207 0001:0000eb17   208 0001:0000eb1d   147 0001:0000ebf0   148 0001:0000ebf7
+   149 0001:0000ec01   150 0001:0000ec03
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlbase.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlbase.h) segment .text
 
-  2573 0001:0000e9f0  2575 0001:0000ea01  2576 0001:0000ea0a  2577 0001:0000ea16
-  2578 0001:0000ea1c  2579 0001:0000ea23  2582 0001:0000eab0  2583 0001:0000ead3
-  2584 0001:0000eadb  2587 0001:0000eb00  2588 0001:0000eb07  2589 0001:0000eb1b
-  6215 0001:0000eb60  6216 0001:0000eb64  6217 0001:0000eb6a  6218 0001:0000eb71
-  6219 0001:0000eb79  6220 0001:0000eb7d  6221 0001:0000eb85  6223 0001:0000eb8c
-  6224 0001:0000ebae  6225 0001:0000ebcd  6226 0001:0000ebd8  6227 0001:0000ebe3
-  6228 0001:0000ebec  6229 0001:0000ebee  2602 0001:0001ba40
+  2573 0001:0000e9e0  2575 0001:0000e9f1  2576 0001:0000e9fa  2577 0001:0000ea06
+  2578 0001:0000ea0c  2579 0001:0000ea13  2582 0001:0000eaa0  2583 0001:0000eac3
+  2584 0001:0000eacb  2587 0001:0000eaf0  2588 0001:0000eaf7  2589 0001:0000eb0b
+  6215 0001:0000eb50  6216 0001:0000eb54  6217 0001:0000eb5a  6218 0001:0000eb61
+  6219 0001:0000eb69  6220 0001:0000eb6d  6221 0001:0000eb75  6223 0001:0000eb7c
+  6224 0001:0000eb9e  6225 0001:0000ebbd  6226 0001:0000ebc8  6227 0001:0000ebd3
+  6228 0001:0000ebdc  6229 0001:0000ebde  2602 0001:0001ba40
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlcomcli.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlcomcli.h) segment .text
 
-   628 0001:0000e640   629 0001:0000e647   630 0001:0000e653
+   628 0001:0000e630   629 0001:0000e637   630 0001:0000e643
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atltrace.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atltrace.h) segment .text
 
-   161 0001:0000e000   162 0001:0000e004   163 0001:0000e00a   164 0001:0000e034
-   165 0001:0000e03b
+   161 0001:0000dff0   162 0001:0000dff4   163 0001:0000dffa   164 0001:0000e024
+   165 0001:0000e02b
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlexcept.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlexcept.h) segment .text
 
-    61 0001:0000dfa0    62 0001:0000dfa6    64 0001:0000dfd4    66 0001:0000dfdd
-    70 0001:0000dfe2    75 0001:0000dfeb    80 0001:0000e940    81 0001:0000e946
-    82 0001:0000e94f    83 0001:0000e97e    26 0001:0000ed30    27 0001:0000ed33
-    28 0001:0000ed45
+    61 0001:0000df90    62 0001:0000df96    64 0001:0000dfc4    66 0001:0000dfcd
+    70 0001:0000dfd2    75 0001:0000dfdb    80 0001:0000e930    81 0001:0000e936
+    82 0001:0000e93f    83 0001:0000e96e    26 0001:0000ed20    27 0001:0000ed23
+    28 0001:0000ed35
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlalloc.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlalloc.h) segment .text
 
-   331 0001:0000de30   332 0001:0000de56   334 0001:0000de5a   336 0001:0000de61
-   341 0001:0000de86   343 0001:0000dea1   344 0001:0000dea5   346 0001:0000deb2
-   347 0001:0000deb5   373 0001:0000e660   375 0001:0000e680   376 0001:0000e689
-   377 0001:0000e69b   378 0001:0000e6a1   381 0001:0000e6a5   382 0001:0000e6af
-   384 0001:0000e6b7   385 0001:0000e6bf    30 0001:0000e6d0    31 0001:0000e6d3
-    32 0001:0000e6e0   387 0001:0000e6f0   389 0001:0000e6f9   391 0001:0000e701
-   392 0001:0000e709   393 0001:0000e715   394 0001:0000e721   395 0001:0000e723
-    35 0001:0000e730    36 0001:0000e733    37 0001:0000e740   216 0001:0000e750
-   217 0001:0000e760   225 0001:0000e770   226 0001:0000e777   228 0001:0000e784
-   230 0001:0000e78c   233 0001:0000e790   234 0001:0000e797   235 0001:0000e79c
-   243 0001:0000e7a0   244 0001:0000e7a7   245 0001:0000e7b3   276 0001:0000e830
-   277 0001:0000e837   278 0001:0000e861   280 0001:0000e86a   282 0001:0000e876
-   284 0001:0000e878   287 0001:0000e883   288 0001:0000e888   312 0001:0000e890
-   313 0001:0000e897   314 0001:0000e8a5   365 0001:0000e990   366 0001:0000e997
-   367 0001:0000e99d   292 0001:0000e9b0   293 0001:0000e9b9   294 0001:0000e9c8
-   296 0001:0000e9ce   298 0001:0000e9d8   299 0001:0000e9e0
+   331 0001:0000de20   332 0001:0000de46   334 0001:0000de4a   336 0001:0000de51
+   341 0001:0000de76   343 0001:0000de91   344 0001:0000de95   346 0001:0000dea2
+   347 0001:0000dea5   373 0001:0000e650   375 0001:0000e670   376 0001:0000e679
+   377 0001:0000e68b   378 0001:0000e691   381 0001:0000e695   382 0001:0000e69f
+   384 0001:0000e6a7   385 0001:0000e6af    30 0001:0000e6c0    31 0001:0000e6c3
+    32 0001:0000e6d0   387 0001:0000e6e0   389 0001:0000e6e9   391 0001:0000e6f1
+   392 0001:0000e6f9   393 0001:0000e705   394 0001:0000e711   395 0001:0000e713
+    35 0001:0000e720    36 0001:0000e723    37 0001:0000e730   216 0001:0000e740
+   217 0001:0000e750   225 0001:0000e760   226 0001:0000e767   228 0001:0000e774
+   230 0001:0000e77c   233 0001:0000e780   234 0001:0000e787   235 0001:0000e78c
+   243 0001:0000e790   244 0001:0000e797   245 0001:0000e7a3   276 0001:0000e820
+   277 0001:0000e827   278 0001:0000e851   280 0001:0000e85a   282 0001:0000e866
+   284 0001:0000e868   287 0001:0000e873   288 0001:0000e878   312 0001:0000e880
+   313 0001:0000e887   314 0001:0000e895   365 0001:0000e980   366 0001:0000e987
+   367 0001:0000e98d   292 0001:0000e9a0   293 0001:0000e9a9   294 0001:0000e9b8
+   296 0001:0000e9be   298 0001:0000e9c8   299 0001:0000e9d0
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlconv.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlconv.h) segment .text
 
-   157 0001:0000dc00   158 0001:0000dc03   159 0001:0000dc09   573 0001:0000ded0
-   574 0001:0000ded4   575 0001:0000defc   576 0001:0000df24   577 0001:0000df30
-   581 0001:0000df34   582 0001:0000df3a   583 0001:0000df5b   585 0001:0000df61
-   586 0001:0000df87   588 0001:0000df8b   589 0001:0000df8e   554 0001:0000e3c0
-   555 0001:0000e3c4   556 0001:0000e3ec   557 0001:0000e414   558 0001:0000e420
-   562 0001:0000e424   563 0001:0000e42c   564 0001:0000e449   566 0001:0000e44f
-   567 0001:0000e475   569 0001:0000e479   570 0001:0000e47c   419 0001:0000e7c0
-   420 0001:0000e7d2   421 0001:0000e7e4   428 0001:0000e7f0   429 0001:0000e7f7
-   431 0001:0000e804   433 0001:0000e813   436 0001:0000e820   437 0001:0000e827
-   438 0001:0000e82c   442 0001:0000e8b0   443 0001:0000e8b9   445 0001:0000e8bf
-   446 0001:0000e8c8   448 0001:0000e8ca   449 0001:0000e8da   451 0001:0000e8e2
-   453 0001:0000e8eb   454 0001:0000e8fd   456 0001:0000e905   460 0001:0000e90f
-   462 0001:0000e935   464 0001:0000e93a
+   157 0001:0000dbf0   158 0001:0000dbf3   159 0001:0000dbf9   573 0001:0000dec0
+   574 0001:0000dec4   575 0001:0000deec   576 0001:0000df14   577 0001:0000df20
+   581 0001:0000df24   582 0001:0000df2a   583 0001:0000df4b   585 0001:0000df51
+   586 0001:0000df77   588 0001:0000df7b   589 0001:0000df7e   554 0001:0000e3b0
+   555 0001:0000e3b4   556 0001:0000e3dc   557 0001:0000e404   558 0001:0000e410
+   562 0001:0000e414   563 0001:0000e41c   564 0001:0000e439   566 0001:0000e43f
+   567 0001:0000e465   569 0001:0000e469   570 0001:0000e46c   419 0001:0000e7b0
+   420 0001:0000e7c2   421 0001:0000e7d4   428 0001:0000e7e0   429 0001:0000e7e7
+   431 0001:0000e7f4   433 0001:0000e803   436 0001:0000e810   437 0001:0000e817
+   438 0001:0000e81c   442 0001:0000e8a0   443 0001:0000e8a9   445 0001:0000e8af
+   446 0001:0000e8b8   448 0001:0000e8ba   449 0001:0000e8ca   451 0001:0000e8d2
+   453 0001:0000e8db   454 0001:0000e8ed   456 0001:0000e8f5   460 0001:0000e8ff
+   462 0001:0000e925   464 0001:0000e92a
 
-Line numbers for .\Debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\cstringt.h) segment .text
+Line numbers for .\debug\StdAfx.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\cstringt.h) segment .text
 
-   183 0001:0000d980   185 0001:0000d983   187 0001:0000d99b   188 0001:0000d9ad
-   115 0001:0000d9c0   119 0001:0000d9c4   124 0001:0000d9f3   125 0001:0000d9fe
-   126 0001:0000da04   132 0001:0000da06   135 0001:0000da0c   136 0001:0000da19
-   159 0001:0000da20   162 0001:0000da48   163 0001:0000da5a   165 0001:0000da6d
-   166 0001:0000da86   167 0001:0000da8c   169 0001:0000dac2   170 0001:0000dad3
-   172 0001:0000daf5   173 0001:0000db1b   174 0001:0000db21   175 0001:0000db59
-   176 0001:0000db86   178 0001:0000dbad   179 0001:0000dbe0   216 0001:0000dc10
-   217 0001:0000dc13   219 0001:0000dc2b   220 0001:0000dc49   192 0001:0000dc50
-   193 0001:0000dc6b   195 0001:0000dc97   196 0001:0000dc9e   198 0001:0000dca8
-   199 0001:0000dd30   200 0001:0000dd36   203 0001:0000dd40   204 0001:0000dd47
-   206 0001:0000dd51   207 0001:0000ddd9   208 0001:0000dddf   211 0001:0000dde9
-   212 0001:0000de1c   240 0001:0000e040   241 0001:0000e043   243 0001:0000e05b
-   244 0001:0000e075   224 0001:0000e080   226 0001:0000e0a8   228 0001:0000e0ba
-   229 0001:0000e0de   230 0001:0000e0f0   232 0001:0000e11d   233 0001:0000e123
-   235 0001:0000e12d   236 0001:0000e170   254 0001:0000e190   255 0001:0000e193
-   257 0001:0000e1ab   258 0001:0000e1b9   247 0001:0000e1c0   248 0001:0000e1c6
-   250 0001:0000e1e3   251 0001:0000e28f   273 0001:0000e2a0   274 0001:0000e2a3
-   276 0001:0000e2bb   277 0001:0000e2c5   261 0001:0000e2d0   262 0001:0000e2d6
-   265 0001:0000e2f3   266 0001:0000e348   267 0001:0000e352   269 0001:0000e3b3
-   270 0001:0000e3b6   292 0001:0000e490   293 0001:0000e493   295 0001:0000e4ab
-   296 0001:0000e4b5   280 0001:0000e4c0   281 0001:0000e4c6   284 0001:0000e4e3
-   285 0001:0000e538   286 0001:0000e542   288 0001:0000e5a3   289 0001:0000e5a6
+   183 0001:0000d970   185 0001:0000d973   187 0001:0000d98b   188 0001:0000d99d
+   115 0001:0000d9b0   119 0001:0000d9b4   124 0001:0000d9e3   125 0001:0000d9ee
+   126 0001:0000d9f4   132 0001:0000d9f6   135 0001:0000d9fc   136 0001:0000da09
+   159 0001:0000da10   162 0001:0000da38   163 0001:0000da4a   165 0001:0000da5d
+   166 0001:0000da76   167 0001:0000da7c   169 0001:0000dab2   170 0001:0000dac3
+   172 0001:0000dae5   173 0001:0000db0b   174 0001:0000db11   175 0001:0000db49
+   176 0001:0000db76   178 0001:0000db9d   179 0001:0000dbd0   216 0001:0000dc00
+   217 0001:0000dc03   219 0001:0000dc1b   220 0001:0000dc39   192 0001:0000dc40
+   193 0001:0000dc5b   195 0001:0000dc87   196 0001:0000dc8e   198 0001:0000dc98
+   199 0001:0000dd20   200 0001:0000dd26   203 0001:0000dd30   204 0001:0000dd37
+   206 0001:0000dd41   207 0001:0000ddc9   208 0001:0000ddcf   211 0001:0000ddd9
+   212 0001:0000de0c   240 0001:0000e030   241 0001:0000e033   243 0001:0000e04b
+   244 0001:0000e065   224 0001:0000e070   226 0001:0000e098   228 0001:0000e0aa
+   229 0001:0000e0ce   230 0001:0000e0e0   232 0001:0000e10d   233 0001:0000e113
+   235 0001:0000e11d   236 0001:0000e160   254 0001:0000e180   255 0001:0000e183
+   257 0001:0000e19b   258 0001:0000e1a9   247 0001:0000e1b0   248 0001:0000e1b6
+   250 0001:0000e1d3   251 0001:0000e27f   273 0001:0000e290   274 0001:0000e293
+   276 0001:0000e2ab   277 0001:0000e2b5   261 0001:0000e2c0   262 0001:0000e2c6
+   265 0001:0000e2e3   266 0001:0000e338   267 0001:0000e342   269 0001:0000e3a3
+   270 0001:0000e3a6   292 0001:0000e480   293 0001:0000e483   295 0001:0000e49b
+   296 0001:0000e4a5   280 0001:0000e4b0   281 0001:0000e4b6   284 0001:0000e4d3
+   285 0001:0000e528   286 0001:0000e532   288 0001:0000e593   289 0001:0000e596
 
-Line numbers for .\Debug\StatLink.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atltrace.h) segment .text
+Line numbers for .\debug\StatLink.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atltrace.h) segment .text
 
-   158 0001:0000d8c0   173 0001:0000d8f0   174 0001:0000d8f4   175 0001:0000d8fa
-   176 0001:0000d929   177 0001:0000d930   121 0001:0000d940   122 0001:0000d943
-   123 0001:0000d96a   202 0001:0000d970   203 0001:0000d977   204 0001:0000d97c
+   158 0001:0000d8b0   173 0001:0000d8e0   174 0001:0000d8e4   175 0001:0000d8ea
+   176 0001:0000d919   177 0001:0000d920   121 0001:0000d930   122 0001:0000d933
+   123 0001:0000d95a   202 0001:0000d960   203 0001:0000d967   204 0001:0000d96c
 
-Line numbers for .\Debug\StatLink.obj(c:\code\smartpropoplus\341\sppconsole\statlink.cpp) segment .text
+Line numbers for .\debug\StatLink.obj(c:\code\smartpropoplus\341\sppconsole\statlink.cpp) segment .text
 
-    19 0001:0000d3e0    19 0001:0000d3f0    19 0001:0000d400    21 0001:0000d410
-    21 0001:0000d420    30 0001:0000d430    31 0001:0000d47f    32 0001:0000d489
-    33 0001:0000d493    34 0001:0000d49d    35 0001:0000d4a7    41 0001:0000d4c0
-    42 0001:0000d4d3    43 0001:0000d4ea    44 0001:0000d4f5    47 0001:0000d500
-    50 0001:0000d519    51 0001:0000d520    54 0001:0000d532    57 0001:0000d541
-    58 0001:0000d556    59 0001:0000d55a    63 0001:0000d569    64 0001:0000d57b
-    65 0001:0000d5a7    67 0001:0000d5b1    70 0001:0000d5b9    72 0001:0000d5c4
-    73 0001:0000d5c7    78 0001:0000d5e0    79 0001:0000d5e9    80 0001:0000d5fc
-    85 0001:0000d60b    86 0001:0000d62e    87 0001:0000d644    88 0001:0000d64e
-    89 0001:0000d658    90 0001:0000d65a    91 0001:0000d662    94 0001:0000d68c
-    99 0001:0000d690   100 0001:0000d6ae   103 0001:0000d6bb   104 0001:0000d6cb
-   105 0001:0000d6e5   107 0001:0000d6f0   109 0001:0000d6fe   110 0001:0000d711
-   111 0001:0000d717   112 0001:0000d726   113 0001:0000d72c   115 0001:0000d73c
-   116 0001:0000d746   117 0001:0000d756   120 0001:0000d770   121 0001:0000d777
-   123 0001:0000d780   124 0001:0000d78d   126 0001:0000d794   127 0001:0000d796
-   133 0001:0000d7a0   134 0001:0000d7cc   136 0001:0000d7d9   137 0001:0000d7e9
-   139 0001:0000d822   140 0001:0000d832   141 0001:0000d842   142 0001:0000d878
+    19 0001:0000d3d0    19 0001:0000d3e0    19 0001:0000d3f0    21 0001:0000d400
+    21 0001:0000d410    30 0001:0000d420    31 0001:0000d46f    32 0001:0000d479
+    33 0001:0000d483    34 0001:0000d48d    35 0001:0000d497    41 0001:0000d4b0
+    42 0001:0000d4c3    43 0001:0000d4da    44 0001:0000d4e5    47 0001:0000d4f0
+    50 0001:0000d509    51 0001:0000d510    54 0001:0000d522    57 0001:0000d531
+    58 0001:0000d546    59 0001:0000d54a    63 0001:0000d559    64 0001:0000d56b
+    65 0001:0000d597    67 0001:0000d5a1    70 0001:0000d5a9    72 0001:0000d5b4
+    73 0001:0000d5b7    78 0001:0000d5d0    79 0001:0000d5d9    80 0001:0000d5ec
+    85 0001:0000d5fb    86 0001:0000d61e    87 0001:0000d634    88 0001:0000d63e
+    89 0001:0000d648    90 0001:0000d64a    91 0001:0000d652    94 0001:0000d67c
+    99 0001:0000d680   100 0001:0000d69e   103 0001:0000d6ab   104 0001:0000d6bb
+   105 0001:0000d6d5   107 0001:0000d6e0   109 0001:0000d6ee   110 0001:0000d701
+   111 0001:0000d707   112 0001:0000d716   113 0001:0000d71c   115 0001:0000d72c
+   116 0001:0000d736   117 0001:0000d746   120 0001:0000d760   121 0001:0000d767
+   123 0001:0000d770   124 0001:0000d77d   126 0001:0000d784   127 0001:0000d786
+   133 0001:0000d790   134 0001:0000d7bc   136 0001:0000d7c9   137 0001:0000d7d9
+   139 0001:0000d812   140 0001:0000d822   141 0001:0000d832   142 0001:0000d868
 
-Line numbers for .\Debug\SppConsoleDlg.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\afxwin4.inl) segment .text
+Line numbers for .\debug\SppConsoleDlg.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\afxwin4.inl) segment .text
 
-    52 0001:0000d3a0
+    52 0001:0000d390
 
-Line numbers for .\Debug\SppConsoleDlg.obj(c:\code\smartpropoplus\341\sppconsole\sppconsoledlg.cpp) segment .text
+Line numbers for .\debug\SppConsoleDlg.obj(c:\code\smartpropoplus\341\sppconsole\sppconsoledlg.cpp) segment .text
 
-    48 0001:00008940    50 0001:00008a9d    53 0001:00008aaa    54 0001:00008ac4
-    57 0001:00008ae0    58 0001:00008ae7    60 0001:00008af3    61 0001:00008b08
-    62 0001:00008b1f    63 0001:00008b37    64 0001:00008b4f    65 0001:00008b66
-    66 0001:00008b7e    67 0001:00008b96    68 0001:00008bad    69 0001:00008bc5
-    70 0001:00008bdd    71 0001:00008bf4    72 0001:00008c0c    74 0001:00008c24
-    75 0001:00008c3b    80 0001:00008c50    80 0001:00008c60   141 0001:00008c70
-   143 0001:00008c76   147 0001:00008c7d   149 0001:00008c8a   153 0001:00008c90
-   160 0001:00008ca2   165 0001:00008ca8   166 0001:00008cb8   168 0001:00008cbf
-   170 0001:00008cc9   172 0001:00008ccf   176 0001:00008cee   178 0001:00008cf8
-   179 0001:00008cfb   183 0001:00008d00   184 0001:00008d03   185 0001:00008d13
-   186 0001:00008d23   187 0001:00008d33   188 0001:00008d43   189 0001:00008d53
-   192 0001:00008d60   193 0001:00008d63   194 0001:00008d73   195 0001:00008d83
-   201 0001:00008d90   206 0001:00008dbe   208 0001:00008dce   209 0001:00008dde
-   211 0001:00008de7   212 0001:00008e02   216 0001:00008e1b   219 0001:00008e48
-   220 0001:00008e59   222 0001:00008e6f   223 0001:00008e7a   226 0001:00008e81
-   231 0001:00008e9c   232 0001:00008eb6   233 0001:00008ed0   237 0001:00008edd
-   239 0001:00008ef1   240 0001:00008f13   241 0001:00008f24   244 0001:00008f39
-   247 0001:00008f44   250 0001:00008f54   253 0001:00008f5f   254 0001:00008fd5
-   255 0001:00008fe0   256 0001:00008ff1   257 0001:00008ffc   261 0001:00009014
-   262 0001:0000907d   263 0001:00009093   264 0001:0000909e   268 0001:000090ab
-   269 0001:000090bc   271 0001:000090cb   272 0001:000090e0   274 0001:000090f9
-   275 0001:0000910a   276 0001:00009122   277 0001:0000912a   278 0001:00009135
-   279 0001:00009140   280 0001:0000914b   282 0001:00009156   283 0001:00009176
-   288 0001:00009193   292 0001:0000919e   295 0001:000091ba   296 0001:000091d2
-   297 0001:000091e8   300 0001:00009205   302 0001:00009210   304 0001:00009215
-   307 0001:00009230   309 0001:00009239   310 0001:0000924b   311 0001:0000925d
-   312 0001:0000927b   313 0001:000092ab   314 0001:000092ba   315 0001:000092c7
-   316 0001:000092cf   317 0001:000092d7   324 0001:000092e0   325 0001:0000930e
-   327 0001:00009321   329 0001:0000933a   332 0001:00009355   333 0001:00009363
-   334 0001:00009371   335 0001:00009379   336 0001:00009388   337 0001:000093a1
-   340 0001:000093ba   341 0001:000093da   342 0001:000093ec   344 0001:000093ee
-   346 0001:000093f9   359 0001:00009420   360 0001:00009427   361 0001:00009430
-   364 0001:00009440   365 0001:00009447   366 0001:0000944f   367 0001:00009457
-   368 0001:0000945f   369 0001:00009470   372 0001:00009480   375 0001:0000949e
-   376 0001:000094ae   377 0001:000094b4   380 0001:000094b9   381 0001:000094c9
-   382 0001:000094d4   385 0001:000094e4   386 0001:000094eb   387 0001:000094fd
-   388 0001:00009516   391 0001:00009528   392 0001:0000952e   395 0001:00009536
-   396 0001:0000954e   397 0001:00009566   398 0001:0000957e   399 0001:00009596
-   400 0001:000095a4   403 0001:000095d0   404 0001:000095d7   405 0001:000095e4
-   408 0001:000095f0   410 0001:000095f9   411 0001:00009609   412 0001:0000960f
-   415 0001:00009611   418 0001:0000961c   421 0001:00009628   422 0001:0000962e
-   425 0001:00009635   427 0001:00009637   428 0001:00009647   429 0001:00009652
-   430 0001:00009658   431 0001:00009660   432 0001:00009662   436 0001:0000966a
-   437 0001:00009670   438 0001:0000967a   439 0001:0000967c   441 0001:00009686
-   444 0001:00009690   445 0001:00009697   446 0001:000096a4   448 0001:000096b0
-   449 0001:000096b7   450 0001:000096c1   451 0001:000096c8   453 0001:000096d0
-   454 0001:000096d7   455 0001:000096e4   458 0001:000096f0   459 0001:000096f7
-   460 0001:00009701   461 0001:00009708   465 0001:00009710   466 0001:00009717
-   467 0001:00009725   468 0001:00009727   469 0001:00009731   471 0001:0000973b
-   475 0001:00009740   476 0001:00009747   477 0001:00009755   478 0001:00009757
-   479 0001:00009761   481 0001:0000976b   486 0001:00009770   489 0001:00009779
-   490 0001:00009786   491 0001:00009795   495 0001:0000979d   496 0001:000097ad
-   497 0001:000097b3   501 0001:000097bb   502 0001:000097c2   504 0001:000097d0
-   505 0001:000097f3   506 0001:000097fc   509 0001:000097fe   510 0001:0000980d
-   511 0001:00009816   512 0001:00009818   515 0001:0000981f   518 0001:0000982b
-   519 0001:0000983b   520 0001:0000984a   521 0001:0000985a   522 0001:0000986a
-   523 0001:00009879   526 0001:0000988e   527 0001:00009897   528 0001:000098a1
-   529 0001:000098a3   530 0001:000098ad   531 0001:000098b0   541 0001:000098c0
-   542 0001:000098c9   543 0001:000098d9   545 0001:000098e9   547 0001:000098f1
-   548 0001:00009903   549 0001:00009915   550 0001:0000991f   552 0001:00009929
-   554 0001:0000992b   555 0001:0000993d   556 0001:0000994f   557 0001:00009959
-   560 0001:00009963   568 0001:00009970   570 0001:0000998a   571 0001:000099a3
-   575 0001:000099bc   576 0001:000099cf   577 0001:000099d9   580 0001:000099e7
-   581 0001:000099f1   582 0001:00009a00   583 0001:00009a09   584 0001:00009a13
-   585 0001:00009a1d   587 0001:00009a26   588 0001:00009a2c   590 0001:00009a40
-   591 0001:00009a42   592 0001:00009a49   594 0001:00009a5b   597 0001:00009a60
-   598 0001:00009a6a   599 0001:00009a79   600 0001:00009a82   601 0001:00009a8c
-   602 0001:00009a96   603 0001:00009a9f   604 0001:00009aa6   605 0001:00009ab5
-   606 0001:00009abf   607 0001:00009ac3   608 0001:00009aca   610 0001:00009adc
-   611 0001:00009ae3   613 0001:00009aea   614 0001:00009af0   616 0001:00009b04
-   617 0001:00009b06   618 0001:00009b0d   621 0001:00009b1f   622 0001:00009b25
-   625 0001:00009b2f   626 0001:00009b32   630 0001:00009b50   634 0001:00009b69
-   635 0001:00009b73   636 0001:00009b82   638 0001:00009b8b   640 0001:00009b9d
-   641 0001:00009ba0   648 0001:00009bb0   651 0001:00009bca   654 0001:00009be3
-   655 0001:00009bf6   656 0001:00009c00   657 0001:00009c0e   659 0001:00009c15
-   660 0001:00009c1f   661 0001:00009c2e   662 0001:00009c37   663 0001:00009c41
-   664 0001:00009c48   667 0001:00009c4f   668 0001:00009c55   669 0001:00009c66
-   670 0001:00009c68   673 0001:00009c7a   674 0001:00009c80   675 0001:00009c87
-   676 0001:00009c89   678 0001:00009c9d   680 0001:00009caf   682 0001:00009cb2
-   688 0001:00009cd0   692 0001:00009ce9   693 0001:00009cf3   694 0001:00009d02
-   695 0001:00009d0b   696 0001:00009d15   697 0001:00009d1b   699 0001:00009d2f
-   700 0001:00009d31   702 0001:00009d38   704 0001:00009d4a   705 0001:00009d4d
-   709 0001:00009d60   710 0001:00009d67   711 0001:00009d73   718 0001:00009d80
-   722 0001:00009d89   723 0001:00009d8f   726 0001:00009d95   727 0001:00009da7
-   730 0001:00009daf   731 0001:00009dba   734 0001:00009dc7   735 0001:00009dcc
-   738 0001:00009de0   739 0001:00009de7   740 0001:00009de9   747 0001:00009df0
-   751 0001:00009df9   753 0001:00009e00   754 0001:00009e0f   756 0001:00009e22
-   758 0001:00009e2a   759 0001:00009e3a   760 0001:00009e40   761 0001:00009e47
-   762 0001:00009e53   764 0001:00009e5f   765 0001:00009e61   772 0001:00009e70
-   774 0001:00009e8e   775 0001:00009e9d   776 0001:00009ead   777 0001:00009ec1
-   778 0001:00009ece   779 0001:00009ed4   782 0001:00009ee8   786 0001:00009ef9
-   788 0001:00009f05   790 0001:00009f11   791 0001:00009f1f   792 0001:00009f33
-   793 0001:00009f35   795 0001:00009f49   796 0001:00009f58   803 0001:00009f69
-   804 0001:00009f71   805 0001:00009f7b   807 0001:00009f88   809 0001:00009faa
-   817 0001:00009fd0   818 0001:00009fd7   819 0001:00009fe5   821 0001:00009ff4
-   822 0001:0000a000   831 0001:0000a010   832 0001:0000a017   833 0001:0000a025
-   835 0001:0000a02d   836 0001:0000a02f   846 0001:0000a040   847 0001:0000a05e
-   850 0001:0000a06b   852 0001:0000a078   853 0001:0000a086   854 0001:0000a094
-   855 0001:0000a096   857 0001:0000a0ad   860 0001:0000a0bf   863 0001:0000a0c9
-   864 0001:0000a0df   865 0001:0000a0f5   866 0001:0000a10e   869 0001:0000a12c
-   871 0001:0000a136   874 0001:0000a140   877 0001:0000a14d   879 0001:0000a162
-   880 0001:0000a170   881 0001:0000a1a3   882 0001:0000a1bf   885 0001:0000a1d1
-   888 0001:0000a1db   889 0001:0000a1f1   890 0001:0000a207   891 0001:0000a220
-   894 0001:0000a23a   896 0001:0000a244   900 0001:0000a263   902 0001:0000a26c
-   903 0001:0000a278   907 0001:0000a282   909 0001:0000a28b   910 0001:0000a297
-   913 0001:0000a2a1   915 0001:0000a2ae   917 0001:0000a2be   918 0001:0000a2c9
-   922 0001:0000a2d2   923 0001:0000a2dd   925 0001:0000a2fc   927 0001:0000a304
-   929 0001:0000a30f   930 0001:0000a325   931 0001:0000a329   932 0001:0000a32e
-   934 0001:0000a33c   935 0001:0000a352   936 0001:0000a356   937 0001:0000a35b
-   939 0001:0000a369   940 0001:0000a37b   941 0001:0000a37f   942 0001:0000a381
-   944 0001:0000a390   945 0001:0000a3a6   946 0001:0000a3aa   947 0001:0000a3ac
-   949 0001:0000a3bb   950 0001:0000a3d1   951 0001:0000a3d5   953 0001:0000a3d7
-   954 0001:0000a3f2   957 0001:0000a3f6   959 0001:0000a3ff   960 0001:0000a40f
-   962 0001:0000a421   963 0001:0000a42a   964 0001:0000a443   968 0001:0000a45f
-   972 0001:0000a468   973 0001:0000a46e   974 0001:0000a478   976 0001:0000a47a
-   977 0001:0000a484   982 0001:0000a48c   983 0001:0000a48e   991 0001:0000a4a0
-   992 0001:0000a4a7   994 0001:0000a4b3   995 0001:0000a4c3   997 0001:0000a4d3
-   998 0001:0000a4df  1000 0001:0000a4e4  1004 0001:0000a4ec  1007 0001:0000a4f0
-  1008 0001:0000a4f7  1009 0001:0000a505  1013 0001:0000a510  1015 0001:0000a517
-  1017 0001:0000a532  1018 0001:0000a53e  1020 0001:0000a542  1021 0001:0000a552
-  1022 0001:0000a554  1028 0001:0000a560  1029 0001:0000a585  1030 0001:0000a595
-  1034 0001:0000a5ea  1035 0001:0000a5fa  1038 0001:0000a600  1039 0001:0000a60b
-  1041 0001:0000a611  1042 0001:0000a621  1048 0001:0000a637  1049 0001:0000a647
-  1052 0001:0000a64d  1053 0001:0000a658  1054 0001:0000a65e  1055 0001:0000a66c
-  1056 0001:0000a66e  1060 0001:0000a67c  1062 0001:0000a682  1063 0001:0000a692
-  1064 0001:0000a6a2  1066 0001:0000a6ae  1067 0001:0000a6ba  1068 0001:0000a6c8
-  1069 0001:0000a6ca  1074 0001:0000a6d8  1075 0001:0000a6e8  1077 0001:0000a6fa
-  1078 0001:0000a705  1079 0001:0000a70b  1080 0001:0000a719  1081 0001:0000a71b
-  1082 0001:0000a72b  1085 0001:0000a741  1087 0001:0000a7d8  1088 0001:0000a842
-  1092 0001:0000a860  1093 0001:0000a869  1094 0001:0000a86f  1095 0001:0000a87d
-  1098 0001:0000a888  1099 0001:0000a899  1101 0001:0000a8a1  1102 0001:0000a8ab
-  1103 0001:0000a8b6  1106 0001:0000a8bd  1107 0001:0000a8bf  1131 0001:0000a8d0
-  1133 0001:0000a8d9  1135 0001:0000a8fc  1137 0001:0000a911  1139 0001:0000a922
-  1140 0001:0000a92c  1141 0001:0000a936  1143 0001:0000a94e  1144 0001:0000a958
-  1147 0001:0000a962  1149 0001:0000a978  1150 0001:0000a98e  1152 0001:0000a9a4
-  1153 0001:0000a9ae  1156 0001:0000a9b8  1157 0001:0000a9c3  1158 0001:0000a9cd
-  1160 0001:0000a9d8  1161 0001:0000a9ee  1163 0001:0000aa06  1164 0001:0000aa10
-  1167 0001:0000aa1a  1169 0001:0000aa1c  1170 0001:0000aa26  1173 0001:0000aa46
-  1174 0001:0000aa54  1175 0001:0000aa63  1178 0001:0000aa76  1179 0001:0000aa98
-  1182 0001:0000aab1  1183 0001:0000aabe  1185 0001:0000aace  1187 0001:0000ab28
-  1188 0001:0000ab2d  1191 0001:0000ab40  1195 0001:0000ab49  1196 0001:0000ab59
-  1197 0001:0000ab5f  1200 0001:0000ab64  1201 0001:0000ab75  1202 0001:0000ab8f
-  1205 0001:0000abb0  1207 0001:0000abb6  1208 0001:0000abc3  1209 0001:0000abd5
-  1211 0001:0000abdd  1213 0001:0000abdf  1214 0001:0000abf0  1215 0001:0000ac02
-  1220 0001:0000ac1a  1221 0001:0000ac22  1224 0001:0000ac30  1225 0001:0000ac37
-  1226 0001:0000ac44  1229 0001:0000ac50  1232 0001:0000ac59  1233 0001:0000ac69
-  1234 0001:0000ac6f  1237 0001:0000ac74  1238 0001:0000ac7f  1239 0001:0000ac85
-  1241 0001:0000ac8a  1243 0001:0000ac96  1246 0001:0000acab  1247 0001:0000acbb
-  1248 0001:0000acc1  1251 0001:0000acc3  1255 0001:0000accb  1256 0001:0000acd2
-  1258 0001:0000aced  1259 0001:0000acfd  1260 0001:0000ad06  1263 0001:0000ad08
-  1264 0001:0000ad19  1265 0001:0000ad2b  1268 0001:0000ad30  1269 0001:0000ad37
-  1270 0001:0000ad44  1273 0001:0000ad50  1274 0001:0000ad59  1275 0001:0000ad69
-  1276 0001:0000ad6f  1279 0001:0000ad74  1282 0001:0000ad81  1283 0001:0000ad8c
-  1284 0001:0000ad92  1287 0001:0000ad94  1288 0001:0000ada0  1292 0001:0000ada8
-  1293 0001:0000adb9  1294 0001:0000adc5  1295 0001:0000adc7  1298 0001:0000ade2
-  1299 0001:0000ade8  1301 0001:0000adfa  1302 0001:0000ae08  1305 0001:0000ae10
-  1308 0001:0000ae20  1310 0001:0000ae29  1311 0001:0000ae39  1312 0001:0000ae3f
-  1315 0001:0000ae44  1316 0001:0000ae55  1317 0001:0000ae61  1320 0001:0000ae63
-  1323 0001:0000ae75  1324 0001:0000ae85  1325 0001:0000ae8b  1328 0001:0000ae8d
-  1329 0001:0000ae9e  1330 0001:0000aeaa  1331 0001:0000aeac  1334 0001:0000aec7
-  1335 0001:0000aecd  1336 0001:0000aedf  1339 0001:0000aef0  1343 0001:0000aef9
-  1344 0001:0000af09  1347 0001:0000af1a  1350 0001:0000af2c  1353 0001:0000af3e
-  1354 0001:0000af4c  1356 0001:0000af54  1359 0001:0000af60  1363 0001:0000af69
-  1364 0001:0000af79  1365 0001:0000af7f  1366 0001:0000af84  1368 0001:0000af90
-  1369 0001:0000afa0  1370 0001:0000afa6  1371 0001:0000afab  1374 0001:0000afb7
-  1375 0001:0000afc7  1377 0001:0000afcd  1378 0001:0000afd3  1379 0001:0000afdd
-  1380 0001:0000afdf  1386 0001:0000afe9  1388 0001:0000afef  1389 0001:0000affc
-  1390 0001:0000b009  1391 0001:0000b017  1392 0001:0000b022  1394 0001:0000b02d
-  1397 0001:0000b02f  1398 0001:0000b038  1399 0001:0000b045  1400 0001:0000b04e
-  1403 0001:0000b05b  1404 0001:0000b072  1405 0001:0000b081  1406 0001:0000b090
-  1407 0001:0000b098  1411 0001:0000b0a1  1412 0001:0000b0ad  1414 0001:0000b0b9
-  1424 0001:0000b0c0  1425 0001:0000b0c9  1429 0001:0000b0d1  1431 0001:0000b0e7
-  1432 0001:0000b0fc  1433 0001:0000b108  1437 0001:0000b11c  1438 0001:0000b12a
-  1455 0001:0000b130  1458 0001:0000b139  1459 0001:0000b14c  1460 0001:0000b151
-  1461 0001:0000b164  1463 0001:0000b169  1465 0001:0000b16b  1474 0001:0000b170
-  1477 0001:0000b179  1478 0001:0000b188  1479 0001:0000b18e  1482 0001:0000b192
-  1483 0001:0000b1a3  1484 0001:0000b1b8  1485 0001:0000b1be  1487 0001:0000b1d0
-  1489 0001:0000b1d2  1497 0001:0000b1e0  1499 0001:0000b1e9  1500 0001:0000b1fa
-  1501 0001:0000b20f  1502 0001:0000b215  1503 0001:0000b224  1504 0001:0000b226
-  1506 0001:0000b22a  1507 0001:0000b22d  1515 0001:0000b240  1517 0001:0000b249
-  1520 0001:0000b25b  1521 0001:0000b270  1522 0001:0000b27c  1528 0001:0000b290
-  1530 0001:0000b299  1532 0001:0000b2a4  1535 0001:0000b2b0  1537 0001:0000b2c5
-  1538 0001:0000b2e2  1541 0001:0000b2e4  1542 0001:0000b2f9  1543 0001:0000b309
-  1546 0001:0000b310  1547 0001:0000b317  1548 0001:0000b324  1552 0001:0000b330
-  1553 0001:0000b339  1554 0001:0000b349  1555 0001:0000b35b  1562 0001:0000b360
-  1565 0001:0000b369  1567 0001:0000b382  1568 0001:0000b38f  1570 0001:0000b396
-  1571 0001:0000b3b1  1574 0001:0000b3b8  1576 0001:0000b3c6  1577 0001:0000b3dd
-  1578 0001:0000b3e0  1590 0001:0000b3f0  1595 0001:0000b3f9  1596 0001:0000b408
-  1598 0001:0000b40d  1599 0001:0000b425  1601 0001:0000b42a  1602 0001:0000b445
-  1603 0001:0000b44b  1606 0001:0000b44d  1608 0001:0000b455  1609 0001:0000b470
-  1613 0001:0000b47c  1615 0001:0000b47e  1616 0001:0000b499  1619 0001:0000b4a5
-  1622 0001:0000b4ae  1624 0001:0000b4b7  1627 0001:0000b4c0  1631 0001:0000b4e1
-  1634 0001:0000b4f1  1635 0001:0000b501  1637 0001:0000b508  1638 0001:0000b513
-  1640 0001:0000b538  1641 0001:0000b541  1642 0001:0000b557  1643 0001:0000b570
-  1644 0001:0000b57b  1649 0001:0000b590  1650 0001:0000b59f  1653 0001:0000b5aa
-  1654 0001:0000b5bd  1655 0001:0000b5c3  1659 0001:0000b5d5  1660 0001:0000b5e7
-  1662 0001:0000b5ef  1663 0001:0000b5fe  1664 0001:0000b613  1666 0001:0000b62b
-  1674 0001:0000b650  1678 0001:0000b671  1681 0001:0000b681  1682 0001:0000b691
-  1684 0001:0000b698  1685 0001:0000b6a3  1687 0001:0000b6c8  1688 0001:0000b6d1
-  1689 0001:0000b6e7  1690 0001:0000b700  1691 0001:0000b70b  1695 0001:0000b720
-  1696 0001:0000b72f  1699 0001:0000b73a  1700 0001:0000b74d  1701 0001:0000b753
-  1705 0001:0000b765  1706 0001:0000b777  1708 0001:0000b77f  1709 0001:0000b78e
-  1710 0001:0000b7a3  1712 0001:0000b7bb  1719 0001:0000b7e0  1721 0001:0000b804
-  1723 0001:0000b80f  1724 0001:0000b823  1727 0001:0000b831  1730 0001:0000b83c
-  1731 0001:0000b847  1737 0001:0000b870  1741 0001:0000b88e  1744 0001:0000b89e
-  1745 0001:0000b8ae  1747 0001:0000b8b5  1749 0001:0000b8dd  1750 0001:0000b8e6
-  1751 0001:0000b8fc  1752 0001:0000b912  1756 0001:0000b924  1759 0001:0000b936
-  1760 0001:0000b944  1761 0001:0000b94a  1762 0001:0000b95b  1763 0001:0000b95d
-  1765 0001:0000b96e  1771 0001:0000b990  1772 0001:0000b999  1773 0001:0000b9a9
-  1774 0001:0000b9b7  1775 0001:0000b9c1  1779 0001:0000b9d0  1780 0001:0000b9ee
-  1783 0001:0000b9fe  1784 0001:0000ba0e  1785 0001:0000ba14  1788 0001:0000ba29
-  1789 0001:0000ba34  1790 0001:0000ba3e  1793 0001:0000ba50  1795 0001:0000ba5b
-  1797 0001:0000ba61  1798 0001:0000ba68  1800 0001:0000ba82  1802 0001:0000ba84
-  1803 0001:0000ba8b  1808 0001:0000ba9d  1809 0001:0000baa9  1815 0001:0000bad0
-  1819 0001:0000baee  1820 0001:0000bafa  1821 0001:0000bb4b  1822 0001:0000bb6c
-  1823 0001:0000bb7d  1824 0001:0000bb7f  1826 0001:0000bb84  1827 0001:0000bb8a
-  1829 0001:0000bb8f  1830 0001:0000bb9f  1831 0001:0000bba6  1833 0001:0000bbca
-  1835 0001:0000bbde  1836 0001:0000bbe7  1838 0001:0000bbe9  1839 0001:0000bbf2
-  1840 0001:0000bbf9  1844 0001:0000bbfb  1845 0001:0000bc3d  1846 0001:0000bc54
-  1847 0001:0000bc5f  1849 0001:0000bc79  1850 0001:0000bc99  1851 0001:0000bca7
-  1852 0001:0000bcc5  1853 0001:0000bcc7  1854 0001:0000bce4  1857 0001:0000bcf6
-  1859 0001:0000bcfc  1860 0001:0000bd02  1861 0001:0000bd0b  1862 0001:0000bd0d
-  1864 0001:0000bd14  1865 0001:0000bd3c  1866 0001:0000bd42  1868 0001:0000bd54
-  1869 0001:0000bd66  1873 0001:0000bd77  1874 0001:0000bd92  1908 0001:0000bdb0
-  1909 0001:0000bdce  1910 0001:0000bdd9  1913 0001:0000bde9  1914 0001:0000bdf5
-  1915 0001:0000be0a  1916 0001:0000be10  1919 0001:0000be31  1920 0001:0000be42
-  1922 0001:0000be4a  1923 0001:0000be57  1924 0001:0000be65  1926 0001:0000be73
-  1928 0001:0000be75  1929 0001:0000be81  1930 0001:0000be9a  1931 0001:0000bea6
-  1932 0001:0000beb4  1936 0001:0000bec6  1937 0001:0000bed2  1938 0001:0000beea
-  1941 0001:0000befc  1942 0001:0000bf04  1945 0001:0000bf30  1946 0001:0000bf37
-  1947 0001:0000bf3f  1948 0001:0000bf44  1954 0001:0000bf50  1957 0001:0000bf59
-  1962 0001:0000bf6d  1963 0001:0000bf79  1965 0001:0000bf89  1966 0001:0000bf9a
-  1969 0001:0000bfa8  1970 0001:0000bfc5  1971 0001:0000bfc7  1975 0001:0000bfd0
-  1978 0001:0000bfd9  1979 0001:0000bfe5  1980 0001:0000bff5  1981 0001:0000bff7
-  1985 0001:0000c000  1986 0001:0000c01e  1987 0001:0000c024  1988 0001:0000c02b
-  1990 0001:0000c036  1991 0001:0000c044  1995 0001:0000c05c  1997 0001:0000c067
-  2000 0001:0000c077  2001 0001:0000c086  2003 0001:0000c0a4  2004 0001:0000c0b4
-  2007 0001:0000c0bc  2008 0001:0000c0cf  2009 0001:0000c0e1  2010 0001:0000c0e3
-  2013 0001:0000c0ed  2014 0001:0000c0f9  2018 0001:0000c110  2019 0001:0000c119
-  2023 0001:0000c14f  2024 0001:0000c15f  2025 0001:0000c17b  2026 0001:0000c185
-  2027 0001:0000c193  2035 0001:0000c1a0  2040 0001:0000c1a9  2042 0001:0000c1b4
-  2043 0001:0000c1bd  2045 0001:0000c1c1  2046 0001:0000c1c3  2049 0001:0000c1c7
-  2051 0001:0000c1cd  2053 0001:0000c1d5  2055 0001:0000c1eb  2057 0001:0000c1ed
-  2058 0001:0000c1f4  2061 0001:0000c20a  2062 0001:0000c217  2063 0001:0000c253
-  2064 0001:0000c286  2068 0001:0000c290  2069 0001:0000c2ae  2070 0001:0000c2ba
-  2072 0001:0000c2bf  2074 0001:0000c2cb  2075 0001:0000c31e  2077 0001:0000c346
-  2080 0001:0000c359  2084 0001:0000c370  2086 0001:0000c377  2087 0001:0000c38d
-  2088 0001:0000c3a3  2090 0001:0000c3b9  2091 0001:0000c3bb  2095 0001:0000c3d0
-  2097 0001:0000c3d7  2098 0001:0000c3ed  2099 0001:0000c403  2101 0001:0000c419
-  2102 0001:0000c41b  2106 0001:0000c430  2107 0001:0000c437  2109 0001:0000c444
-  2110 0001:0000c446  2114 0001:0000c450  2116 0001:0000c457  2120 0001:0000c463
-  2124 0001:0000c470  2127 0001:0000c479  2128 0001:0000c481  2129 0001:0000c487
-  2130 0001:0000c491  2131 0001:0000c493  2134 0001:0000c49d  2135 0001:0000c4a3
-  2137 0001:0000c4ad  2138 0001:0000c4c2  2141 0001:0000c4d0  2142 0001:0000c4ee
-  2143 0001:0000c4fd  2145 0001:0000c50a  2148 0001:0000c511  2150 0001:0000c535
-  2152 0001:0000c549  2153 0001:0000c565  2154 0001:0000c574  2156 0001:0000c576
-  2157 0001:0000c57f  2158 0001:0000c581  2159 0001:0000c58d  2162 0001:0000c5ae
-  2163 0001:0000c5c0  2164 0001:0000c5c6  2167 0001:0000c5e7  2168 0001:0000c5ed
-  2169 0001:0000c5fc  2170 0001:0000c5fe  2173 0001:0000c60d  2175 0001:0000c613
-  2176 0001:0000c61b  2177 0001:0000c622  2178 0001:0000c624  2182 0001:0000c62b
-  2185 0001:0000c631  2187 0001:0000c637  2188 0001:0000c641  2189 0001:0000c64b
-  2191 0001:0000c65d  2193 0001:0000c65f  2194 0001:0000c669  2195 0001:0000c673
-  2199 0001:0000c685  2200 0001:0000c697  2203 0001:0000c69f  2205 0001:0000c6af
-  2208 0001:0000c6e0  2209 0001:0000c70e  2214 0001:0000c720  2215 0001:0000c740
-  2216 0001:0000c758  2219 0001:0000c76a  2222 0001:0000c770  2223 0001:0000c78a
-  2224 0001:0000c793  2228 0001:0000c7a5  2229 0001:0000c7bd  2230 0001:0000c7c8
-  2233 0001:0000c800  2235 0001:0000c82e  2236 0001:0000c848  2237 0001:0000c851
-  2242 0001:0000c856  2243 0001:0000c866  2244 0001:0000c86d  2247 0001:0000c897
-  2248 0001:0000c8aa  2249 0001:0000c8b6  2250 0001:0000c8d9  2251 0001:0000c8f5
-  2253 0001:0000c908  2255 0001:0000c920  2256 0001:0000c927  2257 0001:0000c930
-  2258 0001:0000c938  2259 0001:0000c93a  2260 0001:0000c94a  2264 0001:0000c950
-  2265 0001:0000c96e  2266 0001:0000c97a  2268 0001:0000c97f  2270 0001:0000c98b
-  2271 0001:0000c9dc  2273 0001:0000ca04  2275 0001:0000ca17  2279 0001:0000ca30
-  2280 0001:0000ca37  2281 0001:0000ca44  2282 0001:0000ca46  2286 0001:0000ca50
-  2287 0001:0000ca6e  2288 0001:0000ca7a  2290 0001:0000ca7f  2292 0001:0000ca8f
-  2293 0001:0000cae0  2294 0001:0000cb08  2296 0001:0000cb1b  2297 0001:0000cb22
-  2298 0001:0000cb34  2300 0001:0000cb60  2302 0001:0000cb73  2306 0001:0000cb90
-  2307 0001:0000cb97  2308 0001:0000cba4  2309 0001:0000cba6  2313 0001:0000cbb0
-  2314 0001:0000cbce  2316 0001:0000cbde  2317 0001:0000cc2f  2318 0001:0000cc55
-  2320 0001:0000cc68  2321 0001:0000cc6f  2322 0001:0000cc81  2324 0001:0000ccad
-  2326 0001:0000ccc0  2329 0001:0000ccd0  2331 0001:0000cce9  2332 0001:0000ccf8
-  2335 0001:0000ccff  2336 0001:0000cd18  2337 0001:0000cd31  2342 0001:0000cd4a
-  2343 0001:0000cd5c  2346 0001:0000cd78  2347 0001:0000cd99  2349 0001:0000cda8
-  2350 0001:0000cdbb  2351 0001:0000cdcb  2356 0001:0000cdd2  2357 0001:0000cde2
-  2358 0001:0000cdfd  2359 0001:0000ce33  2360 0001:0000ce4e  2361 0001:0000ce69
-  2362 0001:0000ce84  2363 0001:0000ce9f  2364 0001:0000ceba  2365 0001:0000ced5
-  2366 0001:0000cef0  2367 0001:0000cf24  2368 0001:0000cf3f  2369 0001:0000cf55
-  2371 0001:0000cf65  2372 0001:0000cf67  2375 0001:0000cf80  2377 0001:0000cf89
-  2378 0001:0000cf9f  2379 0001:0000cfb5  2382 0001:0000cfcb  2383 0001:0000cfef
-  2386 0001:0000cff6  2388 0001:0000d002  2389 0001:0000d00f  2394 0001:0000d01a
-  2398 0001:0000d027  2399 0001:0000d034  2400 0001:0000d047  2401 0001:0000d05f
-  2402 0001:0000d08f  2403 0001:0000d0a7  2406 0001:0000d0ba  2407 0001:0000d0c7
-  2408 0001:0000d0c9  2412 0001:0000d0d0  2413 0001:0000d0d7  2414 0001:0000d0e4
-  2415 0001:0000d0e6  2419 0001:0000d0f0  2420 0001:0000d10e  2422 0001:0000d11e
-  2423 0001:0000d16f  2424 0001:0000d195  2426 0001:0000d1a8  2427 0001:0000d1af
-  2428 0001:0000d1c1  2430 0001:0000d1ed  2432 0001:0000d200  2435 0001:0000d210
-  2436 0001:0000d217  2437 0001:0000d224  2438 0001:0000d226  2442 0001:0000d230
-  2444 0001:0000d254  2445 0001:0000d26a  2446 0001:0000d278  2448 0001:0000d27e
-  2449 0001:0000d28b  2452 0001:0000d296  2453 0001:0000d2af  2456 0001:0000d2bd
-  2458 0001:0000d2c3  2459 0001:0000d2d2  2461 0001:0000d2dd  2464 0001:0000d300
-  2466 0001:0000d309  2467 0001:0000d315  2468 0001:0000d31b  2470 0001:0000d320
-  2471 0001:0000d323  2474 0001:0000d330  2475 0001:0000d337  2476 0001:0000d34d
-  2477 0001:0000d363  2478 0001:0000d365
+    48 0001:00008930    50 0001:00008a8d    53 0001:00008a9a    54 0001:00008ab4
+    57 0001:00008ad0    58 0001:00008ad7    60 0001:00008ae3    61 0001:00008af8
+    62 0001:00008b0f    63 0001:00008b27    64 0001:00008b3f    65 0001:00008b56
+    66 0001:00008b6e    67 0001:00008b86    68 0001:00008b9d    69 0001:00008bb5
+    70 0001:00008bcd    71 0001:00008be4    72 0001:00008bfc    74 0001:00008c14
+    75 0001:00008c2b    80 0001:00008c40    80 0001:00008c50   141 0001:00008c60
+   143 0001:00008c66   147 0001:00008c6d   149 0001:00008c7a   153 0001:00008c80
+   160 0001:00008c92   165 0001:00008c98   166 0001:00008ca8   168 0001:00008caf
+   170 0001:00008cb9   172 0001:00008cbf   176 0001:00008cde   178 0001:00008ce8
+   179 0001:00008ceb   183 0001:00008cf0   184 0001:00008cf3   185 0001:00008d03
+   186 0001:00008d13   187 0001:00008d23   188 0001:00008d33   189 0001:00008d43
+   192 0001:00008d50   193 0001:00008d53   194 0001:00008d63   195 0001:00008d73
+   201 0001:00008d80   206 0001:00008dae   208 0001:00008dbe   209 0001:00008dce
+   211 0001:00008dd7   212 0001:00008df2   216 0001:00008e0b   219 0001:00008e38
+   220 0001:00008e49   222 0001:00008e5f   223 0001:00008e6a   226 0001:00008e71
+   231 0001:00008e8c   232 0001:00008ea6   233 0001:00008ec0   237 0001:00008ecd
+   239 0001:00008ee1   240 0001:00008f03   241 0001:00008f14   244 0001:00008f29
+   247 0001:00008f34   250 0001:00008f44   253 0001:00008f4f   254 0001:00008fc5
+   255 0001:00008fd0   256 0001:00008fe1   257 0001:00008fec   261 0001:00009004
+   262 0001:0000906d   263 0001:00009083   264 0001:0000908e   268 0001:0000909b
+   269 0001:000090ac   271 0001:000090bb   272 0001:000090d0   274 0001:000090e9
+   275 0001:000090fa   276 0001:00009112   277 0001:0000911a   278 0001:00009125
+   279 0001:00009130   280 0001:0000913b   282 0001:00009146   283 0001:00009166
+   288 0001:00009183   292 0001:0000918e   295 0001:000091aa   296 0001:000091c2
+   297 0001:000091d8   300 0001:000091f5   302 0001:00009200   304 0001:00009205
+   307 0001:00009220   309 0001:00009229   310 0001:0000923b   311 0001:0000924d
+   312 0001:0000926b   313 0001:0000929b   314 0001:000092aa   315 0001:000092b7
+   316 0001:000092bf   317 0001:000092c7   324 0001:000092d0   325 0001:000092fe
+   327 0001:00009311   329 0001:0000932a   332 0001:00009345   333 0001:00009353
+   334 0001:00009361   335 0001:00009369   336 0001:00009378   337 0001:00009391
+   340 0001:000093aa   341 0001:000093ca   342 0001:000093dc   344 0001:000093de
+   346 0001:000093e9   359 0001:00009410   360 0001:00009417   361 0001:00009420
+   364 0001:00009430   365 0001:00009437   366 0001:0000943f   367 0001:00009447
+   368 0001:0000944f   369 0001:00009460   372 0001:00009470   375 0001:0000948e
+   376 0001:0000949e   377 0001:000094a4   380 0001:000094a9   381 0001:000094b9
+   382 0001:000094c4   385 0001:000094d4   386 0001:000094db   387 0001:000094ed
+   388 0001:00009506   391 0001:00009518   392 0001:0000951e   395 0001:00009526
+   396 0001:0000953e   397 0001:00009556   398 0001:0000956e   399 0001:00009586
+   400 0001:00009594   403 0001:000095c0   404 0001:000095c7   405 0001:000095d4
+   408 0001:000095e0   410 0001:000095e9   411 0001:000095f9   412 0001:000095ff
+   415 0001:00009601   418 0001:0000960c   421 0001:00009618   422 0001:0000961e
+   425 0001:00009625   427 0001:00009627   428 0001:00009637   429 0001:00009642
+   430 0001:00009648   431 0001:00009650   432 0001:00009652   436 0001:0000965a
+   437 0001:00009660   438 0001:0000966a   439 0001:0000966c   441 0001:00009676
+   444 0001:00009680   445 0001:00009687   446 0001:00009694   448 0001:000096a0
+   449 0001:000096a7   450 0001:000096b1   451 0001:000096b8   453 0001:000096c0
+   454 0001:000096c7   455 0001:000096d4   458 0001:000096e0   459 0001:000096e7
+   460 0001:000096f1   461 0001:000096f8   465 0001:00009700   466 0001:00009707
+   467 0001:00009715   468 0001:00009717   469 0001:00009721   471 0001:0000972b
+   475 0001:00009730   476 0001:00009737   477 0001:00009745   478 0001:00009747
+   479 0001:00009751   481 0001:0000975b   486 0001:00009760   489 0001:00009769
+   490 0001:00009776   491 0001:00009785   495 0001:0000978d   496 0001:0000979d
+   497 0001:000097a3   501 0001:000097ab   502 0001:000097b2   504 0001:000097c0
+   505 0001:000097e3   506 0001:000097ec   509 0001:000097ee   510 0001:000097fd
+   511 0001:00009806   512 0001:00009808   515 0001:0000980f   518 0001:0000981b
+   519 0001:0000982b   520 0001:0000983a   521 0001:0000984a   522 0001:0000985a
+   523 0001:00009869   526 0001:0000987e   527 0001:00009887   528 0001:00009891
+   529 0001:00009893   530 0001:0000989d   531 0001:000098a0   541 0001:000098b0
+   542 0001:000098b9   543 0001:000098c9   545 0001:000098d9   547 0001:000098e1
+   548 0001:000098f3   549 0001:00009905   550 0001:0000990f   552 0001:00009919
+   554 0001:0000991b   555 0001:0000992d   556 0001:0000993f   557 0001:00009949
+   560 0001:00009953   568 0001:00009960   570 0001:0000997a   571 0001:00009993
+   575 0001:000099ac   576 0001:000099bf   577 0001:000099c9   580 0001:000099d7
+   581 0001:000099e1   582 0001:000099f0   583 0001:000099f9   584 0001:00009a03
+   585 0001:00009a0d   587 0001:00009a16   588 0001:00009a1c   590 0001:00009a30
+   591 0001:00009a32   592 0001:00009a39   594 0001:00009a4b   597 0001:00009a50
+   598 0001:00009a5a   599 0001:00009a69   600 0001:00009a72   601 0001:00009a7c
+   602 0001:00009a86   603 0001:00009a8f   604 0001:00009a96   605 0001:00009aa5
+   606 0001:00009aaf   607 0001:00009ab3   608 0001:00009aba   610 0001:00009acc
+   611 0001:00009ad3   613 0001:00009ada   614 0001:00009ae0   616 0001:00009af4
+   617 0001:00009af6   618 0001:00009afd   621 0001:00009b0f   622 0001:00009b15
+   625 0001:00009b1f   626 0001:00009b22   630 0001:00009b40   634 0001:00009b59
+   635 0001:00009b63   636 0001:00009b72   638 0001:00009b7b   640 0001:00009b8d
+   641 0001:00009b90   648 0001:00009ba0   651 0001:00009bba   654 0001:00009bd3
+   655 0001:00009be6   656 0001:00009bf0   657 0001:00009bfe   659 0001:00009c05
+   660 0001:00009c0f   661 0001:00009c1e   662 0001:00009c27   663 0001:00009c31
+   664 0001:00009c38   667 0001:00009c3f   668 0001:00009c45   669 0001:00009c56
+   670 0001:00009c58   673 0001:00009c6a   674 0001:00009c70   675 0001:00009c77
+   676 0001:00009c79   678 0001:00009c8d   680 0001:00009c9f   682 0001:00009ca2
+   688 0001:00009cc0   692 0001:00009cd9   693 0001:00009ce3   694 0001:00009cf2
+   695 0001:00009cfb   696 0001:00009d05   697 0001:00009d0b   699 0001:00009d1f
+   700 0001:00009d21   702 0001:00009d28   704 0001:00009d3a   705 0001:00009d3d
+   709 0001:00009d50   710 0001:00009d57   711 0001:00009d63   718 0001:00009d70
+   722 0001:00009d79   723 0001:00009d7f   726 0001:00009d85   727 0001:00009d97
+   730 0001:00009d9f   731 0001:00009daa   734 0001:00009db7   735 0001:00009dbc
+   738 0001:00009dd0   739 0001:00009dd7   740 0001:00009dd9   747 0001:00009de0
+   751 0001:00009de9   753 0001:00009df0   754 0001:00009dff   756 0001:00009e12
+   758 0001:00009e1a   759 0001:00009e2a   760 0001:00009e30   761 0001:00009e37
+   762 0001:00009e43   764 0001:00009e4f   765 0001:00009e51   772 0001:00009e60
+   774 0001:00009e7e   775 0001:00009e8d   776 0001:00009e9d   777 0001:00009eb1
+   778 0001:00009ebe   779 0001:00009ec4   782 0001:00009ed8   786 0001:00009ee9
+   788 0001:00009ef5   790 0001:00009f01   791 0001:00009f0f   792 0001:00009f23
+   793 0001:00009f25   795 0001:00009f39   796 0001:00009f48   803 0001:00009f59
+   804 0001:00009f61   805 0001:00009f6b   807 0001:00009f78   809 0001:00009f9a
+   817 0001:00009fc0   818 0001:00009fc7   819 0001:00009fd5   821 0001:00009fe4
+   822 0001:00009ff0   831 0001:0000a000   832 0001:0000a007   833 0001:0000a015
+   835 0001:0000a01d   836 0001:0000a01f   846 0001:0000a030   847 0001:0000a04e
+   850 0001:0000a05b   852 0001:0000a068   853 0001:0000a076   854 0001:0000a084
+   855 0001:0000a086   857 0001:0000a09d   860 0001:0000a0af   863 0001:0000a0b9
+   864 0001:0000a0cf   865 0001:0000a0e5   866 0001:0000a0fe   869 0001:0000a11c
+   871 0001:0000a126   874 0001:0000a130   877 0001:0000a13d   879 0001:0000a152
+   880 0001:0000a160   881 0001:0000a193   882 0001:0000a1af   885 0001:0000a1c1
+   888 0001:0000a1cb   889 0001:0000a1e1   890 0001:0000a1f7   891 0001:0000a210
+   894 0001:0000a22a   896 0001:0000a234   900 0001:0000a253   902 0001:0000a25c
+   903 0001:0000a268   907 0001:0000a272   909 0001:0000a27b   910 0001:0000a287
+   913 0001:0000a291   915 0001:0000a29e   917 0001:0000a2ae   918 0001:0000a2b9
+   922 0001:0000a2c2   923 0001:0000a2cd   925 0001:0000a2ec   927 0001:0000a2f4
+   929 0001:0000a2ff   930 0001:0000a315   931 0001:0000a319   932 0001:0000a31e
+   934 0001:0000a32c   935 0001:0000a342   936 0001:0000a346   937 0001:0000a34b
+   939 0001:0000a359   940 0001:0000a36b   941 0001:0000a36f   942 0001:0000a371
+   944 0001:0000a380   945 0001:0000a396   946 0001:0000a39a   947 0001:0000a39c
+   949 0001:0000a3ab   950 0001:0000a3c1   951 0001:0000a3c5   953 0001:0000a3c7
+   954 0001:0000a3e2   957 0001:0000a3e6   959 0001:0000a3ef   960 0001:0000a3ff
+   962 0001:0000a411   963 0001:0000a41a   964 0001:0000a433   968 0001:0000a44f
+   972 0001:0000a458   973 0001:0000a45e   974 0001:0000a468   976 0001:0000a46a
+   977 0001:0000a474   982 0001:0000a47c   983 0001:0000a47e   991 0001:0000a490
+   992 0001:0000a497   994 0001:0000a4a3   995 0001:0000a4b3   997 0001:0000a4c3
+   998 0001:0000a4cf  1000 0001:0000a4d4  1004 0001:0000a4dc  1007 0001:0000a4e0
+  1008 0001:0000a4e7  1009 0001:0000a4f5  1013 0001:0000a500  1015 0001:0000a507
+  1017 0001:0000a522  1018 0001:0000a52e  1020 0001:0000a532  1021 0001:0000a542
+  1022 0001:0000a544  1028 0001:0000a550  1029 0001:0000a575  1030 0001:0000a585
+  1034 0001:0000a5da  1035 0001:0000a5ea  1038 0001:0000a5f0  1039 0001:0000a5fb
+  1041 0001:0000a601  1042 0001:0000a611  1048 0001:0000a627  1049 0001:0000a637
+  1052 0001:0000a63d  1053 0001:0000a648  1054 0001:0000a64e  1055 0001:0000a65c
+  1056 0001:0000a65e  1060 0001:0000a66c  1062 0001:0000a672  1063 0001:0000a682
+  1064 0001:0000a692  1066 0001:0000a69e  1067 0001:0000a6aa  1068 0001:0000a6b8
+  1069 0001:0000a6ba  1074 0001:0000a6c8  1075 0001:0000a6d8  1077 0001:0000a6ea
+  1078 0001:0000a6f5  1079 0001:0000a6fb  1080 0001:0000a709  1081 0001:0000a70b
+  1082 0001:0000a71b  1085 0001:0000a731  1087 0001:0000a7c8  1088 0001:0000a832
+  1092 0001:0000a850  1093 0001:0000a859  1094 0001:0000a85f  1095 0001:0000a86d
+  1098 0001:0000a878  1099 0001:0000a889  1101 0001:0000a891  1102 0001:0000a89b
+  1103 0001:0000a8a6  1106 0001:0000a8ad  1107 0001:0000a8af  1131 0001:0000a8c0
+  1133 0001:0000a8c9  1135 0001:0000a8ec  1137 0001:0000a901  1139 0001:0000a912
+  1140 0001:0000a91c  1141 0001:0000a926  1143 0001:0000a93e  1144 0001:0000a948
+  1147 0001:0000a952  1149 0001:0000a968  1150 0001:0000a97e  1152 0001:0000a994
+  1153 0001:0000a99e  1156 0001:0000a9a8  1157 0001:0000a9b3  1158 0001:0000a9bd
+  1160 0001:0000a9c8  1161 0001:0000a9de  1163 0001:0000a9f6  1164 0001:0000aa00
+  1167 0001:0000aa0a  1169 0001:0000aa0c  1170 0001:0000aa16  1173 0001:0000aa36
+  1174 0001:0000aa44  1175 0001:0000aa53  1178 0001:0000aa66  1179 0001:0000aa88
+  1182 0001:0000aaa1  1183 0001:0000aaae  1185 0001:0000aabe  1187 0001:0000ab18
+  1188 0001:0000ab1d  1191 0001:0000ab30  1195 0001:0000ab39  1196 0001:0000ab49
+  1197 0001:0000ab4f  1200 0001:0000ab54  1201 0001:0000ab65  1202 0001:0000ab7f
+  1205 0001:0000aba0  1207 0001:0000aba6  1208 0001:0000abb3  1209 0001:0000abc5
+  1211 0001:0000abcd  1213 0001:0000abcf  1214 0001:0000abe0  1215 0001:0000abf2
+  1220 0001:0000ac0a  1221 0001:0000ac12  1224 0001:0000ac20  1225 0001:0000ac27
+  1226 0001:0000ac34  1229 0001:0000ac40  1232 0001:0000ac49  1233 0001:0000ac59
+  1234 0001:0000ac5f  1237 0001:0000ac64  1238 0001:0000ac6f  1239 0001:0000ac75
+  1241 0001:0000ac7a  1243 0001:0000ac86  1246 0001:0000ac9b  1247 0001:0000acab
+  1248 0001:0000acb1  1251 0001:0000acb3  1255 0001:0000acbb  1256 0001:0000acc2
+  1258 0001:0000acdd  1259 0001:0000aced  1260 0001:0000acf6  1263 0001:0000acf8
+  1264 0001:0000ad09  1265 0001:0000ad1b  1268 0001:0000ad20  1269 0001:0000ad27
+  1270 0001:0000ad34  1273 0001:0000ad40  1274 0001:0000ad49  1275 0001:0000ad59
+  1276 0001:0000ad5f  1279 0001:0000ad64  1282 0001:0000ad71  1283 0001:0000ad7c
+  1284 0001:0000ad82  1287 0001:0000ad84  1288 0001:0000ad90  1292 0001:0000ad98
+  1293 0001:0000ada9  1294 0001:0000adb5  1295 0001:0000adb7  1298 0001:0000add2
+  1299 0001:0000add8  1301 0001:0000adea  1302 0001:0000adf8  1305 0001:0000ae00
+  1308 0001:0000ae10  1310 0001:0000ae19  1311 0001:0000ae29  1312 0001:0000ae2f
+  1315 0001:0000ae34  1316 0001:0000ae45  1317 0001:0000ae51  1320 0001:0000ae53
+  1323 0001:0000ae65  1324 0001:0000ae75  1325 0001:0000ae7b  1328 0001:0000ae7d
+  1329 0001:0000ae8e  1330 0001:0000ae9a  1331 0001:0000ae9c  1334 0001:0000aeb7
+  1335 0001:0000aebd  1336 0001:0000aecf  1339 0001:0000aee0  1343 0001:0000aee9
+  1344 0001:0000aef9  1347 0001:0000af0a  1350 0001:0000af1c  1353 0001:0000af2e
+  1354 0001:0000af3c  1356 0001:0000af44  1359 0001:0000af50  1363 0001:0000af59
+  1364 0001:0000af69  1365 0001:0000af6f  1366 0001:0000af74  1368 0001:0000af80
+  1369 0001:0000af90  1370 0001:0000af96  1371 0001:0000af9b  1374 0001:0000afa7
+  1375 0001:0000afb7  1377 0001:0000afbd  1378 0001:0000afc3  1379 0001:0000afcd
+  1380 0001:0000afcf  1386 0001:0000afd9  1388 0001:0000afdf  1389 0001:0000afec
+  1390 0001:0000aff9  1391 0001:0000b007  1392 0001:0000b012  1394 0001:0000b01d
+  1397 0001:0000b01f  1398 0001:0000b028  1399 0001:0000b035  1400 0001:0000b03e
+  1403 0001:0000b04b  1404 0001:0000b062  1405 0001:0000b071  1406 0001:0000b080
+  1407 0001:0000b088  1411 0001:0000b091  1412 0001:0000b09d  1414 0001:0000b0a9
+  1424 0001:0000b0b0  1425 0001:0000b0b9  1429 0001:0000b0c1  1431 0001:0000b0d7
+  1432 0001:0000b0ec  1433 0001:0000b0f8  1437 0001:0000b10c  1438 0001:0000b11a
+  1455 0001:0000b120  1458 0001:0000b129  1459 0001:0000b13c  1460 0001:0000b141
+  1461 0001:0000b154  1463 0001:0000b159  1465 0001:0000b15b  1474 0001:0000b160
+  1477 0001:0000b169  1478 0001:0000b178  1479 0001:0000b17e  1482 0001:0000b182
+  1483 0001:0000b193  1484 0001:0000b1a8  1485 0001:0000b1ae  1487 0001:0000b1c0
+  1489 0001:0000b1c2  1497 0001:0000b1d0  1499 0001:0000b1d9  1500 0001:0000b1ea
+  1501 0001:0000b1ff  1502 0001:0000b205  1503 0001:0000b214  1504 0001:0000b216
+  1506 0001:0000b21a  1507 0001:0000b21d  1515 0001:0000b230  1517 0001:0000b239
+  1520 0001:0000b24b  1521 0001:0000b260  1522 0001:0000b26c  1528 0001:0000b280
+  1530 0001:0000b289  1532 0001:0000b294  1535 0001:0000b2a0  1537 0001:0000b2b5
+  1538 0001:0000b2d2  1541 0001:0000b2d4  1542 0001:0000b2e9  1543 0001:0000b2f9
+  1546 0001:0000b300  1547 0001:0000b307  1548 0001:0000b314  1552 0001:0000b320
+  1553 0001:0000b329  1554 0001:0000b339  1555 0001:0000b34b  1562 0001:0000b350
+  1565 0001:0000b359  1567 0001:0000b372  1568 0001:0000b37f  1570 0001:0000b386
+  1571 0001:0000b3a1  1574 0001:0000b3a8  1576 0001:0000b3b6  1577 0001:0000b3cd
+  1578 0001:0000b3d0  1590 0001:0000b3e0  1595 0001:0000b3e9  1596 0001:0000b3f8
+  1598 0001:0000b3fd  1599 0001:0000b415  1601 0001:0000b41a  1602 0001:0000b435
+  1603 0001:0000b43b  1606 0001:0000b43d  1608 0001:0000b445  1609 0001:0000b460
+  1613 0001:0000b46c  1615 0001:0000b46e  1616 0001:0000b489  1619 0001:0000b495
+  1622 0001:0000b49e  1624 0001:0000b4a7  1627 0001:0000b4b0  1631 0001:0000b4d1
+  1634 0001:0000b4e1  1635 0001:0000b4f1  1637 0001:0000b4f8  1638 0001:0000b503
+  1640 0001:0000b528  1641 0001:0000b531  1642 0001:0000b547  1643 0001:0000b560
+  1644 0001:0000b56b  1649 0001:0000b580  1650 0001:0000b58f  1653 0001:0000b59a
+  1654 0001:0000b5ad  1655 0001:0000b5b3  1659 0001:0000b5c5  1660 0001:0000b5d7
+  1662 0001:0000b5df  1663 0001:0000b5ee  1664 0001:0000b603  1666 0001:0000b61b
+  1674 0001:0000b640  1678 0001:0000b661  1681 0001:0000b671  1682 0001:0000b681
+  1684 0001:0000b688  1685 0001:0000b693  1687 0001:0000b6b8  1688 0001:0000b6c1
+  1689 0001:0000b6d7  1690 0001:0000b6f0  1691 0001:0000b6fb  1695 0001:0000b710
+  1696 0001:0000b71f  1699 0001:0000b72a  1700 0001:0000b73d  1701 0001:0000b743
+  1705 0001:0000b755  1706 0001:0000b767  1708 0001:0000b76f  1709 0001:0000b77e
+  1710 0001:0000b793  1712 0001:0000b7ab  1719 0001:0000b7d0  1721 0001:0000b7f4
+  1723 0001:0000b7ff  1724 0001:0000b813  1727 0001:0000b821  1730 0001:0000b82c
+  1731 0001:0000b837  1737 0001:0000b860  1741 0001:0000b87e  1744 0001:0000b88e
+  1745 0001:0000b89e  1747 0001:0000b8a5  1749 0001:0000b8cd  1750 0001:0000b8d6
+  1751 0001:0000b8ec  1752 0001:0000b902  1756 0001:0000b914  1759 0001:0000b926
+  1760 0001:0000b934  1761 0001:0000b93a  1762 0001:0000b94b  1763 0001:0000b94d
+  1765 0001:0000b95e  1771 0001:0000b980  1772 0001:0000b989  1773 0001:0000b999
+  1774 0001:0000b9a7  1775 0001:0000b9b1  1779 0001:0000b9c0  1780 0001:0000b9de
+  1783 0001:0000b9ee  1784 0001:0000b9fe  1785 0001:0000ba04  1788 0001:0000ba19
+  1789 0001:0000ba24  1790 0001:0000ba2e  1793 0001:0000ba40  1795 0001:0000ba4b
+  1797 0001:0000ba51  1798 0001:0000ba58  1800 0001:0000ba72  1802 0001:0000ba74
+  1803 0001:0000ba7b  1808 0001:0000ba8d  1809 0001:0000ba99  1815 0001:0000bac0
+  1819 0001:0000bade  1820 0001:0000baea  1821 0001:0000bb3b  1822 0001:0000bb5c
+  1823 0001:0000bb6d  1824 0001:0000bb6f  1826 0001:0000bb74  1827 0001:0000bb7a
+  1829 0001:0000bb7f  1830 0001:0000bb8f  1831 0001:0000bb96  1833 0001:0000bbba
+  1835 0001:0000bbce  1836 0001:0000bbd7  1838 0001:0000bbd9  1839 0001:0000bbe2
+  1840 0001:0000bbe9  1844 0001:0000bbeb  1845 0001:0000bc2d  1846 0001:0000bc44
+  1847 0001:0000bc4f  1849 0001:0000bc69  1850 0001:0000bc89  1851 0001:0000bc97
+  1852 0001:0000bcb5  1853 0001:0000bcb7  1854 0001:0000bcd4  1857 0001:0000bce6
+  1859 0001:0000bcec  1860 0001:0000bcf2  1861 0001:0000bcfb  1862 0001:0000bcfd
+  1864 0001:0000bd04  1865 0001:0000bd2c  1866 0001:0000bd32  1868 0001:0000bd44
+  1869 0001:0000bd56  1873 0001:0000bd67  1874 0001:0000bd82  1908 0001:0000bda0
+  1909 0001:0000bdbe  1910 0001:0000bdc9  1913 0001:0000bdd9  1914 0001:0000bde5
+  1915 0001:0000bdfa  1916 0001:0000be00  1919 0001:0000be21  1920 0001:0000be32
+  1922 0001:0000be3a  1923 0001:0000be47  1924 0001:0000be55  1926 0001:0000be63
+  1928 0001:0000be65  1929 0001:0000be71  1930 0001:0000be8a  1931 0001:0000be96
+  1932 0001:0000bea4  1936 0001:0000beb6  1937 0001:0000bec2  1938 0001:0000beda
+  1941 0001:0000beec  1942 0001:0000bef4  1945 0001:0000bf20  1946 0001:0000bf27
+  1947 0001:0000bf2f  1948 0001:0000bf34  1954 0001:0000bf40  1957 0001:0000bf49
+  1962 0001:0000bf5d  1963 0001:0000bf69  1965 0001:0000bf79  1966 0001:0000bf8a
+  1969 0001:0000bf98  1970 0001:0000bfb5  1971 0001:0000bfb7  1975 0001:0000bfc0
+  1978 0001:0000bfc9  1979 0001:0000bfd5  1980 0001:0000bfe5  1981 0001:0000bfe7
+  1985 0001:0000bff0  1986 0001:0000c00e  1987 0001:0000c014  1988 0001:0000c01b
+  1990 0001:0000c026  1991 0001:0000c034  1995 0001:0000c04c  1997 0001:0000c057
+  2000 0001:0000c067  2001 0001:0000c076  2003 0001:0000c094  2004 0001:0000c0a4
+  2007 0001:0000c0ac  2008 0001:0000c0bf  2009 0001:0000c0d1  2010 0001:0000c0d3
+  2013 0001:0000c0dd  2014 0001:0000c0e9  2018 0001:0000c100  2019 0001:0000c109
+  2023 0001:0000c13f  2024 0001:0000c14f  2025 0001:0000c16b  2026 0001:0000c175
+  2027 0001:0000c183  2035 0001:0000c190  2040 0001:0000c199  2042 0001:0000c1a4
+  2043 0001:0000c1ad  2045 0001:0000c1b1  2046 0001:0000c1b3  2049 0001:0000c1b7
+  2051 0001:0000c1bd  2053 0001:0000c1c5  2055 0001:0000c1db  2057 0001:0000c1dd
+  2058 0001:0000c1e4  2061 0001:0000c1fa  2062 0001:0000c207  2063 0001:0000c243
+  2064 0001:0000c276  2068 0001:0000c280  2069 0001:0000c29e  2070 0001:0000c2aa
+  2072 0001:0000c2af  2074 0001:0000c2bb  2075 0001:0000c30e  2077 0001:0000c336
+  2080 0001:0000c349  2084 0001:0000c360  2086 0001:0000c367  2087 0001:0000c37d
+  2088 0001:0000c393  2090 0001:0000c3a9  2091 0001:0000c3ab  2095 0001:0000c3c0
+  2097 0001:0000c3c7  2098 0001:0000c3dd  2099 0001:0000c3f3  2101 0001:0000c409
+  2102 0001:0000c40b  2106 0001:0000c420  2107 0001:0000c427  2109 0001:0000c434
+  2110 0001:0000c436  2114 0001:0000c440  2116 0001:0000c447  2120 0001:0000c453
+  2124 0001:0000c460  2127 0001:0000c469  2128 0001:0000c471  2129 0001:0000c477
+  2130 0001:0000c481  2131 0001:0000c483  2134 0001:0000c48d  2135 0001:0000c493
+  2137 0001:0000c49d  2138 0001:0000c4b2  2141 0001:0000c4c0  2142 0001:0000c4de
+  2143 0001:0000c4ed  2145 0001:0000c4fa  2148 0001:0000c501  2150 0001:0000c525
+  2152 0001:0000c539  2153 0001:0000c555  2154 0001:0000c564  2156 0001:0000c566
+  2157 0001:0000c56f  2158 0001:0000c571  2159 0001:0000c57d  2162 0001:0000c59e
+  2163 0001:0000c5b0  2164 0001:0000c5b6  2167 0001:0000c5d7  2168 0001:0000c5dd
+  2169 0001:0000c5ec  2170 0001:0000c5ee  2173 0001:0000c5fd  2175 0001:0000c603
+  2176 0001:0000c60b  2177 0001:0000c612  2178 0001:0000c614  2182 0001:0000c61b
+  2185 0001:0000c621  2187 0001:0000c627  2188 0001:0000c631  2189 0001:0000c63b
+  2191 0001:0000c64d  2193 0001:0000c64f  2194 0001:0000c659  2195 0001:0000c663
+  2199 0001:0000c675  2200 0001:0000c687  2203 0001:0000c68f  2205 0001:0000c69f
+  2208 0001:0000c6d0  2209 0001:0000c6fe  2214 0001:0000c710  2215 0001:0000c730
+  2216 0001:0000c748  2219 0001:0000c75a  2222 0001:0000c760  2223 0001:0000c77a
+  2224 0001:0000c783  2228 0001:0000c795  2229 0001:0000c7ad  2230 0001:0000c7b8
+  2233 0001:0000c7f0  2235 0001:0000c81e  2236 0001:0000c838  2237 0001:0000c841
+  2242 0001:0000c846  2243 0001:0000c856  2244 0001:0000c85d  2247 0001:0000c887
+  2248 0001:0000c89a  2249 0001:0000c8a6  2250 0001:0000c8c9  2251 0001:0000c8e5
+  2253 0001:0000c8f8  2255 0001:0000c910  2256 0001:0000c917  2257 0001:0000c920
+  2258 0001:0000c928  2259 0001:0000c92a  2260 0001:0000c93a  2264 0001:0000c940
+  2265 0001:0000c95e  2266 0001:0000c96a  2268 0001:0000c96f  2270 0001:0000c97b
+  2271 0001:0000c9cc  2273 0001:0000c9f4  2275 0001:0000ca07  2279 0001:0000ca20
+  2280 0001:0000ca27  2281 0001:0000ca34  2282 0001:0000ca36  2286 0001:0000ca40
+  2287 0001:0000ca5e  2288 0001:0000ca6a  2290 0001:0000ca6f  2292 0001:0000ca7f
+  2293 0001:0000cad0  2294 0001:0000caf8  2296 0001:0000cb0b  2297 0001:0000cb12
+  2298 0001:0000cb24  2300 0001:0000cb50  2302 0001:0000cb63  2306 0001:0000cb80
+  2307 0001:0000cb87  2308 0001:0000cb94  2309 0001:0000cb96  2313 0001:0000cba0
+  2314 0001:0000cbbe  2316 0001:0000cbce  2317 0001:0000cc1f  2318 0001:0000cc45
+  2320 0001:0000cc58  2321 0001:0000cc5f  2322 0001:0000cc71  2324 0001:0000cc9d
+  2326 0001:0000ccb0  2329 0001:0000ccc0  2331 0001:0000ccd9  2332 0001:0000cce8
+  2335 0001:0000ccef  2336 0001:0000cd08  2337 0001:0000cd21  2342 0001:0000cd3a
+  2343 0001:0000cd4c  2346 0001:0000cd68  2347 0001:0000cd89  2349 0001:0000cd98
+  2350 0001:0000cdab  2351 0001:0000cdbb  2356 0001:0000cdc2  2357 0001:0000cdd2
+  2358 0001:0000cded  2359 0001:0000ce23  2360 0001:0000ce3e  2361 0001:0000ce59
+  2362 0001:0000ce74  2363 0001:0000ce8f  2364 0001:0000ceaa  2365 0001:0000cec5
+  2366 0001:0000cee0  2367 0001:0000cf14  2368 0001:0000cf2f  2369 0001:0000cf45
+  2371 0001:0000cf55  2372 0001:0000cf57  2375 0001:0000cf70  2377 0001:0000cf79
+  2378 0001:0000cf8f  2379 0001:0000cfa5  2382 0001:0000cfbb  2383 0001:0000cfdf
+  2386 0001:0000cfe6  2388 0001:0000cff2  2389 0001:0000cfff  2394 0001:0000d00a
+  2398 0001:0000d017  2399 0001:0000d024  2400 0001:0000d037  2401 0001:0000d04f
+  2402 0001:0000d07f  2403 0001:0000d097  2406 0001:0000d0aa  2407 0001:0000d0b7
+  2408 0001:0000d0b9  2412 0001:0000d0c0  2413 0001:0000d0c7  2414 0001:0000d0d4
+  2415 0001:0000d0d6  2419 0001:0000d0e0  2420 0001:0000d0fe  2422 0001:0000d10e
+  2423 0001:0000d15f  2424 0001:0000d185  2426 0001:0000d198  2427 0001:0000d19f
+  2428 0001:0000d1b1  2430 0001:0000d1dd  2432 0001:0000d1f0  2435 0001:0000d200
+  2436 0001:0000d207  2437 0001:0000d214  2438 0001:0000d216  2442 0001:0000d220
+  2444 0001:0000d244  2445 0001:0000d25a  2446 0001:0000d268  2448 0001:0000d26e
+  2449 0001:0000d27b  2452 0001:0000d286  2453 0001:0000d29f  2456 0001:0000d2ad
+  2458 0001:0000d2b3  2459 0001:0000d2c2  2461 0001:0000d2cd  2464 0001:0000d2f0
+  2466 0001:0000d2f9  2467 0001:0000d305  2468 0001:0000d30b  2470 0001:0000d310
+  2471 0001:0000d313  2474 0001:0000d320  2475 0001:0000d327  2476 0001:0000d33d
+  2477 0001:0000d353  2478 0001:0000d355
 
-Line numbers for .\Debug\SppConsole.obj(c:\code\smartpropoplus\341\sppconsole\sppconsole.cpp) segment .text
+Line numbers for .\debug\SppConsole.obj(c:\code\smartpropoplus\341\sppconsole\sppconsole.cpp) segment .text
 
-    20 0001:00008690    20 0001:000086a0    32 0001:000086b0    34 0001:000086ca
-    45 0001:000086e0    57 0001:00008704    59 0001:00008712    60 0001:00008726
-    61 0001:00008735    62 0001:00008744    76 0001:00008752    77 0001:00008774
-    80 0001:00008790    84 0001:00008799    86 0001:000087a2    87 0001:000087b2
-    89 0001:000087b6    90 0001:000087e2    92 0001:000087e6    93 0001:000087e8
-    97 0001:000087f0    98 0001:00008814    99 0001:00008828   100 0001:00008833
+    20 0001:00008680    20 0001:00008690    32 0001:000086a0    34 0001:000086ba
+    45 0001:000086d0    57 0001:000086f4    59 0001:00008702    60 0001:00008716
+    61 0001:00008725    62 0001:00008734    76 0001:00008742    77 0001:00008764
+    80 0001:00008780    84 0001:00008789    86 0001:00008792    87 0001:000087a2
+    89 0001:000087a6    90 0001:000087d2    92 0001:000087d6    93 0001:000087d8
+    97 0001:000087e0    98 0001:00008804    99 0001:00008818   100 0001:00008823
     39 0001:0001ba20
 
-Line numbers for .\Debug\ScanInputs.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\cstringt.h) segment .text
+Line numbers for .\debug\ScanInputs.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\cstringt.h) segment .text
 
-  2014 0001:000085e0  2015 0001:00008602  2017 0001:0000861c  2019 0001:00008651
-  2020 0001:0000867a
+  2014 0001:000085d0  2015 0001:000085f2  2017 0001:0000860c  2019 0001:00008641
+  2020 0001:0000866a
 
-Line numbers for .\Debug\ScanInputs.obj(c:\code\smartpropoplus\341\sppconsole\scaninputs.cpp) segment .text
+Line numbers for .\debug\ScanInputs.obj(c:\code\smartpropoplus\341\sppconsole\scaninputs.cpp) segment .text
 
-    13 0001:00007dd0    13 0001:00007de0    13 0001:00007df0    16 0001:00007e00
-    17 0001:00007e4c    24 0001:00007e58    25 0001:00007e6f    26 0001:00007e86
-    27 0001:00007e9d    30 0001:00007eb4    31 0001:00007ecb    32 0001:00007ee2
-    33 0001:00007ef9    34 0001:00007f10    35 0001:00007f27    38 0001:00007f3e
-    41 0001:00007f60    42 0001:00007f8c    45 0001:00007fc0    46 0001:00007fc7
-    47 0001:00007fe8    50 0001:00007ff0    50 0001:00008000    60 0001:00008010
-    62 0001:00008017    63 0001:0000802f    64 0001:00008047    65 0001:0000805f
-    66 0001:00008077    68 0001:0000808f    70 0001:0000809d    71 0001:000080ab
-    74 0001:000080b0    76 0001:000080b9    79 0001:000080d1    80 0001:000080e2
-    81 0001:000080f3    84 0001:00008111    85 0001:00008122    86 0001:00008133
-    88 0001:0000814d    90 0001:00008158    91 0001:00008169    93 0001:0000817d
-    94 0001:00008192    97 0001:00008194    98 0001:000081b0    99 0001:000081be
-   101 0001:000081c3   102 0001:000081df   103 0001:000081ed   106 0001:000081f2
-   107 0001:0000820a   110 0001:00008210   112 0001:00008217   115 0001:00008220
-   116 0001:0000823e   119 0001:00008275   120 0001:00008287   121 0001:000082a2
-   122 0001:000082b8   125 0001:000082d3   126 0001:000082f1   127 0001:00008300
-   130 0001:00008343   131 0001:00008351   132 0001:00008365   133 0001:00008379
-   136 0001:000083c0   137 0001:000083c9   138 0001:000083da   140 0001:000083eb
-   142 0001:00008405   144 0001:00008410   145 0001:00008421   146 0001:00008431
-   148 0001:00008437   151 0001:0000843c   152 0001:00008458   153 0001:00008466
-   155 0001:00008468   156 0001:0000846b   159 0001:00008470   160 0001:0000848e
-   163 0001:000084b8   166 0001:000084ce   167 0001:000084e8   168 0001:000084f7
-   171 0001:0000853a   172 0001:00008548   173 0001:0000855c   174 0001:00008570
+    13 0001:00007dc0    13 0001:00007dd0    13 0001:00007de0    16 0001:00007df0
+    17 0001:00007e3c    24 0001:00007e48    25 0001:00007e5f    26 0001:00007e76
+    27 0001:00007e8d    30 0001:00007ea4    31 0001:00007ebb    32 0001:00007ed2
+    33 0001:00007ee9    34 0001:00007f00    35 0001:00007f17    38 0001:00007f2e
+    41 0001:00007f50    42 0001:00007f7c    45 0001:00007fb0    46 0001:00007fb7
+    47 0001:00007fd8    50 0001:00007fe0    50 0001:00007ff0    60 0001:00008000
+    62 0001:00008007    63 0001:0000801f    64 0001:00008037    65 0001:0000804f
+    66 0001:00008067    68 0001:0000807f    70 0001:0000808d    71 0001:0000809b
+    74 0001:000080a0    76 0001:000080a9    79 0001:000080c1    80 0001:000080d2
+    81 0001:000080e3    84 0001:00008101    85 0001:00008112    86 0001:00008123
+    88 0001:0000813d    90 0001:00008148    91 0001:00008159    93 0001:0000816d
+    94 0001:00008182    97 0001:00008184    98 0001:000081a0    99 0001:000081ae
+   101 0001:000081b3   102 0001:000081cf   103 0001:000081dd   106 0001:000081e2
+   107 0001:000081fa   110 0001:00008200   112 0001:00008207   115 0001:00008210
+   116 0001:0000822e   119 0001:00008265   120 0001:00008277   121 0001:00008292
+   122 0001:000082a8   125 0001:000082c3   126 0001:000082e1   127 0001:000082f0
+   130 0001:00008333   131 0001:00008341   132 0001:00008355   133 0001:00008369
+   136 0001:000083b0   137 0001:000083b9   138 0001:000083ca   140 0001:000083db
+   142 0001:000083f5   144 0001:00008400   145 0001:00008411   146 0001:00008421
+   148 0001:00008427   151 0001:0000842c   152 0001:00008448   153 0001:00008456
+   155 0001:00008458   156 0001:0000845b   159 0001:00008460   160 0001:0000847e
+   163 0001:000084a8   166 0001:000084be   167 0001:000084d8   168 0001:000084e7
+   171 0001:0000852a   172 0001:00008538   173 0001:0000854c   174 0001:00008560
 
-Line numbers for .\Debug\LogRawPulse.obj(c:\code\smartpropoplus\341\sppconsole\lograwpulse.cpp) segment .text
+Line numbers for .\debug\LogRawPulse.obj(c:\code\smartpropoplus\341\sppconsole\lograwpulse.cpp) segment .text
 
-     7 0001:00007b60     8 0001:00007b7a     9 0001:00007b87    10 0001:00007b94
-    11 0001:00007ba1    12 0001:00007bb5    15 0001:00007bc0    16 0001:00007bd0
-    19 0001:00007be0    20 0001:00007be9    21 0001:00007c2d    22 0001:00007c71
-    23 0001:00007cb5    26 0001:00007cc0    27 0001:00007cc7    28 0001:00007cdf
-    31 0001:00007cf0    32 0001:00007cf7    33 0001:00007d0f    35 0001:00007d20
-    36 0001:00007d27    37 0001:00007d3f    40 0001:00007d50    41 0001:00007d60
-    42 0001:00007d80
+     7 0001:00007b50     8 0001:00007b6a     9 0001:00007b77    10 0001:00007b84
+    11 0001:00007b91    12 0001:00007ba5    15 0001:00007bb0    16 0001:00007bc0
+    19 0001:00007bd0    20 0001:00007bd9    21 0001:00007c1d    22 0001:00007c61
+    23 0001:00007ca5    26 0001:00007cb0    27 0001:00007cb7    28 0001:00007ccf
+    31 0001:00007ce0    32 0001:00007ce7    33 0001:00007cff    35 0001:00007d10
+    36 0001:00007d17    37 0001:00007d2f    40 0001:00007d40    41 0001:00007d50
+    42 0001:00007d70
 
-Line numbers for .\Debug\LogPulses.obj(c:\code\smartpropoplus\341\sppconsole\logpulses.cpp) segment .text
+Line numbers for .\debug\LogPulses.obj(c:\code\smartpropoplus\341\sppconsole\logpulses.cpp) segment .text
 
-     7 0001:00007900     8 0001:0000791a     9 0001:00007927    10 0001:00007934
-    11 0001:00007941    14 0001:00007950    15 0001:00007960    18 0001:00007970
-    19 0001:00007979    20 0001:000079bd    21 0001:00007a01    22 0001:00007a45
-    25 0001:00007a50    26 0001:00007a57    27 0001:00007a6f    30 0001:00007a80
-    31 0001:00007a87    32 0001:00007a9f    34 0001:00007ab0    35 0001:00007ab7
-    36 0001:00007acf    39 0001:00007ae0    40 0001:00007af0    41 0001:00007b10
+     7 0001:000078f0     8 0001:0000790a     9 0001:00007917    10 0001:00007924
+    11 0001:00007931    14 0001:00007940    15 0001:00007950    18 0001:00007960
+    19 0001:00007969    20 0001:000079ad    21 0001:000079f1    22 0001:00007a35
+    25 0001:00007a40    26 0001:00007a47    27 0001:00007a5f    30 0001:00007a70
+    31 0001:00007a77    32 0001:00007a8f    34 0001:00007aa0    35 0001:00007aa7
+    36 0001:00007abf    39 0001:00007ad0    40 0001:00007ae0    41 0001:00007b00
 
-Line numbers for .\Debug\LogFmsConn.obj(c:\code\smartpropoplus\341\sppconsole\logfmsconn.cpp) segment .text
+Line numbers for .\debug\LogFmsConn.obj(c:\code\smartpropoplus\341\sppconsole\logfmsconn.cpp) segment .text
 
-     7 0001:000076a0     8 0001:000076ba     9 0001:000076c7    10 0001:000076d4
-    11 0001:000076e1    12 0001:000076f5    15 0001:00007700    16 0001:00007710
-    19 0001:00007720    20 0001:00007729    21 0001:0000776d    22 0001:000077b1
-    23 0001:000077f5    26 0001:00007800    27 0001:00007807    28 0001:0000781f
-    31 0001:00007830    32 0001:00007837    33 0001:0000784f    35 0001:00007860
-    36 0001:00007867    37 0001:0000787f    40 0001:00007890    41 0001:000078b0
+     7 0001:00007690     8 0001:000076aa     9 0001:000076b7    10 0001:000076c4
+    11 0001:000076d1    12 0001:000076e5    15 0001:000076f0    16 0001:00007700
+    19 0001:00007710    20 0001:00007719    21 0001:0000775d    22 0001:000077a1
+    23 0001:000077e5    26 0001:000077f0    27 0001:000077f7    28 0001:0000780f
+    31 0001:00007820    32 0001:00007827    33 0001:0000783f    35 0001:00007850
+    36 0001:00007857    37 0001:0000786f    40 0001:00007880    41 0001:000078a0
 
-Line numbers for .\Debug\LogAudioHdrs.obj(c:\code\smartpropoplus\341\sppconsole\logaudiohdrs.cpp) segment .text
+Line numbers for .\debug\LogAudioHdrs.obj(c:\code\smartpropoplus\341\sppconsole\logaudiohdrs.cpp) segment .text
 
-     7 0001:00007440     8 0001:0000745a     9 0001:00007467    10 0001:00007474
-    11 0001:00007481    14 0001:00007490    15 0001:000074a0    18 0001:000074b0
-    19 0001:000074b9    20 0001:000074fd    21 0001:00007541    22 0001:00007585
-    25 0001:00007590    26 0001:00007597    27 0001:000075af    30 0001:000075c0
-    31 0001:000075c7    32 0001:000075df    34 0001:000075f0    35 0001:000075f7
-    36 0001:0000760f    39 0001:00007620    40 0001:00007630    41 0001:00007650
+     7 0001:00007430     8 0001:0000744a     9 0001:00007457    10 0001:00007464
+    11 0001:00007471    14 0001:00007480    15 0001:00007490    18 0001:000074a0
+    19 0001:000074a9    20 0001:000074ed    21 0001:00007531    22 0001:00007575
+    25 0001:00007580    26 0001:00007587    27 0001:0000759f    30 0001:000075b0
+    31 0001:000075b7    32 0001:000075cf    34 0001:000075e0    35 0001:000075e7
+    36 0001:000075ff    39 0001:00007610    40 0001:00007620    41 0001:00007640
 
-Line numbers for .\Debug\DynamicLED.obj(c:\code\smartpropoplus\341\sppconsole\dynamicled.cpp) segment .text
+Line numbers for .\debug\DynamicLED.obj(c:\code\smartpropoplus\341\sppconsole\dynamicled.cpp) segment .text
 
     19 0001:000068a0    21 0001:0000691b    22 0001:00006928    23 0001:00006935
     24 0001:00006942    25 0001:0000694c    26 0001:00006959    27 0001:00006963
     30 0001:00006980    31 0001:000069ae    32 0001:000069e5    34 0001:00006a50
-    34 0001:00006a60    49 0001:00006a70    50 0001:00006a8e    54 0001:00006a9a
-    55 0001:00006aa6    57 0001:00006ab2    58 0001:00006b07    60 0001:00006b0f
-    62 0001:00006b17    65 0001:00006b30    66 0001:00006b58    68 0001:00006b6b
-    69 0001:00006b7d    70 0001:00006b8c    73 0001:00006bb0    74 0001:00006bb9
-    77 0001:00006bc5    78 0001:00006bcd    81 0001:00006bd9    82 0001:00006c0c
-    84 0001:00006c41    85 0001:00006c4d    88 0001:00006c60    89 0001:00006c69
-    91 0001:00006c75    92 0001:00006c87    95 0001:00006c94    98 0001:00006ca2
-    99 0001:00006caa   102 0001:00006cb6   103 0001:00006ce9   106 0001:00006d1e
-   109 0001:00006d30   110 0001:00006d37   111 0001:00006d41   114 0001:00006d50
-   115 0001:00006d57   116 0001:00006d61   119 0001:00006d70   122 0001:00006d77
-   123 0001:00006d80   124 0001:00006d88   125 0001:00006da1   127 0001:00006da3
-   128 0001:00006dc1   129 0001:00006ddd   136 0001:00006df0   137 0001:00006df9
-   138 0001:00006e02   141 0001:00006e09   144 0001:00006e15   145 0001:00006e34
-   146 0001:00006e55   147 0001:00006e6a   149 0001:00006e79   154 0001:00006e85
-   155 0001:00006e97   157 0001:00006ea9   159 0001:00006eb5   164 0001:00006eb7
-   165 0001:00006ec9   167 0001:00006edb   170 0001:00006ee7   171 0001:00006eea
-   174 0001:00006ef0   178 0001:00006ef7   179 0001:00006f00   181 0001:00006f0b
-   182 0001:00006f14   184 0001:00006f1f   185 0001:00006f28   187 0001:00006f33
-   188 0001:00006f3c   191 0001:00006f47   195 0001:00006f56   196 0001:00006f6a
-   201 0001:00006f7a   202 0001:00006f8e   204 0001:00006f9e   208 0001:00006fb2
-   209 0001:00006fc6   211 0001:00006fd6   212 0001:00006fea   214 0001:00006ffa
-   218 0001:0000700e   219 0001:00007022   221 0001:00007032   222 0001:00007046
-   224 0001:00007056   228 0001:00007067   229 0001:0000707b   231 0001:0000708b
-   232 0001:0000709f   235 0001:000070af   237 0001:000070c0   242 0001:000070de
-   243 0001:000070e7   246 0001:000070ec   249 0001:00007100   250 0001:0000710f
-   251 0001:00007120   253 0001:0000712f   256 0001:00007143   257 0001:0000714b
-   258 0001:0000715c   259 0001:0000716b   262 0001:0000717f   263 0001:00007187
-   264 0001:00007198   267 0001:000071a7   268 0001:000071b7   269 0001:000071dc
-   271 0001:000071f7   272 0001:0000721a   274 0001:00007256   275 0001:00007262
-   276 0001:0000726f   279 0001:0000727e   280 0001:000072a5   283 0001:000072d0
-   284 0001:000072ee   285 0001:000072f7   288 0001:000072fc   293 0001:00007317
-   294 0001:00007326   295 0001:00007337   297 0001:00007346   298 0001:0000735d
-   299 0001:00007370   301 0001:00007383   304 0001:0000738b   305 0001:0000739c
-   307 0001:000073ab   308 0001:000073c2   309 0001:000073d5   310 0001:000073e8
+    34 0001:00006a60    52 0001:00006a70    53 0001:00006a8e    57 0001:00006a9a
+    58 0001:00006aa6    60 0001:00006ab2    61 0001:00006b07    63 0001:00006b0f
+    65 0001:00006b17    71 0001:00006b30    72 0001:00006b58    74 0001:00006b6b
+    75 0001:00006b7d    76 0001:00006b8c    83 0001:00006bb0    84 0001:00006bb9
+    87 0001:00006bc5    88 0001:00006bcd    91 0001:00006bd9    92 0001:00006c0c
+    94 0001:00006c41    95 0001:00006c4d   103 0001:00006c60   104 0001:00006c69
+   106 0001:00006c75   107 0001:00006c87   110 0001:00006c94   113 0001:00006ca2
+   114 0001:00006caa   117 0001:00006cb6   118 0001:00006ce9   121 0001:00006d1e
+   127 0001:00006d30   128 0001:00006d37   129 0001:00006d41   134 0001:00006d50
+   135 0001:00006d57   136 0001:00006d61   143 0001:00006d70   146 0001:00006d77
+   147 0001:00006d80   148 0001:00006d88   149 0001:00006da1   151 0001:00006da3
+   152 0001:00006dc1   153 0001:00006ddd   160 0001:00006df0   161 0001:00006df9
+   162 0001:00006e02   165 0001:00006e09   168 0001:00006e15   169 0001:00006e34
+   170 0001:00006e55   171 0001:00006e6a   173 0001:00006e79   178 0001:00006e85
+   179 0001:00006e97   181 0001:00006ea9   183 0001:00006eb5   188 0001:00006eb7
+   189 0001:00006ec9   191 0001:00006edb   194 0001:00006ee7   195 0001:00006eea
+   201 0001:00006ef0   205 0001:00006ef7   206 0001:00006f0b   207 0001:00006f1f
+   208 0001:00006f33   212 0001:00006f47   216 0001:00006f56   217 0001:00006f6a
+   222 0001:00006f7a   223 0001:00006f8e   225 0001:00006f9e   229 0001:00006fb2
+   230 0001:00006fc6   232 0001:00006fd6   233 0001:00006fea   235 0001:00006ffa
+   239 0001:0000700e   240 0001:00007022   242 0001:00007032   243 0001:00007046
+   245 0001:00007056   249 0001:00007067   250 0001:0000707b   252 0001:0000708b
+   253 0001:0000709f   256 0001:000070af   262 0001:000070c0   263 0001:000070de
+   264 0001:000070e7   270 0001:000070ec   271 0001:000070fb   272 0001:0000710c
+   274 0001:0000711b   277 0001:0000712f   278 0001:00007137   279 0001:00007148
+   280 0001:00007157   283 0001:0000716b   284 0001:00007173   285 0001:00007184
+   288 0001:00007193   289 0001:000071a3   290 0001:000071c8   292 0001:000071e3
+   293 0001:00007206   295 0001:00007242   296 0001:0000724e   297 0001:0000725b
+   300 0001:0000726a   301 0001:00007291   308 0001:000072c0   309 0001:000072de
+   310 0001:000072e7   313 0001:000072ec   318 0001:00007307   319 0001:00007316
+   320 0001:00007327   322 0001:00007336   323 0001:0000734d   324 0001:00007360
+   326 0001:00007373   329 0001:0000737b   330 0001:0000738c   332 0001:0000739b
+   333 0001:000073b2   334 0001:000073c5   335 0001:000073d8
 
-Line numbers for .\Debug\DefVolumeDlg.obj(c:\code\smartpropoplus\341\sppconsole\defvolumedlg.cpp) segment .text
+Line numbers for .\debug\DefVolumeDlg.obj(c:\code\smartpropoplus\341\sppconsole\defvolumedlg.cpp) segment .text
 
     23 0001:00005f40    27 0001:00006006    28 0001:00006013    29 0001:00006020
     30 0001:0000602d    31 0001:0000603a    35 0001:00006060    36 0001:00006067
@@ -3267,11 +3267,11 @@ Line numbers for .\Debug\DefVolumeDlg.obj(c:\code\smartpropoplus\341\sppconsole\
    237 0001:00006737   238 0001:0000674e   239 0001:00006765   240 0001:0000677c
    243 0001:00006793   244 0001:0000679b
 
-Line numbers for .\Debug\AudioInput.obj(c:\program files\microsoft visual studio .net 2003\vc7\include\new.h) segment .text
+Line numbers for .\debug\AudioInput.obj(c:\program files\microsoft visual studio .net 2003\vc7\include\new.h) segment .text
 
    109 0001:00004c30
 
-Line numbers for .\Debug\AudioInput.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\afxtempl.h) segment .text
+Line numbers for .\debug\AudioInput.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\afxtempl.h) segment .text
 
    349 0001:000034f0   350 0001:00003508   351 0001:00003512   352 0001:00003530
    272 0001:00003540   284 0001:00003560   287 0001:00003580   288 0001:00003587
@@ -3427,7 +3427,7 @@ Line numbers for .\Debug\AudioInput.obj(c:\program files\microsoft visual studio
    106 0001:00005ef3   108 0001:00005ef5   137 0001:00005f00   138 0001:00005f03
    145 0001:00005f33
 
-Line numbers for .\Debug\AudioInput.obj(c:\code\smartpropoplus\341\sppconsole\audioinput.cpp) segment .text
+Line numbers for .\debug\AudioInput.obj(c:\code\smartpropoplus\341\sppconsole\audioinput.cpp) segment .text
 
     23 0001:00000400    24 0001:00000404    29 0001:00000421    31 0001:00000425
     33 0001:00000427    37 0001:00000430    42 0001:00000436    43 0001:0000043d
@@ -3614,7 +3614,7 @@ Line numbers for .\Debug\AudioInput.obj(c:\code\smartpropoplus\341\sppconsole\au
   1541 0001:000033e1  1546 0001:000033f0  1547 0001:000033f7  1548 0001:000033fd
   1552 0001:00003410  1553 0001:00003417  1554 0001:0000341d
 
-Line numbers for .\Debug\AboutDlg.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlconv.h) segment .text
+Line numbers for .\debug\AboutDlg.obj(c:\program files\microsoft visual studio .net 2003\vc7\atlmfc\include\atlconv.h) segment .text
 
    134 0001:000002c0   138 0001:000002d3   139 0001:000002dd   140 0001:000002ea
    143 0001:000002fc   145 0001:00000306   147 0001:00000308   149 0001:00000312
@@ -3625,7 +3625,7 @@ Line numbers for .\Debug\AboutDlg.obj(c:\program files\microsoft visual studio .
    123 0001:000003dc   124 0001:000003df   127 0001:000003f0   128 0001:000003f3
    129 0001:000003f8
 
-Line numbers for .\Debug\AboutDlg.obj(c:\code\smartpropoplus\341\sppconsole\aboutdlg.cpp) segment .text
+Line numbers for .\debug\AboutDlg.obj(c:\code\smartpropoplus\341\sppconsole\aboutdlg.cpp) segment .text
 
     21 0001:00000000    24 0001:00000048    28 0001:00000070    29 0001:00000077
     32 0001:00000083    35 0001:00000090    35 0001:000000a0    43 0001:000000b0
@@ -3804,11 +3804,11 @@ Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropopl
   1127 0001:00011a9f  1128 0001:00011ac3  1129 0001:00011ac9  1131 0001:00011acd
   1132 0001:00011ad2
 
-Line numbers for \Code\SmartPropoPlus\341\FilterIf\Debug\FilterIf.lib(c:\program files\microsoft visual studio .net 2003\vc7\include\tchar.h) segment .text
+Line numbers for \code\smartpropoplus\341\filterif\debug\FilterIf.lib(c:\program files\microsoft visual studio .net 2003\vc7\include\tchar.h) segment .text
 
    854 0001:00012000
 
-Line numbers for \Code\SmartPropoPlus\341\FilterIf\Debug\FilterIf.lib(c:\code\smartpropoplus\341\filterif\filterif.cpp) segment .text
+Line numbers for \code\smartpropoplus\341\filterif\debug\FilterIf.lib(c:\code\smartpropoplus\341\filterif\filterif.cpp) segment .text
 
     11 0001:00011bc0    14 0001:00011bf2    17 0001:00011c00    18 0001:00011c0e
     21 0001:00011c20    23 0001:00011c3f    24 0001:00011c5d    25 0001:00011c66

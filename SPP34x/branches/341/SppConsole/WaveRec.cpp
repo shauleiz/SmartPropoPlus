@@ -296,8 +296,10 @@ void CWaveRec::OnBnClickedRecPlay()
 	m_dynLEDGreen.SwitchOff();
 
 	// Get the name of the Wav file to play
-	GetDlgItem(IDC_REC_PLAY)->EnableWindow(false);
-	if (!GetWaveFileName())
+	CWnd * pLed = GetDlgItem(IDC_REC_PLAY);
+	if (pLed)
+		pLed->EnableWindow(false);
+	if (!GetWaveFileName() && pLed)
 	{
 		GetDlgItem(IDC_REC_PLAY)->EnableWindow(true);
 		m_dynLEDGreen.SwitchOff();

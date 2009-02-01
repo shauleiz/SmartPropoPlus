@@ -38,12 +38,15 @@ BEGIN_MESSAGE_MAP(CDynamicLED, CStatic)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CDynamicLED message handlers
 
 /*
-	Initialize led to  shape & colour
+	Initialize led to shape & colour
 	Set of Off
+	Input:
+		pWnd:		Pointer to object where this control is located
+		nIDColor:	LED colour. Possible values: ID_LED_RED/ID_LED_GREEN/ID_LED_BLUE/ID_LED_YELLOW
+		nIDShape:	Led shape.  Possible values: ID_SHAPE_ROUND/ID_SHAPE_SQUARE
+	No Return Value
 */
 void CDynamicLED::InitLed(CWnd *pWnd, UINT nIDColor, UINT nIDShape)
 {
@@ -61,6 +64,9 @@ void CDynamicLED::InitLed(CWnd *pWnd, UINT nIDColor, UINT nIDShape)
 	return;
 }
 
+/*
+	Paint event handler
+*/
 void CDynamicLED::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
@@ -69,6 +75,10 @@ void CDynamicLED::OnPaint()
 	return;
 }
 
+/*
+	Timer event handler
+	Used for blinking
+*/
 void CDynamicLED::OnTimer(UINT nIDEvent) 
 {	
 	SetLedBright(NULL,TRUE);
@@ -84,6 +94,11 @@ void CDynamicLED::OnTimer(UINT nIDEvent)
 	CStatic::OnTimer(nIDEvent);
 }
 
+/*
+	Turn the led on/off 
+	On:		Bright colour
+	Off:	Dark colour
+*/
 void CDynamicLED::Switch(BOOL on)
 {
 	if (m_BlinkTimer) 
@@ -105,16 +120,25 @@ void CDynamicLED::Switch(BOOL on)
 	return;
 }
 
+/*
+	Turn the led ON (Bright colour)
+*/
 void CDynamicLED::SwitchOn()
 {
 	Switch(TRUE);
 }
-
+/*
+	Turn the led OFF (Dark colour)
+*/
 void CDynamicLED::SwitchOff()
 {
 	Switch(FALSE);
 }
 
+/*
+	Set LED to blink (Alternate bright/dark colour)
+	Input Value: milisec - blink period in miliseconds
+*/
 void CDynamicLED::Blink(int milisec)
 {
 	static rate=0;
@@ -170,22 +194,19 @@ BOOL CDynamicLED::SetLedBright(BOOL Bright, BOOL Toggle)
 	return ret;
 }
 
+/*
+	Helper function - Set the pens and brushes to a set of bright/dark colours
+*/
 void CDynamicLED::SetPenBrush(void)
 {
 	// If the pen has been selected already, then we have to delete it
 	// so that it doesnt throw an assertion
 
-	if(m_PenBright.m_hObject!=NULL)
-		m_PenBright.DeleteObject();
+	if(m_PenBright.m_hObject!=NULL) m_PenBright.DeleteObject();		// Bright pen
+	if(m_BrushBright.m_hObject!=NULL) m_BrushBright.DeleteObject();	// Bright brush
+	if(m_PenDark.m_hObject!=NULL) m_PenDark.DeleteObject();			// Dark pen
+	if(m_BrushDark.m_hObject!=NULL)	m_BrushDark.DeleteObject();		// Dark brush
 
-	if(m_BrushBright.m_hObject!=NULL)
-		m_BrushBright.DeleteObject();
-
-	if(m_PenDark.m_hObject!=NULL)
-		m_PenDark.DeleteObject();
-
-	if(m_BrushDark.m_hObject!=NULL)
-		m_BrushDark.DeleteObject();	
 
 	// If the user has selected RED as the color of the LED
 	if(m_nID==ID_LED_RED)
@@ -233,17 +254,17 @@ void CDynamicLED::SetPenBrush(void)
 	}
 
 }
+
+/*
+	Draw a round LED within the given rectangle of the window where we are going to draw
+*/
 void CDynamicLED::DrawRoundLed(CRect rcClient)
 {
-	//// Get the rectangle of the window where we are going to draw
-	//CRect rcClient;
-	//GetClientRect(&rcClient);
-
 	if (!m_pdc)
 		return;
 
 	// Draw the actual colour of the LED
-	m_pdc->Ellipse(rcClient);
+	//m_pdc->Ellipse(rcClient);
 
 	// Draw a thick dark gray coloured circle
 	CPen Pen;
@@ -279,6 +300,10 @@ void CDynamicLED::DrawRoundLed(CRect rcClient)
 	m_pdc->Ellipse(rcClient.left+4,rcClient.top+4,rcClient.left+6,rcClient.top+6);
 }
 
+
+/*
+	Draw a rectangular LED within the given rectangle of the window where we are going to draw
+*/
 void CDynamicLED::DrawSquareLed(CRect rcClient)
 {
 	if (!m_pdc)
