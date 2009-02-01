@@ -1,0 +1,4 @@
+To Do list for 3.3.x
+
+1. SPP4FMS:	Enable the user to start SppConsole and then FMS. Perhaps starting SppConsole should start FMS.
+2  PPM anti-jitter:	From menu: Enable(Default)/Disable
