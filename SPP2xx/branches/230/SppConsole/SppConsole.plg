@@ -1,0 +1,42 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: SppConsole - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPC20.tmp" with contents
+[
+smartpropoplus.lib winmm.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/SppConsole.pdb" /machine:I386 /nodefaultlib:"LIBC.lib" /out:"Release/SppConsole.exe" /libpath:"../smartpropoplus/release" 
+.\Release\AboutDlg.obj
+.\Release\AudioInput.obj
+.\Release\DefVolumeDlg.obj
+.\Release\SppConsole.obj
+.\Release\SppConsoleDlg.obj
+.\Release\StatLink.obj
+.\Release\StdAfx.obj
+.\Release\SppConsole.res
+\Code\SmartPropoPlus\230\GlobalMemory\Release\GlobalMemory.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPC20.tmp"
+<h3>Output Window</h3>
+Linking...
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPC22.bat" with contents
+[
+@echo off
+copy .\Release\SppConsole.exe "C:\Program Files\FMS8\."
+copy .\Release\SppConsole.exe  ..\.
+]
+Creating command line "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPC22.bat"
+
+        1 file(s) copied.
+        1 file(s) copied.
+
+
+
+<h3>Results</h3>
+SppConsole.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
