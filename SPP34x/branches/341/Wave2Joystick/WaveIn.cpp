@@ -715,6 +715,7 @@ int CWaveIn::ProcessPulseWalPcm(int width, BOOL input)
 	if (width>56)
 	{
 		DebugPrintRawPulses("ProcessPulseWalPcm", width, (unsigned char *)cycle, 50);
+		if (nPulse==0) m_ValidPositions = true;
 		nPulse = 1;
 		return 2;
 	};
@@ -755,7 +756,7 @@ int CWaveIn::ProcessPulseWalPcm(int width, BOOL input)
 			m_Position[1] = smooth(m_Position[1], Ailerons);
 			m_Position[2] = smooth(m_Position[2], Throttle);
 			m_Position[3] = smooth(m_Position[3], Rudder);
-			m_ValidPositions = true;
+			//m_ValidPositions = true;
 		}
 
 		/* Copy data to joystick positions if checksum is valid (ch5-ch8) */
@@ -765,7 +766,7 @@ int CWaveIn::ProcessPulseWalPcm(int width, BOOL input)
 			m_Position[5] = smooth(m_Position[5], Pitch);
 			m_Position[6] = smooth(m_Position[6], Gyro);
 			m_Position[7] = smooth(m_Position[7], Ch8);
-			m_ValidPositions = true;
+			//m_ValidPositions = true;
 		} 
 		else
 			m_ValidPositions = false;
@@ -1286,7 +1287,7 @@ int CWaveIn::ProcessPulsePpm(int width, BOOL input)
 	if (width < 5)
 		return 0;
 
-	if (StaleCount++>10)
+	if (StaleCount++>50)
 		m_ValidPositions = false;
 	else
 		m_ValidPositions = true;

@@ -134,20 +134,25 @@ void CScanInputs::LogAudioLevel(int iMixer, int iLine, int Level)
 
 int CScanInputs::ScanModulationTypes(void)
 {
+	const int nTrys = 3; 
+	int nPos[nTrys]; // Number of joystick positions X nTrys
+	int iTry;
+
 	int ModeTypeCount =  m_ModeTypeCtrl->GetCount();
 	int ModeTypeCurSel = m_ModeTypeCtrl->GetCurSel();
 	// Loop on all modulation types
 	for (int m=0; m<ModeTypeCount; m++)
 	{
 		Sleep(200);
-		// Get joystick information
-		int nPos = m_pWndParent->GetNumJoystickPos();
-		LogModulation(ModeTypeCurSel, nPos);
-		if (nPos)// If found, print and return the number of joystick positions
+		// Get joystick information (Several tries)
+		for (iTry=0; iTry<nTrys; iTry++)
 		{
-			return nPos;
+			nPos[iTry] = m_pWndParent->GetNumJoystickPos();
+			LogModulation(ModeTypeCurSel, nPos[iTry]);
+			if (!nPos[iTry]) break;
+			if (iTry >0 && iTry == nTrys-1 && nPos[iTry] == nPos[iTry-1])
+				return nPos[iTry];
 		};
-
 		ModeTypeCurSel = m_ModeTypeCtrl->SetCurSel((ModeTypeCurSel+1)%ModeTypeCount);
 		m_pWndParent->SomethingChanged();
 	};
