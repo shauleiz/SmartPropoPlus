@@ -33,8 +33,6 @@ CScanInputs::CScanInputs(CWnd* pParent /*=NULL*/)
 	m_iOrigShiftAuto = m_ShiftAutoCtrl->GetCheck();
 	m_ShiftPosCtrl = (CButton*)m_pWndParent->GetShiftPosCtrl();
 	m_iOrigShiftPos = m_ShiftPosCtrl->GetCheck();
-
-	// TODO: place window beside the calling window
 }
 
 CScanInputs::~CScanInputs()
@@ -51,6 +49,7 @@ BEGIN_MESSAGE_MAP(CScanInputs, CDialog)
 	ON_BN_CLICKED(IDCANCEL, OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_SCAN, OnBnClickedScan)
 	ON_BN_CLICKED(IDC_SAVE_LOG, OnBnClickedSaveLog)
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 
@@ -176,4 +175,25 @@ void CScanInputs::LogModulation(int iModeType, int nPos)
 	int nLines = m_LogEdt.GetLineCount();
 	m_LogEdt.LineScroll(nLines-1);
 	m_LogEdt.RedrawWindow();
+}
+
+
+void CScanInputs::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialog::OnShowWindow(bShow, nStatus);
+
+	// Move the dialog box to (almost) aline with the upper-right corner of the parent dialog box
+	RECT RectParent, RectDlg;
+	m_pWndParent->GetWindowRect(&RectParent);
+	GetWindowRect(&RectDlg);
+
+	int DeltaRight = RectParent.right - RectDlg.right-8;
+	RectDlg.right +=DeltaRight;
+	RectDlg.left +=DeltaRight;
+
+	int DeltaTop = RectParent.top - RectDlg.top+8;
+	RectDlg.top += DeltaTop;
+	RectDlg.bottom += DeltaTop;
+
+	MoveWindow(&RectDlg,0);
 }
