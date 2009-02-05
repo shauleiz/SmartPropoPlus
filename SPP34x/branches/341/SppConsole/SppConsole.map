@@ -1,6 +1,6 @@
  SppConsole
 
- Timestamp is 498761e0 (Mon Feb 02 23:13:04 2009)
+ Timestamp is 498b3429 (Thu Feb 05 20:47:05 2009)
 
  Preferred load address is 00400000
 
@@ -2637,7 +2637,7 @@ Line numbers for .\Debug\WaveRec.obj(c:\program files\microsoft visual studio .n
 
    843 0001:0000fac0
 
-Line numbers for .\Debug\WaveRec.obj(c:\code\smartpropoplus\341\sppconsole\waverec.cpp) segment .text
+Line numbers for .\Debug\WaveRec.obj(c:\code\smartpropoplus\34x\sppconsole\waverec.cpp) segment .text
 
     17 0001:0000ee30    17 0001:0000ee40    17 0001:0000ee50    23 0001:0000ee60
     24 0001:0000eecc    25 0001:0000eed3    26 0001:0000eee0    27 0001:0000eeed
@@ -2794,7 +2794,7 @@ Line numbers for .\Debug\StatLink.obj(c:\program files\microsoft visual studio .
    176 0001:0000da09   177 0001:0000da10   121 0001:0000da20   122 0001:0000da23
    123 0001:0000da4a   202 0001:0000da50   203 0001:0000da57   204 0001:0000da5c
 
-Line numbers for .\Debug\StatLink.obj(c:\code\smartpropoplus\341\sppconsole\statlink.cpp) segment .text
+Line numbers for .\Debug\StatLink.obj(c:\code\smartpropoplus\34x\sppconsole\statlink.cpp) segment .text
 
     19 0001:0000d4c0    19 0001:0000d4d0    19 0001:0000d4e0    21 0001:0000d4f0
     21 0001:0000d500    30 0001:0000d510    31 0001:0000d55f    32 0001:0000d569
@@ -2818,7 +2818,7 @@ Line numbers for .\Debug\SppConsoleDlg.obj(c:\program files\microsoft visual stu
 
     52 0001:0000d480
 
-Line numbers for .\Debug\SppConsoleDlg.obj(c:\code\smartpropoplus\341\sppconsole\sppconsoledlg.cpp) segment .text
+Line numbers for .\Debug\SppConsoleDlg.obj(c:\code\smartpropoplus\34x\sppconsole\sppconsoledlg.cpp) segment .text
 
     48 0001:00008a20    50 0001:00008b7d    53 0001:00008b8a    54 0001:00008ba4
     57 0001:00008bc0    58 0001:00008bc7    60 0001:00008bd3    61 0001:00008be8
@@ -3124,7 +3124,7 @@ Line numbers for .\Debug\SppConsoleDlg.obj(c:\code\smartpropoplus\341\sppconsole
   2471 0001:0000d403  2474 0001:0000d410  2475 0001:0000d417  2476 0001:0000d42d
   2477 0001:0000d443  2478 0001:0000d445
 
-Line numbers for .\Debug\SppConsole.obj(c:\code\smartpropoplus\341\sppconsole\sppconsole.cpp) segment .text
+Line numbers for .\Debug\SppConsole.obj(c:\code\smartpropoplus\34x\sppconsole\sppconsole.cpp) segment .text
 
     20 0001:00008770    20 0001:00008780    32 0001:00008790    34 0001:000087aa
     45 0001:000087c0    57 0001:000087e4    59 0001:000087f2    60 0001:00008806
@@ -3139,7 +3139,7 @@ Line numbers for .\Debug\ScanInputs.obj(c:\program files\microsoft visual studio
   2014 0001:000086c0  2015 0001:000086e2  2017 0001:000086fc  2019 0001:00008731
   2020 0001:0000875a
 
-Line numbers for .\Debug\ScanInputs.obj(c:\code\smartpropoplus\341\sppconsole\scaninputs.cpp) segment .text
+Line numbers for .\Debug\ScanInputs.obj(c:\code\smartpropoplus\34x\sppconsole\scaninputs.cpp) segment .text
 
     13 0001:00007dc0    13 0001:00007dd0    13 0001:00007de0    16 0001:00007df0
     17 0001:00007e3c    24 0001:00007e48    25 0001:00007e5f    26 0001:00007e76
@@ -3169,7 +3169,7 @@ Line numbers for .\Debug\ScanInputs.obj(c:\code\smartpropoplus\341\sppconsole\sc
    190 0001:00008637   191 0001:00008643   192 0001:0000864c   194 0001:00008655
    195 0001:00008661   196 0001:0000866a   198 0001:00008673   199 0001:00008681
 
-Line numbers for .\Debug\LogRawPulse.obj(c:\code\smartpropoplus\341\sppconsole\lograwpulse.cpp) segment .text
+Line numbers for .\Debug\LogRawPulse.obj(c:\code\smartpropoplus\34x\sppconsole\lograwpulse.cpp) segment .text
 
      7 0001:00007b50     8 0001:00007b6a     9 0001:00007b77    10 0001:00007b84
     11 0001:00007b91    12 0001:00007ba5    15 0001:00007bb0    16 0001:00007bc0
@@ -3179,7 +3179,7 @@ Line numbers for .\Debug\LogRawPulse.obj(c:\code\smartpropoplus\341\sppconsole\l
     36 0001:00007d17    37 0001:00007d2f    40 0001:00007d40    41 0001:00007d50
     42 0001:00007d70
 
-Line numbers for .\Debug\LogPulses.obj(c:\code\smartpropoplus\341\sppconsole\logpulses.cpp) segment .text
+Line numbers for .\Debug\LogPulses.obj(c:\code\smartpropoplus\34x\sppconsole\logpulses.cpp) segment .text
 
      7 0001:000078f0     8 0001:0000790a     9 0001:00007917    10 0001:00007924
     11 0001:00007931    14 0001:00007940    15 0001:00007950    18 0001:00007960
@@ -3188,7 +3188,7 @@ Line numbers for .\Debug\LogPulses.obj(c:\code\smartpropoplus\341\sppconsole\log
     31 0001:00007a77    32 0001:00007a8f    34 0001:00007aa0    35 0001:00007aa7
     36 0001:00007abf    39 0001:00007ad0    40 0001:00007ae0    41 0001:00007b00
 
-Line numbers for .\Debug\LogFmsConn.obj(c:\code\smartpropoplus\341\sppconsole\logfmsconn.cpp) segment .text
+Line numbers for .\Debug\LogFmsConn.obj(c:\code\smartpropoplus\34x\sppconsole\logfmsconn.cpp) segment .text
 
      7 0001:00007690     8 0001:000076aa     9 0001:000076b7    10 0001:000076c4
     11 0001:000076d1    12 0001:000076e5    15 0001:000076f0    16 0001:00007700
@@ -3197,7 +3197,7 @@ Line numbers for .\Debug\LogFmsConn.obj(c:\code\smartpropoplus\341\sppconsole\lo
     31 0001:00007820    32 0001:00007827    33 0001:0000783f    35 0001:00007850
     36 0001:00007857    37 0001:0000786f    40 0001:00007880    41 0001:000078a0
 
-Line numbers for .\Debug\LogAudioHdrs.obj(c:\code\smartpropoplus\341\sppconsole\logaudiohdrs.cpp) segment .text
+Line numbers for .\Debug\LogAudioHdrs.obj(c:\code\smartpropoplus\34x\sppconsole\logaudiohdrs.cpp) segment .text
 
      7 0001:00007430     8 0001:0000744a     9 0001:00007457    10 0001:00007464
     11 0001:00007471    14 0001:00007480    15 0001:00007490    18 0001:000074a0
@@ -3206,7 +3206,7 @@ Line numbers for .\Debug\LogAudioHdrs.obj(c:\code\smartpropoplus\341\sppconsole\
     31 0001:000075b7    32 0001:000075cf    34 0001:000075e0    35 0001:000075e7
     36 0001:000075ff    39 0001:00007610    40 0001:00007620    41 0001:00007640
 
-Line numbers for .\Debug\DynamicLED.obj(c:\code\smartpropoplus\341\sppconsole\dynamicled.cpp) segment .text
+Line numbers for .\Debug\DynamicLED.obj(c:\code\smartpropoplus\34x\sppconsole\dynamicled.cpp) segment .text
 
     19 0001:000068a0    21 0001:0000691b    22 0001:00006928    23 0001:00006935
     24 0001:00006942    25 0001:0000694c    26 0001:00006959    27 0001:00006963
@@ -3245,7 +3245,7 @@ Line numbers for .\Debug\DynamicLED.obj(c:\code\smartpropoplus\341\sppconsole\dy
    326 0001:00007373   329 0001:0000737b   330 0001:0000738c   332 0001:0000739b
    333 0001:000073b2   334 0001:000073c5   335 0001:000073d8
 
-Line numbers for .\Debug\DefVolumeDlg.obj(c:\code\smartpropoplus\341\sppconsole\defvolumedlg.cpp) segment .text
+Line numbers for .\Debug\DefVolumeDlg.obj(c:\code\smartpropoplus\34x\sppconsole\defvolumedlg.cpp) segment .text
 
     23 0001:00005f40    27 0001:00006006    28 0001:00006013    29 0001:00006020
     30 0001:0000602d    31 0001:0000603a    35 0001:00006060    36 0001:00006067
@@ -3436,7 +3436,7 @@ Line numbers for .\Debug\AudioInput.obj(c:\program files\microsoft visual studio
    106 0001:00005ef3   108 0001:00005ef5   137 0001:00005f00   138 0001:00005f03
    145 0001:00005f33
 
-Line numbers for .\Debug\AudioInput.obj(c:\code\smartpropoplus\341\sppconsole\audioinput.cpp) segment .text
+Line numbers for .\Debug\AudioInput.obj(c:\code\smartpropoplus\34x\sppconsole\audioinput.cpp) segment .text
 
     23 0001:00000400    24 0001:00000404    29 0001:00000421    31 0001:00000425
     33 0001:00000427    37 0001:00000430    42 0001:00000436    43 0001:0000043d
@@ -3634,7 +3634,7 @@ Line numbers for .\Debug\AboutDlg.obj(c:\program files\microsoft visual studio .
    123 0001:000003dc   124 0001:000003df   127 0001:000003f0   128 0001:000003f3
    129 0001:000003f8
 
-Line numbers for .\Debug\AboutDlg.obj(c:\code\smartpropoplus\341\sppconsole\aboutdlg.cpp) segment .text
+Line numbers for .\Debug\AboutDlg.obj(c:\code\smartpropoplus\34x\sppconsole\aboutdlg.cpp) segment .text
 
     21 0001:00000000    24 0001:00000048    28 0001:00000070    29 0001:00000077
     32 0001:00000083    35 0001:00000090    35 0001:000000a0    43 0001:000000b0
@@ -3643,7 +3643,7 @@ Line numbers for .\Debug\AboutDlg.obj(c:\code\smartpropoplus\341\sppconsole\abou
     59 0001:00000156    61 0001:00000168    62 0001:0000018a    64 0001:0000019c
     65 0001:000001a4    67 0001:000001cb
 
-Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropoplus\341\smartpropoplus\smartpropoplus.c) segment .text
+Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropoplus\34x\smartpropoplus\smartpropoplus.c) segment .text
 
      8 0001:0000fae0    14 0001:0000faf3    15 0001:0000faff    16 0001:0000fb20
     17 0001:0000fb40    18 0001:0000fb59    21 0001:0000fb70    22 0001:0000fb73
@@ -3678,7 +3678,7 @@ Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropopl
    330 0001:00010029   331 0001:00010042   332 0001:00010059   333 0001:00010062
    334 0001:00010069   337 0001:00010076   338 0001:0001007b
 
-Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropoplus\341\sppregistry\sppregistry.c) segment .text
+Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropoplus\34x\sppregistry\sppregistry.c) segment .text
 
     15 0001:00010090    19 0001:00010096    24 0001:0001009d    25 0001:000100a6
     26 0001:000100ad    27 0001:000100b8    28 0001:000100bf    29 0001:000100ca
@@ -3813,11 +3813,11 @@ Line numbers for ../smartpropoplus/debug\smartpropoplus.lib(c:\code\smartpropopl
   1127 0001:00011b8f  1128 0001:00011bb3  1129 0001:00011bb9  1131 0001:00011bbd
   1132 0001:00011bc2
 
-Line numbers for \Code\SmartPropoPlus\341\FilterIf\Debug\FilterIf.lib(c:\program files\microsoft visual studio .net 2003\vc7\include\tchar.h) segment .text
+Line numbers for \Code\SmartPropoPlus\34x\FilterIf\Debug\FilterIf.lib(c:\program files\microsoft visual studio .net 2003\vc7\include\tchar.h) segment .text
 
    854 0001:000120f0
 
-Line numbers for \Code\SmartPropoPlus\341\FilterIf\Debug\FilterIf.lib(c:\code\smartpropoplus\341\filterif\filterif.cpp) segment .text
+Line numbers for \Code\SmartPropoPlus\34x\FilterIf\Debug\FilterIf.lib(c:\code\smartpropoplus\34x\filterif\filterif.cpp) segment .text
 
     11 0001:00011cb0    14 0001:00011ce2    17 0001:00011cf0    18 0001:00011cfe
     21 0001:00011d10    23 0001:00011d2f    24 0001:00011d4d    25 0001:00011d56
