@@ -715,7 +715,7 @@ int CWaveIn::ProcessPulseWalPcm(int width, BOOL input)
 	if (width>56)
 	{
 		DebugPrintRawPulses("ProcessPulseWalPcm", width, (unsigned char *)cycle, 50);
-		if (nPulse==0) m_ValidPositions = true;
+		if (nPulse==0 && width<300) m_ValidPositions = true;
 		nPulse = 1;
 		return 2;
 	};
