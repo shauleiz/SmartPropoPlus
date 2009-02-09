@@ -587,6 +587,10 @@ CAudioInput::CMixerDevice::~CMixerDevice()
 		delete(phd);
 		m_ArrayPhysicalDev.RemoveAt(0);
 	};
+
+	if (m_ValidMixerDevice)
+		delete (this->m_name);
+
 	m_ArrayPhysicalDev.RemoveAll();
 }
 
@@ -1182,13 +1186,16 @@ CAudioInput::CMixerDevice::CInputLine::CInputLine()
 
 CAudioInput::CMixerDevice::CInputLine::~CInputLine()
 {
+	INT_PTR count = m_ArrayMuteControl->GetCount();
 	m_ArrayMuteControl->RemoveAll();
 	delete(m_ArrayMuteControl);
+	free((void *)m_Name);
 }
 
 CAudioInput::CMixerDevice::CInputLine::CInputLine(HMIXER hMixerDevice, unsigned long id, const char * Name, unsigned long Type, long Selected)
 {
 	/**** Insert basic data ****/
+	m_ArrayMuteControl = NULL;
 	m_hMixerDevice = hMixerDevice;	// Handle to mixed device
 	m_ID = id;						// Source Line ID
 	m_Name = strdup(Name);			// Source line Name
@@ -1322,6 +1329,7 @@ CArray<  CAudioInput::CMixerDevice::CInputLine::sMuteLine , CAudioInput::CMixerD
 					ml->LineID = mxl.dwLineID;
 					GetMuteValue(m_hMixerDevice, ControlList[iCtrl].dwControlID, &(ml->mute));
 					MuteArray->Add(*ml);
+					delete (ml);
 					found++;
 					iSrc++; // next
 					break;

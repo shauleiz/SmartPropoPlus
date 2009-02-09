@@ -1,6 +1,12 @@
 // SppConsole.cpp : Defines the class behaviors for the application.
 //
 
+// Debugging info - Start
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+// Debugging info - End
+
 #include "stdafx.h"
 #include "SppConsole.h"
 #include "SppConsoleDlg.h"
@@ -53,6 +59,11 @@ BOOL CSppConsoleApp::InitInstance()
 #else
 //	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+	
+	// Debugging memory leaks - Start
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_DELAY_FREE_MEM_DF );
+	// Debugging memory leaks - End
 
 	bool StartIconified = doStartIconified();
 

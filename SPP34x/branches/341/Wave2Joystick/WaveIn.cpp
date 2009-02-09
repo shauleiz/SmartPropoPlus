@@ -712,7 +712,7 @@ int CWaveIn::ProcessPulseWalPcm(int width, BOOL input)
 
 
 	/* Detect Sync pulse - if detected then reset pulse counter and return */
-	if (width>56)
+	if (width>56 && width<70)
 	{
 		DebugPrintRawPulses("ProcessPulseWalPcm", width, (unsigned char *)cycle, 50);
 		if (nPulse==0 && width<300) m_ValidPositions = true;

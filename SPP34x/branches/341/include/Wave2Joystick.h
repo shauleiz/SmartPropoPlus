@@ -60,6 +60,7 @@ public:
 public:
 	virtual BOOL InitInstance();
 	virtual BOOL Start();
+	virtual BOOL Stop();
 
 private:
 	TCHAR *				m_CurrMixerDeviceName;
@@ -147,6 +148,7 @@ extern "C" {            /* Assume C declarations for C++ */
 LONG PASCAL EXPORT TestTest();
 CWave2JoystickApp * PASCAL GetWave2JoystickObject();
 BOOL PASCAL SppStart(void);
+BOOL PASCAL SppStop(void);
 BOOL PASCAL StopInterfaces(void);
 
 // Set parameters

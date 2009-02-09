@@ -306,6 +306,8 @@ BOOL CSppConsoleDlg::OnInitDialog()
 void CSppConsoleDlg::OnDestroy()
 {
 	/* Clean-up */
+	_CrtMemDumpAllObjectsSince(NULL);
+
 	KillTimer(m_TimerLevel);
 	KillTimer(m_TimerJoystick);
 	if (m_TimerFmsStat) KillTimer(m_TimerFmsStat);
@@ -313,6 +315,8 @@ void CSppConsoleDlg::OnDestroy()
 	WinHelp(0L, HELP_QUIT);
 	TaskBarDelIcon(IDR_MAINFRAME);
 	StoreLocationDialogWindow();
+	if (m_pMainMenu) delete(m_pMainMenu);
+	if (m_pFilters) delete(m_pFilters);
 	CDialog::OnDestroy();
 }
 
@@ -527,6 +531,16 @@ int CSppConsoleDlg::PopulateModulation()
 		ShowShiftRB(false);
 	else
 		ShowShiftRB();
+
+	/* Some cleaning up */
+	i=0;
+	while (Modulation->ModulationList[i])
+	{
+		if (Modulation->ModulationList[i]->ModTypeDisplay) delete (Modulation->ModulationList[i]->ModTypeDisplay);
+		if (Modulation->ModulationList[i]->ModTypeInternal) delete (Modulation->ModulationList[i]->ModTypeInternal);
+		i++;
+	};
+
 	return selected;
 }
 
@@ -995,7 +1009,10 @@ void CSppConsoleDlg::OnOK()
 		CloseHandle(m_hConsoleMuxex);
 	};
 	if (m_Wave2Joystick)
+	{
 		StopInterfaces();
+		SppStop();
+	}
 
 	CDialog::OnOK();
 /*	if (!isDllActive())
@@ -1430,7 +1447,9 @@ int CSppConsoleDlg::GetCurrentMixerDevice()
 	{
 		int MixerId = m_AudioInput->GetMixerDeviceID(MixerName);
 		::SetCurrentMixerDevice(MixerName);
-		return m_AudioInput->GetMixerDeviceIndex(MixerName);
+		int index =  m_AudioInput->GetMixerDeviceIndex(MixerName);
+		free(MixerName);
+		return index;
 	};
 
 	/* Default */
@@ -1867,6 +1886,7 @@ void CSppConsoleDlg::UpdateFilterMenu()
 
 		SetMenu(m_pMainMenu);
 		m_hFilterMenu = pFilterMenu->Detach();
+		delete (pFilterMenu);
 	}
 
 	/* Set the selected item */
