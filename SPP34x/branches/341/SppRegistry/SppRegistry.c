@@ -314,7 +314,7 @@ char * GetCurrentMixerDeviceFromRegistry(void)
 	/* Get  data */	
 	ValueDataSize = MAX_VAL_NAME;
 	res = RegQueryValueEx(hkSpp, MIXER_DEV,  NULL, NULL, (unsigned char *)&(Active[0]),  &ValueDataSize);
-	if (res != ERROR_SUCCESS)
+	if (res != ERROR_SUCCESS || ValueDataSize<=1)
 		return NULL;
 
 	return strdup(Active);
@@ -344,6 +344,7 @@ int GetCurrentInputLineFromRegistry(unsigned int *SrcID)
 
 	
 	res = RegQueryValueEx(hkAud, mdName, NULL, NULL, (unsigned char *)SrcID,  &ValueDataSize);
+	free(mdName);
 	if (res != ERROR_SUCCESS)
 		return 0;
 
@@ -946,7 +947,7 @@ char * GetSelectedFilterNameFromRegistry()
 	/* Get  data */	
 	ValueDataSize = MAX_VAL_NAME;
 	res = RegQueryValueEx(hkSpp, SEL_FLTR,  NULL, NULL, (unsigned char *)&(Active[0]),  &ValueDataSize);
-	if (res != ERROR_SUCCESS)
+	if (res != ERROR_SUCCESS || ValueDataSize<=1)
 		return NULL;
 
 	return strdup(Active);

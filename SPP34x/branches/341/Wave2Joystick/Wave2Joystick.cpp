@@ -558,6 +558,34 @@ bool CWave2JoystickApp::GetFilteredPos(int * pos)
 		return false;
 }
 
+//---------------------------------------------------------------------------
+//  Stop all WaveIn devices
+BOOL CWave2JoystickApp::Stop()
+{
+	// If no list - do nothing
+	if (!m_WaveInList)
+		return FALSE;
+
+	/* Loop on all devices until got to end or found (100 is only to prevent endless looping ) */
+	for  (int index = 0; index<100; index++)
+	{
+		if (!m_WaveInList->pDevice[index])
+			break;
+		m_WaveInList->pDevice[index]->Stop();
+		delete (m_WaveInList->pDevice[index]);
+		m_WaveInList->pDevice[index] = NULL;
+	};
+	delete (m_WaveInList->pDevice);
+	m_WaveInList->pDevice = NULL;
+	delete (m_WaveInList);
+	m_WaveInList = NULL;
+
+	return TRUE;
+}
+
+
+//---------------------------------------------------------------------------
+
 
 
 //---------------------------------------------------------------------------
@@ -880,6 +908,9 @@ CWave2JoystickApp::~CWave2JoystickApp(void)
 		while (m_WaveInList->pDevice[index])
 			delete m_WaveInList->pDevice[index++];
 	};
+
+	if (m_CurrMixerDeviceName)
+		free(m_CurrMixerDeviceName);
 }
 
 
@@ -924,6 +955,13 @@ BOOL PASCAL SppStart(void)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	return theApp.Start();
+}
+
+// Stop all WAVE IN capture devices
+BOOL PASCAL SppStop(void)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	return theApp.Stop();
 }
 
 

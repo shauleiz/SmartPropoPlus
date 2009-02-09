@@ -65,8 +65,12 @@ int CFilterIf::GetIndexOfSelected(void)
 	{
 		FilterName = pGetFilterNameByIndex(i);
 		if (!_tcscmp(FilterName, name))
+		{
+			if (name) free(name);
 			return i;
+		};
 	};
+	if (name) free(name);
 	return -1;
 }
 

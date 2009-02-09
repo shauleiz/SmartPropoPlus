@@ -15,25 +15,26 @@ SppSetActiveAudioDevice			@7
 SppSetSelectedInput				@8
 SppSetMixerSelector				@9
 SppStart						@10
-StopInterfaces					@11
+SppStop							@11
+StopInterfaces					@12
 
 ; Log & Debug
-SppWaveLoggerStart				@12
-SppWaveLoggerStop				@13
-SppWaveLoggerPlay				@14
-SppWaveLoggerGetStat			@15
-SppAudioHdrLoggerStart			@16
-SppAudioHdrLoggerStop			@17
-; SppAudioHdrLoggerPlay			@18
-SppAudioHdrLoggerGetStat		@19
-SppPulseLoggerStart				@20
-SppPulseLoggerStop				@21
-; SppPulseLoggerPlay			@22
-SppPulseLoggerGetStat			@23
-SppRawPulseLoggerStart			@24
-SppRawPulseLoggerStop			@25
-; SppRawPulseLoggerPlay			@26
-SppRawPulseLoggerGetStat		@27
+SppWaveLoggerStart				@22
+SppWaveLoggerStop				@23
+SppWaveLoggerPlay				@24
+SppWaveLoggerGetStat			@25
+SppAudioHdrLoggerStart			@26
+SppAudioHdrLoggerStop			@27
+; SppAudioHdrLoggerPlay			@28
+SppAudioHdrLoggerGetStat		@29
+SppPulseLoggerStart				@30
+SppPulseLoggerStop				@31
+; SppPulseLoggerPlay			@32
+SppPulseLoggerGetStat			@33
+SppRawPulseLoggerStart			@34
+SppRawPulseLoggerStop			@35
+; SppRawPulseLoggerPlay			@36
+SppRawPulseLoggerGetStat		@37
 
 
 ; PPJoy Interface
