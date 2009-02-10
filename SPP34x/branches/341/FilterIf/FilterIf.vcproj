@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="FilterIf"
 	ProjectGUID="{6159AB20-2B87-45B8-9671-5B59D61B4352}"
+	RootNamespace="FilterIf"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -20,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Code\SmartPropoPlus\341\include"
+				AdditionalIncludeDirectories="$(SolutionDir)\Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -62,7 +63,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Code\SmartPropoPlus\341\include"
+				AdditionalIncludeDirectories="$(SolutionDir)\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="3"

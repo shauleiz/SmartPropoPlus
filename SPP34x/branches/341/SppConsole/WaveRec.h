@@ -70,4 +70,5 @@ public:
 	BOOL OnInitDialog(void);
 	afx_msg void OnBnClickedCancel();
 	void OnTimer(UINT nIDEvent);
+	afx_msg void OnNcDestroy();
 };

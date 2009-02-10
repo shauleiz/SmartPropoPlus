@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CWaveRec, CDialog)
 	ON_BN_CLICKED(IDCANCEL, OnBnClickedCancel)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_REC_PLAY, OnBnClickedRecPlay)
+	ON_WM_NCDESTROY()
 END_MESSAGE_MAP()
 
 
@@ -175,14 +176,13 @@ void CWaveRec::OnBnClickedCancel()
 		return;
 	};
 
-	OnCancel();
-
 	// Inform the calling dialog box that Recording is off
 	PostMessageStop();
 	PostMessageCancel();
 
+
+	//OnNcDestroy();
 	DestroyWindow();
-	OnNcDestroy();
 }
 
 
@@ -340,3 +340,8 @@ BOOL CWaveRec::SppLoggerStop(void) { return SppWaveLoggerStop();}
 BOOL CWaveRec::SppLoggerPlay(TCHAR * FileName)	{ return SppWaveLoggerPlay(FileName);}
 BOOL CWaveRec::SppLoggerStart(TCHAR * FileName) { return SppWaveLoggerStart(FileName);}
 BOOL CWaveRec::SppLoggerStat(int * stat)		{ return SppWaveLoggerGetStat(stat);}
+
+void CWaveRec::OnNcDestroy()
+{
+	delete (this);
+}

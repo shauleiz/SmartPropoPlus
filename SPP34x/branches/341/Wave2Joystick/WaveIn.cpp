@@ -2176,8 +2176,7 @@ bool CWaveIn::SetAntiJitter(const bool Enable)
 
 CWaveIn::~CWaveIn(void)
 {
-	if (m_LogWr)
-		delete m_LogWr;
-	if (m_LogRd)
-		delete m_LogRd;
+	if (m_LogWr) delete m_LogWr;
+	if (m_LogRd) delete m_LogRd;
+	if (m_DeviceName) delete m_DeviceName;
 }
