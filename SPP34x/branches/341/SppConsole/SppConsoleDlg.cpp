@@ -271,7 +271,9 @@ BOOL CSppConsoleDlg::OnInitDialog()
 		sprintf(msg, "OnInitDialog(): Cannot initialize Object Wave2Joystick");
 		::MessageBox(NULL,msg, "SmartPropoPlus Message" , MB_SYSTEMMODAL);
 	};
-	BOOL SetActiveDev  = SppSetActiveAudioDevice(::GetCurrentMixerDevice());
+	char * DeviceName = ::GetCurrentMixerDevice();
+	BOOL SetActiveDev  = SppSetActiveAudioDevice(DeviceName);
+	if (DeviceName) free (DeviceName);
 	BOOL SetFilter = SetFilterInterface(m_pFilters);	// Set filter to audio capture object
 	BOOL Started = SppStart();							// Start audio capture
 	InitJitterStatus();									// Initialize anti-jitter mechanism
@@ -306,8 +308,6 @@ BOOL CSppConsoleDlg::OnInitDialog()
 void CSppConsoleDlg::OnDestroy()
 {
 	/* Clean-up */
-	_CrtMemDumpAllObjectsSince(NULL);
-
 	KillTimer(m_TimerLevel);
 	KillTimer(m_TimerJoystick);
 	if (m_TimerFmsStat) KillTimer(m_TimerFmsStat);
@@ -534,12 +534,16 @@ int CSppConsoleDlg::PopulateModulation()
 
 	/* Some cleaning up */
 	i=0;
-	while (Modulation->ModulationList[i])
+	while (Modulation && Modulation->ModulationList[i])
 	{
 		if (Modulation->ModulationList[i]->ModTypeDisplay) delete (Modulation->ModulationList[i]->ModTypeDisplay);
 		if (Modulation->ModulationList[i]->ModTypeInternal) delete (Modulation->ModulationList[i]->ModTypeInternal);
+		free (Modulation->ModulationList[i]);
 		i++;
 	};
+
+	free (Modulation->ModulationList);
+	free (Modulation);
 
 	return selected;
 }
@@ -1315,7 +1319,10 @@ void CSppConsoleDlg::OnSelchangeMixerdevice()
 	if (md)
 		md->SetSelectedInputLine(m_iSelLine);
 
-	BOOL SetActiveDev  = SppSetActiveAudioDevice(::GetCurrentMixerDevice());
+	char * MixerDevice = ::GetCurrentMixerDevice();
+	BOOL SetActiveDev  = SppSetActiveAudioDevice(MixerDevice);
+	free (MixerDevice);
+
 	BOOL Started = SppStart();
 	return;
 
@@ -1367,7 +1374,10 @@ void CSppConsoleDlg::OnEnableAudio()
 	EnableAudio(m_enable_audio);
 
 	// Inform the Wave2Joystick module
-	BOOL SetActiveDev  = SppSetActiveAudioDevice(::GetCurrentMixerDevice());
+	char * MixerDevice = ::GetCurrentMixerDevice();
+	BOOL SetActiveDev  = SppSetActiveAudioDevice(MixerDevice);
+	free (MixerDevice);
+
 	BOOL Started = SppStart();
 
 }
@@ -2095,8 +2105,6 @@ void CSppConsoleDlg::OnWaveRec()
 		BOOL created = m_RecWaveDialog->Create(IDD_REC_DIALOG, this);
 	};
 	BOOL Shown = m_RecWaveDialog->ShowWindow(SW_SHOW);
-	//m_WaveRecording = false;
-	//RecWaveDialog.DoModal();
 }		   
 
 // Message handler - Wave recording started
@@ -2124,7 +2132,11 @@ LRESULT CSppConsoleDlg::OnWaveRecStop(WPARAM wParam, LPARAM lParam)
 // Message handler - Wave recording dialog box destroyed
 LRESULT CSppConsoleDlg::OnWaveRecCancel(WPARAM wParam, LPARAM lParam)
 {
-	m_RecWaveDialog = NULL;
+	if (m_RecWaveDialog)
+	{
+		//free(m_RecWaveDialog);
+		m_RecWaveDialog = NULL;
+	};
 	//m_WaveRecording = false;
 	return NULL;
 }
@@ -2297,7 +2309,10 @@ void CSppConsoleDlg::OnLogAudioHdrs()
 // Message handler - Wave recording dialog box destroyed
 LRESULT CSppConsoleDlg::OnLogAudioHdrsCancel(WPARAM wParam, LPARAM lParam)
 {
-	m_LogAudioHdrsDialog = NULL;
+	if (m_LogAudioHdrsDialog)
+	{
+		m_LogAudioHdrsDialog = NULL;
+	};
 	return NULL;
 }
 
@@ -2324,7 +2339,11 @@ void CSppConsoleDlg::OnLogPulse()
 // Message handler - Wave recording dialog box destroyed
 LRESULT CSppConsoleDlg::OnLogPulseCancel(WPARAM wParam, LPARAM lParam)
 {
-	m_LogPulseDialog = NULL;
+	if (m_LogPulseDialog)
+	{
+		//free(m_LogPulseDialog);
+		m_LogPulseDialog = NULL;
+	};
 	return NULL;
 }
 
@@ -2430,7 +2449,11 @@ LRESULT CSppConsoleDlg::OnFmsConnStop(WPARAM wParam, LPARAM lParam)
 // Message handler - Wave recording dialog box destroyed
 LRESULT CSppConsoleDlg::OnFmsConnCancel(WPARAM wParam, LPARAM lParam)
 {
-	m_LogFmsConnDialog = NULL;
+	if (m_LogFmsConnDialog)
+	{
+		//free(m_LogFmsConnDialog);
+		m_LogFmsConnDialog = NULL;
+	};
 	return NULL;
 }
 
@@ -2453,7 +2476,11 @@ void CSppConsoleDlg::OnLogRawPulse()
 
 LRESULT CSppConsoleDlg::OnRawPulseCancel(WPARAM wParam, LPARAM lParam)
 {
-	m_LogRawPulseDialog = NULL;
+	if (m_LogRawPulseDialog)
+	{
+		//free(m_LogRawPulseDialog);
+		m_LogRawPulseDialog = NULL;
+	}
 	return NULL;
 }
 

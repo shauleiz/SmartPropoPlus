@@ -275,6 +275,7 @@ bool CWave2JoystickApp::StartWaveLog(TCHAR * LogFileName)
 
 
 	strncpy(LogFileName, Name, MAX_PATH);
+	free(Name);
 	return true;
 
 }
@@ -344,6 +345,7 @@ bool CWave2JoystickApp::StartAudioHeaderLog(TCHAR * LogFileName)
 		return false;
 
 	strncpy(LogFileName, Name, MAX_PATH);
+	free(Name);
 	return true;
 
 }
@@ -396,6 +398,7 @@ bool CWave2JoystickApp::StartPulseLog(TCHAR * LogFileName)
 		return false;
 
 	strncpy(LogFileName, Name, MAX_PATH);
+	free(Name);
 	return true;
 
 }
@@ -449,6 +452,7 @@ bool CWave2JoystickApp::StartRawPulseLog(TCHAR * LogFileName)
 		return false;
 
 	strncpy(LogFileName, Name, MAX_PATH);
+	free(Name);
 	return true;
 
 }
