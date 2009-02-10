@@ -253,7 +253,7 @@ char * GetCurrentMixerDevice()
 		return MixerName;
 	}
 	else
-		return "";
+		return NULL;
 }
 
 int GetCurrentInputLine(unsigned int *SrcID)

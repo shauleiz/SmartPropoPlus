@@ -142,7 +142,7 @@ int CScanInputs::ScanModulationTypes(void)
 	// Loop on all modulation types
 	for (int m=0; m<ModeTypeCount; m++)
 	{
-		Sleep(200);
+		Sleep(500);
 		// Get joystick information (Several tries)
 		for (iTry=0; iTry<nTrys; iTry++)
 		{
