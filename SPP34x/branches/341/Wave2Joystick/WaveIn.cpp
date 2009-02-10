@@ -830,7 +830,7 @@ int CWaveIn::ProcessPulseAirPcm1(int width, BOOL input)
 
 	DebugPrintRawPulses("ProcessPulseAirPcm1", width*(1-2*input), (const unsigned char  *)data, 10,sizeof(int));		
 
-	// If data was stale for more than 10 consecutive times then the positions are declared invalid
+	// If data was stale for more than 80 consecutive times then the positions are declared invalid
 	if (width>200 || StaleCount++>80)
 		m_ValidPositions = false;
 	else
@@ -948,10 +948,18 @@ int CWaveIn::ProcessPulseAirPcm2(int width, BOOL input)
     static unsigned int data[10];
 	static int i = 0;
 	static int StaleCount=0;
+	static int Accumulate=0;
 
 	DebugPrintRawPulses("ProcessPulseAirPcm2", width*(1-2*input), (const unsigned char  *)data, 10,sizeof(int));
 
+	// If data was stale for more than 80 consecutive times then the positions are declared invalid
+	if (width>200 || StaleCount++>80)
+		m_ValidPositions = false;
+	else
+		m_ValidPositions = true;
+
 		pulse = width/12; // Width to bits
+		Accumulate += pulse;
 		if (pulse == 7)  // 4-bit pulse marks a biginind of a data chunk
 		{
 			if (!input)
@@ -972,8 +980,10 @@ int CWaveIn::ProcessPulseAirPcm2(int width, BOOL input)
 			bitstream = 0;
 			bitcount = -1;
 			chunk = input;	// Mark chunk polarity - 0: Low channels, 1: High channels
-			StaleCount=0;
-			m_ValidPositions = true;
+			// Accumulate should be 75 here - every miss is counted as stale data
+			if (Accumulate>70 && Accumulate<80)
+				StaleCount=0;
+			Accumulate=0;
 		};
 		
 		if (sync) 

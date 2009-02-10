@@ -1321,7 +1321,7 @@ void CSppConsoleDlg::OnSelchangeMixerdevice()
 
 	char * MixerDevice = ::GetCurrentMixerDevice();
 	BOOL SetActiveDev  = SppSetActiveAudioDevice(MixerDevice);
-	free (MixerDevice);
+	if (MixerDevice) free (MixerDevice);
 
 	BOOL Started = SppStart();
 	return;
@@ -1376,7 +1376,7 @@ void CSppConsoleDlg::OnEnableAudio()
 	// Inform the Wave2Joystick module
 	char * MixerDevice = ::GetCurrentMixerDevice();
 	BOOL SetActiveDev  = SppSetActiveAudioDevice(MixerDevice);
-	free (MixerDevice);
+	if (MixerDevice) free (MixerDevice);
 
 	BOOL Started = SppStart();
 
