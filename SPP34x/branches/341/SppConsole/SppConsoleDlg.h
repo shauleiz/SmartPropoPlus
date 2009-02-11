@@ -14,7 +14,6 @@
 #include "FilterIf.h"
 #include "afxcmn.h"
 
-
 typedef HRESULT (CALLBACK* DLLFUNC1)();
 typedef HRESULT (CALLBACK* DLLFUNC2)(int);
 
@@ -208,6 +207,7 @@ protected:
 	FILE * m_pRawPulseLogFile; // Raw pulses logger output file 
 	LOGSTAT	m_RawPulseLogStat; // State of Raw pulses logger state machine
 	class CDynamicLED m_LedValidPos;
+	CWnd * m_pScanInputs;
 
 	// Generated message map functions
 	//{{AFX_MSG(CSppConsoleDlg)
@@ -282,6 +282,7 @@ public:
 	afx_msg void OnLogFmsConn();
 	afx_msg void OnLogRawPulse();
 	afx_msg void OnBnClickedScandlg();
+	afx_msg void OnEnterIdle(UINT nWhy, CWnd* pWho);
 };
 
 //{{AFX_INSERT_LOCATION}}

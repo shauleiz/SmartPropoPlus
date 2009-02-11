@@ -28,7 +28,6 @@ BEGIN_MESSAGE_MAP(CSppConsoleApp, CWinApp)
 	ON_COMMAND(IDC_ABOUT, OnAbout)
 	//}}AFX_MSG_MAP
 	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
-
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
