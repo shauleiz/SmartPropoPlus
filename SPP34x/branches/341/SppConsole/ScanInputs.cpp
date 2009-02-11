@@ -5,7 +5,7 @@
 #include "SppConsole.h"
 #include "SppConsoleDlg.h"
 #include "ScanInputs.h"
-#include ".\scaninputs.h"
+//#include ".\scaninputs.h"
 
 
 // ScanInputs dialog
@@ -15,6 +15,7 @@ CScanInputs::CScanInputs(CWnd* pParent /*=NULL*/)
 	: CDialog(CScanInputs::IDD, pParent)
 {
 	m_pWndParent = (CSppConsoleDlg *)pParent;
+	m_FirstIdle = true;
 
 	//// Audio source checkbox
 	//m_EnableAudioCtrl = (CButton*)m_pWndParent->GetCheckAudioCtrl();
@@ -196,4 +197,22 @@ void CScanInputs::OnShowWindow(BOOL bShow, UINT nStatus)
 	RectDlg.bottom += DeltaTop;
 
 	MoveWindow(&RectDlg,0);
+}
+
+
+/*
+	This function is called by the parent window every time this dialog box is idle
+*/
+int  CScanInputs::OnIdle( void )
+{
+
+	// If this is the first time the dialog box id idle the start a scan
+	if (m_FirstIdle)
+	{
+		OnBnClickedScan();
+		m_FirstIdle=false;
+		return 1;
+	};
+
+	return 0;
 }

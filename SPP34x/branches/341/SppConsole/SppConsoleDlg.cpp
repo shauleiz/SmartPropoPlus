@@ -6,7 +6,6 @@
 #include <time.h>
 #include "filterif.h"
 #include "SppConsole.h"
-#include "SppConsoleDlg.h"
 #include "DefVolumeDlg.h"
 #include "LogAudioHdrs.h"
 #include "LogPulse.h"
@@ -14,8 +13,8 @@
 #include "LogRawPulse.h"
 #include "WaveRec.h"
 #include "SmartPropoPlus.h"
+#include "SppConsoleDlg.h"
 #include "ScanInputs.h"
-#include ".\sppconsoledlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -45,6 +44,7 @@ CSppConsoleDlg::CSppConsoleDlg(CWnd* pParent /*=NULL*/)
 	, m_LogRawPulseDialog(NULL)
 	, m_pFmsConnLogFile(NULL)
 	, m_FmsConnLogStat(Idle)
+	, m_pScanInputs(NULL)
 {
 	//{{AFX_DATA_INIT(CSppConsoleDlg)
 	m_enable_audio = FALSE; /* Version 3.3.3 - Default is FALSE */
@@ -131,6 +131,7 @@ BEGIN_MESSAGE_MAP(CSppConsoleDlg, CDialog)
 	ON_COMMAND(ID_LOG_RAWPULSES, OnLogRawPulse)
 	ON_MESSAGE(MSG_RAW_PULSE_CANCEL, OnRawPulseCancel)
 	ON_BN_CLICKED(IDC_SCANDLG, OnBnClickedScandlg)
+	ON_WM_ENTERIDLE()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2497,6 +2498,7 @@ void CSppConsoleDlg::OnBnClickedScandlg()
 	};
 
 	CScanInputs ScanInputsDlg(this);
+	m_pScanInputs = &ScanInputsDlg;
 	INT_PTR nResponse = ScanInputsDlg.DoModal();
 
 	// If exit with cancel then restore state of audio sources checkbox
@@ -2522,4 +2524,21 @@ int CSppConsoleDlg::GetNumJoystickPos()
 	if (!SppGetFilteredPos(m_JoystickPos)) return 0;
 	if (m_JoystickPos) return m_JoystickPos[0];
 	return 0;
+}
+
+/*
+	This is an ugly way to start make the ScanInputs dialog box start scanning automatically
+	This is how it works:
+	1. The Modal dialog box (class CScanInputs) is created, the pointer to it is saved in m_pScanInputs
+	2. Once the dialog box is idle and ready to start receiving commands it sends a WM_ENTERIDLE to its parent window (this window)
+	3. The message handler for WM_ENTERIDLE is this function (OnEnterIdle)
+	4. If the message is sent by the Modal dialog box - it calles its function 'OnIdle' which does the work
+*/
+void CSppConsoleDlg::OnEnterIdle(UINT nWhy, CWnd* pWho)
+{
+	CDialog::OnEnterIdle(nWhy, pWho);
+
+	// Scan dialog box is idle
+	if (MSGF_DIALOGBOX == nWhy && m_pScanInputs == pWho)
+		((CScanInputs *)pWho)->OnIdle();
 }

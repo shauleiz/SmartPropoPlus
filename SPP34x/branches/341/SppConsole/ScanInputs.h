@@ -43,7 +43,10 @@ protected:
 	int					m_iOrigShiftAuto;
 	CButton*			m_ShiftPosCtrl;
 	int					m_iOrigShiftPos;
+	bool				m_FirstIdle;
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	int OnIdle ( void );
+
 };
 
