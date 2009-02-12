@@ -5,7 +5,6 @@
 #include "SppConsole.h"
 #include "SppConsoleDlg.h"
 #include "ScanInputs.h"
-//#include ".\scaninputs.h"
 
 
 // ScanInputs dialog
@@ -108,7 +107,46 @@ void CScanInputs::OnBnClickedScan()
 
 void CScanInputs::OnBnClickedSaveLog()
 {
-	// TODO: Save the log text in a file
+	CString txt;
+	// If the text is too short then abort
+	m_LogEdt.GetWindowText(txt);
+	if (!txt || txt.IsEmpty() || !txt.GetLength())
+		return;
+
+	// Get the name of the destination file
+	OPENFILENAME OpenFileNameStruct;
+	const TCHAR *Filter = {"Log File\0*.log\0\0"};
+	const TCHAR *Ext	= {"Log"};
+	TCHAR FileName[MAX_PATH] = "";
+
+	// Prepare structure for 'SaveAs' dialog box
+	OpenFileNameStruct.lpstrFile = FileName;
+	OpenFileNameStruct.lStructSize =  sizeof (OPENFILENAME);
+	OpenFileNameStruct.hwndOwner = NULL;
+	OpenFileNameStruct.lpstrFilter = Filter;
+	OpenFileNameStruct.lpstrCustomFilter = NULL;
+	OpenFileNameStruct.nMaxFile = MAX_PATH;
+	OpenFileNameStruct.lpstrFileTitle = NULL;
+	OpenFileNameStruct.lpstrTitle = NULL;
+	OpenFileNameStruct.Flags = OFN_OVERWRITEPROMPT;
+	OpenFileNameStruct.lpstrDefExt = Ext;
+	OpenFileNameStruct.FlagsEx = NULL;
+	OpenFileNameStruct.pvReserved = NULL;
+	OpenFileNameStruct.dwReserved = 0;
+
+	// Display 'SaveAs' dialog box - get file name
+	BOOL Res = GetSaveFileName(&OpenFileNameStruct);
+	if (!Res)
+		return;
+
+	// Open output file and write data into file
+	HANDLE hFile = CreateFile(FileName, FILE_WRITE_DATA, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+		return;
+	TCHAR * buffer = txt.GetBuffer();
+	DWORD BytesWritten;
+	Res = WriteFile(hFile, buffer, (DWORD)strlen(buffer), &BytesWritten, (LPOVERLAPPED)NULL);
+
 }
 
 void CScanInputs::LogAudioLevel(int iMixer, int iLine, int Level)
