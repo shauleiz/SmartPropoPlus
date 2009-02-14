@@ -44,6 +44,7 @@ protected:
 	CButton*			m_ShiftPosCtrl;
 	int					m_iOrigShiftPos;
 	bool				m_FirstIdle;
+	bool				m_Found;
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	int OnIdle ( void );
