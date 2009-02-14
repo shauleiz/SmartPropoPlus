@@ -15,6 +15,7 @@ CScanInputs::CScanInputs(CWnd* pParent /*=NULL*/)
 {
 	m_pWndParent = (CSppConsoleDlg *)pParent;
 	m_FirstIdle = true;
+	m_Found = false;
 
 	//// Audio source checkbox
 	//m_EnableAudioCtrl = (CButton*)m_pWndParent->GetCheckAudioCtrl();
@@ -71,7 +72,12 @@ void CScanInputs::OnBnClickedCancel()
 
 void CScanInputs::OnBnClickedScan()
 {
-	// Set the hourglass cursor
+	m_Found = false;
+
+	// By default - the 'Apply' button is disabled
+	GetDlgItem(IDOK)->EnableWindow(FALSE);
+
+	// Set the hourglass cursor 
 	AfxGetApp()->DoWaitCursor(1); 
 
 	// Loop on all mixer devices
@@ -90,8 +96,13 @@ void CScanInputs::OnBnClickedScan()
 			LogAudioLevel(MixerCurSel, AudioLineCurSel, CurAudioLevel);
 			// If the audio level is high enough - Scan modulations
 			if ((CurAudioLevel>200) && (ScanModulationTypes()>0))
-				return; // FOUND! Stop searching	
-
+			{// FOUND! Stop searching
+				m_Found = true;
+				// 'Apply' button is enabled
+				GetDlgItem(IDOK)->EnableWindow(TRUE);
+				AfxGetApp()->DoWaitCursor(-1);
+				return; 	
+			}
 			// get next audio line
 			AudioLineCurSel = m_AudioLinesCtrl->SetCurSel((AudioLineCurSel+1)%AudioLineCount);
 			m_pWndParent->SomethingChanged();
@@ -101,10 +112,15 @@ void CScanInputs::OnBnClickedScan()
 		m_pWndParent->SomethingChanged();
 	}; // Mixer for-loop
 
-	// Remove the hourglass cursor
+	
+	// Remove the hourglass cursor 
+	GetDlgItem(IDOK)->EnableWindow(FALSE);
+	m_Found = false;
 	AfxGetApp()->DoWaitCursor(-1); 
+	return; 	
 }
 
+// Save the log text in a file
 void CScanInputs::OnBnClickedSaveLog()
 {
 	CString txt;
