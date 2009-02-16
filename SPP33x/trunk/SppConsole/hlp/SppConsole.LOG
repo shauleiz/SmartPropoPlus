@@ -2,7 +2,7 @@ Microsoft (R) Help Compiler
 HCRTF 4.03.0002
 Copyright (c) Microsoft Corp 1990 - 1995. All rights reserved.
 sppconsole.hpj
-    HC3037: Warning: c:\Code\SmartPropoPlus\337\SppConsole\hlp\SppConsole.hm : 
+    HC3037: Warning: c:\Code\SmartPropoPlus\SPP33x\SppConsole\hlp\SppConsole.hm : 
 	The map value for "HIDD_ABOUT" is the same as the map value for "HIDR_MENU_MAIN".
     HC1002: Note: 
 	Using existing phrase table: SppConsole.ph.
@@ -225,7 +225,7 @@ sppconsole.hpj
 0	Bitmaps
 
 
-Created c:\Code\SmartPropoPlus\337\SppConsole\hlp\SppConsole.HLP, 5,995 bytes
+Created c:\Code\SmartPropoPlus\SPP33x\SppConsole\hlp\SppConsole.HLP, 5,995 bytes
 Phrase+Zeck compression INCREASED help file by 32 bytes.
 Compile time: 0 minutes, 0 seconds
 2 notes, 1 warning
