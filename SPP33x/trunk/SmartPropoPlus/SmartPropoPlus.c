@@ -35,7 +35,10 @@ void SetSelectedFilterIndex(const int i)
 	name  = GetFilterNameByIndexFromGlobalMemory(i);
 
 	if (i>=0 && name && strlen(name) )
+	{
 		SetSelectedFilterNameToRegistry(name);
+		free(name);
+	}
 	else
 		SetSelectedFilterNameToRegistry("");
 }
@@ -50,7 +53,10 @@ int GetSelectedFilterIndex()
 	/* Not found - get name of selected filter from registry and convert to index */
 	name = GetSelectedFilterNameFromRegistry();
 	if (name && strlen(name))
+	{
 		index  = GetFilterIndexByNameFromGlobalMemory(name);
+		free(name);
+	}
 	else
 		/* Get the index of the selected filter from global memory */
 		index  = GetSelectedFilterIndexFromGlobalMemory();
@@ -116,6 +122,28 @@ struct Modulations * GetModulation(int Create)
 		return Out;
 	else
 		return GetModulationFromRegistry(Create);
+}
+
+void FreeModulation(struct Modulations * list)
+{
+	int i=0;
+
+	if (!list)
+		return;
+
+	while (list->ModulationList[i])
+	{
+		free(list->ModulationList[i]->ModTypeDisplay);
+		free(list->ModulationList[i]->ModTypeInternal);
+		free(list->ModulationList[i]);
+		list->ModulationList[i] = NULL;
+		i++;
+	};
+
+	free(list->ModulationList);
+	list->ModulationList = NULL;
+	free(list);
+	list = NULL;
 }
 
 /*
