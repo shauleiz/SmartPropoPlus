@@ -389,6 +389,7 @@ struct Modulations * GetModulationFromGlobalMemory()
 		Mod[index] = (struct Modulation *)malloc(sizeof(struct Modulation));
 		Mod[index]->index = index;
 		Mod[index]->ModTypeInternal =  strdup((char *)gpSharedBlock->pInternalModName[index]);
+		Mod[index]->ModTypeDisplay = NULL;
 		index++;
 	}while ((char *)gpSharedBlock->pInternalModName[index]);
 

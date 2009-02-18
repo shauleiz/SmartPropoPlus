@@ -1,5 +1,10 @@
 // SppConsoleDlg.cpp : implementation file
 //
+// Debugging info - Start
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+// Debugging info - End
 
 #include "stdafx.h"
 #include "shlwapi.h"
@@ -142,6 +147,11 @@ BOOL CSppConsoleDlg::OnInitDialog()
 	HANDLE hMuxex;
 	char msg[1000];
 
+	// Debugging memory leaks - Start
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_DELAY_FREE_MEM_DF );
+	// Debugging memory leaks - End
+
 	/*** Unique Instance ***/
 	/* Register a message to communicate between two SPPConsole instances */
 	WM_INTERSPPCONSOLE = RegisterWindowMessage(INTERSPPCONSOLE);
@@ -200,20 +210,17 @@ BOOL CSppConsoleDlg::OnInitDialog()
 	m_hPpJoyExDll = NULL;						// Initialize handle to DLL
 	PpJoyExShowCtrl();							// Display/Hide check box. Check/uncheck it
 	OnPpjoyex();								// Start PPJoy according to checkbox state
+			
+
 
 	/* Get Filter (JsChPostProc) information */
 	DLLFUNC1 pStartJsChPostProc = (DLLFUNC1)GetProcAddress(m_hPpJoyExDll, "StartJsChPostProc");
 	if (pStartJsChPostProc)
 		(*pStartJsChPostProc)();
-		
-	
 	
 	CDialog::OnInitDialog();
 
-
 	m_pSpkPic = GetDlgItem(IDC_SPK);
-
-
 	return TRUE;  // return TRUE  unless you set the focus to a control
 
 }
@@ -388,6 +395,20 @@ int CSppConsoleDlg::PopulateModulation()
 		ShowShiftRB(false);
 	else
 		ShowShiftRB();
+
+	/* Some cleaning up */
+	i=0;
+	while (Modulation && Modulation->ModulationList[i])
+	{
+		if (Modulation->ModulationList[i]->ModTypeDisplay) delete (Modulation->ModulationList[i]->ModTypeDisplay);
+		if (Modulation->ModulationList[i]->ModTypeInternal) delete (Modulation->ModulationList[i]->ModTypeInternal);
+		free (Modulation->ModulationList[i]);
+		i++;
+	};
+
+	free (Modulation->ModulationList);
+	free (Modulation); 
+
 	return selected;
 }
 
@@ -678,6 +699,7 @@ LRESULT CSppConsoleDlg::OnInterSppConsole(WPARAM wParam, LPARAM lParam)
 LRESULT CSppConsoleDlg::OnInterSppApps(WPARAM wParam, LPARAM lParam)
 {
 	CButton* OK = (CButton *)GetDlgItem(IDOK);
+	_CrtMemDumpAllObjectsSince(NULL);
 
 	/* DLL is stopping */
 	if (wParam == MSG_DLLSTOPPING)
@@ -744,7 +766,6 @@ LRESULT CSppConsoleDlg::OnInterSppApps(WPARAM wParam, LPARAM lParam)
 	if (wParam == MSG_JSCHPPEVAIL)
 	{
 
-//		ASSERT(0);
 		if (lParam == 0)
 			m_JsChPostProcEvail = false;
 		else
@@ -754,7 +775,7 @@ LRESULT CSppConsoleDlg::OnInterSppApps(WPARAM wParam, LPARAM lParam)
 		};
 
 	};
-	
+					
 	return 0;
 }
 
@@ -888,7 +909,10 @@ void CSppConsoleDlg::PopulateAudioSource()
 	/* Loop on the list and populate the combo box */
 	int nAudioDev = m_AudioInput->GetCountMixerDevice();
 	for (int i=0 ; i<nAudioDev ; i++)
-		MixerList->InsertString(i, m_AudioInput->GetMixerDeviceName(i));
+	{	
+		const char * MixerDeviceName = m_AudioInput->GetMixerDeviceName(i);
+		MixerList->InsertString(i, MixerDeviceName);
+	}
 
 	/* No audio device detected */
 	if (nAudioDev < 1)
@@ -1069,7 +1093,11 @@ int CSppConsoleDlg::GetCurrentMixerDevice()
 {
 	char * mixer = ::GetCurrentMixerDevice();
 	if (mixer)
-		return m_AudioInput->GetMixerDeviceIndex(mixer);
+	{
+		int iMixer = m_AudioInput->GetMixerDeviceIndex(mixer);
+		free(mixer);
+		return iMixer;
+	}
 	else
 		return 0; // Default 
 }
@@ -1486,7 +1514,6 @@ void CSppConsoleDlg::OnPpjoyex()
 void CSppConsoleDlg::UpdateFilterMenu()
 {
 	int nFilters;
-	
 	nFilters = GetNumberOfFilters();
 	if (nFilters<1)
 		return;
@@ -1515,11 +1542,12 @@ void CSppConsoleDlg::UpdateFilterMenu()
 	int res = pFilterMenu->CreatePopupMenu( );
 	for (int index = 0; index<nFilters; index++)
 	{
-		CString item = GetFilterNameByIndex(index);
+		char * item = GetFilterNameByIndex(index);
 		if (m_iSelFilter == index)
 			pFilterMenu->AppendMenu(MF_STRING|MF_CHECKED, IDC_FILTER_0+index, item);
 		else
 			pFilterMenu->AppendMenu(MF_STRING|MF_UNCHECKED, IDC_FILTER_0+index, item);
+		free(item);
 	};
 
 	/* If does not exist, create as third  and attach the filter menu */
@@ -1536,6 +1564,7 @@ void CSppConsoleDlg::UpdateFilterMenu()
 
 		SetMenu(&menu);
 		m_hFilterMenu = pFilterMenu->Detach();
+		delete (pFilterMenu);
 	}
 
 	/* Set the selected item */

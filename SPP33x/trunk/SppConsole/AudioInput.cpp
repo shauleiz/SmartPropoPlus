@@ -359,6 +359,7 @@ CAudioInput::CAudioInput()
 	if (!nMixDev)
 		return;
 
+
 	for (unsigned int index=0; index<nMixDev ; index++)
 	{
 		mixer = new CMixerDevice(index);
@@ -513,7 +514,10 @@ CAudioInput::CMixerDevice::~CMixerDevice()
 		delete(phd);
 		m_ArrayPhysicalDev.RemoveAt(0);
 	};
+	
 	m_ArrayPhysicalDev.RemoveAll();
+	free(m_name);
+
 }
 
 CAudioInput::CMixerDevice::CMixerDevice(int index)
@@ -1096,6 +1100,8 @@ CAudioInput::CMixerDevice::CInputLine::CInputLine()
 
 CAudioInput::CMixerDevice::CInputLine::~CInputLine()
 {
+	free((void *)m_Name);
+	m_Name=NULL;
 	m_ArrayMuteControl->RemoveAll();
 	delete(m_ArrayMuteControl);
 }
@@ -1208,6 +1214,7 @@ CArray<  CAudioInput::CMixerDevice::CInputLine::sMuteLine , CAudioInput::CMixerD
 					ml->LineID = mxl.dwLineID;
 					GetMuteValue(m_hMixerDevice, ControlList[iCtrl].dwControlID, &(ml->mute));
 					MuteArray->Add(*ml);
+					delete (ml);
 					found++;
 					iSrc++; // next
 					break;

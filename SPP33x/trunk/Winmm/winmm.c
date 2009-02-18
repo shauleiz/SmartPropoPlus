@@ -1,6 +1,12 @@
 // pcpp : Defines the entry point for the DLL application.
 //
 
+// Debugging info - Start
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+// Debugging info - End
+
 #include "stdafx.h"
 #include "math.h"
 #include "mmsystem.h"
@@ -1844,18 +1850,17 @@ void StartPropo(void)
 	int res=0;
 	static int PropoStarted;
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",4); fflush(gCtrlLogFile);
-#endif
+	// Debugging memory leaks - Start
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_DELAY_FREE_MEM_DF );
+	// Debugging memory leaks - End
+
 	if (PropoStarted)
 		return;
 	else
 		PropoStarted = 1; 
 	VistaOS = isVista();
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",5); fflush(gCtrlLogFile);
-#endif
 	/* Download configuration from the registry (if exists) */
 	Modulation= GetModulation(0);
 
@@ -1866,12 +1871,10 @@ void StartPropo(void)
 	/* SetActiveProcessPulseFunction(DataBlock); */
 	nActiveModulations = LoadProcessPulseFunctions(DataBlock);
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",6); fflush(gCtrlLogFile);
-#endif
 	/* Get Debug level from the registry (if exists) and start debugging */
 	gDebugLevel = GetDebugLevel();
 	_DebugWelcomePopUp(Modulation);
+	FreeModulation(Modulation );
 
 #ifndef WASAPI 
     waveRecording = TRUE; /* Start recording */
@@ -1982,6 +1985,9 @@ void StopPropo(void)
 		sprintf(msg, "StopPropo(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS", WM_INTERSPPAPPS);
 		MessageBox(NULL,msg, "SmartPropoPlus Message" , MB_SYSTEMMODAL);
 	};
+
+	/* Cleaning the list of ProcessPulseXXX functions */
+	free(ListProcessPulseFunc);
 
 	if (console_started)
 		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLSTOPPING, 0);
@@ -2140,6 +2146,11 @@ BOOL LoadWinmm(int line)
 	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: Starting LoadWinmm (%s)",1, DEBUG_W2K); fflush(gCtrlLogFile);
 #endif
 
+	// Debugging memory leaks - Start
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_DELAY_FREE_MEM_DF );
+	// Debugging memory leaks - End
+
     if (!GetSystemDirectory(path, MAX_PATH)) 
 	{
 		if (path)
@@ -2228,7 +2239,6 @@ int GetJsChPostProcInfo(FAR HMODULE  hJschpostproc)
 	if (!hJschpostproc)
 		return 0;
 
-
 	/* Number of supported filters */
 	if (pGetNumberOfFilters)
 		n = pGetNumberOfFilters();
@@ -2252,11 +2262,21 @@ int GetJsChPostProcInfo(FAR HMODULE  hJschpostproc)
 	}
 	else
 	{
-		names[0] = "(Default)";
+		names[0] = strdup("(Default)");
 		names[1] = NULL;
 	};
 	
 	SetFilterNames(names);
+
+	// Cleaning
+	i=0;
+	while (names[i]) 
+	{
+		free (names[i]);
+		names[i] = NULL;
+		i++;
+	};
+
 
 	return 1;
 }

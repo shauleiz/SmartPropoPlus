@@ -183,6 +183,7 @@ void SetCurrentMixerDevice(const char * MixerName);
 void SetCurrentInputLine(const char * MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);
 int isVista(void);
+void FreeModulation(struct Modulations * list);
 
 
 
