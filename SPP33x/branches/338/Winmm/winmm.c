@@ -1745,6 +1745,7 @@ static void __fastcall ProcessData(int i)
 	high++;
         if (low) 
 		{
+			low=low*44100/waveFmt.nSamplesPerSec; // Normalize number of sumples
 			_DebugProcessData(i,min, max, threshold, low,0);
             ProcessPulse(low, FALSE);
 			 _DebugJoyStickData();
@@ -1755,6 +1756,7 @@ static void __fastcall ProcessData(int i)
         low++;
         if (high) 
 		{
+			high=high*44100/waveFmt.nSamplesPerSec; // Normalize number of sumples
 			_DebugProcessData(i,min, max, threshold, high,1);
             ProcessPulse(high, TRUE);
 			 _DebugJoyStickData();
@@ -2988,7 +2990,7 @@ DWORD WINAPI ProcThread(void *param){
     IMMDevice *m_pDeviceIn = NULL;
     IAudioClient *m_pClientIn = NULL;
     IAudioCaptureClient *pCaptureClient = NULL;
-	WAVEFORMATEX  waveFmt,*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
+	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
 	//HANDLE hNotificationEvent;
 //	LPWSTR DevId;
 //	DWORD dwState;
@@ -3116,8 +3118,8 @@ DWORD WINAPI ProcThread(void *param){
             packetLength = 0;
 			hr = pCaptureClient->lpVtbl->GetNextPacketSize(pCaptureClient, &packetLength);
 			if (FAILED(hr))
-			{
-				MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+			{	// Usually caused by change of sampling frequency while SPP is on
+				MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 				EXIT_ON_ERROR(hr);
 			};
 
