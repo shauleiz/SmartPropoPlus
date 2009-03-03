@@ -112,6 +112,7 @@ public:
 		const char * GetMixerDeviceName(int index);
 		const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 		CMixerDevice * GetMixerDevice(int Mixer);
+		int SetPreferredMixerDevice(void);
 
 		int GetCountMixerDevice(void);
 		CAudioInput();
@@ -120,6 +121,7 @@ public:
 	protected:
 		CArray< CMixerDevice *,CMixerDevice *> m_ArrayMixerDevice;
 		int m_CurrentMixerDevice;
+		TCHAR * m_OrigPreferredMixerDevice;
 };
 
 
