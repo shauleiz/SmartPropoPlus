@@ -1838,7 +1838,6 @@ extern __declspec(dllexport) UINT __stdcall   StopPPJoyInterface()
 */
 void StartPropo(void)
 {
-    int i;
 	struct Modulations *  Modulation;
 	int nActiveModulations;
 	char ChnlLogFileName[2000] = {""};
@@ -1846,18 +1845,12 @@ void StartPropo(void)
 	int res=0;
 	static int PropoStarted;
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",4); fflush(gCtrlLogFile);
-#endif
 	if (PropoStarted)
 		return;
 	else
 		PropoStarted = 1; 
 	VistaOS = isVista();
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",5); fflush(gCtrlLogFile);
-#endif
 	/* Download configuration from the registry (if exists) */
 	Modulation= GetModulation(0);
 
@@ -1868,47 +1861,15 @@ void StartPropo(void)
 	/* SetActiveProcessPulseFunction(DataBlock); */
 	nActiveModulations = LoadProcessPulseFunctions(DataBlock);
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",6); fflush(gCtrlLogFile);
-#endif
 	/* Get Debug level from the registry (if exists) and start debugging */
 	gDebugLevel = GetDebugLevel();
 	_DebugWelcomePopUp(Modulation);
 
+	// Initialize WaveIn and start it
 #ifndef WASAPI 
-    waveRecording = TRUE; /* Start recording */
+	StartStreaming();
+#else
 
-	/* Get sample rate Version 3.3.2 
-	res = pwaveInGetDevCapsA(waveIn, &Capabilities, sizeof(WAVEINCAPS));*/
-
-	/* Wave format structure initialization */
-    waveFmt.wFormatTag = WAVE_FORMAT_PCM;
-    waveFmt.nChannels = 1;
-    waveFmt.nSamplesPerSec = 44100;
-    waveFmt.wBitsPerSample =16;
-    waveFmt.nBlockAlign = waveFmt.wBitsPerSample / 8 * waveFmt.nChannels;
-    waveFmt.nAvgBytesPerSec = waveFmt.nSamplesPerSec * waveFmt.nBlockAlign;
-    waveFmt.cbSize = 0;
-
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",7); fflush(gCtrlLogFile);
-#endif
-	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
-    pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
-
-	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
-    for (i = 0; i < N_WAVEIN_BUF; i++) {
-        waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
-        waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
-        waveBuf[i]->dwBufferLength = waveBufSize;
-        waveBuf[i]->dwUser = i;
-        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
-    }
-
-	/* Begin listening to WAVE IN */
-    pwaveInStart(waveIn);
-#else // WASAPI
 	i=0;
 	closeRequest = FALSE;
 	waveRecording = FALSE;
@@ -1931,30 +1892,11 @@ void StartPropo(void)
 
 void StopPropo(void)
 {
-    int i;
 	char tbuffer [9], msg[1000];
 	static UINT NEAR WM_INTERSPPAPPS;
-	HANDLE hProcessHeap;
-
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fclose(gCtrlLogFile);
-#endif
 
 #ifndef WASAPI
-    waveRecording = FALSE;
-	hProcessHeap = GetProcessHeap();
-	
-	if (waveIn && hProcessHeap && !VistaOS)
-	{
-		pwaveInStop(waveIn);
-		/* 3.3.5 - Higher number of buffers to support Vista */
-		for (i = 0; i < N_WAVEIN_BUF ;i++) {
-			pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-			HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
-			HeapFree(hProcessHeap, 0, waveBuf[i]);
-		}
-		pwaveInClose(waveIn);
-	};
+	StopStreaming();
 #else // WASAPI
 	i=0;
 	hProcessHeap=NULL;
@@ -1993,6 +1935,61 @@ void StopPropo(void)
 		fclose(gChnlLogFile);
 #endif
 
+}
+
+void StartStreaming(void)
+{
+	int i;
+    waveRecording = TRUE; /* Start recording */
+
+	/* Get sample rate Version 3.3.2 
+	res = pwaveInGetDevCapsA(waveIn, &Capabilities, sizeof(WAVEINCAPS));*/
+
+	/* Wave format structure initialization */
+    waveFmt.wFormatTag = WAVE_FORMAT_PCM;
+    waveFmt.nChannels = 1;
+    waveFmt.nSamplesPerSec = 44100;
+    waveFmt.wBitsPerSample =16;
+    waveFmt.nBlockAlign = waveFmt.wBitsPerSample / 8 * waveFmt.nChannels;
+    waveFmt.nAvgBytesPerSec = waveFmt.nSamplesPerSec * waveFmt.nBlockAlign;
+    waveFmt.cbSize = 0;
+
+	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
+    pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
+
+	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
+    for (i = 0; i < N_WAVEIN_BUF; i++) {
+        waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
+        waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
+        waveBuf[i]->dwBufferLength = waveBufSize;
+        waveBuf[i]->dwUser = i;
+        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
+    }
+
+	/* Begin listening to WAVE IN */
+    pwaveInStart(waveIn);
+}
+
+void StopStreaming(void)
+{
+    int i;
+	HANDLE hProcessHeap;
+
+    waveRecording = FALSE;
+	hProcessHeap = GetProcessHeap();
+	
+	if (waveIn && hProcessHeap && !VistaOS)
+	{
+		pwaveInStop(waveIn);
+		/* 3.3.5 - Higher number of buffers to support Vista */
+		for (i = 0; i < N_WAVEIN_BUF ;i++) {
+			pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+			HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
+			HeapFree(hProcessHeap, 0, waveBuf[i]);
+		}
+		pwaveInClose(waveIn);
+	};
 }
 
 //---------------------------------------------------------------------------

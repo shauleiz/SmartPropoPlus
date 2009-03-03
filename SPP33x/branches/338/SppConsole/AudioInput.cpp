@@ -6,6 +6,7 @@
 #include "sppconsole.h"
 #include "AudioInput.h"
 #include <math.h>
+#include <mmddk.h>
 #include "SmartPropoPlus.h"
 
 #ifdef _DEBUG
@@ -169,11 +170,10 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_BOOLEAN list,
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_BOOLEAN);
 	mixDetails.paDetails = list;
 	mmres = mixerSetControlDetails((HMIXEROBJ)hmxobj, (LPMIXERCONTROLDETAILS) &mixDetails,	MIXER_SETCONTROLDETAILSF_VALUE);
-				
 	return mmres;
 				
 }
@@ -189,7 +189,7 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_UNSIGNED list
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
 	mixDetails.paDetails = list;
 	mmres = mixerSetControlDetails((HMIXEROBJ)hmxobj, (LPMIXERCONTROLDETAILS) &mixDetails,	MIXER_SETCONTROLDETAILSF_VALUE);
@@ -241,7 +241,7 @@ MMRESULT GetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_LISTTEXT list
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_LISTTEXT);
 	mixDetails.paDetails = list;
 	mmres = mixerGetControlDetails((HMIXEROBJ)hmxobj,(LPMIXERCONTROLDETAILS) &mixDetails, MIXER_GETCONTROLDETAILSF_LISTTEXT);
@@ -263,7 +263,7 @@ MMRESULT GetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_BOOLEAN list,
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_BOOLEAN);
 	mixDetails.paDetails = list;
 	mmres = mixerGetControlDetails((HMIXEROBJ)hmxobj,(LPMIXERCONTROLDETAILS) &mixDetails, MIXER_GETCONTROLDETAILSF_VALUE);
@@ -359,12 +359,18 @@ CAudioInput::CAudioInput()
 	if (!nMixDev)
 		return;
 
+	// Create array mixer devices
 	for (unsigned int index=0; index<nMixDev ; index++)
 	{
 		mixer = new CMixerDevice(index);
 		m_ArrayMixerDevice.Add(mixer);
 	};
 
+	// Find the name of the preferred mixer device (Before SPP started) - Save it
+	MMRESULT Res;
+	WAVEINCAPS caps;
+	Res = waveInGetDevCaps(0, &caps, sizeof(WAVEINCAPS));
+	m_OrigPreferredMixerDevice = strdup(caps.szPname);
 }
 
 CAudioInput::~CAudioInput()
@@ -379,6 +385,25 @@ CAudioInput::~CAudioInput()
 
 	/* Distroy the container itself */
 	m_ArrayMixerDevice.RemoveAll();
+
+	///// Restore original preferred mixer device
+	// Get ID of original preferred mixer device
+	WAVEINCAPS caps;
+	int iSelectedDevice = -1;
+	int i=0;
+	while (waveInGetDevCaps(i, &caps, sizeof(WAVEINCAPS))== MMSYSERR_NOERROR)
+	{
+		const char * DevName = caps.szPname;
+		if (!strcmp(DevName, m_OrigPreferredMixerDevice))
+			iSelectedDevice = i;
+		i++;
+	};
+
+	// Set preferred device
+	waveInMessage((HWAVEIN)WAVE_MAPPER, DRVM_MAPPER_PREFERRED_SET, iSelectedDevice, 0);
+
+	// Clean-up
+	free(m_OrigPreferredMixerDevice);
 }
 
 int CAudioInput::GetCountMixerDevice()
@@ -434,11 +459,13 @@ void CAudioInput::Restore()
 	if (!nMixDev)
 		return;
 
+	// Restore all mixers
 	for (int index=0; index<nMixDev ; index++)
 	{
 		mixer = m_ArrayMixerDevice.GetAt(index);
 		mixer->Restore();
 	};
+
 }
 
 int CAudioInput::GetMixerDeviceIndex(char *mixer)
@@ -463,6 +490,7 @@ bool CAudioInput::SetCurrentMixerDevice(int i)
 	if (i>=0 && i<cMixer)
 	{
 		m_CurrentMixerDevice = i;
+		SetPreferredMixerDevice();
 		return true;
 	}
 	else
@@ -478,6 +506,59 @@ int CAudioInput::GetCurrentMixerDevice()
 	return m_CurrentMixerDevice;
 }
 
+
+/*
+	This function affects the system-wide preferred device
+	It gets the device name from its index (m_CurrentMixerDevice)
+	and serches the system for the ID of this name.
+	If found, it sets it as preferred (default) device
+
+	Return:
+	Success:	New ID of the former selected device
+	Failiure:	-1
+*/
+int CAudioInput::SetPreferredMixerDevice(void)
+{
+	// Get name of current preferred device - store it
+	MMRESULT Res;
+	WAVEINCAPS caps;
+	Res = waveInGetDevCaps(0, &caps, sizeof(WAVEINCAPS));
+	if (Res != MMSYSERR_NOERROR)
+		return -1;
+	const char * CurPrefDeviceName = caps.szPname;
+
+	// Get name of new selected device
+	const char * SelectedDevice = GetMixerDeviceName(m_CurrentMixerDevice);
+	if (!SelectedDevice || !strlen(SelectedDevice))
+		return -1;
+
+	// Get ID of new selected device
+	int iSelectedDevice = -1;
+	int i=0;
+	while (waveInGetDevCaps(i, &caps, sizeof(WAVEINCAPS))== MMSYSERR_NOERROR)
+	{
+		const char * DevName = caps.szPname;
+		if (!strcmp(DevName, SelectedDevice))
+			iSelectedDevice = i;
+		i++;
+	};
+
+	// Set new preferred device
+	Res  = waveInMessage((HWAVEIN)WAVE_MAPPER, DRVM_MAPPER_PREFERRED_SET, iSelectedDevice, 0);
+	if (Res != MMSYSERR_NOERROR)
+		return -1;
+
+	// Get ID of previous preferred device
+	iSelectedDevice = -1;
+	i=0;
+	while (waveInGetDevCaps(i, &caps, sizeof(WAVEINCAPS))== MMSYSERR_NOERROR)
+	{
+		const char * DevName = caps.szPname;
+		if (!strcmp(DevName, CurPrefDeviceName))
+			return i;
+	}
+	return -1;
+}
 
 /***************************************************************************************
 	Class CMixerDevice

@@ -266,7 +266,6 @@ copy .\release\winmm.dll  ..\.
 				Name="VCLinkerTool"
 				AdditionalDependencies="smartpropoplus.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\Debug/winmm.dll"
-				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="../smartpropoplus/debug"
 				IgnoreDefaultLibraryNames=""

@@ -294,6 +294,8 @@ HANDLE hThread;
 
 extern void StartPropo(void);
 extern void StopPropo(void);
+void StartStreaming(void);
+void StopStreaming(void);
 DWORD WINAPI ProcThread(void *param);
 
 //-------------- JsChPostProc.dll interface ---------------------------------
