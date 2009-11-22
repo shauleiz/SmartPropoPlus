@@ -349,6 +349,7 @@ int GetCurrentInputLineFromRegistry(unsigned int *SrcID)
 		return 0;
 
 	RegCloseKey(hkAud);
+	free(mdName);
 	return 1;
 }
 
