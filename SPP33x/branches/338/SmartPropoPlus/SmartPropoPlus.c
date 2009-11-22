@@ -231,6 +231,7 @@ int GetCurrentInputLine(unsigned int *SrcID)
 void SetCurrentMixerDevice(const char * MixerName)
 {
 	SetCurrentMixerDeviceToRegistry(MixerName);
+	SetMixerDeviceChangedToGlobalMemory();
 }
 
 void SetCurrentInputLine(const char * MixerName, unsigned int SrcID)
