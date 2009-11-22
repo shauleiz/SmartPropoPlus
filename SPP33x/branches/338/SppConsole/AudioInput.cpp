@@ -490,7 +490,9 @@ bool CAudioInput::SetCurrentMixerDevice(int i)
 	if (i>=0 && i<cMixer)
 	{
 		m_CurrentMixerDevice = i;
-		SetPreferredMixerDevice();
+		int PrevDeviceID = SetPreferredMixerDevice();
+		if (PrevDeviceID<0)
+			return false;
 		return true;
 	}
 	else
