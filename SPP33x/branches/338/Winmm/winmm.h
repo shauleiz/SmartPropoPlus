@@ -297,6 +297,7 @@ extern void StopPropo(void);
 void StartStreaming(void);
 void StopStreaming(void);
 DWORD WINAPI ProcThread(void *param);
+DWORD WINAPI MixerChangedThread(void *param);
 
 //-------------- JsChPostProc.dll interface ---------------------------------
 
