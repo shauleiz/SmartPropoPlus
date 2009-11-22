@@ -233,6 +233,28 @@ int SetActiveModeToGlobalMemory(const char * selected)
 	return iMod;
 }
 
+void SetMixerDeviceChangedToGlobalMemory(void)
+{
+	if (!isGlobalMemoryExist())
+	{
+		Sleep(200); /* Replace with something else */
+		if (!isGlobalMemoryExist())
+			return;
+	}
+
+	/* Open Mutex and Wait for it */
+	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
+	WaitForSingleObject(ghDataLock, INFINITE);
+
+	/* Lock access to global memory */
+	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+
+	gpSharedBlock->MixerDeviceChanged = TRUE;
+
+	/* Release acces lock */
+	ReleaseMutex(ghDataLock);
+
+}
 
 int SetShiftAutoDetectToGlobalMemory(const int sel)
 {
@@ -549,6 +571,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 		/* Default values */
 		gpSharedBlock->VersionGui = 0;
 		gpSharedBlock->i_sel_fltr = -1;
+		gpSharedBlock->MixerDeviceChanged = FALSE;
 
 	};
 	
