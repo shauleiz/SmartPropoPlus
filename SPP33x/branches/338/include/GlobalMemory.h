@@ -27,6 +27,7 @@ struct SharedDataBlock
 		BOOL		ActiveModShift; // Positive shift?
 		BOOL		AutoDetectModShift; // Shift Auto-detect on?
 	} ActiveModulation;
+	BOOL MixerDeviceChanged; // Set by SppConsole when changed, reset by Winmm.dll when detected
 /*	far void  __based( gpSharedBlock ) ** ListProcessPulseFunc; */
 	int nModulations;
 	char __based( gpSharedBlock ) *pInternalModName[MAX_MODS];
@@ -53,6 +54,8 @@ int SetActiveModeToGlobalMemory(const char * selected);
 int SetShiftAutoDetectToGlobalMemory(const int sel);
 void SetPositiveShiftToGlobalMemory(const int sel);
 struct Modulations * GetModulationFromGlobalMemory();
+
+void SetMixerDeviceChangedToGlobalMemory(void);
 
 void SetNumberOfFiltersToGlobalMemory(const int n);
 int GetNumberOfFiltersFromGlobalMemory();
