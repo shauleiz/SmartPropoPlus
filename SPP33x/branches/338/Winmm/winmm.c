@@ -17,10 +17,8 @@
 #include "JsChPostProc.h"
 #include "winmm.h"
 #include <assert.h>
-#ifdef WASAPI
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
-#endif // WASAPI
 #ifdef PPJOY
 #include <winioctl.h>
 #include "ppjoyex.h"
@@ -1796,7 +1794,15 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
 		/* Requests the audio device to refill the current buffer */
         if (waveRecording) 
 			pwaveInAddBuffer(waveIn, waveBuf[buf->dwUser], sizeof(WAVEHDR));
+
+		/* If mixer device changed - start a thread that restarts WaveIn with the new device */
+		if (DataBlock->MixerDeviceChanged)
+		{
+				hThread = CreateThread(NULL, 0, MixerChangedThread, NULL,  0, &dwThreadId);
+				DataBlock->MixerDeviceChanged = FALSE;	/* Clear Flag */
+		};
     }
+
 }
 
 #ifdef PPJOY
@@ -1844,12 +1850,13 @@ void StartPropo(void)
 	//WAVEINCAPS Capabilities;
 	int res=0;
 	static int PropoStarted;
+	int i;
 
 	if (PropoStarted)
 		return;
 	else
 		PropoStarted = 1; 
-	VistaOS = isVista();
+	VistaOS = isVista(); // Vista or Windows7
 
 	/* Download configuration from the registry (if exists) */
 	Modulation= GetModulation(0);
@@ -1866,26 +1873,23 @@ void StartPropo(void)
 	_DebugWelcomePopUp(Modulation);
 
 	// Initialize WaveIn and start it
-#ifndef WASAPI 
-	StartStreaming();
-#else
+	if (!VistaOS)
+		StartStreaming();
+	else
+	{
 
-	i=0;
-	closeRequest = FALSE;
-	waveRecording = FALSE;
+		i=0;
+		closeRequest = FALSE;
+		waveRecording = FALSE;
 
-	hThread = CreateThread(
-        NULL,              // no security attribute
-        0,                 // default stack size
-        ProcThread,
-        NULL,    // thread parameter
-        0,                 // not suspended
-        &dwThreadId);      // returns thread ID
-#endif // WASAPI 
-
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: End of StartPropo",8); fflush(gCtrlLogFile);
-#endif
+		hThread = CreateThread(
+			NULL,              // no security attribute
+			0,                 // default stack size
+			ProcThread,
+			NULL,				// thread parameter
+			0,                 // not suspended
+			&dwThreadId);      // returns thread ID
+	} 
 	
 }
 //---------------------------------------------------------------------------
@@ -1894,20 +1898,23 @@ void StopPropo(void)
 {
 	char tbuffer [9], msg[1000];
 	static UINT NEAR WM_INTERSPPAPPS;
+	int i;
+	HANDLE hProcessHeap;
 
-#ifndef WASAPI
-	StopStreaming();
-#else // WASAPI
-	i=0;
-	hProcessHeap=NULL;
-	if( waveRecording && hThread != NULL) {
-		/* suppress unused variable warnings */
-		closeRequest = TRUE;
-		while(WaitForSingleObject(hThread, 1000) != WAIT_OBJECT_0){
+	if (!VistaOS)
+		StopStreaming();
+	else 
+	{// WASAPI
+		i=0;
+		hProcessHeap=NULL;
+		if( waveRecording && hThread != NULL) {
+			/* suppress unused variable warnings */
+			closeRequest = TRUE;
+			while(WaitForSingleObject(hThread, 1000) != WAIT_OBJECT_0){
+			}
+			hThread = NULL;
 		}
-		hThread = NULL;
-	}
-#endif // WASAPI
+	};
 	if (gDebugLevel>=2 && gCtrlLogFile)
 	{
 		fprintf(gCtrlLogFile,"\n%s - Closing WINMM.DLL\n\n", _strtime( tbuffer ));
@@ -2979,7 +2986,7 @@ extern __declspec(dllexport) UINT __stdcall    StartJsChPostProc(void)
 	return res;
 }
 #endif /* PPJOY */
-#ifdef WASAPI
+
 DWORD WINAPI ProcThread(void *param){
 
     HRESULT hr = S_OK;
@@ -3176,4 +3183,15 @@ Exit:
 	return 0;
 }
 
-#endif /* WASAPI */
+
+/* Thread called when user changed preffered mixer device */
+DWORD WINAPI MixerChangedThread(void *param)
+{
+	StopStreaming();						/* Stop current Wavein */
+
+	Sleep(2000);								/* Wait for buffers to clear */
+
+	StartStreaming();						/* Start new WaveIn */
+
+	return 0;
+}
