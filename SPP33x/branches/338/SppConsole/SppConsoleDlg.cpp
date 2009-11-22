@@ -901,7 +901,7 @@ void CSppConsoleDlg::PopulateAudioSource()
 	{
 		m_iSelMixer = GetCurrentMixerDevice();
 		MixerList->SetCurSel(m_iSelMixer);
-		m_AudioInput->SetCurrentMixerDevice(m_iSelMixer);
+		/*m_AudioInput->*/SetCurrentMixerDevice(m_iSelMixer);
 	};
 
 
@@ -1151,7 +1151,7 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	/* Update AudioInput object */
 	m_AudioInput->SetCurrentMixerDevice(iMixer);
 
-	/* Get the Mixer Device string and put it in the registry */
+	/* Get the Mixer Device string,  put it in the registry and update Global memory area*/
 	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 	::SetCurrentMixerDevice(MixerName);
 }
@@ -1396,7 +1396,7 @@ void CSppConsoleDlg::OnAudioPrint()
 	// Success?
 	GetExitCodeProcess(ProcessInformation.hProcess, &ExitCode);
 	if (ExitCode)
-		MessageBox("Output file is: AudioStatus.txt\n It is on your Desctop");
+		MessageBox("Output file is: AudioStatus.txt\n It is on your Desktop");
 	else
 		MessageBox("Cannot Create output file", NULL, MB_ICONERROR);
 
