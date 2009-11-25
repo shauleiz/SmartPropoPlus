@@ -34,14 +34,15 @@
 ;--------------------------------
 ;General
 
-   VAR  PPJoyExist			; Boolean: 1 if PPJoy installed
-   VAR  FmsExist			; Boolean: 1 if FMS installed
-   VAR  VERSION				; SPP DLL file version (3.3.3)
+   VAR  PPJoyExist		; Boolean: 1 if PPJoy installed
+   VAR  FmsExist		; Boolean: 1 if FMS installed
+   VAR  VERSION			; SPP DLL file version (3.3.3)
    VAR	FolderSPP4FMS		; Destination folder for SPP for FMS
    VAR	FolderGenSpp		; Destination folder for Generic SPP
-   VAR	FolderUtils			; Destination folder for Utilities
-   VAR	SubText				; Subtext for finishing page
-   VAR	FinishText			; Text for finishing page
+   VAR	FolderUtils		; Destination folder for Utilities
+   VAR  FolderFMS               ; FMS folder. "" If does not exist
+   VAR	SubText			; Subtext for finishing page
+   VAR	FinishText		; Text for finishing page
    VAR	RadioButtonStart	; Default Selected Section
    VAR	SPP4FMSremoved		; Boolean: 1 if SPP for FMS component was removed
    VAR	GenSPPremoved		; Boolean: 1 if Generic SPP component was removed
@@ -109,7 +110,8 @@ RequestExecutionLevel admin
 ;--------------------------------
 ;Installer Sections
 
-Section /o "!SmartPropoPlus for FMS" SPP4FMS
+;Section /o "!SmartPropoPlus for FMS" SPP4FMS
+Section /o "!" SPP4FMS
 
   ;SectionIn 1
   DetailPrint "[I] Installing SmartPropoPlus for FMS" ; Debug
@@ -124,15 +126,8 @@ Section /o "!SmartPropoPlus for FMS" SPP4FMS
 	file ..\..\AudioStudy\Release\AudioStudy.exe
 	file ..\..\filters\JsChPostProc\Release\JsChPostProc.dll
 	file ..\SppConsole\Release\SppConsole.exe
-   ${If} ${AtLeastWinVista}
-   ; Vista
- 	file ..\winmm\Release_WASAPI\winmm.dll
-	!insertmacro GetLocalFileVer "..\winmm\Release_WASAPI\winmm.dll" "$VERSION" ; DLL Version manipulation	
-  ${Else}
-   ; Non-Vista
 	file ..\winmm\Release\winmm.dll
-	!insertmacro GetLocalFileVer "..\winmm\Release\winmm.dll" "$VERSION" ; DLL Version manipulation	
-   ${EndIf}
+	!insertmacro GetLocalFileVer "..\winmm\Release\winmm.dll" "$VERSION" ; DLL Version manipulation
 
 
   ; Start Menu
@@ -158,7 +153,6 @@ Section /o "!SmartPropoPlus for FMS" SPP4FMS
   
   ; Vista only: Run in XP-SP2 compatibility mode
   ${If} ${AtLeastWinVista}
-  ;WriteRegStr HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
   WriteRegStr HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
   ${Endif}
   
@@ -171,7 +165,7 @@ Section /o "!SmartPropoPlus for FMS" SPP4FMS
 SectionEnd ;SPP4FMS
 
 
-Section "!Generic SmartPropoPlus" GenSPP
+Section "!" GenSPP
 
   ;SectionIn 2
   DetailPrint "[I] Installing Generic SmartPropoPlus in $INSTDIR" ; Debug
@@ -187,16 +181,8 @@ Section "!Generic SmartPropoPlus" GenSPP
   	file ..\..\filters\JsChPostProc\Release\JsChPostProc.dll
   	file ..\SppConsole\Release\SppConsole.exe
   	file ..\winmm\Release_PPJoy\PPJoyEx.dll
-   ${If} ${AtLeastWinVista}
-   ; Vista
-	file ..\winmm\Release_PPJoy_WASAPI\PPJoyEx.dll
-	!insertmacro GetLocalFileVer "..\winmm\Release_PPJoy_WASAPI\PPJoyEx.dll" "$VERSION" ; DLL Version manipulation	
-  ${Else}
-   ; Non-Vista
-	file ..\winmm\Release_PPJoy\PPJoyEx.dll
-	!insertmacro GetLocalFileVer "..\winmm\Release_PPJoy\PPJoyEx.dll" "$VERSION" ; DLL Version manipulation	
-   ${EndIf}
-  		
+	!insertmacro GetLocalFileVer "..\winmm\Release_PPJoy\PPJoyEx.dll" "$VERSION" ; DLL Version manipulation
+
 
   ; Start Menu
 	CreateDirectory "$SMPROGRAMS\SmartPropoPlus"
@@ -224,7 +210,6 @@ Section "!Generic SmartPropoPlus" GenSPP
   
   ; Vista only: Run in XP-SP2 compatibility mode
   ${If} ${AtLeastWinVista}
-;  WriteRegStr HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
   WriteRegStr HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
   ${Endif}
   
@@ -489,39 +474,50 @@ SectionEnd
 ;Callback functions
 
   Function .onInit
-  	
-	;TestFms:
+
+
   	call isFmsInstalled
-  	IntCmp $FmsExist 0 NoFms
-	call GetFmsFolder
-	pop $R0				; This is where GetFmsFolder() pushed the folder name
-	StrLen $R1 $R0		; Found Folder?
-	IntCmp $R1 0 NoFms
-	;IfFileExists "$PROGRAMFILES\FMS\FMS.EXE" 0 NoFms
-		StrCpy $INSTDIR $R0
-		; Select all components related to SPP for FMS
-		 StrCpy $RadioButtonStart ${SPP4FMS}				; Select radio button default
-  		 SectionSetFlags ${SPP4FMS} ${SF_SELBOLD}			; Install SPP for FMS
-  		 SectionSetFlags ${Utils_SPP4FMS} ${SF_SELECTED}	; Install Utilities
-		; Unselect all files related to Generic SPP
-    	 SectionSetFlags ${GenSPP} ${SF_BOLD}						; Do not install Generic SPP
-    	 SectionSetFlags ${PPJoy_Inst} ${SF_RO}				; Do not install PPJoy and make it RO
-		 goto EndOfFunconInit
-  	NoFms:
-		; Select all components related to Generic SPP
-		 StrCpy $RadioButtonStart ${GENSPP}					; Select radio button default
-  		 SectionSetFlags ${GENSPP} ${SF_SELBOLD}			; Install Generic SPP
-  		 SectionSetFlags ${Utils_SPP4FMS} ${SF_SELECTED}	; Install Utilities
-		; Unselect all files related to SPP for FMS
-    	 SectionSetFlags ${SPP4FMS} ${SF_BOLD}				; Do not install SPP for FMS
-    	 StrCpy $INSTDIR "$PROGRAMFILES\SmartPropoPlus"
-		 
-    	; Check if PPJoy already installed. If NOT installed check the PPJoy component
-  		 Call  isPPJoyInstalled
-  		 IntCmp $PPJoyExist 1 PPJoyExists
-    	 SectionSetFlags ${PPJoy_Inst} ${SF_SELECTED}		; Install PPJoy
-  	PPJoyExists:
-  	EndOfFunconInit:
+  	call GetFmsFolder
+  	Call  isPPJoyInstalled
+  	
+  	${If} $FmsExist <> 0     ; FMS Exist?
+          ${If} $FolderFMS >= "" ; Valid FMS Folder?
+                   ; FMS is installed: Set installation directory, select FMS radio button set SPP4FMS
+                   DetailPrint "[I] FMS is installed, FolderFMS is $FolderFMS"
+                   StrCpy $INSTDIR $FolderFMS                                 ; Set installation directory
+                   StrCpy $RadioButtonStart ${SPP4FMS}                        ; Select radio button default
+                   SectionSetFlags ${SPP4FMS} ${SF_SELBOLD}		      ; Install SPP for FMS
+  	           SectionSetFlags ${Utils_SPP4FMS} ${SF_SELECTED}	      ; Install Utilities
+  	           SectionSetText ${SPP4FMS} "SmartPropoPlus for FMS"         ; Set the text next to the FMS check-box
+  	           ${If} $PPJoyExists <> 0   ; PPJoy also exist?
+  	                 ; PPJoy is installed in addition to FMS
+  	                 SectionSetText ${GenSPP} "Generic SmartPropoPlus"    ; Set the text next to the Generic check-box
+  	                 SectionSetFlags ${GenSPP} ${SF_BOLD}		      ; Display Generic un-selected
+                   ${Else}
+  	                 ; PPJoy is NOT installed in addition to FMS
+  	                 SectionSetText ${GenSPP} "Generic SmartPropoPlus $\n(PPJoy Must be installed first)"          ; Set the text next to the Generic check-box
+  	                 SectionSetFlags ${GenSPP} ${SF_RO}		      ; Display Generic un-selected
+  	           ${EndIf}   ; PPJoy also exist?
+  	           goto EndOfFunconInit
+          ${EndIf} ; Valid FMS Folder?
+  	${EndIf}               ; FMS Exist?
+
+        ; FMS is not installed - Test for PPJoy installation
+        ${If} $PPJoyExists <> 0   ; PPJoy  exist?
+              ; PPJoy  is installed: Set installation directory, select Generic radio button set GENSPP
+    	      StrCpy $INSTDIR "$PROGRAMFILES\SmartPropoPlus"            ; Set installation directory
+              StrCpy $RadioButtonStart ${GENSPP}			; Select radio button default
+  	      SectionSetFlags ${GENSPP} ${SF_SELBOLD}			; Install Generic SPP
+  	      SectionSetFlags ${Utils_SPP4FMS} ${SF_SELECTED}	        ; Install Utilities
+	      SectionSetText ${GenSPP} "Generic SmartPropoPlus"         ; Set the text next to the Generic check-box
+	      ; FMS is not installed
+	      SectionSetText ${SPP4FMS} "SmartPropoPlus for FMS $\n(FMS Must be installed first)"         ; Set the text next to the FMS check-box
+	      SectionSetFlags ${SPP4FMS} ${SF_RO}		      ; Display SPP4FMS un-selected
+        ${Else}   ; PPJoy  exist?
+              MessageBox MB_ICONEXCLAMATION  "SmartPropoPlus cannot be installed$\r$\nBefore installing SmartPropoPlus you must install either PPJoy or FMS"
+              abort
+        ${EndIf}   ; PPJoy  exist?
+        
   FunctionEnd
   
   
@@ -700,12 +696,7 @@ FunctionEnd
 ; Find FMS folder
 Function GetFmsFolder
 	ReadRegStr $R1 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FMS" "UninstallString"
-	${GetParent} "$R1" $R0
-	StrLen $R2 $R0 
-	IntCmp $R2 0 Nothing
-;CopyString:
-	Push $R0
-Nothing:
+	${GetParent} "$R1" $FolderFMS
 FunctionEnd
 
 ; Leave function for the component page
