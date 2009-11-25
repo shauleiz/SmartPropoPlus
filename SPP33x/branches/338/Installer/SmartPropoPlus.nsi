@@ -517,6 +517,8 @@ SectionEnd
               MessageBox MB_ICONEXCLAMATION  "SmartPropoPlus cannot be installed$\r$\nBefore installing SmartPropoPlus you must install either PPJoy or FMS"
               abort
         ${EndIf}   ; PPJoy  exist?
+
+        EndOfFunconInit:
         
   FunctionEnd
   
