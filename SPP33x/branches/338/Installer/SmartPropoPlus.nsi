@@ -66,7 +66,7 @@
 ;Interface Settings
 
   !define MUI_ABORTWARNING
-  !define MUI_COMPONENTSPAGE_NODESC	; No component description area - makes the type field much wider
+  !define MUI_COMPONENTSPAGE_SMALLDESC	; Component description area at the bottom - makes the type field much wider
   
   ; Make the FINISH page run SPP
   !define MUI_INSTFILESPAGE_FINISHHEADER_TEXT $FinishText
@@ -77,27 +77,16 @@
 ;--------------------------------
 ;Pages
 
-  !define 		MUI_PAGE_CUSTOMFUNCTION_LEAVE  ComponentLeaveFunction
+  !define 	MUI_PAGE_CUSTOMFUNCTION_LEAVE  ComponentLeaveFunction
   !insertmacro	MUI_PAGE_COMPONENTS
   !insertmacro	MUI_PAGE_DIRECTORY
   !insertmacro	MUI_PAGE_INSTFILES
-  !define 		MUI_PAGE_CUSTOMFUNCTION_PRE FinishPreFunction
+  !define 	MUI_PAGE_CUSTOMFUNCTION_PRE FinishPreFunction
   !insertmacro	MUI_PAGE_FINISH
   
  !insertmacro	MUI_UNPAGE_COMPONENTS
  !insertmacro	MUI_UNPAGE_INSTFILES
-  
 
-;--------------------------------
-;Installation Types
-  ;InstType "SmartPropoPlus for FMS"
-  ;InstType "Generic SmartPropoPlus"
-  ;InstType "un.SmartPropoPlus for FMS"
-  ;InstType "un.Generic SmartPropoPlus"
-  ;InstType /NOCUSTOM	; No 'custom' type
-  ;InstType /COMPONENTSONLYONCUSTOM ; Components shown only for 'custom' type. Since 'custom' type does not exist - No Components field
-
-;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
@@ -267,13 +256,14 @@ SectionEnd
 
   ;Language strings
   LangString DESC_SecSpp4Fms ${LANG_ENGLISH} "You intend to use SmartPropoPlus only with FMS"
-  LangString DESC_SecGenSpp  ${LANG_ENGLISH} "You intend to use SmartPropoPlus with simulators other than FMS"
+  LangString DESC_SecGenSpp  ${LANG_ENGLISH} "You intend to use SmartPropoPlus with any simulator"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   	!insertmacro MUI_DESCRIPTION_TEXT ${SPP4FMS} $(DESC_SecSpp4Fms)
   	!insertmacro MUI_DESCRIPTION_TEXT ${GenSPP}  $(DESC_SecGenSpp)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+  
 
 ;--------------------------------
 Section "un.SmartPropoPlus for FMS" UnSPP4FMS
@@ -407,6 +397,20 @@ ReplaceCommon:
 	
 EndUninstGenSpp:
 SectionEnd ; UnGenSPP
+
+;--------------------------------
+;Descriptions
+
+  ;Language strings
+  LangString DESC_UnSecSpp4Fms ${LANG_ENGLISH} "Will uninstall SmartPropoPlus$\r$\n(FMS will not be uninstalled)"
+  LangString DESC_UnSecGenSpp  ${LANG_ENGLISH} "Will uninstall SmartPropoPlus$\r$\n(PPJoy && Simulator will not be uninstalled)"
+
+  ;Assign language strings to sections
+  !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
+  	!insertmacro MUI_DESCRIPTION_TEXT ${UnSPP4FMS} $(DESC_UnSecSpp4Fms)
+  	!insertmacro MUI_DESCRIPTION_TEXT ${UnGenSPP}  $(DESC_UnSecGenSpp)
+  !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
+
 /*
 Section "-un.Utilities" UnUtils
 ;	Call un.GetInstallFolders
