@@ -51,7 +51,7 @@
    VAR	RunAppOnFinishText	; The text nexr to the checkbox of the application to run
   
  ;Name and file
-  Name "SmartPropoPlus"
+  Name "SmartPropoPlus (v3.3.8)"
   OutFile "InstallSPP.exe"
   !define MUI_ICON  "..\SppConsole\res\SppConsole.ico" /* Icon */
   !define MUI_UNICON  "UnInstaller.ico" /* Uninstall Icon */
@@ -398,17 +398,24 @@ ReplaceCommon:
 EndUninstGenSpp:
 SectionEnd ; UnGenSPP
 
+Section /o "un.Wipe Clean" unwipeclean
+DetailPrint "[I] Removing configuration from HKCU Software\\Flying-Model-Simulator\\SmartPropoPlus";
+DeleteRegKey HKCU "Software\Flying-Model-Simulator\SmartPropoPlus"
+SectionEnd ; UnGenSPP
+
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
   LangString DESC_UnSecSpp4Fms ${LANG_ENGLISH} "Will uninstall SmartPropoPlus$\r$\n(FMS will not be uninstalled)"
   LangString DESC_UnSecGenSpp  ${LANG_ENGLISH} "Will uninstall SmartPropoPlus$\r$\n(PPJoy && Simulator will not be uninstalled)"
+  LangString DESC_UnWipeClean  ${LANG_ENGLISH} "Will remove SmartPropoPlus configuration from the registry"
 
   ;Assign language strings to sections
   !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
   	!insertmacro MUI_DESCRIPTION_TEXT ${UnSPP4FMS} $(DESC_UnSecSpp4Fms)
   	!insertmacro MUI_DESCRIPTION_TEXT ${UnGenSPP}  $(DESC_UnSecGenSpp)
+  	!insertmacro MUI_DESCRIPTION_TEXT ${UnWipeClean}  $(DESC_UnWipeClean)
   !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
 
 /*
@@ -583,7 +590,7 @@ SectionEnd
 	Next1:	
 	 
   FunctionEnd
-  
+
   Function un.onInit
   
 	StrCpy $SPP4FMSremoved 0
@@ -600,22 +607,65 @@ SectionEnd
   	
   	;Fms:
 	SectionSetText ${UnSPP4FMS} "SmartPropoPlus for FMS"
-  		
+        SectionSetFlags ${UnSPP4FMS} ${SF_SELBOLD}
+
   	Generic:
   	StrLen $0 $FolderGenSpp
   	IntCmp $0 0 Utils 
 	SectionSetText ${UnGenSPP} "Generic SmartPropoPlus"
-	
+        SectionSetFlags ${UnGenSPP} ${SF_SELBOLD}
+
   	Utils:
   	StrLen $0 $FolderUtils
   	IntCmp $0 0 Common 
 ;	SectionSetText ${UnUtils} "Utilities"
+
+        ;Wipe:
+        SectionSetText ${UnWipeClean} "SmartPropoPlus Configuration data"
+        
 	return
 	
   	Common:
 
   FunctionEnd
-  
+
+
+  Function un.onSelChange
+  ; WipeClean can be writeable and selected only if both GenSpp and Spp4FMS are selected
+ 	SectionGetFlags ${UnSPP4FMS} $0
+  	SectionGetFlags ${UnGenSPP} $2
+ 	SectionGetFlags ${UnWipeClean} $3
+  	IntOp $0 $0 & ${SF_SELECTED} ; Spp for FMS
+  	IntOp $2 $2 & ${SF_SELECTED} ; Generic SPP
+  	IntOp $3 $3 & ${SF_SELECTED} ; Wipe Clean
+  	
+
+  	; Test both if selected - if not BOTH selected then jump to NoWipe
+  	${If} $0 <> 1
+         goto NoWipe
+        ${EndIf}
+  	${If} $2 <> 1
+         goto NoWipe
+        ${EndIf}
+        
+        ; Both are selected
+        
+  	; If wipe selected - do nothing
+  	${If} $3 = 1
+          return
+        ${EndIf}
+        
+        ; If wipe NOT selected - make it selectable
+        SectionSetFlags ${UnWipeClean} 0
+        return
+        
+        ; At least one is not selected
+        NoWipe:
+        SectionSetFlags ${UnWipeClean} ${SF_RO}
+
+        
+  FunctionEnd
+
 ;--------------------------------
 ; User Functions
 Function "FinishPreFunction"	  	
