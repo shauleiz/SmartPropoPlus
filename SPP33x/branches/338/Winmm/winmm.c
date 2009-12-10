@@ -892,8 +892,80 @@ static PP ProcessPulseAirPcm2(int width, BOOL input)
 }
 
 
+// Debug version of ProcessPulseJrPcm
+static PP ProcessPulseJrPcmDeb(int width, BOOL input)
+{
+    static int sync = 0;
 
-//#elif defined JR_PCM
+    static unsigned int bitcount = 0;
+    static unsigned int bitstream = 0;
+    static int data[30];
+    static int datacount = 0;
+	static int i = 0;
+	int j, iJR, prtPos=0;
+#define N_OCTETS	32
+#define FULL_PRT	0
+
+	if (FULL_PRT) fprintf(gCtrlLogFile,"\n>> %d \t", width);
+
+    if (sync == 0 && (int)floor(2.0 * width / PW_JR + 0.5) == 5) {
+        sync = 1;
+        bitstream = 0;
+        bitcount = -1;
+        datacount = 0;
+		fprintf(gCtrlLogFile,"data[0-%d]=",N_OCTETS-1);
+		for (j=0; j<N_OCTETS;j++)
+			fprintf(gCtrlLogFile," %02x", data[j]);
+		fprintf(gCtrlLogFile,"\n");
+		if (FULL_PRT) fprintf(gCtrlLogFile,"***************** Synch pulse width: Raw: %d, Calc: %d *****************", width, (int)floor((double)width / PW_JR + 0.5));
+        return 0;
+    }
+
+    if (!sync) 
+	{
+		if (FULL_PRT) fprintf(gCtrlLogFile,"Error: Unexpected synch. Calc. Width: %d", (int)floor((double)width / PW_JR + 0.5));
+		return 0;
+	};
+
+    width = (int)floor((double)width / PW_JR + 0.5);
+    bitstream = ((bitstream << 1) + 1) << (width - 1);
+    bitcount += width;
+
+	if (FULL_PRT) fprintf(gCtrlLogFile,"W:%02d  BS:%08x  BC:%02d",width, bitstream, bitcount);
+
+    if (bitcount >= 8) {
+        bitcount -= 8;
+		iJR = (bitstream >> bitcount) & 0xFF;
+        if ((data[datacount++] = jr_symbol[iJR]) < 0) {
+            sync = 0;
+			if (FULL_PRT) fprintf(gCtrlLogFile,"Error: Illegal value");
+            return 0;
+        }
+	if (FULL_PRT) fprintf(gCtrlLogFile,"\t-\tSymbol[%02x]=%02x", iJR, jr_symbol[iJR]);	
+	prtPos=1;
+    }
+
+    switch (datacount) {
+        case 3:  Position[2] = 1023 - ((data[1] << 5) | data[2]); break;
+        case 6:  Position[0] = 1023 - ((data[4] << 5) | data[5]); break;
+        case 11: Position[5] = 1023 - ((data[9] << 5) | data[10]); break;
+        case 14: Position[7] = 1023 - ((data[12] << 5) | data[13]); break;
+        case 18: Position[3] = 1023 - ((data[16] << 5) | data[17]); break;
+        case 21: Position[1] = 1023 - ((data[19] << 5) | data[20]); break;
+        case 26: Position[4] = 1023 - ((data[24] << 5) | data[25]); break;
+        case 29: Position[6] = 1023 - ((data[27] << 5) | data[28]); break;
+        case N_OCTETS: sync = 0;
+#ifdef PPJOY
+				SendPPJoy(8, Position);
+#endif
+    };
+		
+	if (FULL_PRT) if (prtPos) fprintf(gCtrlLogFile,"\t-\tDC:%02d, Position[0-7]= %03d,%03d,%03d,%03d,%03d,%03d,%03d,%03d", datacount-1, Position[0],Position[1],Position[2],Position[3],Position[4],Position[5],Position[6],Position[7] );
+
+	 return 0;
+}
+
+
 static PP ProcessPulseJrPcm(int width, BOOL input)
 {
     static int sync = 0;
@@ -902,12 +974,9 @@ static PP ProcessPulseJrPcm(int width, BOOL input)
     static unsigned int bitstream = 0;
     static int data[30];
     static int datacount = 0;
-	char tbuffer [9];
 	static int i = 0;
 
-	if (gDebugLevel>=2 && gCtrlLogFile && !(i++%50))
-		fprintf(gCtrlLogFile,"\n%s - ProcessPulseJrPcm(%d)", _strtime( tbuffer ), width);
-
+	if (gDebugLevel>=2 && gCtrlLogFile) return ProcessPulseJrPcmDeb( width,  input); // Call debug version of this function
 
     if (sync == 0 && (int)floor(2.0 * width / PW_JR + 0.5) == 5) {
         sync = 1;
@@ -919,9 +988,11 @@ static PP ProcessPulseJrPcm(int width, BOOL input)
 
     if (!sync) return 0;
 
+
     width = (int)floor((double)width / PW_JR + 0.5);
     bitstream = ((bitstream << 1) + 1) << (width - 1);
     bitcount += width;
+
 
     if (bitcount >= 8) {
         bitcount -= 8;
