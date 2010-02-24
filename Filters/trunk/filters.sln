@@ -1,0 +1,31 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Example1", "Example1\Example1.vcproj", "{6A983595-45AA-43C2-A610-DE4F0CB27FF1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JsChPostProc", "JsChPostProc\JsChPostProc.vcproj", "{C8B779DF-EADB-4E54-AA68-C0C3B4F1DC8D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{6A983595-45AA-43C2-A610-DE4F0CB27FF1}.Debug.ActiveCfg = Debug|Win32
+		{6A983595-45AA-43C2-A610-DE4F0CB27FF1}.Debug.Build.0 = Debug|Win32
+		{6A983595-45AA-43C2-A610-DE4F0CB27FF1}.Release.ActiveCfg = Release|Win32
+		{6A983595-45AA-43C2-A610-DE4F0CB27FF1}.Release.Build.0 = Release|Win32
+		{C8B779DF-EADB-4E54-AA68-C0C3B4F1DC8D}.Debug.ActiveCfg = Debug|Win32
+		{C8B779DF-EADB-4E54-AA68-C0C3B4F1DC8D}.Debug.Build.0 = Debug|Win32
+		{C8B779DF-EADB-4E54-AA68-C0C3B4F1DC8D}.Release.ActiveCfg = Release|Win32
+		{C8B779DF-EADB-4E54-AA68-C0C3B4F1DC8D}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
