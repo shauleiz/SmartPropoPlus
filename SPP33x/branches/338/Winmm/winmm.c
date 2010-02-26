@@ -893,36 +893,44 @@ static PP ProcessPulseAirPcm2(int width, BOOL input)
 
 
 // Debug version of ProcessPulseJrPcm
+#define N_OCTETS	50
+#define FULL_PRT	0
 static PP ProcessPulseJrPcmDeb(int width, BOOL input)
 {
     static int sync = 0;
 
     static unsigned int bitcount = 0;
     static unsigned int bitstream = 0;
-    static int data[30];
+    static int data[N_OCTETS];
     static int datacount = 0;
 	static int i = 0;
 	int j, iJR, prtPos=0;
-#define N_OCTETS	32
-#define FULL_PRT	0
+	static int Frame = 0;
 
 	if (FULL_PRT) fprintf(gCtrlLogFile,"\n>> %d \t", width);
 
-    if (sync == 0 && (int)floor(2.0 * width / PW_JR + 0.5) == 5) {
+    if (!sync || (int)floor(2.0 * width / PW_JR + 0.5) == 5) {
         sync = 1;
         bitstream = 0;
         bitcount = -1;
         datacount = 0;
 		fprintf(gCtrlLogFile,"data[0-%d]=",N_OCTETS-1);
 		for (j=0; j<N_OCTETS;j++)
+		{
+			if (data[j] == 0xEE) break;
 			fprintf(gCtrlLogFile," %02x", data[j]);
+			data[j] = 0xEE;
+		};
 		fprintf(gCtrlLogFile,"\n");
 		if (FULL_PRT) fprintf(gCtrlLogFile,"***************** Synch pulse width: Raw: %d, Calc: %d *****************", width, (int)floor((double)width / PW_JR + 0.5));
+		if (FULL_PRT) fprintf(gCtrlLogFile,"***************** Frame width: %d *****************", Frame);
+		Frame=0;
         return 0;
     }
 
     if (!sync) 
 	{
+		Frame += (int)floor((double)width / PW_JR + 0.5);
 		if (FULL_PRT) fprintf(gCtrlLogFile,"Error: Unexpected synch. Calc. Width: %d", (int)floor((double)width / PW_JR + 0.5));
 		return 0;
 	};
@@ -932,6 +940,7 @@ static PP ProcessPulseJrPcmDeb(int width, BOOL input)
     bitcount += width;
 
 	if (FULL_PRT) fprintf(gCtrlLogFile,"W:%02d  BS:%08x  BC:%02d",width, bitstream, bitcount);
+	Frame += width;
 
     if (bitcount >= 8) {
         bitcount -= 8;
@@ -1089,7 +1098,7 @@ static PP ProcessPulseFutabaPcm(int width, BOOL input)
         bitcount = 0;
         datacount = 0;		
 			if (gDebugLevel>=2 && gCtrlLogFile /*&& !(i++%50)*/)
-				fprintf(gCtrlLogFile,"\n%s - ProcessPulseFutabaPcm(%d) %02d %02d %02d %02d ; %02d %02d %02d %02d ; %02d %02d %02d %02d ; %02d %02d %02d %02d - %02d %02d %02d %02d ; %02d %02d %02d %02d ; %02d %02d %02d %02d ; %02d %02d %02d %02d", _strtime( tbuffer ), width,\
+				fprintf(gCtrlLogFile,"\n%s - ProcessPulseFutabaPcm(%d) %02x %02x %02x %02x ; %02x %02x %02x %02x ; %02x %02x %02x %02x ; %02x %02x %02x %02x - %02x %02x %02x %02x ; %02x %02x %02x %02x ; %02x %02x %02x %02x ; %02x %02x %02x %02x", _strtime( tbuffer ), width,\
 				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],\
 				data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15],\
 				data[16], data[17], data[18], data[19], data[20], data[21], data[22], data[23],\
