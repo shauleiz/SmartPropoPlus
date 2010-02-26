@@ -508,6 +508,29 @@ int CAudioInput::GetCurrentMixerDevice()
 	return m_CurrentMixerDevice;
 }
 
+/* 
+	Get the index of the preferred mixer device
+	If not found it returns -1
+*/
+int CAudioInput::GetPreferredMixerDevice(void)
+{
+	// Get name of current preferred device - store it
+	MMRESULT Res;
+	WAVEINCAPS caps;
+	Res = waveInGetDevCaps(0, &caps, sizeof(WAVEINCAPS));
+	if (Res != MMSYSERR_NOERROR)
+		return -1;
+	const char * CurPrefDeviceName = caps.szPname;
+
+	const char * iDeviceName;
+	int i=0;
+	while (iDeviceName = GetMixerDeviceName(i++))
+	{
+		if (!strcmp(CurPrefDeviceName, iDeviceName))
+			return (i-1);
+	};
+	return -1;
+}
 
 /*
 	This function affects the system-wide preferred device
