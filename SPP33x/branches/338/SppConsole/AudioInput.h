@@ -113,6 +113,7 @@ public:
 		const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 		CMixerDevice * GetMixerDevice(int Mixer);
 		int SetPreferredMixerDevice(void);
+		int GetPreferredMixerDevice(void);
 
 		int GetCountMixerDevice(void);
 		CAudioInput();
