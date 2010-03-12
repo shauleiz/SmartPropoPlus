@@ -260,8 +260,7 @@ int WINAPI  DllMain( HANDLE hModule,
             break;
 
         case DLL_PROCESS_DETACH:
-            FreeLibrary(hWinmm);
-			StopPropo();
+			CreateThread(NULL, 0, WrapStopPropo, NULL,  0, &dwThreadId); // Stop and FreeLibrary(hWinmm)
             break;
     }
 			
@@ -1878,11 +1877,18 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
 		/* If mixer device changed - start a thread that restarts WaveIn with the new device */
 		if (DataBlock->MixerDeviceChanged)
 		{
-				hThread = CreateThread(NULL, 0, MixerChangedThread, NULL,  0, &dwThreadId);
 				DataBlock->MixerDeviceChanged = FALSE;	/* Clear Flag */
+				hThread = CreateThread(NULL, 0, MixerChangedThread, NULL,  0, &dwThreadId);
 		};
     }
-
+#ifdef _DEBUG
+	if (uMsg == WIM_CLOSE) 
+	{
+		Beep(800, 100);
+		Beep(1200, 150);
+		Beep(16000, 200);
+	};
+#endif
 }
 
 #ifdef PPJOY
@@ -1951,6 +1957,9 @@ void StartPropo(void)
 	/* Get Debug level from the registry (if exists) and start debugging */
 	gDebugLevel = GetDebugLevel();
 	_DebugWelcomePopUp(Modulation);
+
+	// Initialize the Cretical Section than prevents simultaneous Start/Stop streaming
+	// InitializeCriticalSection(&StreamingCS);
 
 	// Initialize WaveIn and start it
 	if (!VistaOS)
@@ -2024,9 +2033,22 @@ void StopPropo(void)
 
 }
 
+/* Wrapper for StopPropo + free library */
+DWORD WINAPI  WrapStopPropo(void * fict)
+{
+	StopPropo();
+	FreeLibrary(hWinmm);
+	return 0;
+}
+
 void StartStreaming(void)
 {
 	int i;
+	UINT waveInOpenFailed, waveInStartFailed;
+	WAVEINCAPS Capabilities;
+
+	//EnterCriticalSection(&StreamingCS);
+
     waveRecording = TRUE; /* Start recording */
 
 	/* Get sample rate Version 3.3.2 
@@ -2042,7 +2064,12 @@ void StartStreaming(void)
     waveFmt.cbSize = 0;
 
 	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
-    pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
+    waveInOpenFailed = pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
+	_ASSERTE(!waveInOpenFailed);
+
+#ifdef _DEBUG
+	pwaveInGetDevCapsA(waveIn, &Capabilities, sizeof(WAVEINCAPS));
+#endif
 
 	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
     for (i = 0; i < N_WAVEIN_BUF; i++) {
@@ -2050,33 +2077,45 @@ void StartStreaming(void)
         waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
         waveBuf[i]->dwBufferLength = waveBufSize;
         waveBuf[i]->dwUser = i;
-        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
+        _ASSERTE(!pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR)));
+        _ASSERTE(!pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR)));
     }
 
 	/* Begin listening to WAVE IN */
-    pwaveInStart(waveIn);
+    waveInStartFailed = pwaveInStart(waveIn);
+	_ASSERTE(!waveInStartFailed);
+
+	//LeaveCriticalSection(&StreamingCS);
 }
 
 void StopStreaming(void)
 {
     int i;
 	HANDLE hProcessHeap;
+	UINT waveInResetFailed, pwaveInCloseFailed;
 
-    waveRecording = FALSE;
+	//EnterCriticalSection(&StreamingCS);
+	
+	waveRecording = FALSE;
 	hProcessHeap = GetProcessHeap();
 	
 	if (waveIn && hProcessHeap && !VistaOS)
 	{
-		pwaveInStop(waveIn);
+		waveInResetFailed = pwaveInReset(waveIn);
+		_ASSERTE(!waveInResetFailed);
+
 		/* 3.3.5 - Higher number of buffers to support Vista */
 		for (i = 0; i < N_WAVEIN_BUF ;i++) {
 			pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
 			HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
 			HeapFree(hProcessHeap, 0, waveBuf[i]);
 		}
-		pwaveInClose(waveIn);
+
+		pwaveInCloseFailed = pwaveInClose(waveIn);
+		_ASSERTE(!pwaveInCloseFailed);
 	};
+
+	//LeaveCriticalSection(&StreamingCS);
 }
 
 //---------------------------------------------------------------------------
@@ -3269,9 +3308,10 @@ DWORD WINAPI MixerChangedThread(void *param)
 {
 	StopStreaming();						/* Stop current Wavein */
 
-	Sleep(2000);								/* Wait for buffers to clear */
+	Sleep(2000);							/* Wait for buffers to clear */
 
 	StartStreaming();						/* Start new WaveIn */
 
 	return 0;
 }
+

@@ -24,7 +24,8 @@
 #define JOYERR_UNPLUGGED      (JOYERR_BASE+7)      /* joystick is unplugged */
 #define WAVERR_BASE            32
 #define WAVERR_STILLPLAYING   (WAVERR_BASE + 1)    /* still something playing */
-#define WIM_DATA              0x3C0
+#define WIM_DATA            0x3C0
+#define WIM_CLOSE		0x3BF
 #define WAVE_FORMAT_PCM     1
 #define WAVE_MAPPER     ((UINT)-1)
 #define CALLBACK_FUNCTION   0x00030000l    /* dwCallback is a FARPROC */
