@@ -119,6 +119,7 @@ protected:
 	void UpdateFilterMenu(void);
 	void PpJoyExShowCtrl(void);
 	int GetCurrentMixerDevice();
+	int GetPreferredMixerDevice();
 	void HearTx(bool hear=TRUE);
 	void CheckAudioCB(void);
 	void SetCurrentInputLine(int iLine);
