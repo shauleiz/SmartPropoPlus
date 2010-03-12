@@ -289,6 +289,7 @@ int VistaOS;
 static volatile BOOL closeRequest;
 DWORD dwThreadId;
 HANDLE hThread;
+//CRITICAL_SECTION StreamingCS;
 
 //---------------------------------------------------------------------------
 
@@ -298,6 +299,7 @@ void StartStreaming(void);
 void StopStreaming(void);
 DWORD WINAPI ProcThread(void *param);
 DWORD WINAPI MixerChangedThread(void *param);
+DWORD WINAPI  WrapStopPropo(void * fict);
 
 //-------------- JsChPostProc.dll interface ---------------------------------
 
