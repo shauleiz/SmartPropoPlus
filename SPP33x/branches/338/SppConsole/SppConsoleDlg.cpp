@@ -883,12 +883,12 @@ void CSppConsoleDlg::PopulateAudioSource()
 	/* Get the Mixer Device Box */
 	CComboBox* MixerList = (CComboBox*)GetDlgItem(IDC_MIXERDEVICE);
 	if (!MixerList)
-		return;
+	 	return;
 
 	/* Loop on the list and populate the combo box */
 	int nAudioDev = m_AudioInput->GetCountMixerDevice();
 	for (int i=0 ; i<nAudioDev ; i++)
-		MixerList->InsertString(i, m_AudioInput->GetMixerDeviceName(i));
+	MixerList->InsertString(i, m_AudioInput->GetMixerDeviceName(i));
 
 	/* No audio device detected */
 	if (nAudioDev < 1)
@@ -903,7 +903,6 @@ void CSppConsoleDlg::PopulateAudioSource()
 		MixerList->SetCurSel(m_iSelMixer);
 		/*m_AudioInput->*/SetCurrentMixerDevice(m_iSelMixer);
 	};
-
 
 	/*** List of Inputs ***/
 	PopulateInputLines();
@@ -1060,6 +1059,14 @@ void CSppConsoleDlg::EnableAudio(int enable)
 }
 
 /*
+	Get the 'preferred' mixer device which is the default system-wide mixer
+*/
+int CSppConsoleDlg::GetPreferredMixerDevice()
+{
+	return m_AudioInput->GetPreferredMixerDevice();
+}
+
+/*
 	Get the last-used mixer device
 	First check the registry.
 	Then check the current set-up
@@ -1164,8 +1171,10 @@ void CSppConsoleDlg::SetCurrentInputLine(int iLine)
 {
 	/* Get the current Mixer Device */
 	int iMixer = GetCurrentMixerDevice();
-	/* Set the current Mixer Device in the registry */
+
+	/* Set the current Mixer Device in the registry 
 	SetCurrentMixerDevice(iMixer);
+	*/
 
 	/* Get the Source Line ID of the selected line */
 	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
