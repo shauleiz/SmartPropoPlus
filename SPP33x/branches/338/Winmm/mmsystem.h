@@ -72,6 +72,13 @@
 #define MIXERLINE_COMPONENTTYPE_SRC_ANALOG      (MIXERLINE_COMPONENTTYPE_SRC_FIRST + 10)
 #define MIXERLINE_COMPONENTTYPE_SRC_LAST        (MIXERLINE_COMPONENTTYPE_SRC_FIRST + 10)
 
+/* flags for dwFlags field of WAVEHDR */
+#define WHDR_DONE       0x00000001  /* done bit */
+#define WHDR_PREPARED   0x00000002  /* set if this header has been prepared */
+#define WHDR_BEGINLOOP  0x00000004  /* loop start block */
+#define WHDR_ENDLOOP    0x00000008  /* loop end block */
+#define WHDR_INQUEUE    0x00000010  /* reserved for driver */
+
 
 #define MIXER_GETLINEINFOF_QUERYMASK        0x0000000FL
 

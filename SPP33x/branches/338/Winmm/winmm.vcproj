@@ -97,6 +97,7 @@ copy .\Release_PPJoy\PPJoyEx.dll  ..\SppConsole\Release\.
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="../include;&quot;N:\Program Files\Microsoft SDKs\Windows\v6.1\Include&quot;;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="PPJOY;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINMM_EXPORTS"
 				RuntimeLibrary="5"

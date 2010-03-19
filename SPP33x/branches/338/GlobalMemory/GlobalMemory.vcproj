@@ -384,6 +384,9 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath="..\include\GlobalMemory.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
