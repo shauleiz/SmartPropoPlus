@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
+
 #ifdef PPJOY
 #include <winioctl.h>
 #include "ppjoyex.h"
@@ -260,7 +261,7 @@ int WINAPI  DllMain( HANDLE hModule,
             break;
 
         case DLL_PROCESS_DETACH:
-			CreateThread(NULL, 0, WrapStopPropo, NULL,  0, &dwThreadId); // Stop and FreeLibrary(hWinmm)
+			ExitPropo();
             break;
     }
 			
@@ -1851,10 +1852,31 @@ static void __fastcall ProcessData(int i)
 static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *buf, DWORD Reserved)
 {
     int i;
+	static int NewDevice=0;
+	DWORD iCurrentDevice, Status=0;
+	HWAVEIN hPrev=0;
+
     if (uMsg == WIM_DATA) /* Sent when the device driver is finished with a data block */
 	{
         int Size = waveFmt.nBlockAlign;
         int Length = buf->dwBytesRecorded / Size;
+	
+		/* If not recording then the data is not important */
+		if (!waveRecording)
+			return;
+		//if (NewDevice)
+		//{
+		//	NewDevice=0;
+		//	if (!waveIn)
+		//		MessageBox(NULL,"WaveIn is NULL", "New Device" , MB_OK);
+		//	else if (waveIn == hPrev)
+		//		MessageBox(NULL,"WaveIn did not change", "New Device" , MB_OK);
+		//	else if (waveIn != hPrev)
+		//		MessageBox(NULL,"WaveIn changed", "New Device" , MB_OK);
+
+		//	hPrev=waveIn;
+		//};
+
         if (Size == 1) /* 8-bit per sample. Value range: 0-255 */
 		{
             for (i = 0; i < Length; i++) 
@@ -1871,24 +1893,33 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
         }
 
 		/* Requests the audio device to refill the current buffer */
-        if (waveRecording) 
+		if (DataBlock->MixerDeviceStatus == RUNNING)
 			pwaveInAddBuffer(waveIn, waveBuf[buf->dwUser], sizeof(WAVEHDR));
 
+
 		/* If mixer device changed - start a thread that restarts WaveIn with the new device */
-		if (DataBlock->MixerDeviceChanged)
+		if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
 		{
-				DataBlock->MixerDeviceChanged = FALSE;	/* Clear Flag */
-				hThread = CreateThread(NULL, 0, MixerChangedThread, NULL,  0, &dwThreadId);
+			DataBlock->MixerDeviceStatus = STOPPING;
+			hThread = CreateThread(NULL, 0, StopStreaming, NULL,  0, &dwThreadId);
 		};
     }
-#ifdef _DEBUG
 	if (uMsg == WIM_CLOSE) 
-	{
-		Beep(800, 100);
-		Beep(1200, 150);
-		Beep(16000, 200);
-	};
+	{	
+		_ASSERTE(DataBlock->MixerDeviceStatus == STOPPING);
+		if (DataBlock->MixerDeviceStatus == STOPPED || DataBlock->MixerDeviceStatus == STOPPING)
+		{
+			DataBlock->MixerDeviceStatus = STARTING;
+			NewDevice = 1;
+			hThread = CreateThread(NULL, 0, StartStreaming, NULL,  0, &dwThreadId);
+
+#ifdef __DEBUG
+			Beep(1600, 200);
+			Beep(1200, 150);
+			Beep(800, 100);
 #endif
+		}
+	};
 }
 
 #ifdef PPJOY
@@ -1938,10 +1969,12 @@ void StartPropo(void)
 	static int PropoStarted;
 	int i;
 
+
 	if (PropoStarted)
 		return;
 	else
 		PropoStarted = 1; 
+
 	VistaOS = isVista(); // Vista or Windows7
 
 	/* Download configuration from the registry (if exists) */
@@ -1958,12 +1991,13 @@ void StartPropo(void)
 	gDebugLevel = GetDebugLevel();
 	_DebugWelcomePopUp(Modulation);
 
-	// Initialize the Cretical Section than prevents simultaneous Start/Stop streaming
-	// InitializeCriticalSection(&StreamingCS);
+	// Initialize the mutex than prevents simultaneous Start/Stop streaming
+	hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
+
 
 	// Initialize WaveIn and start it
 	if (!VistaOS)
-		StartStreaming();
+		StartStreaming(NULL);
 	else
 	{
 
@@ -1985,13 +2019,12 @@ void StartPropo(void)
 
 void StopPropo(void)
 {
-	char tbuffer [9], msg[1000];
-	static UINT NEAR WM_INTERSPPAPPS;
+	char tbuffer [9];
 	int i;
 	HANDLE hProcessHeap;
 
 	if (!VistaOS)
-		StopStreaming();
+		StopStreaming(NULL);
 	else 
 	{// WASAPI
 		i=0;
@@ -2012,19 +2045,7 @@ void StopPropo(void)
 
 	/* TODO - Release global memory by UnMapping File View */
 
-	/* Release Mutex */
-	ReleaseMutex(MUTXWINMM);
-
-	/* Send closing message to the GUI */
-	WM_INTERSPPAPPS = RegisterWindowMessage(INTERSPPAPPS);
-	if (!WM_INTERSPPAPPS)
-	{	/* 3.3.1 */
-		sprintf(msg, "StopPropo(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS", WM_INTERSPPAPPS);
-		MessageBox(NULL,msg, "SmartPropoPlus Message" , MB_SYSTEMMODAL);
-	};
-
-	if (console_started)
-		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLSTOPPING, 0);
+	ExitPropo();
 
 #ifdef _DEBUG // Collect channel data - close output file
 	if (gChnlLogFile)
@@ -2034,22 +2055,49 @@ void StopPropo(void)
 }
 
 /* Wrapper for StopPropo + free library */
-DWORD WINAPI  WrapStopPropo(void * fict)
+DWORD WINAPI  WrapStopPropo(void * pDummy)
 {
 	StopPropo();
 	FreeLibrary(hWinmm);
 	return 0;
 }
 
-void StartStreaming(void)
+/* Exit the DLL with clean-up */
+void ExitPropo(void)
+{
+	char msg[1000];
+	static UINT NEAR WM_INTERSPPAPPS;
+
+	/* Release Mutex */
+	ReleaseMutex(MUTXWINMM);
+
+	/* Send closing message to the GUI */
+	WM_INTERSPPAPPS = RegisterWindowMessage(INTERSPPAPPS);
+	if (!WM_INTERSPPAPPS)
+	{	/* 3.3.1 */
+		sprintf(msg, "ExitPropo(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS", WM_INTERSPPAPPS);
+		MessageBox(NULL,msg, "SmartPropoPlus Message" , MB_SYSTEMMODAL);
+	};
+
+	if (console_started)
+		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLSTOPPING, 0);
+}
+
+DWORD WINAPI  StartStreaming(void * pDummy)
 {
 	int i;
 	UINT waveInOpenFailed, waveInStartFailed;
-	WAVEINCAPS Capabilities;
 
-	//EnterCriticalSection(&StreamingCS);
+	if (WaitForSingleObject(hMutexStartStop, 3000) == WAIT_TIMEOUT)
+	{
+		return -3;
+	};
 
-    waveRecording = TRUE; /* Start recording */
+	if (waveRecording)
+	{
+		ReleaseMutex(hMutexStartStop);
+		return -4;
+	};
 
 	/* Get sample rate Version 3.3.2 
 	res = pwaveInGetDevCapsA(waveIn, &Capabilities, sizeof(WAVEINCAPS));*/
@@ -2066,56 +2114,110 @@ void StartStreaming(void)
 	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
     waveInOpenFailed = pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
 	_ASSERTE(!waveInOpenFailed);
-
-#ifdef _DEBUG
-	pwaveInGetDevCapsA(waveIn, &Capabilities, sizeof(WAVEINCAPS));
-#endif
+	if (waveInOpenFailed)
+	{
+		ReleaseMutex(hMutexStartStop);
+		return -1;
+	};
 
 	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
-    for (i = 0; i < N_WAVEIN_BUF; i++) {
-        waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
+	for (i = 0; i < N_WAVEIN_BUF; i++) {
+		waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
         waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
         waveBuf[i]->dwBufferLength = waveBufSize;
         waveBuf[i]->dwUser = i;
-        _ASSERTE(!pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR)));
-        _ASSERTE(!pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR)));
-    }
+        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
+	}
 
 	/* Begin listening to WAVE IN */
-    waveInStartFailed = pwaveInStart(waveIn);
+	waveRecording = TRUE; /* Start recording */
+	waveInStartFailed = pwaveInStart(waveIn);
 	_ASSERTE(!waveInStartFailed);
+	if (waveInStartFailed)
+	{
+		ReleaseMutex(hMutexStartStop);
+		return -2;
+	};
 
+	DataBlock->MixerDeviceStatus = STARTED;
+	DataBlock->MixerDeviceStatus = RUNNING; // Remove later
+
+#ifdef __DEBUG
+	Beep(400, 200);
+	Beep(1200, 50);
+	Beep(400, 50);
+#endif
+
+
+	ReleaseMutex(hMutexStartStop);
+	return 0;
 	//LeaveCriticalSection(&StreamingCS);
 }
 
-void StopStreaming(void)
+DWORD WINAPI StopStreaming(void * pDummy)
 {
-    int i;
+	int i;
 	HANDLE hProcessHeap;
-	UINT waveInResetFailed, pwaveInCloseFailed;
+	UINT waveInResetFailed, waveInCloseFailed, waveInUnprepareHeaderFailed;
 
-	//EnterCriticalSection(&StreamingCS);
-	
+	if (WaitForSingleObject(hMutexStartStop, 3000) == WAIT_TIMEOUT)
+	{
+		MessageBox(NULL, "WaitForSingleObject timeout" ,"StopStreaming Failed", MB_OK);
+		return -3;
+	};
+
+	if (!waveRecording)
+	{
+		MessageBox(NULL, "waveRecording == 0" ,"StopStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -4;
+	};
+
+
 	waveRecording = FALSE;
 	hProcessHeap = GetProcessHeap();
-	
+
 	if (waveIn && hProcessHeap && !VistaOS)
 	{
 		waveInResetFailed = pwaveInReset(waveIn);
 		_ASSERTE(!waveInResetFailed);
+		if (waveInResetFailed)
+		{
+			MessageBox(NULL, "waveInReset Failed" ,"StopStreaming Failed", MB_OK);
+			ReleaseMutex(hMutexStartStop);
+			return -1;
+		};
 
 		/* 3.3.5 - Higher number of buffers to support Vista */
 		for (i = 0; i < N_WAVEIN_BUF ;i++) {
-			pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-			HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
-			HeapFree(hProcessHeap, 0, waveBuf[i]);
+			waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+			_ASSERTE(!waveInUnprepareHeaderFailed);
+			if (waveBuf[i]->dwFlags & WHDR_DONE)
+			{
+				HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
+				HeapFree(hProcessHeap, 0, waveBuf[i]);
+			}
+			else
+				MessageBox(NULL, toascii(i),"waveInUnprepareHeader Failed", MB_OK);
 		}
 
-		pwaveInCloseFailed = pwaveInClose(waveIn);
-		_ASSERTE(!pwaveInCloseFailed);
+		waveInCloseFailed = pwaveInClose(waveIn);
+		_ASSERTE(!waveInCloseFailed);
+		if (waveInCloseFailed)
+		{
+			MessageBox(NULL, "waveInClose Failed" ,"StopStreaming Failed", MB_OK);
+			ReleaseMutex(hMutexStartStop);
+			return -2;
+		};
+
+		/* Stopping succeeded */
+		waveIn = NULL;
+		DataBlock->MixerDeviceStatus = STOPPED;
 	};
 
-	//LeaveCriticalSection(&StreamingCS);
+	ReleaseMutex(hMutexStartStop);
+	return 0;
 }
 
 //---------------------------------------------------------------------------
@@ -3303,15 +3405,15 @@ Exit:
 }
 
 
-/* Thread called when user changed preffered mixer device */
-DWORD WINAPI MixerChangedThread(void *param)
-{
-	StopStreaming();						/* Stop current Wavein */
-
-	Sleep(2000);							/* Wait for buffers to clear */
-
-	StartStreaming();						/* Start new WaveIn */
-
-	return 0;
-}
+///* Thread called when user changed preffered mixer device */
+//DWORD WINAPI MixerChangedThread(void *param)
+//{
+//	StopStreaming(NULL);						/* Stop current Wavein */
+//
+//	Sleep(2000);							/* Wait for buffers to clear */
+//
+//	StartStreaming(NULL);						/* Start new WaveIn */
+//
+//	return 0;
+//}
 

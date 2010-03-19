@@ -400,7 +400,7 @@ CAudioInput::~CAudioInput()
 	};
 
 	// Set preferred device
-	waveInMessage((HWAVEIN)WAVE_MAPPER, DRVM_MAPPER_PREFERRED_SET, iSelectedDevice, 0);
+	waveInMessage((HWAVEIN)((int)WAVE_MAPPER), DRVM_MAPPER_PREFERRED_SET, iSelectedDevice, 0);
 
 	// Clean-up
 	free(m_OrigPreferredMixerDevice);
@@ -569,9 +569,16 @@ int CAudioInput::SetPreferredMixerDevice(void)
 	};
 
 	// Set new preferred device
-	Res  = waveInMessage((HWAVEIN)WAVE_MAPPER, DRVM_MAPPER_PREFERRED_SET, iSelectedDevice, 0);
+
+	Res  = waveInMessage((HWAVEIN)((int)WAVE_MAPPER), DRVM_MAPPER_PREFERRED_SET, iSelectedDevice, 0);
 	if (Res != MMSYSERR_NOERROR)
 		return -1;
+
+#ifdef _DEBUG
+	DWORD iCurrentDevice, Status=0;
+	Res  = waveInMessage((HWAVEIN)WAVE_MAPPER, DRVM_MAPPER_PREFERRED_GET, (DWORD_PTR)&iCurrentDevice, (DWORD_PTR)&Status);
+	Res =  waveInGetDevCaps(iCurrentDevice, &caps, sizeof(WAVEINCAPS));
+#endif
 
 	// Get ID of previous preferred device
 	iSelectedDevice = -1;

@@ -249,7 +249,7 @@ void SetMixerDeviceChangedToGlobalMemory(void)
 	/* Lock access to global memory */
 	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
-	gpSharedBlock->MixerDeviceChanged = TRUE;
+	gpSharedBlock->MixerDeviceStatus = CHANGE_REQ;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
@@ -571,7 +571,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 		/* Default values */
 		gpSharedBlock->VersionGui = 0;
 		gpSharedBlock->i_sel_fltr = -1;
-		gpSharedBlock->MixerDeviceChanged = FALSE;
+		gpSharedBlock->MixerDeviceStatus = RUNNING;
 
 	};
 	

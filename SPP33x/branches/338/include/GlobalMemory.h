@@ -27,7 +27,16 @@ struct SharedDataBlock
 		BOOL		ActiveModShift; // Positive shift?
 		BOOL		AutoDetectModShift; // Shift Auto-detect on?
 	} ActiveModulation;
-	BOOL MixerDeviceChanged; // Set by SppConsole when changed, reset by Winmm.dll when detected
+	enum MDSTAT 
+	{
+		RUNNING=0, 
+		CHANGE_REQ,
+		STOPPING,
+		STOPPED,
+		STARTING,
+		STARTED,
+		FAILED,
+	}  MixerDeviceStatus; // Status of Mixer Device changing process
 /*	far void  __based( gpSharedBlock ) ** ListProcessPulseFunc; */
 	int nModulations;
 	char __based( gpSharedBlock ) *pInternalModName[MAX_MODS];
