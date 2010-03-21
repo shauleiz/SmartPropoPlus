@@ -1,0 +1,97 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioStudy", "..\AudioStudy\AudioStudy.vcproj", "{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GlobalMemory", "GlobalMemory\GlobalMemory.vcproj", "{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SPPREGISTRY", "SppRegistry\SPPREGISTRY.vcproj", "{BD10375E-2D3F-44E7-A418-A19964B3803A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartPropoPlus", "SmartPropoPlus\SmartPropoPlus.vcproj", "{C77D72B2-347D-4018-A843-94D24D4F30A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BD10375E-2D3F-44E7-A418-A19964B3803A} = {BD10375E-2D3F-44E7-A418-A19964B3803A}
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6} = {A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SppConsole", "SppConsole\SppConsole.vcproj", "{F74F6C19-3577-42D4-984C-FAD4FCE4A654}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C77D72B2-347D-4018-A843-94D24D4F30A5} = {C77D72B2-347D-4018-A843-94D24D4F30A5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winmm", "Winmm\winmm.vcproj", "{15CE735E-597D-42BA-9225-F46544BF0827}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BD10375E-2D3F-44E7-A418-A19964B3803A} = {BD10375E-2D3F-44E7-A418-A19964B3803A}
+		{C77D72B2-347D-4018-A843-94D24D4F30A5} = {C77D72B2-347D-4018-A843-94D24D4F30A5}
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6} = {A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug PPJoy = Debug PPJoy
+		Release = Release
+		Release PPJoy = Release PPJoy
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug.ActiveCfg = Debug|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug.Build.0 = Debug|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug PPJoy.ActiveCfg = Debug|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug PPJoy.Build.0 = Debug|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release.ActiveCfg = Release|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release.Build.0 = Release|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release PPJoy.ActiveCfg = Release|Win32
+		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release PPJoy.Build.0 = Release|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug.ActiveCfg = Debug|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug.Build.0 = Debug|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug PPJoy.ActiveCfg = Debug|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug PPJoy.Build.0 = Debug|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Release.ActiveCfg = Release|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Release.Build.0 = Release|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Release PPJoy.ActiveCfg = Release|Win32
+		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Release PPJoy.Build.0 = Release|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Debug.ActiveCfg = Debug|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Debug.Build.0 = Debug|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Debug PPJoy.ActiveCfg = Debug|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Debug PPJoy.Build.0 = Debug|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Release.ActiveCfg = Release|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Release.Build.0 = Release|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Release PPJoy.ActiveCfg = Release|Win32
+		{BD10375E-2D3F-44E7-A418-A19964B3803A}.Release PPJoy.Build.0 = Release|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Debug.ActiveCfg = Debug|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Debug.Build.0 = Debug|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Debug PPJoy.ActiveCfg = Debug|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Debug PPJoy.Build.0 = Debug|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Release.ActiveCfg = Release|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Release.Build.0 = Release|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Release PPJoy.ActiveCfg = Release|Win32
+		{C77D72B2-347D-4018-A843-94D24D4F30A5}.Release PPJoy.Build.0 = Release|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Debug.ActiveCfg = Debug|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Debug.Build.0 = Debug|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Debug PPJoy.ActiveCfg = Debug|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Debug PPJoy.Build.0 = Debug|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Release.ActiveCfg = Release|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Release.Build.0 = Release|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Release PPJoy.ActiveCfg = Release|Win32
+		{F74F6C19-3577-42D4-984C-FAD4FCE4A654}.Release PPJoy.Build.0 = Release|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Debug.ActiveCfg = Debug|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Debug.Build.0 = Debug|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Debug PPJoy.ActiveCfg = Debug PPJoy|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Debug PPJoy.Build.0 = Debug PPJoy|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Release.ActiveCfg = Release|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Release.Build.0 = Release|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Release PPJoy.ActiveCfg = Release PPJoy|Win32
+		{15CE735E-597D-42BA-9225-F46544BF0827}.Release PPJoy.Build.0 = Release PPJoy|Win32
+	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
