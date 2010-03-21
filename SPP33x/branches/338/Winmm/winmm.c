@@ -1893,7 +1893,7 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
         }
 
 		/* Requests the audio device to refill the current buffer */
-		if (DataBlock->MixerDeviceStatus == RUNNING)
+		if (DataBlock->MixerDeviceStatus != STOPPING && DataBlock->MixerDeviceStatus != STOPPED)
 			pwaveInAddBuffer(waveIn, waveBuf[buf->dwUser], sizeof(WAVEHDR));
 
 
@@ -1906,7 +1906,6 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
     }
 	if (uMsg == WIM_CLOSE) 
 	{	
-		_ASSERTE(DataBlock->MixerDeviceStatus == STOPPING);
 		if (DataBlock->MixerDeviceStatus == STOPPED || DataBlock->MixerDeviceStatus == STOPPING)
 		{
 			DataBlock->MixerDeviceStatus = STARTING;
@@ -2088,13 +2087,16 @@ DWORD WINAPI  StartStreaming(void * pDummy)
 	int i;
 	UINT waveInOpenFailed, waveInStartFailed;
 
-	if (WaitForSingleObject(hMutexStartStop, 3000) == WAIT_TIMEOUT)
+	if (WaitForSingleObject(hMutexStartStop, 3000))
 	{
+		MessageBox(NULL, "WaitForSingleObject failed" ,"StartStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
 		return -3;
 	};
 
 	if (waveRecording)
 	{
+		MessageBox(NULL, "waveRecording == 1" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
 		return -4;
 	};
@@ -2116,6 +2118,7 @@ DWORD WINAPI  StartStreaming(void * pDummy)
 	_ASSERTE(!waveInOpenFailed);
 	if (waveInOpenFailed)
 	{
+		MessageBox(NULL, "waveInOpen Failed" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
 		return -1;
 	};
@@ -2136,12 +2139,13 @@ DWORD WINAPI  StartStreaming(void * pDummy)
 	_ASSERTE(!waveInStartFailed);
 	if (waveInStartFailed)
 	{
+		MessageBox(NULL, "waveInStart Failed" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
 		return -2;
 	};
 
 	DataBlock->MixerDeviceStatus = STARTED;
-	DataBlock->MixerDeviceStatus = RUNNING; // Remove later
+	//DataBlock->MixerDeviceStatus = RUNNING; // Remove later
 
 #ifdef __DEBUG
 	Beep(400, 200);
@@ -2159,11 +2163,12 @@ DWORD WINAPI StopStreaming(void * pDummy)
 {
 	int i;
 	HANDLE hProcessHeap;
-	UINT waveInResetFailed, waveInCloseFailed, waveInUnprepareHeaderFailed;
+	UINT waveInStopFailed, waveInResetFailed, waveInCloseFailed, waveInUnprepareHeaderFailed;
 
-	if (WaitForSingleObject(hMutexStartStop, 3000) == WAIT_TIMEOUT)
+	if (WaitForSingleObject(hMutexStartStop, 3000))
 	{
-		MessageBox(NULL, "WaitForSingleObject timeout" ,"StopStreaming Failed", MB_OK);
+		MessageBox(NULL, "WaitForSingleObject Failed" ,"StopStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
 		return -3;
 	};
 
@@ -2180,6 +2185,15 @@ DWORD WINAPI StopStreaming(void * pDummy)
 
 	if (waveIn && hProcessHeap && !VistaOS)
 	{
+		waveInStopFailed = pwaveInStop(waveIn);
+		if (waveInStopFailed)
+		{
+			MessageBox(NULL, "waveInStop Failed" ,"StopStreaming Failed", MB_OK);
+			ReleaseMutex(hMutexStartStop);
+			return -5;
+		};
+
+
 		waveInResetFailed = pwaveInReset(waveIn);
 		_ASSERTE(!waveInResetFailed);
 		if (waveInResetFailed)
@@ -2188,6 +2202,7 @@ DWORD WINAPI StopStreaming(void * pDummy)
 			ReleaseMutex(hMutexStartStop);
 			return -1;
 		};
+
 
 		/* 3.3.5 - Higher number of buffers to support Vista */
 		for (i = 0; i < N_WAVEIN_BUF ;i++) {
@@ -2210,6 +2225,7 @@ DWORD WINAPI StopStreaming(void * pDummy)
 			ReleaseMutex(hMutexStartStop);
 			return -2;
 		};
+
 
 		/* Stopping succeeded */
 		waveIn = NULL;
