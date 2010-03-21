@@ -1160,7 +1160,10 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 	/* Get the Mixer Device string,  put it in the registry and update Global memory area*/
 	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
+
+	AfxGetApp()->DoWaitCursor(1); 
 	::SetCurrentMixerDevice(MixerName);
+	AfxGetApp()->DoWaitCursor(-1); 
 }
 
 

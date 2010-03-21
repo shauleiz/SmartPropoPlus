@@ -235,6 +235,8 @@ int SetActiveModeToGlobalMemory(const char * selected)
 
 void SetMixerDeviceChangedToGlobalMemory(void)
 {
+	int counter=0;
+
 	if (!isGlobalMemoryExist())
 	{
 		Sleep(200); /* Replace with something else */
@@ -249,7 +251,30 @@ void SetMixerDeviceChangedToGlobalMemory(void)
 	/* Lock access to global memory */
 	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
+	if (gpSharedBlock->MixerDeviceStatus = STARTED)
+		gpSharedBlock->MixerDeviceStatus = RUNNING;
+
+	while (gpSharedBlock->MixerDeviceStatus != RUNNING)
+	{
+		Beep(500,100);
+		ReleaseMutex(ghDataLock);
+		return;
+	};
+
+
 	gpSharedBlock->MixerDeviceStatus = CHANGE_REQ;
+	//assert(0);
+
+	// Wait for Mixer status to become STARTED
+	while (gpSharedBlock->MixerDeviceStatus != STARTED)
+	{
+		Sleep (20);
+		counter++;
+		if (counter>100)
+			break;
+	};
+
+	gpSharedBlock->MixerDeviceStatus = RUNNING;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
