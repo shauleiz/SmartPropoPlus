@@ -1148,12 +1148,34 @@ bool CSppConsoleDlg::GetCurrentInputLineFromSystem(unsigned int *iLine)
 */
 void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 {
-	/* Update AudioInput object */
-	m_AudioInput->SetCurrentMixerDevice(iMixer);
 
-	/* Get the Mixer Device string and put it in the registry */
+
+
+	// TODO (3.3.9)
+	// If DLL connected (Let's assume it is) then 
+	// 1. Get the name of the new mixer device
 	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
+	// 2. Compare to the name of the current mixer device
+	int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
+	// 3. If they are NOT identical then
+	if (iCurMixer == iMixer)
+		return;
+
+	//  A. Enter Wait state (Cursor & disactivate GUI)
+	AfxGetApp()->DoWaitCursor(1);
+
+	//  B. Place request on the global memory for the DLL to switch mixer device
+	// ::SwitchMixerRequest(MixerName);
+
+	//  C. Wait for ack from DLL or timeout
+
+	AfxGetApp()->DoWaitCursor(-1); 
+
+	/* Update AudioInput object */
 	::SetCurrentMixerDevice(MixerName);
+
+
+	m_AudioInput->SetCurrentMixerDevice(iMixer);
 }
 
 
