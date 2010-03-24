@@ -89,6 +89,7 @@ Global
 		{15CE735E-597D-42BA-9225-F46544BF0827}.Release PPJoy.Build.0 = Release PPJoy|Win32
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
+		include\GlobalMemory.h = include\GlobalMemory.h
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
