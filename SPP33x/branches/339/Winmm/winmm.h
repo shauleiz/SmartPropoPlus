@@ -39,6 +39,7 @@
               if ((punk) != NULL)  \
                 { (punk)->lpVtbl->Release(punk); (punk) = NULL; }
 
+#define MUTEX_STOP_START	"WaveIn Stopping and Starting are mutually exclusive"
 
 typedef  void ( * PP)(int width, BOOL input);
 
@@ -266,7 +267,7 @@ extern void GetPointerToOriginalFunc(void);
 
 
 //---------------------------------------------------------------------------
-static HWAVEIN       waveIn;         // WAVE IN
+static HWAVEIN       waveIn=0;       // WAVE IN
 static HWAVEOUT      waveOut;        // WAVE OUT
 static WAVEFORMATEX  waveFmt;		 // WAVE FORMAT (IN)
 static WAVEFORMATEX  waveFmtO;		 // WAVE FORMAT (OUT)
@@ -289,12 +290,19 @@ int VistaOS;
 static volatile BOOL closeRequest;
 DWORD dwThreadId;
 HANDLE hThread;
+HANDLE hMutexStartStop;
+
 
 //---------------------------------------------------------------------------
 
 extern void StartPropo(void);
 extern void StopPropo(void);
+extern void ExitPropo(void);
+
 DWORD WINAPI ProcThread(void *param);
+DWORD WINAPI  StartStreaming(void * pDummy);
+DWORD WINAPI StopStreaming(void * pDummy);
+
 
 //-------------- JsChPostProc.dll interface ---------------------------------
 

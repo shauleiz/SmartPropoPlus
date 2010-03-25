@@ -17,10 +17,9 @@
 #include "JsChPostProc.h"
 #include "winmm.h"
 #include <assert.h>
-#ifdef WASAPI
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
-#endif // WASAPI
+
 #ifdef PPJOY
 #include <winioctl.h>
 #include "ppjoyex.h"
@@ -262,8 +261,9 @@ int WINAPI  DllMain( HANDLE hModule,
             break;
 
         case DLL_PROCESS_DETACH:
-            FreeLibrary(hWinmm);
-			StopPropo();
+            // FreeLibrary(hWinmm); /* ... the entry-point function must not call the FreeLibrary function ... */
+			// StopPropo();
+			ExitPropo();
             break;
     }
 			
@@ -1838,7 +1838,7 @@ extern __declspec(dllexport) UINT __stdcall   StopPPJoyInterface()
 */
 void StartPropo(void)
 {
-    int i;
+	int i;
 	struct Modulations *  Modulation;
 	int nActiveModulations;
 	char ChnlLogFileName[2000] = {""};
@@ -1846,18 +1846,13 @@ void StartPropo(void)
 	int res=0;
 	static int PropoStarted;
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",4); fflush(gCtrlLogFile);
-#endif
 	if (PropoStarted)
 		return;
 	else
 		PropoStarted = 1; 
-	VistaOS = isVista();
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",5); fflush(gCtrlLogFile);
-#endif
+	VistaOS = isVista(); // Vista or Windows7
+
 	/* Download configuration from the registry (if exists) */
 	Modulation= GetModulation(0);
 
@@ -1868,47 +1863,20 @@ void StartPropo(void)
 	/* SetActiveProcessPulseFunction(DataBlock); */
 	nActiveModulations = LoadProcessPulseFunctions(DataBlock);
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",6); fflush(gCtrlLogFile);
-#endif
 	/* Get Debug level from the registry (if exists) and start debugging */
 	gDebugLevel = GetDebugLevel();
 	_DebugWelcomePopUp(Modulation);
 
-#ifndef WASAPI 
-    waveRecording = TRUE; /* Start recording */
+	// Initialize the mutex than prevents simultaneous Start/Stop streaming
+	hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
 
-	/* Get sample rate Version 3.3.2 
-	res = pwaveInGetDevCapsA(waveIn, &Capabilities, sizeof(WAVEINCAPS));*/
 
-	/* Wave format structure initialization */
-    waveFmt.wFormatTag = WAVE_FORMAT_PCM;
-    waveFmt.nChannels = 1;
-    waveFmt.nSamplesPerSec = 44100;
-    waveFmt.wBitsPerSample =16;
-    waveFmt.nBlockAlign = waveFmt.wBitsPerSample / 8 * waveFmt.nChannels;
-    waveFmt.nAvgBytesPerSec = waveFmt.nSamplesPerSec * waveFmt.nBlockAlign;
-    waveFmt.cbSize = 0;
+	// Initialize WaveIn and start it
+	if (!VistaOS)
+	StartStreaming(NULL);
+	else
+	{
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: inside StartPropo",7); fflush(gCtrlLogFile);
-#endif
-	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
-    pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
-
-	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
-    for (i = 0; i < N_WAVEIN_BUF; i++) {
-        waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
-        waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
-        waveBuf[i]->dwBufferLength = waveBufSize;
-        waveBuf[i]->dwUser = i;
-        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
-    }
-
-	/* Begin listening to WAVE IN */
-    pwaveInStart(waveIn);
-#else // WASAPI
 	i=0;
 	closeRequest = FALSE;
 	waveRecording = FALSE;
@@ -1920,11 +1888,7 @@ void StartPropo(void)
         NULL,    // thread parameter
         0,                 // not suspended
         &dwThreadId);      // returns thread ID
-#endif // WASAPI 
-
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fprintf(gCtrlLogFile, "\n%d: End of StartPropo",8); fflush(gCtrlLogFile);
-#endif
+	} 
 	
 }
 //---------------------------------------------------------------------------
@@ -1936,26 +1900,10 @@ void StopPropo(void)
 	static UINT NEAR WM_INTERSPPAPPS;
 	HANDLE hProcessHeap;
 
-#ifdef DEBUG_W2K
-	if (gCtrlLogFile) fclose(gCtrlLogFile);
-#endif
-
-#ifndef WASAPI
-    waveRecording = FALSE;
-	hProcessHeap = GetProcessHeap();
-	
-	if (waveIn && hProcessHeap && !VistaOS)
-	{
-		pwaveInStop(waveIn);
-		/* 3.3.5 - Higher number of buffers to support Vista */
-		for (i = 0; i < N_WAVEIN_BUF ;i++) {
-			pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-			HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
-			HeapFree(hProcessHeap, 0, waveBuf[i]);
-		}
-		pwaveInClose(waveIn);
-	};
-#else // WASAPI
+	if (!VistaOS)
+		StopStreaming(NULL);
+	else 
+	{// WASAPI
 	i=0;
 	hProcessHeap=NULL;
 	if( waveRecording && hThread != NULL) {
@@ -1964,8 +1912,8 @@ void StopPropo(void)
 		while(WaitForSingleObject(hThread, 1000) != WAIT_OBJECT_0){
 		}
 		hThread = NULL;
-	}
-#endif // WASAPI
+		}
+	};
 	if (gDebugLevel>=2 && gCtrlLogFile)
 	{
 		fprintf(gCtrlLogFile,"\n%s - Closing WINMM.DLL\n\n", _strtime( tbuffer ));
@@ -1974,6 +1922,21 @@ void StopPropo(void)
 
 	/* TODO - Release global memory by UnMapping File View */
 
+	ExitPropo();
+
+#ifdef _DEBUG // Collect channel data - close output file
+	if (gChnlLogFile)
+		fclose(gChnlLogFile);
+#endif
+
+}
+
+/* Exit the DLL with clean-up */
+void ExitPropo(void)
+{
+	char msg[1000];
+	static UINT NEAR WM_INTERSPPAPPS;
+
 	/* Release Mutex */
 	ReleaseMutex(MUTXWINMM);
 
@@ -1981,18 +1944,161 @@ void StopPropo(void)
 	WM_INTERSPPAPPS = RegisterWindowMessage(INTERSPPAPPS);
 	if (!WM_INTERSPPAPPS)
 	{	/* 3.3.1 */
-		sprintf(msg, "StopPropo(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS", WM_INTERSPPAPPS);
+		sprintf(msg, "ExitPropo(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS", WM_INTERSPPAPPS);
 		MessageBox(NULL,msg, "SmartPropoPlus Message" , MB_SYSTEMMODAL);
 	};
 
 	if (console_started)
 		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLSTOPPING, 0);
+}
 
-#ifdef _DEBUG // Collect channel data - close output file
-	if (gChnlLogFile)
-		fclose(gChnlLogFile);
+
+DWORD WINAPI  StartStreaming(void * pDummy)
+{
+	int i;
+	UINT waveInOpenFailed, waveInStartFailed;
+
+	if (WaitForSingleObject(hMutexStartStop, 3000))
+	{
+		MessageBox(NULL, "WaitForSingleObject failed" ,"StartStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -3;
+	};
+
+	if (waveRecording)
+	{
+		MessageBox(NULL, "waveRecording == 1" ,"StartStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -4;
+	};
+
+
+	/* Wave format structure initialization */
+    waveFmt.wFormatTag = WAVE_FORMAT_PCM;
+    waveFmt.nChannels = 1;
+    waveFmt.nSamplesPerSec = 44100;
+    waveFmt.wBitsPerSample =16;
+    waveFmt.nBlockAlign = waveFmt.wBitsPerSample / 8 * waveFmt.nChannels;
+    waveFmt.nAvgBytesPerSec = waveFmt.nSamplesPerSec * waveFmt.nBlockAlign;
+    waveFmt.cbSize = 0;
+
+	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
+    waveInOpenFailed = pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
+	_ASSERTE(!waveInOpenFailed);
+	if (waveInOpenFailed)
+	{
+		MessageBox(NULL, "waveInOpen Failed" ,"StartStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -1;
+	};
+
+	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
+	for (i = 0; i < N_WAVEIN_BUF; i++) {
+		waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
+        waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
+        waveBuf[i]->dwBufferLength = waveBufSize;
+        waveBuf[i]->dwUser = i;
+        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
+	}
+
+	/* Begin listening to WAVE IN */
+	waveRecording = TRUE; /* Start recording */
+	waveInStartFailed = pwaveInStart(waveIn);
+	_ASSERTE(!waveInStartFailed);
+	if (waveInStartFailed)
+	{
+		MessageBox(NULL, "waveInStart Failed" ,"StartStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -2;
+	};
+
+#ifdef __DEBUG
+	Beep(400, 200);
+	Beep(1200, 50);
+	Beep(400, 50);
 #endif
 
+
+	ReleaseMutex(hMutexStartStop);
+	return 0;
+	//LeaveCriticalSection(&StreamingCS);
+}
+
+DWORD WINAPI StopStreaming(void * pDummy)
+{
+	int i;
+	HANDLE hProcessHeap;
+	UINT waveInStopFailed, waveInResetFailed, waveInCloseFailed, waveInUnprepareHeaderFailed;
+
+	if (WaitForSingleObject(hMutexStartStop, 3000))
+	{
+		MessageBox(NULL, "WaitForSingleObject Failed" ,"StopStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -3;
+	};
+
+	if (!waveRecording)
+	{
+		MessageBox(NULL, "waveRecording == 0" ,"StopStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -4;
+	};
+
+
+	waveRecording = FALSE;
+	hProcessHeap = GetProcessHeap();
+
+	if (waveIn && hProcessHeap && !VistaOS)
+	{
+		waveInStopFailed = pwaveInStop(waveIn);
+		if (waveInStopFailed)
+		{
+			MessageBox(NULL, "waveInStop Failed" ,"StopStreaming Failed", MB_OK);
+			ReleaseMutex(hMutexStartStop);
+			return -5;
+		};
+
+
+		waveInResetFailed = pwaveInReset(waveIn);
+		_ASSERTE(!waveInResetFailed);
+		if (waveInResetFailed)
+		{
+			MessageBox(NULL, "waveInReset Failed" ,"StopStreaming Failed", MB_OK);
+			ReleaseMutex(hMutexStartStop);
+			return -1;
+		};
+
+
+		/* 3.3.5 - Higher number of buffers to support Vista */
+		for (i = 0; i < N_WAVEIN_BUF ;i++) {
+			waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+			_ASSERTE(!waveInUnprepareHeaderFailed);
+			if (waveBuf[i]->dwFlags & WHDR_DONE)
+			{
+				HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
+				HeapFree(hProcessHeap, 0, waveBuf[i]);
+			}
+			else
+				MessageBox(NULL, (LPCSTR)toascii(i),"waveInUnprepareHeader Failed", MB_OK);
+		}
+
+		waveInCloseFailed = pwaveInClose(waveIn);
+		_ASSERTE(!waveInCloseFailed);
+		if (waveInCloseFailed)
+		{
+			MessageBox(NULL, "waveInClose Failed" ,"StopStreaming Failed", MB_OK);
+			ReleaseMutex(hMutexStartStop);
+			return -2;
+		};
+
+
+		/* Stopping succeeded */
+		waveIn = NULL;
+	};
+
+	ReleaseMutex(hMutexStartStop);
+	return 0;
 }
 
 //---------------------------------------------------------------------------
@@ -2982,7 +3088,6 @@ extern __declspec(dllexport) UINT __stdcall    StartJsChPostProc(void)
 	return res;
 }
 #endif /* PPJOY */
-#ifdef WASAPI
 DWORD WINAPI ProcThread(void *param){
 
     HRESULT hr = S_OK;
@@ -3179,4 +3284,3 @@ Exit:
 	return 0;
 }
 
-#endif /* WASAPI */
