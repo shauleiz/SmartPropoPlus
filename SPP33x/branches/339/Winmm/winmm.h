@@ -267,7 +267,23 @@ extern void GetPointerToOriginalFunc(void);
 
 
 //---------------------------------------------------------------------------
-static HWAVEIN       waveIn=0;       // WAVE IN
+
+struct WAVEINSTRUCT 
+{
+	//BOOL			active;
+	UINT			id;
+	HWAVEIN			hWaveInDev;
+	WAVEFORMATEX	waveFmt;
+	WAVEHDR			*waveBuf[N_WAVEIN_BUF];
+	volatile BOOL	waveRecording;
+};
+
+struct WAVEINSTRUCT *	WaveInInfo;
+struct WAVEINSTRUCT *	CurrentWaveInInfo = NULL;
+int						iCurrentWaveInInfo = -1;
+//static HWAVEIN       waveIn=0;       // WAVE IN
+HWAVEIN * hWaveInDev;
+
 static HWAVEOUT      waveOut;        // WAVE OUT
 static WAVEFORMATEX  waveFmt;		 // WAVE FORMAT (IN)
 static WAVEFORMATEX  waveFmtO;		 // WAVE FORMAT (OUT)
@@ -300,9 +316,11 @@ extern void StopPropo(void);
 extern void ExitPropo(void);
 
 DWORD WINAPI ProcThread(void *param);
-DWORD WINAPI  StartStreaming(void * pDummy);
+DWORD WINAPI  StartStreaming(const char * DevName);
 DWORD WINAPI StopStreaming(void * pDummy);
 
+int		OpenAllStreams();
+HWAVEIN	OpenStream(struct WAVEINSTRUCT * wi);
 
 //-------------- JsChPostProc.dll interface ---------------------------------
 
