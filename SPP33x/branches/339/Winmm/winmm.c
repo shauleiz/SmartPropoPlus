@@ -1745,7 +1745,7 @@ static void __fastcall ProcessData(int i)
 	high++;
         if (low) 
 		{
-			low=low*44100/waveFmt.nSamplesPerSec; // Normalize number of sumples
+			low=low*44100/CurrentWaveInInfo->waveFmt.nSamplesPerSec; // Normalize number of sumples
 			_DebugProcessData(i,min, max, threshold, low,0);
             ProcessPulse(low, FALSE);
 			 _DebugJoyStickData();
@@ -1756,7 +1756,7 @@ static void __fastcall ProcessData(int i)
         low++;
         if (high) 
 		{
-			high=high*44100/waveFmt.nSamplesPerSec; // Normalize number of sumples
+			high=high*44100/CurrentWaveInInfo->waveFmt.nSamplesPerSec; // Normalize number of sumples
 			_DebugProcessData(i,min, max, threshold, high,1);
             ProcessPulse(high, TRUE);
 			 _DebugJoyStickData();
@@ -1776,7 +1776,7 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
     int i;
     if (uMsg == WIM_DATA) /* Sent when the device driver is finished with a data block */
 	{
-        int Size = waveFmt.nBlockAlign;
+        int Size = CurrentWaveInInfo->waveFmt.nBlockAlign;
         int Length = buf->dwBytesRecorded / Size;
         if (Size == 1) /* 8-bit per sample. Value range: 0-255 */
 		{
@@ -1794,8 +1794,8 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
         }
 
 		/* Requests the audio device to refill the current buffer */
-        if (waveRecording) 
-			pwaveInAddBuffer(waveIn, waveBuf[buf->dwUser], sizeof(WAVEHDR));
+        if (CurrentWaveInInfo->waveRecording) 
+			pwaveInAddBuffer(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[buf->dwUser], sizeof(WAVEHDR));
     }
 }
 
@@ -1832,7 +1832,7 @@ extern __declspec(dllexport) UINT __stdcall   StopPPJoyInterface()
 				44100 samples/second
 				16 bits per sample
 
-	static HWAVEIN waveIn: handle to the WAVE IN audio stream
+	static HWAVEIN hWaveInDev[0]: handle to the WAVE IN audio stream
 	static WAVEHDR      *waveBuf[2]: Two headers to the audio buffers. Initialized
 
 */
@@ -1871,9 +1871,14 @@ void StartPropo(void)
 	hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
 
 
-	// Initialize WaveIn and start it
+	// Initialize hWaveInDev[0] and start it
 	if (!VistaOS)
-	StartStreaming(NULL);
+	{
+		OpenAllStreams();
+		//StartStreaming("SoundMAX Digital Audio");
+		//StartStreaming("Creative Sound Blaster PCI");
+		StartStreaming(NULL);
+	}
 	else
 	{
 
@@ -1896,7 +1901,7 @@ void StartPropo(void)
 void StopPropo(void)
 {
     int i;
-	char tbuffer [9], msg[1000];
+	char tbuffer [9];
 	static UINT NEAR WM_INTERSPPAPPS;
 	HANDLE hProcessHeap;
 
@@ -1952,78 +1957,150 @@ void ExitPropo(void)
 		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLSTOPPING, 0);
 }
 
-
-DWORD WINAPI  StartStreaming(void * pDummy)
+/*
+	Open all devices for streaming
+	None of the streams is started
+*/
+int OpenAllStreams()
 {
-	int i;
-	UINT waveInOpenFailed, waveInStartFailed;
+	int nDev, iDev=0, nGoodDevs=0;
+	WAVEINCAPS caps;
+
+
+	/* Get number of devices and initialise global structures */
+	nDev = pwaveInGetNumDevs();
+	WaveInInfo = (struct WAVEINSTRUCT *)calloc(nDev+2, sizeof(struct WAVEINSTRUCT));
+	
+	/* For every device+"preferred device" - Open and get handle */
+	for (iDev=0 ; iDev<nDev ; iDev++)
+	{
+		if (pwaveInGetDevCapsA(iDev, &caps, sizeof(WAVEINCAPS)))
+			return -1;
+		if (!(caps.dwFormats & (WAVE_FORMAT_4M08 | WAVE_FORMAT_4M16 | WAVE_FORMAT_4S08 | WAVE_FORMAT_4S16)))
+			continue;
+
+		WaveInInfo[nGoodDevs].waveRecording = FALSE;
+		//WaveInInfo[nGoodDevs].active = FALSE;
+		WaveInInfo[nGoodDevs].hWaveInDev = NULL;
+		WaveInInfo[nGoodDevs].id = iDev;
+		OpenStream(&WaveInInfo[nGoodDevs]);
+
+		nGoodDevs++;
+	};
+
+	// Preferred device
+	WaveInInfo[nGoodDevs].waveRecording = FALSE;
+	//WaveInInfo[nGoodDevs].active = FALSE;
+	WaveInInfo[nGoodDevs].hWaveInDev = NULL;
+	WaveInInfo[nGoodDevs].id = WAVE_MAPPER;
+	OpenStream(&WaveInInfo[nGoodDevs]); 
+
+	return nDev;
+}
+
+HWAVEIN  OpenStream(struct WAVEINSTRUCT * wi)
+{
+		int i;
+	UINT waveInOpenFailed;
 
 	if (WaitForSingleObject(hMutexStartStop, 3000))
 	{
 		MessageBox(NULL, "WaitForSingleObject failed" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
-		return -3;
+		return NULL;
 	};
 
-	if (waveRecording)
+	if (wi->waveRecording)
 	{
 		MessageBox(NULL, "waveRecording == 1" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
-		return -4;
+		return NULL;
 	};
 
 
 	/* Wave format structure initialization */
-    waveFmt.wFormatTag = WAVE_FORMAT_PCM;
-    waveFmt.nChannels = 1;
-    waveFmt.nSamplesPerSec = 44100;
-    waveFmt.wBitsPerSample =16;
-    waveFmt.nBlockAlign = waveFmt.wBitsPerSample / 8 * waveFmt.nChannels;
-    waveFmt.nAvgBytesPerSec = waveFmt.nSamplesPerSec * waveFmt.nBlockAlign;
-    waveFmt.cbSize = 0;
+    wi->waveFmt.wFormatTag = WAVE_FORMAT_PCM;
+    wi->waveFmt.nChannels = 1;
+    wi->waveFmt.nSamplesPerSec = 44100;
+    wi->waveFmt.wBitsPerSample =16;
+    wi->waveFmt.nBlockAlign = wi->waveFmt.wBitsPerSample / 8 * wi->waveFmt.nChannels;
+    wi->waveFmt.nAvgBytesPerSec = wi->waveFmt.nSamplesPerSec * wi->waveFmt.nBlockAlign;
+    wi->waveFmt.cbSize = 0;
 
 	/* Open audio stream, assigning 'waveInProc()' as the WAVE IN callback function*/
-    waveInOpenFailed = pwaveInOpen(&waveIn, WAVE_MAPPER, &waveFmt, (DWORD)(waveInProc), 0, CALLBACK_FUNCTION);
+	waveInOpenFailed = pwaveInOpen(&(wi->hWaveInDev), wi->id, &(wi->waveFmt), (DWORD)(waveInProc), wi->id, CALLBACK_FUNCTION);
 	_ASSERTE(!waveInOpenFailed);
 	if (waveInOpenFailed)
 	{
 		MessageBox(NULL, "waveInOpen Failed" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
-		return -1;
+		return NULL;
 	};
 
 	/* Initialize the  WAVE IN buffers; 3.3.5 - Higher number of buffers to suppor Vista */
-	for (i = 0; i < N_WAVEIN_BUF; i++) {
-		waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
-        waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
-        waveBuf[i]->dwBufferLength = waveBufSize;
-        waveBuf[i]->dwUser = i;
-        pwaveInPrepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
-        pwaveInAddBuffer(waveIn, waveBuf[i], sizeof(WAVEHDR));
+	for (i = 0; i < N_WAVEIN_BUF; i++) {		
+		wi->waveBuf[i] = (WAVEHDR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WAVEHDR));
+        wi->waveBuf[i]->lpData = (char*)HeapAlloc(GetProcessHeap(), 0, waveBufSize);
+        wi->waveBuf[i]->dwBufferLength = waveBufSize;
+        wi->waveBuf[i]->dwUser = i;
+        pwaveInPrepareHeader(wi->hWaveInDev, wi->waveBuf[i], sizeof(WAVEHDR));
+        pwaveInAddBuffer(wi->hWaveInDev , wi->waveBuf[i], sizeof(WAVEHDR));
 	}
 
+	///* Begin listening to WAVE IN */
+	//waveRecording = TRUE; /* Start recording */
+	//waveInStartFailed = pwaveInStart(WaveInInfo[iDev].hWaveInDev);
+	//_ASSERTE(!waveInStartFailed);
+	//if (waveInStartFailed)
+	//{
+	//	MessageBox(NULL, "waveInStart Failed" ,"StartStreaming Failed", MB_OK);
+	//	ReleaseMutex(hMutexStartStop);
+	//	return NULL;
+	//};
+
+	ReleaseMutex(hMutexStartStop);
+	return wi->hWaveInDev;
+}
+
+/*
+	Given Mixer Device name - start WaveIn streaming for this device
+	If device name is NULL/Empty/Does not exist - Start 'Preferred device' (WAVE_MAPPER)
+*/
+DWORD WINAPI  StartStreaming(const char * DevName)
+{
+	int iDev=-1, nGoodDevs=0;
+	WAVEINCAPS caps;
+	UINT waveInStartFailed;
+
+	do 
+	{
+		iDev++;
+		if (DevName)
+		{
+			pwaveInGetDevCapsA(WaveInInfo[iDev].id, &caps, sizeof(WAVEINCAPS));
+			if (!strcmp(caps.szPname, DevName))
+				break;
+		};
+
+	}
+	while (	WaveInInfo[iDev].id != WAVE_MAPPER);
+
 	/* Begin listening to WAVE IN */
-	waveRecording = TRUE; /* Start recording */
-	waveInStartFailed = pwaveInStart(waveIn);
+	CurrentWaveInInfo = &(WaveInInfo[iDev]);
+	iCurrentWaveInInfo = iDev;
+	CurrentWaveInInfo->waveRecording = TRUE; /* Start recording */
+	waveInStartFailed = pwaveInStart(CurrentWaveInInfo->hWaveInDev);
 	_ASSERTE(!waveInStartFailed);
 	if (waveInStartFailed)
 	{
 		MessageBox(NULL, "waveInStart Failed" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
-		return -2;
+		return -1;
 	};
 
-#ifdef __DEBUG
-	Beep(400, 200);
-	Beep(1200, 50);
-	Beep(400, 50);
-#endif
-
-
-	ReleaseMutex(hMutexStartStop);
 	return 0;
-	//LeaveCriticalSection(&StreamingCS);
 }
+
 
 DWORD WINAPI StopStreaming(void * pDummy)
 {
@@ -2038,7 +2115,7 @@ DWORD WINAPI StopStreaming(void * pDummy)
 		return -3;
 	};
 
-	if (!waveRecording)
+	if (!CurrentWaveInInfo->waveRecording)
 	{
 		MessageBox(NULL, "waveRecording == 0" ,"StopStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
@@ -2046,12 +2123,12 @@ DWORD WINAPI StopStreaming(void * pDummy)
 	};
 
 
-	waveRecording = FALSE;
+	CurrentWaveInInfo->waveRecording = FALSE;
 	hProcessHeap = GetProcessHeap();
 
-	if (waveIn && hProcessHeap && !VistaOS)
+	if (CurrentWaveInInfo->hWaveInDev && hProcessHeap && !VistaOS)
 	{
-		waveInStopFailed = pwaveInStop(waveIn);
+		waveInStopFailed = pwaveInStop(CurrentWaveInInfo->hWaveInDev);
 		if (waveInStopFailed)
 		{
 			MessageBox(NULL, "waveInStop Failed" ,"StopStreaming Failed", MB_OK);
@@ -2060,7 +2137,7 @@ DWORD WINAPI StopStreaming(void * pDummy)
 		};
 
 
-		waveInResetFailed = pwaveInReset(waveIn);
+		waveInResetFailed = pwaveInReset(CurrentWaveInInfo->hWaveInDev);
 		_ASSERTE(!waveInResetFailed);
 		if (waveInResetFailed)
 		{
@@ -2072,18 +2149,18 @@ DWORD WINAPI StopStreaming(void * pDummy)
 
 		/* 3.3.5 - Higher number of buffers to support Vista */
 		for (i = 0; i < N_WAVEIN_BUF ;i++) {
-			waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(waveIn, waveBuf[i], sizeof(WAVEHDR));
+			waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[i], sizeof(WAVEHDR));
 			_ASSERTE(!waveInUnprepareHeaderFailed);
-			if (waveBuf[i]->dwFlags & WHDR_DONE)
+			if (CurrentWaveInInfo->waveBuf[i]->dwFlags & WHDR_DONE)
 			{
-				HeapFree(hProcessHeap, 0, waveBuf[i]->lpData);
-				HeapFree(hProcessHeap, 0, waveBuf[i]);
+				HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]->lpData);
+				HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]);
 			}
 			else
 				MessageBox(NULL, (LPCSTR)toascii(i),"waveInUnprepareHeader Failed", MB_OK);
 		}
 
-		waveInCloseFailed = pwaveInClose(waveIn);
+		waveInCloseFailed = pwaveInClose(CurrentWaveInInfo->hWaveInDev);
 		_ASSERTE(!waveInCloseFailed);
 		if (waveInCloseFailed)
 		{
@@ -2091,10 +2168,6 @@ DWORD WINAPI StopStreaming(void * pDummy)
 			ReleaseMutex(hMutexStartStop);
 			return -2;
 		};
-
-
-		/* Stopping succeeded */
-		waveIn = NULL;
 	};
 
 	ReleaseMutex(hMutexStartStop);
