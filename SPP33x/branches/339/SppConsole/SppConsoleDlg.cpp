@@ -1165,7 +1165,7 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	AfxGetApp()->DoWaitCursor(1);
 
 	//  B. Place request on the global memory for the DLL to switch mixer device
-	// ::SwitchMixerRequest(MixerName);
+	::SwitchMixerRequest(MixerName);
 
 	//  C. Wait for ack from DLL or timeout
 

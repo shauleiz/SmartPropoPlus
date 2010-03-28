@@ -405,6 +405,44 @@ struct Modulations * GetModulationFromGlobalMemory()
 
 
 
+void SwitchMixerRequestViaGlobalMemory(const char * MixerName)
+{
+	if (!isGlobalMemoryExist())
+		return;
+
+	/* Open Mutex and Wait for it */
+	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
+	WaitForSingleObject(ghDataLock, INFINITE);
+	
+	/* Lock access to global memory */
+	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+
+	strncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
+	gpSharedBlock->MixerDeviceStatus = CHANGE_REQ;
+
+	/* Release acces lock */
+	ReleaseMutex(ghDataLock);
+
+}
+
+void SetSwitchMixerRequestStatToGlobalMemory(enum MDSTAT Stat)
+{
+	if (!isGlobalMemoryExist())
+		return;
+
+	/* Open Mutex and Wait for it */
+	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
+	WaitForSingleObject(ghDataLock, INFINITE);
+	
+	/* Lock access to global memory */
+	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+
+	gpSharedBlock->MixerDeviceStatus = Stat;
+
+	/* Release acces lock */
+	ReleaseMutex(ghDataLock);
+
+}
 
 /*
 	Create the global shared memory that is used by the DLL and the GUI
@@ -540,6 +578,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 			/* Get shift-related info */
 			gpSharedBlock->ActiveModulation.ActiveModShift		= 1;
 			gpSharedBlock->ActiveModulation.AutoDetectModShift	= 1;
+
 		};
 			
 		/* Store version of THIS file */
@@ -549,6 +588,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 		/* Default values */
 		gpSharedBlock->VersionGui = 0;
 		gpSharedBlock->i_sel_fltr = -1;
+		gpSharedBlock->MixerDeviceStatus = RUNNING;
 
 	};
 	

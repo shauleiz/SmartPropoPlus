@@ -1794,8 +1794,17 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
         }
 
 		/* Requests the audio device to refill the current buffer */
-        if (CurrentWaveInInfo->waveRecording) 
+		if (CurrentWaveInInfo->waveRecording && CurrentWaveInInfo->id == (int)(lpUser)) 
 			pwaveInAddBuffer(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[buf->dwUser], sizeof(WAVEHDR));
+
+		/* Request to change input mixer device */
+		if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
+		{
+			Beep(400,100);
+			SetSwitchMixerRequestStat(STOPPING);
+			hThread = CreateThread(NULL, 0, ChangeStreaming, DataBlock->SrcName,  0, &dwThreadId);
+		};
+
     }
 }
 
@@ -1845,16 +1854,21 @@ void StartPropo(void)
 	//WAVEINCAPS Capabilities;
 	int res=0;
 	static int PropoStarted;
+	char * MixerName=NULL;
 
 	if (PropoStarted)
 		return;
 	else
 		PropoStarted = 1; 
 
-	VistaOS = isVista(); // Vista or Windows7
+	VistaOS = isVista(); // Vista (or Windows7)
 
 	/* Download configuration from the registry (if exists) */
-	Modulation= GetModulation(0);
+	Modulation = GetModulation(0);		// Modulation type: PPM/PCM(JR) ....
+	if (GetCurrentAudioState())			// Get  Mixer Device (selected or preferred) 
+		MixerName = strdup(GetCurrentMixerDevice());	// Selected
+	else
+		MixerName=NULL;									// Preferred
 
 
 	/* Create the Global memory area (a.k.a. Shared Data) and upload configuration to it */
@@ -1871,13 +1885,11 @@ void StartPropo(void)
 	hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
 
 
-	// Initialize hWaveInDev[0] and start it
+	// Initialize all audio streams and start the selected one
 	if (!VistaOS)
 	{
 		OpenAllStreams();
-		//StartStreaming("SoundMAX Digital Audio");
-		//StartStreaming("Creative Sound Blaster PCI");
-		StartStreaming(NULL);
+		StartStreaming(MixerName);
 	}
 	else
 	{
@@ -2072,6 +2084,13 @@ DWORD WINAPI  StartStreaming(const char * DevName)
 	WAVEINCAPS caps;
 	UINT waveInStartFailed;
 
+	if (WaitForSingleObject(hMutexStartStop, 3000))
+	{
+		MessageBox(NULL, "WaitForSingleObject Failed" ,"StopStreaming Failed", MB_OK);
+		ReleaseMutex(hMutexStartStop);
+		return -3;
+	};
+
 	do 
 	{
 		iDev++;
@@ -2098,15 +2117,18 @@ DWORD WINAPI  StartStreaming(const char * DevName)
 		return -1;
 	};
 
+	SetSwitchMixerRequestStat(STARTED);
+
+	ReleaseMutex(hMutexStartStop);
+
 	return 0;
 }
 
 
 DWORD WINAPI StopStreaming(void * pDummy)
 {
-	int i;
 	HANDLE hProcessHeap;
-	UINT waveInStopFailed, waveInResetFailed, waveInCloseFailed, waveInUnprepareHeaderFailed;
+	UINT waveInStopFailed;
 
 	if (WaitForSingleObject(hMutexStartStop, 3000))
 	{
@@ -2137,41 +2159,48 @@ DWORD WINAPI StopStreaming(void * pDummy)
 		};
 
 
-		waveInResetFailed = pwaveInReset(CurrentWaveInInfo->hWaveInDev);
-		_ASSERTE(!waveInResetFailed);
-		if (waveInResetFailed)
-		{
-			MessageBox(NULL, "waveInReset Failed" ,"StopStreaming Failed", MB_OK);
-			ReleaseMutex(hMutexStartStop);
-			return -1;
-		};
+		//waveInResetFailed = pwaveInReset(CurrentWaveInInfo->hWaveInDev);
+		//_ASSERTE(!waveInResetFailed);
+		//if (waveInResetFailed)
+		//{
+		//	MessageBox(NULL, "waveInReset Failed" ,"StopStreaming Failed", MB_OK);
+		//	ReleaseMutex(hMutexStartStop);
+		//	return -1;
+		//};
 
 
-		/* 3.3.5 - Higher number of buffers to support Vista */
-		for (i = 0; i < N_WAVEIN_BUF ;i++) {
-			waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[i], sizeof(WAVEHDR));
-			_ASSERTE(!waveInUnprepareHeaderFailed);
-			if (CurrentWaveInInfo->waveBuf[i]->dwFlags & WHDR_DONE)
-			{
-				HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]->lpData);
-				HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]);
-			}
-			else
-				MessageBox(NULL, (LPCSTR)toascii(i),"waveInUnprepareHeader Failed", MB_OK);
-		}
+		///* 3.3.5 - Higher number of buffers to support Vista */
+		//for (i = 0; i < N_WAVEIN_BUF ;i++) {
+		//	waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[i], sizeof(WAVEHDR));
+		//	_ASSERTE(!waveInUnprepareHeaderFailed);
+		//	if (CurrentWaveInInfo->waveBuf[i]->dwFlags & WHDR_DONE)
+		//	{
+		//		HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]->lpData);
+		//		HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]);
+		//	}
+		//	else
+		//		MessageBox(NULL, (LPCSTR)toascii(i),"waveInUnprepareHeader Failed", MB_OK);
+		//}
 
-		waveInCloseFailed = pwaveInClose(CurrentWaveInInfo->hWaveInDev);
-		_ASSERTE(!waveInCloseFailed);
-		if (waveInCloseFailed)
-		{
-			MessageBox(NULL, "waveInClose Failed" ,"StopStreaming Failed", MB_OK);
-			ReleaseMutex(hMutexStartStop);
-			return -2;
-		};
+		//waveInCloseFailed = pwaveInClose(CurrentWaveInInfo->hWaveInDev);
+		//_ASSERTE(!waveInCloseFailed);
+		//if (waveInCloseFailed)
+		//{
+		//	MessageBox(NULL, "waveInClose Failed" ,"StopStreaming Failed", MB_OK);
+		//	ReleaseMutex(hMutexStartStop);
+		//	return -2;
+		//};
 	};
 
+	SetSwitchMixerRequestStat(STOPPED);
 	ReleaseMutex(hMutexStartStop);
 	return 0;
+}
+
+DWORD WINAPI  ChangeStreaming(const char * DevName)
+{
+	StopStreaming(NULL);
+	StartStreaming(DevName);
 }
 
 //---------------------------------------------------------------------------
