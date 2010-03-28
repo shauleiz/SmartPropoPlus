@@ -233,6 +233,16 @@ void SetCurrentMixerDevice(const char * MixerName)
 	SetCurrentMixerDeviceToRegistry(MixerName);
 }
 
+void SwitchMixerRequest(const char * MixerName)
+{
+	SwitchMixerRequestViaGlobalMemory(MixerName);
+}
+
+void SetSwitchMixerRequestStat(enum MDSTAT Stat)
+{
+	SetSwitchMixerRequestStatToGlobalMemory(Stat);
+}
+
 void SetCurrentInputLine(const char * MixerName, unsigned int SrcID)
 {
 	SetCurrentInputLineToRegistry(MixerName, SrcID);

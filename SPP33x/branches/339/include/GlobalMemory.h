@@ -11,10 +11,6 @@ extern struct SharedDataBlock* gpSharedBlock;
 	- Number of modulation types 
 	- Array of nModulations+1 offsets to (internal) names of modulations. Last value must be 0.
 	  The names of modulations are located immediately after the structure.
-	- Number of audio sources
-	- Array of nSrcName+1 offsets to names of audio sources. Last value must be 0.
-	  The source names are located immediately after the names of modulations.
-	- Index of currently active audio source
 */
 struct SharedDataBlock
 {
@@ -23,16 +19,26 @@ struct SharedDataBlock
 	char GuiDialogBoxTitle[128]; // Title text of the GUI dialog box
 	struct ActiveModulationData    //Modulation Data
 	{
-		int		iModType; // Index of active modulation
+		int			iModType; // Index of active modulation
 		BOOL		ActiveModShift; // Positive shift?
 		BOOL		AutoDetectModShift; // Shift Auto-detect on?
 	} ActiveModulation;
 /*	far void  __based( gpSharedBlock ) ** ListProcessPulseFunc; */
 	int nModulations;
 	char __based( gpSharedBlock ) *pInternalModName[MAX_MODS];
-	int nSrcName;
-	char __based( gpSharedBlock ) *pSrcName[MAX_MODS];
-	int iActiveSrc; // Index of active source	
+	//int nSrcName;
+	char SrcName[MAX_MODS];
+	//int iActiveSrc; // Index of active source
+	enum MDSTAT 
+	{
+		RUNNING=0, 
+		CHANGE_REQ,
+		STOPPING,
+		STOPPED,
+		STARTING,
+		STARTED,
+		FAILED,
+	}  MixerDeviceStatus; // Status of Mixer Device changing process
 	// Joystick channels postprocessor data
 	int n_fltr;				// Number of supported filters (1 or more)
 	int	i_sel_fltr;				// Index of selected filter (0 based, -1 means nothing)
@@ -65,5 +71,8 @@ void SetFilterNamesToGlobalMemory(const char ** name);
 
 char * GetFilterIdByIndexFromGlobalMemory(const int i);
 int GetFilterIndexByNameFromGlobalMemory(const char * name);
+
+void SwitchMixerRequestViaGlobalMemory(const char * MixerName);
+void SetSwitchMixerRequestStatToGlobalMemory(enum MDSTAT Stat);
 
 far void * CreateSharedDataStruct(struct Modulations * data);

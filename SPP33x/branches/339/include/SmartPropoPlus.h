@@ -180,6 +180,8 @@ void SetCurrentPpjoyState(int Active);
 char * GetCurrentMixerDevice();
 int GetCurrentInputLine(unsigned int *SrcID);
 void SetCurrentMixerDevice(const char * MixerName);
+void SwitchMixerRequest(const char * MixerName);
+void SetSwitchMixerRequestStat(enum MDSTAT Stat);
 void SetCurrentInputLine(const char * MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);
 int isVista(void);

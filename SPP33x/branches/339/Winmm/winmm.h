@@ -316,6 +316,7 @@ extern void StopPropo(void);
 extern void ExitPropo(void);
 
 DWORD WINAPI ProcThread(void *param);
+DWORD WINAPI  ChangeStreaming(const char * DevName);
 DWORD WINAPI  StartStreaming(const char * DevName);
 DWORD WINAPI StopStreaming(void * pDummy);
 
