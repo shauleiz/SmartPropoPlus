@@ -96,10 +96,11 @@ copy .\Release_PPJoy\PPJoyEx.dll  ..\SppConsole\Release\.
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/EHsc"
 				Optimization="0"
 				AdditionalIncludeDirectories="../include;&quot;N:\Program Files\Microsoft SDKs\Windows\v6.1\Include&quot;;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="PPJOY;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINMM_EXPORTS"
-				RuntimeLibrary="5"
+				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug_PPJoy/winmm.pch"
 				AssemblerListingLocation=".\Debug_PPJoy/"
 				ObjectFile=".\Debug_PPJoy/"

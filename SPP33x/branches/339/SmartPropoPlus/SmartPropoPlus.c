@@ -218,6 +218,12 @@ void SetCurrentPpjoyState(int Active)
 	SetCurrentPpjoyStateToRegistry(Active);
 }
 
+char * GetMixerName(void)
+{
+	return GetMixerNameFromGlobalMemory();
+}
+
+
 char * GetCurrentMixerDevice()
 {
 	return GetCurrentMixerDeviceFromRegistry();	
@@ -237,6 +243,12 @@ void SwitchMixerRequest(const char * MixerName)
 {
 	SwitchMixerRequestViaGlobalMemory(MixerName);
 }
+
+void SwitchMixerAck(const char * MixerName)
+{
+	SwitchMixerAckViaGlobalMemory(MixerName);
+}
+
 
 void SetSwitchMixerRequestStat(enum MDSTAT Stat)
 {

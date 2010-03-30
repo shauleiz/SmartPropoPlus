@@ -404,6 +404,28 @@ struct Modulations * GetModulationFromGlobalMemory()
 }
 
 
+char * GetMixerNameFromGlobalMemory(void)
+{	
+	char * MixerName;
+
+	if (!isGlobalMemoryExist())
+		return NULL;
+
+	/* Open Mutex and Wait for it */
+	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
+	WaitForSingleObject(ghDataLock, INFINITE);
+	
+	/* Lock access to global memory */
+	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+
+	MixerName = strdup(gpSharedBlock->SrcName);
+
+	/* Release acces lock */
+	ReleaseMutex(ghDataLock);
+
+	return MixerName;
+
+}
 
 void SwitchMixerRequestViaGlobalMemory(const char * MixerName)
 {
@@ -424,6 +446,27 @@ void SwitchMixerRequestViaGlobalMemory(const char * MixerName)
 	ReleaseMutex(ghDataLock);
 
 }
+
+void SwitchMixerAckViaGlobalMemory(const char * MixerName)
+{
+	if (!isGlobalMemoryExist())
+		return;
+
+	/* Open Mutex and Wait for it */
+	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
+	WaitForSingleObject(ghDataLock, INFINITE);
+	
+	/* Lock access to global memory */
+	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+
+	strncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
+	gpSharedBlock->MixerDeviceStatus = RUNNING;
+
+	/* Release acces lock */
+	ReleaseMutex(ghDataLock);
+
+}
+
 
 void SetSwitchMixerRequestStatToGlobalMemory(enum MDSTAT Stat)
 {

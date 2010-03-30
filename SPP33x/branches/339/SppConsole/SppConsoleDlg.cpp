@@ -166,7 +166,6 @@ BOOL CSppConsoleDlg::OnInitDialog()
 	else
 		hMuxex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
-
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -909,6 +908,17 @@ void CSppConsoleDlg::PopulateAudioSource()
 	PopulateInputLines();
 }
 
+int CSppConsoleDlg::SetMixerSelectionByName(const char * MixerName)
+{
+
+	/* Get the Mixer Device Box */
+	CComboBox* MixerList = (CComboBox*)GetDlgItem(IDC_MIXERDEVICE);
+	if (!MixerList)
+		return CB_ERR;
+
+	return MixerList->FindStringExact(-1, MixerName);
+}
+
 void CSppConsoleDlg::PopulateInputLines()
 {
 	/*** Get the selected Mixer device ***/
@@ -1151,30 +1161,34 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 
 
-	// TODO (3.3.9)
 	// If DLL connected (Let's assume it is) then 
 	// 1. Get the name of the new mixer device
 	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 	// 2. Compare to the name of the current mixer device
 	int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
-	// 3. If they are NOT identical then
+	// 3. If they are identical then NOP
 	if (iCurMixer == iMixer)
 		return;
 
-	//  A. Enter Wait state (Cursor & disactivate GUI)
+	//  A. Enter Wait state (Cursor)
+	HANDLE hMixerSwitchEvent = CreateEvent(NULL, FALSE, FALSE, EVENT_MIXER);
 	AfxGetApp()->DoWaitCursor(1);
 
 	//  B. Place request on the global memory for the DLL to switch mixer device
 	::SwitchMixerRequest(MixerName);
 
 	//  C. Wait for ack from DLL or timeout
+	WaitForSingleObject(hMixerSwitchEvent,2000);
+	CloseHandle(hMixerSwitchEvent);
+	AfxGetApp()->DoWaitCursor(-1);
 
-	AfxGetApp()->DoWaitCursor(-1); 
+	// Get the name of the actual device from global memory 
+	// Update AudioInput object
+	const char * ActualMixerName = ::GetMixerName();
+	iMixer = SetMixerSelectionByName(ActualMixerName);
 
-	/* Update AudioInput object */
-	::SetCurrentMixerDevice(MixerName);
 
-
+	::SetCurrentMixerDevice(ActualMixerName);
 	m_AudioInput->SetCurrentMixerDevice(iMixer);
 }
 

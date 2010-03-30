@@ -63,6 +63,7 @@ extern "C"
 
 #define MUTEX_LABEL	"SPP Global Shared memory Mutex"
 #define BLOCK_LABEL	"SPP Global Shared memory Block"
+#define EVENT_MIXER	"Mixer Switching Event"
 #define	VER_DLL		0x00030307 /* DLL File Version */
 #define	VER_GUI		0x00030307 /* GUI File Version */
 
@@ -121,6 +122,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define CONSOLE_TITLE		"SmartPropoPlus Console"
 #define	MUTXCONSOLE			"SPPconsole Exists Mutex 1"
 #define	MUTXWINMM			"WINMM Dll is running"
+#define	MUTXPROPOSTARTED	"WINMM Dll - Propo Started"
 #define	INTERSPPCONSOLE		"Inter SPPconsole Message 1"
 #define	INTERSPPAPPS		"Inter SPP Application Message 2"
 
@@ -177,10 +179,12 @@ int GetCurrentAudioState();
 void SetCurrentAudioState(int Active);
 int GetCurrentPpjoyState();
 void SetCurrentPpjoyState(int Active);
+char * GetMixerName(void);
 char * GetCurrentMixerDevice();
 int GetCurrentInputLine(unsigned int *SrcID);
 void SetCurrentMixerDevice(const char * MixerName);
 void SwitchMixerRequest(const char * MixerName);
+void SwitchMixerAck(const char * MixerName);
 void SetSwitchMixerRequestStat(enum MDSTAT Stat);
 void SetCurrentInputLine(const char * MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);

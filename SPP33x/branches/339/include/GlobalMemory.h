@@ -72,7 +72,9 @@ void SetFilterNamesToGlobalMemory(const char ** name);
 char * GetFilterIdByIndexFromGlobalMemory(const int i);
 int GetFilterIndexByNameFromGlobalMemory(const char * name);
 
+char * GetMixerNameFromGlobalMemory(void);
 void SwitchMixerRequestViaGlobalMemory(const char * MixerName);
+void SwitchMixerAckViaGlobalMemory(const char * MixerName);
 void SetSwitchMixerRequestStatToGlobalMemory(enum MDSTAT Stat);
 
 far void * CreateSharedDataStruct(struct Modulations * data);
