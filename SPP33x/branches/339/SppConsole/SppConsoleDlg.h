@@ -129,6 +129,7 @@ protected:
 	void EnableAudio(int enable=1);
 	void PopulateInputLines(void);
 	void PopulateAudioSource();
+	int  SetMixerSelectionByName(const char * MixerName);
 	BOOL TaskBarIconToolTip(UINT uID, const char *ToolTipText);
 	bool isDllActive(void);
 	afx_msg LRESULT OnInterSppConsole(WPARAM wParam, LPARAM lParam);

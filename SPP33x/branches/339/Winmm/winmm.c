@@ -31,6 +31,7 @@
 #define DEBUG_W2K "Version 5"
 #undef DEBUG_W2K
 
+
 /** Helper functions **/
 
 /**  Get the Debug level from the registry  - Default is 0 **/
@@ -43,7 +44,6 @@ int _GetDebugLevel()
 	char msg[4000];
 
 	level =  GetDebugLevel();
-
 
 	/* Get debug level */	
 	if (level < 0)
@@ -1774,6 +1774,8 @@ static void __fastcall ProcessData(int i)
 static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *buf, DWORD Reserved)
 {
     int i;
+	static BOOL ChangingMixer=FALSE;
+
     if (uMsg == WIM_DATA) /* Sent when the device driver is finished with a data block */
 	{
         int Size = CurrentWaveInInfo->waveFmt.nBlockAlign;
@@ -1798,11 +1800,12 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
 			pwaveInAddBuffer(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[buf->dwUser], sizeof(WAVEHDR));
 
 		/* Request to change input mixer device */
-		if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
+		if (DataBlock->MixerDeviceStatus == CHANGE_REQ && !ChangingMixer)
 		{
-			Beep(400,100);
+			ChangingMixer = TRUE;
 			SetSwitchMixerRequestStat(STOPPING);
 			hThread = CreateThread(NULL, 0, ChangeStreaming, DataBlock->SrcName,  0, &dwThreadId);
+			ChangingMixer = FALSE;
 		};
 
     }
@@ -1831,6 +1834,22 @@ extern __declspec(dllexport) UINT __stdcall   StopPPJoyInterface()
 }
 #endif
 
+BOOL PropoStarted(void)
+{
+
+	/* Test if another SPP DLL is running */
+	if (OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXPROPOSTARTED))
+	{	// another instance is already running 
+		return TRUE;
+	}
+	else
+	{
+		CreateMutex(NULL, FALSE, MUTXPROPOSTARTED);
+		return FALSE;
+	};
+}
+
+
 //---------------------------------------------------------------------------
 /*
 	StartPropo - Initialize the WAVE IN capture process
@@ -1853,13 +1872,10 @@ void StartPropo(void)
 	char ChnlLogFileName[2000] = {""};
 	//WAVEINCAPS Capabilities;
 	int res=0;
-	static int PropoStarted;
 	char * MixerName=NULL;
 
-	if (PropoStarted)
+	if (PropoStarted())
 		return;
-	else
-		PropoStarted = 1; 
 
 	VistaOS = isVista(); // Vista (or Windows7)
 
@@ -1883,7 +1899,6 @@ void StartPropo(void)
 
 	// Initialize the mutex than prevents simultaneous Start/Stop streaming
 	hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
-
 
 	// Initialize all audio streams and start the selected one
 	if (!VistaOS)
@@ -2144,7 +2159,6 @@ DWORD WINAPI StopStreaming(void * pDummy)
 		return -4;
 	};
 
-
 	CurrentWaveInInfo->waveRecording = FALSE;
 	hProcessHeap = GetProcessHeap();
 
@@ -2157,39 +2171,6 @@ DWORD WINAPI StopStreaming(void * pDummy)
 			ReleaseMutex(hMutexStartStop);
 			return -5;
 		};
-
-
-		//waveInResetFailed = pwaveInReset(CurrentWaveInInfo->hWaveInDev);
-		//_ASSERTE(!waveInResetFailed);
-		//if (waveInResetFailed)
-		//{
-		//	MessageBox(NULL, "waveInReset Failed" ,"StopStreaming Failed", MB_OK);
-		//	ReleaseMutex(hMutexStartStop);
-		//	return -1;
-		//};
-
-
-		///* 3.3.5 - Higher number of buffers to support Vista */
-		//for (i = 0; i < N_WAVEIN_BUF ;i++) {
-		//	waveInUnprepareHeaderFailed = pwaveInUnprepareHeader(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[i], sizeof(WAVEHDR));
-		//	_ASSERTE(!waveInUnprepareHeaderFailed);
-		//	if (CurrentWaveInInfo->waveBuf[i]->dwFlags & WHDR_DONE)
-		//	{
-		//		HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]->lpData);
-		//		HeapFree(hProcessHeap, 0, CurrentWaveInInfo->waveBuf[i]);
-		//	}
-		//	else
-		//		MessageBox(NULL, (LPCSTR)toascii(i),"waveInUnprepareHeader Failed", MB_OK);
-		//}
-
-		//waveInCloseFailed = pwaveInClose(CurrentWaveInInfo->hWaveInDev);
-		//_ASSERTE(!waveInCloseFailed);
-		//if (waveInCloseFailed)
-		//{
-		//	MessageBox(NULL, "waveInClose Failed" ,"StopStreaming Failed", MB_OK);
-		//	ReleaseMutex(hMutexStartStop);
-		//	return -2;
-		//};
 	};
 
 	SetSwitchMixerRequestStat(STOPPED);
@@ -2197,10 +2178,29 @@ DWORD WINAPI StopStreaming(void * pDummy)
 	return 0;
 }
 
+void ReportChange(void)
+{
+	WAVEINCAPS caps;
+	HANDLE hEvent;
+
+	/* Get the name of the current device */
+	pwaveInGetDevCapsA(CurrentWaveInInfo->id, &caps, sizeof(WAVEINCAPS));
+
+	/* Write it to the global memory */
+	SwitchMixerAck(caps.szPname);
+
+	/* Release waiting GUI */
+	hEvent = OpenEvent(EVENT_MODIFY_STATE , TRUE, EVENT_MIXER);
+	if (hEvent)
+		SetEvent(hEvent);
+}
+
 DWORD WINAPI  ChangeStreaming(const char * DevName)
 {
 	StopStreaming(NULL);
 	StartStreaming(DevName);
+	ReportChange();
+	return 0;
 }
 
 //---------------------------------------------------------------------------

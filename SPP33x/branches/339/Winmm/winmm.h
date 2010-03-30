@@ -307,6 +307,7 @@ static volatile BOOL closeRequest;
 DWORD dwThreadId;
 HANDLE hThread;
 HANDLE hMutexStartStop;
+//static UINT NEAR WM_INTERDLL;
 
 
 //---------------------------------------------------------------------------
@@ -319,9 +320,12 @@ DWORD WINAPI ProcThread(void *param);
 DWORD WINAPI  ChangeStreaming(const char * DevName);
 DWORD WINAPI  StartStreaming(const char * DevName);
 DWORD WINAPI StopStreaming(void * pDummy);
+void ReportChange(void);
 
 int		OpenAllStreams();
 HWAVEIN	OpenStream(struct WAVEINSTRUCT * wi);
+
+BOOL PropoStarted(void);
 
 //-------------- JsChPostProc.dll interface ---------------------------------
 
