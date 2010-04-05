@@ -953,7 +953,11 @@ void CSppConsoleDlg::PopulateInputLines()
 		nLine++;
 	};
 
-	/* Get current Input Line from the registry */
+	/* 
+		Get current Input Line from the registry (if possible)
+		In case of impossibility or when the selected mixer is the 'Preferred Mixer' 
+		then get Input Line from the System
+	*/
 	m_iSelLine = GetCurrentInputLine();
 	InputLineNameList->SetCurSel(m_iSelLine);
 
@@ -1049,26 +1053,31 @@ void CSppConsoleDlg::EnableAudio(int enable)
 
 
 	// If disable then store the current values and restore the values before start
-	if (!enable)	// TODO 3.3.9
-					// Show the 'pereffered device' and its settings when unchecking
+	if (!enable)	
+		// Store the current Mixer Device if exists			
+		// Show the 'pereffered device' and its settings - this is done by (Restor())
 	{
+		UINT SystemSelLine;
 		SelMixer = MixerList->GetCurSel();
-		SelLine  = InputLineNameList->GetCurSel();
 		m_AudioInput->Restore();
+		GetCurrentInputLineFromSystem(&SystemSelLine);
 		SetCurrentMixerDevice((UINT)-1);
+		InputLineNameList->SetCurSel(SystemSelLine);
 	}
-	else	// TODO 3.3.9
-			// Switch back correctly when checkbox is 'checked' again
-
+	else	
+		// Get the stored Mixer Device if exists. If not just get the first one.
+		// Get the selected Input Line for this Mixer Device
 	{
 		// If uninitialized then get preset values
 		if (SelMixer<0)
 			SelMixer = GetCurrentMixerDevice();
-		if (SelLine<0)
-			SelLine = GetCurrentInputLine();
+		//if (SelLine<0)
 
 		// Restore set-up
 		MixerList->SetCurSel(SelMixer);
+		SetCurrentMixerDevice(SelMixer);
+		SelLine = GetCurrentInputLine();
+
 		InputLineNameList->SetCurSel(SelLine);
 		CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(SelMixer);
 		if (md && SelLine > -1)
