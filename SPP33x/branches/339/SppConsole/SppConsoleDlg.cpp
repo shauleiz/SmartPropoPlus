@@ -187,18 +187,18 @@ BOOL CSppConsoleDlg::OnInitDialog()
 	/* Initialize Modulation related controls */
 	PopulateModulation();
 
+	/* PPJoy interface */
+	m_PpJoyExVer = GetDllVersion(PPJDLL_NAME);	// Get info about the DLL
+	m_hPpJoyExDll = NULL;						// Initialize handle to DLL
+	PpJoyExShowCtrl();							// Display/Hide check box. Check/uncheck it
+	OnPpjoyex();								// Start PPJoy according to checkbox state
+
 	/* Initialize Audio source related controls */
 	m_AudioInput = new CAudioInput();
 	PopulateAudioSource();
 	m_enable_audio = ::GetCurrentAudioState();
 	CheckAudioCB();
 	EnableAudio(m_enable_audio);
-
-	/* PPJoy interface */
-	m_PpJoyExVer = GetDllVersion(PPJDLL_NAME);	// Get info about the DLL
-	m_hPpJoyExDll = NULL;						// Initialize handle to DLL
-	PpJoyExShowCtrl();							// Display/Hide check box. Check/uncheck it
-	OnPpjoyex();								// Start PPJoy according to checkbox state
 
 	/* Get Filter (JsChPostProc) information */
 	DLLFUNC1 pStartJsChPostProc = (DLLFUNC1)GetProcAddress(m_hPpJoyExDll, "StartJsChPostProc");
@@ -956,6 +956,10 @@ void CSppConsoleDlg::PopulateInputLines()
 	/* Get current Input Line from the registry */
 	m_iSelLine = GetCurrentInputLine();
 	InputLineNameList->SetCurSel(m_iSelLine);
+
+	/* Activate selected line */
+	if (md && m_iSelLine > -1)
+		md->SetSelectedInputLine(m_iSelLine);	
 }
 
 void CSppConsoleDlg::OnSelchangeMixerdevice() 
@@ -1045,13 +1049,17 @@ void CSppConsoleDlg::EnableAudio(int enable)
 
 
 	// If disable then store the current values and restore the values before start
-	if (!enable)
+	if (!enable)	// TODO 3.3.9
+					// Show the 'pereffered device' and its settings when unchecking
 	{
 		SelMixer = MixerList->GetCurSel();
 		SelLine  = InputLineNameList->GetCurSel();
 		m_AudioInput->Restore();
+		SetCurrentMixerDevice((UINT)-1);
 	}
-	else
+	else	// TODO 3.3.9
+			// Switch back correctly when checkbox is 'checked' again
+
 	{
 		// If uninitialized then get preset values
 		if (SelMixer<0)
@@ -1187,8 +1195,8 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	const char * ActualMixerName = ::GetMixerName();
 	iMixer = SetMixerSelectionByName(ActualMixerName);
 
-
-	::SetCurrentMixerDevice(ActualMixerName);
+	if (iMixer>=0)
+		::SetCurrentMixerDevice(ActualMixerName);
 	m_AudioInput->SetCurrentMixerDevice(iMixer);
 }
 
