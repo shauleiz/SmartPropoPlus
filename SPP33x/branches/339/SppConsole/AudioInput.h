@@ -26,10 +26,10 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_UNSIGNED list
 
 class CAudioInput  
 {
-public:
+protected:
 	class CMixerDevice
 	{
-	public:
+	protected:
 		class CPhysicalDevice
 		{
 		public:
@@ -111,13 +111,21 @@ public:
 		void Restore(void);
 		const char * GetMixerDeviceName(int index);
 		const char * GetMixerDeviceInputLineName(int Mixer, int Line);
-		CMixerDevice * GetMixerDevice(int Mixer);
+		bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
+		bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
+		bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
+		bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
+
+		bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
+		int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
+
 
 		int GetCountMixerDevice(void);
 		CAudioInput();
 		virtual ~CAudioInput();
 		
 	protected:
+		CMixerDevice * GetMixerDevice(int Mixer);
 		CArray< CMixerDevice *,CMixerDevice *> m_ArrayMixerDevice;
 		int m_CurrentMixerDevice;
 };

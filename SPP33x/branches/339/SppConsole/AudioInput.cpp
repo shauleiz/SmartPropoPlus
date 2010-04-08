@@ -405,10 +405,92 @@ const char * CAudioInput::GetMixerDeviceInputLineName(int Mixer, int Line)
 	if (Mixer>=0 && Mixer<GetCountMixerDevice())
 	{
 		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return NULL;
 		return md->GetInputLineName(Line);
 	}
 	else
 		return NULL;
+}
+
+bool CAudioInput::SetMixerDeviceSelectInputLine(int Mixer, int Line)
+{
+	if (Mixer>=0 && Mixer<GetCountMixerDevice())
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return false;
+		return md->SetSelectedInputLine(Line);
+	}
+	else
+		return false;
+}
+
+bool CAudioInput::GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine)
+{
+	if (Mixer>=0 && Mixer<GetCountMixerDevice())
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return false;
+		return md->GetSelectedInputLine(iLine);
+	}
+	else
+		return false;
+}
+
+bool CAudioInput::GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index)
+{
+	if (Mixer>=0 && Mixer<GetCountMixerDevice())
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return false;
+		return md->GetInputLineIndex(SrcID, Index);
+	}
+	else
+		return false;
+}
+
+bool CAudioInput::GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index)
+{
+	if (Mixer>=0 && Mixer<GetCountMixerDevice())
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return false;
+		return md->GetInputLineSrcID(SrcID, Index);
+	}
+	else
+		return false;
+}
+
+bool CAudioInput::MuteSelectedInputLine(int Mixer, unsigned int line, bool mute, bool temporary)
+{
+	if (Mixer>=0 && Mixer<GetCountMixerDevice())
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return false;
+		return md->MuteSelectedInputLine(line, mute, temporary);
+	}
+	else
+		return false;
+
+}
+
+int CAudioInput::SetSpeakers(int Mixer, bool restore, bool mute)
+{
+	if (Mixer>=0 && Mixer<GetCountMixerDevice())
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
+		if (!md)
+			return false;
+		return md->SetSpeakers(restore, mute);
+	}
+	else
+		return false;
+
 }
 
 CAudioInput::CMixerDevice * CAudioInput::GetMixerDevice(int Mixer)
