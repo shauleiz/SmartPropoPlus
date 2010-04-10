@@ -13,21 +13,24 @@
 #ifndef WINVER		// Permit use of features specific to Windows 95 and Windows NT 4.0 or later.
 #define WINVER 0x0400	// Change this to the appropriate value to target 
 #endif                     // Windows 98 and Windows 2000 or later.
+#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
 #ifndef _WIN32_WINNT	// Permit use of features specific to Windows NT 4.0 or later.
 #define _WIN32_WINNT 0x0400	// Change this to the appropriate value to target 
 #endif		         // Windows 98 and Windows 2000 or later.			
 
-#define _WIN32_IE  0x0500
+//#define _WIN32_IE  0x0500
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
-//#define _WIN32_WINNT 0x0500
+#define _WIN32_WINNT 0x0500
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
-#include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
+////#include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #include <afxtempl.h>
 #endif // _AFX_NO_AFXCMN_SUPPORT
+
+// Insert your headers here
 
 
 //{{AFX_INSERT_LOCATION}}
