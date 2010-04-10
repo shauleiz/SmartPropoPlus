@@ -9,6 +9,7 @@
 #endif // _MSC_VER > 1000
 
 #include "AudioInput.h"
+#include "AudioInputW7.h"
 
 typedef HRESULT (CALLBACK* DLLFUNC1)();
 

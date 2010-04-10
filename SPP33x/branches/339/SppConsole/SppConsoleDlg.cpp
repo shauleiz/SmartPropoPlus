@@ -194,7 +194,10 @@ BOOL CSppConsoleDlg::OnInitDialog()
 	OnPpjoyex();								// Start PPJoy according to checkbox state
 
 	/* Initialize Audio source related controls */
-	m_AudioInput = new CAudioInput();
+	if (isVista())
+		m_AudioInput = new CAudioInputW7();
+	else
+		m_AudioInput = new CAudioInput();
 	PopulateAudioSource();
 	m_enable_audio = ::GetCurrentAudioState();
 	CheckAudioCB();

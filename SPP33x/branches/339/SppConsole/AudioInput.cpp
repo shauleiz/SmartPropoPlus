@@ -359,6 +359,7 @@ CAudioInput::CAudioInput()
 	if (!nMixDev)
 		return;
 
+	// Create the array of mixer devices
 	for (unsigned int index=0; index<nMixDev ; index++)
 	{
 		mixer = new CMixerDevice(index);

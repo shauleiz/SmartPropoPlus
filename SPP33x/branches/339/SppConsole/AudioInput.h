@@ -32,25 +32,26 @@ protected:
 	protected:
 		class CPhysicalDevice
 		{
-		public:
+		public: //  CPhysicalDevice
 			virtual ~CPhysicalDevice();
 			CPhysicalDevice();
 			CPhysicalDevice(HMIXER hMixerDevice, unsigned long DstLineID, unsigned long muteCtrlID,bool mute, unsigned long volumeCtrlID, int volume);
 			void SetVolume(int volume=50);
 			void SetMute(bool mute=true);
 			void restore();
-		protected:
+		protected: //  CPhysicalDevice
 			unsigned long m_DstLineID;
 			unsigned long m_muteCtrlID;
 			unsigned long m_volumeCtrlID;
 			bool m_mute;
 			int m_volume;
 			HMIXER m_hMixerDevice;
-		};
+		};//  CPhysicalDevice
+
 		class CInputLine
 		{
 		struct sMuteLine {bool mute; ULONG LineID; ULONG CtrlID;};
-		public:
+		public: // CInputLine
 			int StoreDefaultVolume();
 			bool isInitSelected(void);
 			void RestoreMute(void);
@@ -65,7 +66,7 @@ protected:
 			CInputLine(HMIXER hMixerDevice, unsigned long id, const char * Name, unsigned long Type, long Selected);
 			virtual ~CInputLine();
 
-		protected:
+		protected: // CInputLine
 			HMIXER m_hMixerDevice;
 			unsigned long m_ID;
 			const char * m_Name;
@@ -75,8 +76,9 @@ protected:
 			CArray< sMuteLine ,sMuteLine> * m_ArrayMuteControl;
 			CArray< sMuteLine ,sMuteLine>  * CreateArrayMuteCtrl(ULONG m_SrcType, const char * m_Name);
 		}; // CInputLine
-		public:
-			int CreatePhysicalDevArray(void);
+
+
+		public: //CMixerDevice
 			int SetSpeakers(bool restore=false, bool mute=true);
 			bool MuteSelectedInputLine(unsigned int line, bool mute=true, bool temporary=false);
 			void RestoreSelectedInputLine(unsigned int line);
@@ -90,21 +92,25 @@ protected:
 			bool SetSelectedInputLine(unsigned int line);
 			const char * GetInputLineName(int i);
 			const char * GetName();
-			CMixerDevice();
 			virtual ~CMixerDevice();
 			CMixerDevice(int Index);
-		protected:
+
+		protected: //CMixerDevice
+			CMixerDevice();
+			int CreatePhysicalDevArray(void);
 			int CreateInputLineArray(void);
+
+		protected: //CMixerDevice
 			HMIXER m_hMixerDevice;
 			int m_ID;
 			char * m_name;
 			long m_CurrentSrcID;
-		protected:
 			CArray< CInputLine *,CInputLine *> m_ArrayInputLine;
 			CArray< CPhysicalDevice *,CPhysicalDevice *> m_ArrayPhysicalDev;
 	}; // CMixerDevice
 	
-	public:
+
+	public: // CAudioInput
 		int GetCurrentMixerDevice(void);
 		bool SetCurrentMixerDevice(int i);
 		int GetMixerDeviceIndex(char * mixer);
@@ -115,20 +121,19 @@ protected:
 		bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
 		bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
 		bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
-
 		bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
 		int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
-
-
 		int GetCountMixerDevice(void);
 		CAudioInput();
 		virtual ~CAudioInput();
 		
-	protected:
+	protected: // CAudioInput
 		CMixerDevice * GetMixerDevice(int Mixer);
+
+	protected: // CAudioInput
 		CArray< CMixerDevice *,CMixerDevice *> m_ArrayMixerDevice;
 		int m_CurrentMixerDevice;
-};
+}; // CAudioInput
 
 
 #endif // !defined(AFX_AUDIOINPUT_H__9FACD8AD_2945_4282_9FA6_F366CCBA46BD__INCLUDED_)

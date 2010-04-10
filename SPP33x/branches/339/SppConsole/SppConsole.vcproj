@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="SppConsole"
+	RootNamespace="SppConsole"
 	SccProjectName=""
 	SccLocalPath=""
 	Keyword="MFCProj">
@@ -23,7 +24,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -98,7 +99,7 @@ copy .\Release\SppConsole.exe  ..\.
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
@@ -118,7 +119,7 @@ copy .\Release\SppConsole.exe  ..\.
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="smartpropoplus.lib winmm.lib"
+				AdditionalDependencies="smartpropoplus.lib odbc32.lib odbccp32.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib"
 				OutputFile=".\Debug/SppConsole.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -173,7 +174,7 @@ copy .\Release\SppConsole.exe  ..\.
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -248,7 +249,7 @@ copy .\Release\SppConsole.exe  ..\.
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
@@ -322,7 +323,7 @@ copy .\Release\SppConsole.exe  ..\.
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
@@ -397,7 +398,7 @@ copy .\Release\SppConsole.exe  ..\.
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -581,6 +582,9 @@ copy .\Release\SppConsole.exe  ..\.
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\AudioInputW7.cpp">
 			</File>
 			<File
 				RelativePath="DefVolumeDlg.cpp">
@@ -990,6 +994,9 @@ type &quot;hlp\$(InputName).log&quot;
 			</File>
 			<File
 				RelativePath="AudioInput.h">
+			</File>
+			<File
+				RelativePath=".\AudioInputW7.h">
 			</File>
 			<File
 				RelativePath="DefVolumeDlg.h">
