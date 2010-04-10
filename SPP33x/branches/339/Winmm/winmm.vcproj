@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="winmm"
+	ProjectGUID="{3B518620-350C-48EC-BB28-563CF19C9611}"
 	RootNamespace="winmm"
 	SccProjectName=""
 	SccLocalPath="">
@@ -98,7 +99,7 @@ copy .\Release_PPJoy\PPJoyEx.dll  ..\SppConsole\Release\.
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHsc"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;&quot;N:\Program Files\Microsoft SDKs\Windows\v6.1\Include&quot;;N:\WINDDK\5483\inc\api"
+				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
 				PreprocessorDefinitions="PPJOY;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINMM_EXPORTS"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug_PPJoy/winmm.pch"
