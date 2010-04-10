@@ -1,8 +1,4 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioStudy", "..\AudioStudy\AudioStudy.vcproj", "{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GlobalMemory", "GlobalMemory\GlobalMemory.vcproj", "{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
@@ -39,14 +35,6 @@ Global
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug.ActiveCfg = Debug|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug.Build.0 = Debug|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug PPJoy.ActiveCfg = Debug|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Debug PPJoy.Build.0 = Debug|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release.ActiveCfg = Release|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release.Build.0 = Release|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release PPJoy.ActiveCfg = Release|Win32
-		{9082C2F3-B66C-4D08-A14B-0B8B23F6C791}.Release PPJoy.Build.0 = Release|Win32
 		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug.ActiveCfg = Debug|Win32
 		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug.Build.0 = Debug|Win32
 		{A1966CCB-9BC5-4185-9BE9-DD62BC08DED6}.Debug PPJoy.ActiveCfg = Debug|Win32
