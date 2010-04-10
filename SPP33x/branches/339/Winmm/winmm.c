@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
+#include <Functiondiscoverykeys_devpkey.h>
 
 #ifdef PPJOY
 #include <winioctl.h>
@@ -3194,7 +3195,8 @@ DWORD WINAPI ProcThread(void *param){
 
     HRESULT hr = S_OK;
 	IMMDeviceEnumerator *m_pEnumerator = NULL;
-    IMMDevice *m_pDeviceIn = NULL;
+    IMMDevice *m_pDeviceIn = NULL, *m_pDeviceTmp = NULL;
+	IMMDeviceCollection * m_pDeviceCollect = NULL;
     IAudioClient *m_pClientIn = NULL;
     IAudioCaptureClient *pCaptureClient = NULL;
 	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
@@ -3211,6 +3213,13 @@ DWORD WINAPI ProcThread(void *param){
     DWORD flags;
     UINT32 packetSize;
 	UINT i;
+	UINT  count;
+	PROPVARIANT varName;
+	IPropertyStore *pProps = NULL;
+	LPWSTR pwszID = NULL;
+
+
+
 
 	//BCDE0395-E52F-467C-8E3D-C4579291692E
 	static GUID const CLSID_MMDeviceEnumerator = {
@@ -3228,6 +3237,7 @@ DWORD WINAPI ProcThread(void *param){
 	static GUID const IID_IAudioCaptureClient = {
      0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
+	_ASSERT(0);
 	waveRecording = TRUE;
 
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -3251,6 +3261,45 @@ DWORD WINAPI ProcThread(void *param){
 		EXIT_ON_ERROR(hr);
 	};
 
+	// Create a list of Endpoints
+	hr = m_pEnumerator->lpVtbl->EnumAudioEndpoints(m_pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &m_pDeviceCollect);	   
+	hr = m_pDeviceCollect->lpVtbl->GetCount(m_pDeviceCollect,&count);
+	// Each loop prints the name of an endpoint device.
+	for ( i = 0; i < count; i++)
+	{
+		// Get pointer to endpoint number i.
+		hr = m_pDeviceCollect->lpVtbl->Item(m_pDeviceCollect,i, &m_pDeviceTmp);
+		EXIT_ON_ERROR(hr)
+
+		// Get the endpoint ID string.
+		hr = m_pDeviceTmp->lpVtbl->GetId(m_pDeviceTmp, &pwszID);
+		EXIT_ON_ERROR(hr)
+
+		hr = m_pDeviceTmp->lpVtbl->OpenPropertyStore(
+		m_pDeviceTmp,
+		STGM_READ, &pProps);
+		EXIT_ON_ERROR(hr)
+
+		// Initialize container for property value.
+		PropVariantInit(&varName);
+
+		// Get the endpoint's friendly-name property.
+		hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
+		EXIT_ON_ERROR(hr)
+
+		//MessageBoxW(NULL, varName.pwszVal, (LPWSTR)"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+
+			//// Print endpoint friendly name and endpoint ID.
+			//printf("Endpoint %d: \"%S\" (%S)\n",
+			//i, varName.pwszVal, pwszID);
+
+		CoTaskMemFree(pwszID);
+		pwszID = NULL;
+		PropVariantClear(&varName);
+		SAFE_RELEASE(pProps)
+			SAFE_RELEASE(m_pDeviceTmp)
+	};
+
 	
     hr = m_pDeviceIn->lpVtbl->Activate(m_pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&m_pClientIn);
 	if (FAILED(hr))
@@ -3262,19 +3311,22 @@ DWORD WINAPI ProcThread(void *param){
 	// Get a hint of the currently used format
 	hr = m_pClientIn->lpVtbl->GetMixFormat(m_pClientIn,  &pwaveFmtHint );
 
+	// TODO: 3.3.9 - Replace this later
+	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
+
 	// setup wave fmt
-    waveFmt.wFormatTag = WAVE_FORMAT_PCM;
-    waveFmt.nChannels = 2;
-	waveFmt.nSamplesPerSec = pwaveFmtHint->nSamplesPerSec;
-    waveFmt.wBitsPerSample =16;
-    waveFmt.nBlockAlign = waveFmt.wBitsPerSample / 8 * waveFmt.nChannels;
-    waveFmt.nAvgBytesPerSec = waveFmt.nSamplesPerSec * waveFmt.nBlockAlign;
-    waveFmt.cbSize = 0;
+    CurrentWaveInInfo->waveFmt.wFormatTag = WAVE_FORMAT_PCM;
+    CurrentWaveInInfo->waveFmt.nChannels = 2;
+	CurrentWaveInInfo->waveFmt.nSamplesPerSec = pwaveFmtHint->nSamplesPerSec;
+    CurrentWaveInInfo->waveFmt.wBitsPerSample =16;
+    CurrentWaveInInfo->waveFmt.nBlockAlign = CurrentWaveInInfo->waveFmt.wBitsPerSample / 8 * CurrentWaveInInfo->waveFmt.nChannels;
+    CurrentWaveInInfo->waveFmt.nAvgBytesPerSec = CurrentWaveInInfo->waveFmt.nSamplesPerSec * CurrentWaveInInfo->waveFmt.nBlockAlign;
+    CurrentWaveInInfo->waveFmt.cbSize = 0;
 
 	// check format is supported
-    hr = m_pClientIn->lpVtbl->IsFormatSupported(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  &waveFmt, &pwaveFmtCurrent);
+    hr = m_pClientIn->lpVtbl->IsFormatSupported(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  &(CurrentWaveInInfo->waveFmt), &pwaveFmtCurrent);
 	if (hr == S_OK)
-		pwaveFmtCurrent = &waveFmt;
+		pwaveFmtCurrent = &(CurrentWaveInInfo->waveFmt);
 	else if (FAILED(hr))
 	{
 		MessageBox(NULL,"WASAPI: Format not supported\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
@@ -3352,9 +3404,9 @@ DWORD WINAPI ProcThread(void *param){
 //            ASSERT(packetLength == packetLength2);
 
             // Calculate the packet size in bytes.
-            packetSize = packetLength * waveFmt.nBlockAlign;
+            packetSize = packetLength * CurrentWaveInInfo->waveFmt.nBlockAlign;
 
-			if( waveFmt.nBlockAlign == 4) {
+			if( CurrentWaveInInfo->waveFmt.nBlockAlign == 4) {
 				// 2 channels of 16bit data
 				for (i = 0; i < packetLength; i++) 
 				{

@@ -285,7 +285,7 @@ int						iCurrentWaveInInfo = -1;
 HWAVEIN * hWaveInDev;
 
 static HWAVEOUT      waveOut;        // WAVE OUT
-static WAVEFORMATEX  waveFmt;		 // WAVE FORMAT (IN)
+//static WAVEFORMATEX  waveFmt;		 // WAVE FORMAT (IN)
 static WAVEFORMATEX  waveFmtO;		 // WAVE FORMAT (OUT)
 static WAVEHDR      *waveBuf[N_WAVEIN_BUF];      // WAVEHDR構造体へのポインタ
 static volatile BOOL waveRecording;
