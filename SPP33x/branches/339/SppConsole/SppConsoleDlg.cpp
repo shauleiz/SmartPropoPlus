@@ -964,9 +964,9 @@ void CSppConsoleDlg::PopulateInputLines()
 	m_iSelLine = GetCurrentInputLine();
 	InputLineNameList->SetCurSel(m_iSelLine);
 
-	/* Activate selected line */
-	if (md && m_iSelLine > -1)
-		md->SetSelectedInputLine(m_iSelLine);	
+	/* Activate selected line */ // Seems to be a bug here
+	//if (md && m_iSelLine > -1)
+	//	md->SetSelectedInputLine(m_iSelLine);	
 }
 
 void CSppConsoleDlg::OnSelchangeMixerdevice() 
