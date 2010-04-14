@@ -3237,7 +3237,7 @@ DWORD WINAPI ProcThread(void *param){
 	static GUID const IID_IAudioCaptureClient = {
      0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
-	_ASSERT(0);
+	//_ASSERT(0);
 	waveRecording = TRUE;
 
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
