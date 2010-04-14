@@ -15,9 +15,6 @@
 #endif                     // Windows 98 and Windows 2000 or later.
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
-#ifndef _WIN32_WINNT	// Permit use of features specific to Windows NT 4.0 or later.
-#define _WIN32_WINNT 0x0400	// Change this to the appropriate value to target 
-#endif		         // Windows 98 and Windows 2000 or later.			
 
 //#define _WIN32_IE  0x0500
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers

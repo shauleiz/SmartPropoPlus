@@ -10,6 +10,21 @@
 	members consist of list of Endpoint devices & index of current Endpoint device
 	Endpoint devices are also called Mixer (devices)
 ***************************************************************************************/
+/////////////////// Helper functions //////////////////////////////////////////////////
+
+int w2char(LPWSTR wIn, char * cOut, int size)
+{
+	int i;
+	for (i=0; i<size ; i++)
+	{
+		cOut[i] = (char)wIn[i];
+		if (!cOut[i])
+			break;
+	};
+	return i;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 
 CAudioInputW7::CAudioInputW7(void)
 {
@@ -20,6 +35,7 @@ CAudioInputW7::CAudioInputW7(void)
 	m_pEnumerator = NULL;
 	m_pDeviceCollect = NULL;
 	m_nEndPoints = 0;
+	m_ArrayOfEndPointNames = NULL;
 
 	//BCDE0395-E52F-467C-8E3D-C4579291692E
 	static GUID const CLSID_MMDeviceEnumerator = {
@@ -64,6 +80,8 @@ CAudioInputW7::CAudioInputW7(void)
 		EXIT_ON_ERROR(hr);
 	};
 
+	bool created = CreateArrayOfEndPointNames();
+
 	return;
 
 	Exit:
@@ -77,7 +95,7 @@ CAudioInputW7::~CAudioInputW7(void)
 {
     SAFE_RELEASE(m_pEnumerator);
     SAFE_RELEASE(m_pDeviceCollect);
-
+	delete[] m_ArrayOfEndPointNames;
 }
 
 int CAudioInputW7::GetCountMixerDevice()
@@ -87,38 +105,80 @@ int CAudioInputW7::GetCountMixerDevice()
 
 const char * CAudioInputW7::GetMixerDeviceName(int index)
 {
+	// Sanity checks
+	if ((UINT)index >= m_nEndPoints || index<0 || !m_ArrayOfEndPointNames)
+		return "";
+
+	return m_ArrayOfEndPointNames[index];
+}
+
+
+bool CAudioInputW7::CreateArrayOfEndPointNames(void)
+{
 	HRESULT hr = S_OK;
 	IMMDevice *pDeviceIn = NULL;
 	PROPVARIANT varName;
 	IPropertyStore *pProps = NULL;
 	LPWSTR pwszID = NULL;
+	bool Ret = false;
 
 	
 	// Sanity check
 	if (!m_pDeviceCollect)
-		return NULL;
+		return false;
 
-	// Get pointer to endpoint number i.
-	hr = m_pDeviceCollect->Item(index, &pDeviceIn);
-	EXIT_ON_ERROR(hr);
+	// Create an array of Endpoint names only if 
+	//	Array does not exist
+	//	There is at least one endpoint
+	if (m_ArrayOfEndPointNames || !m_nEndPoints)
+		return false;
 
-	// Get the endpoint ID string.
-	hr = pDeviceIn->GetId( &pwszID);
-	EXIT_ON_ERROR(hr);
+	m_ArrayOfEndPointNames = new char*[m_nEndPoints];
 
-	hr = pDeviceIn->OpenPropertyStore(STGM_READ, &pProps);
-	EXIT_ON_ERROR(hr);
+	for (UINT index=0; index<m_nEndPoints ; index++)
+	{
+		// Get pointer to endpoint number i.
+		hr = m_pDeviceCollect->Item(index, &pDeviceIn);
+		EXIT_ON_ERROR(hr);
 
-	// Initialize container for property value.
-	PropVariantInit(&varName);
+		// Get the endpoint ID string.
+		hr = pDeviceIn->GetId( &pwszID);
+		EXIT_ON_ERROR(hr);
 
-	// Get the endpoint's friendly-name property.
-	hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
-	EXIT_ON_ERROR(hr);
+		hr = pDeviceIn->OpenPropertyStore(STGM_READ, &pProps);
+		EXIT_ON_ERROR(hr);
 
-	Exit:
-    SAFE_RELEASE(pDeviceIn);
+		// Initialize container for property value.
+		PropVariantInit(&varName);
+
+		// Get the endpoint's friendly-name property.
+		hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+		EXIT_ON_ERROR(hr);
+
+		// Convert to char
+		size_t size = wcslen(varName.pwszVal);
+		m_ArrayOfEndPointNames[index] = new char[size+2];
+		w2char(varName.pwszVal, m_ArrayOfEndPointNames[index], (int)size+1);
+	};
+
+	Ret=true;
+
+Exit:
+	SAFE_RELEASE(pDeviceIn);
     SAFE_RELEASE(pProps);
-	return NULL;
+	return Ret;
 }
 
+int CAudioInputW7::GetMixerDeviceIndex(char * mixer)
+{
+	if (!m_ArrayOfEndPointNames)
+		return -1;
+
+	for (UINT index=0; index<m_nEndPoints ; index++)
+	{
+		if (!strcmp(m_ArrayOfEndPointNames[index], mixer))
+			return index;
+	}
+
+	return -1;
+}
