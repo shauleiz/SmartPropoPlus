@@ -26,7 +26,7 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_UNSIGNED list
 
 class CAudioInput  
 {
-public: // TTT
+protected: 
 	class CMixerDevice
 	{
 	protected:
@@ -127,7 +127,7 @@ public: // TTT
 		CAudioInput();
 		virtual ~CAudioInput();
 		
-	// TTT protected: // CAudioInput
+	protected: // CAudioInput
 		CMixerDevice * GetMixerDevice(int Mixer);
 
 	protected: // CAudioInput
