@@ -26,7 +26,7 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_UNSIGNED list
 
 class CAudioInput  
 {
-protected:
+public: // TTT
 	class CMixerDevice
 	{
 	protected:
@@ -111,23 +111,23 @@ protected:
 	
 
 	public: // CAudioInput
-		int GetCurrentMixerDevice(void);
-		bool SetCurrentMixerDevice(int i);
-		int GetMixerDeviceIndex(char * mixer);
-		void Restore(void);
-		const char * GetMixerDeviceName(int index);
-		const char * GetMixerDeviceInputLineName(int Mixer, int Line);
-		bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
-		bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
-		bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
-		bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
-		bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
-		int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
-		int GetCountMixerDevice(void);
+		virtual int GetCurrentMixerDevice(void);
+		virtual bool SetCurrentMixerDevice(int i);
+		virtual int GetMixerDeviceIndex(char * mixer);
+		virtual void Restore(void);
+		virtual const char * GetMixerDeviceName(int index);
+		virtual const char * GetMixerDeviceInputLineName(int Mixer, int Line);
+		virtual bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
+		virtual bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
+		virtual bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
+		virtual bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
+		virtual bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
+		virtual int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
+		virtual int GetCountMixerDevice(void);
 		CAudioInput();
 		virtual ~CAudioInput();
 		
-	protected: // CAudioInput
+	// TTT protected: // CAudioInput
 		CMixerDevice * GetMixerDevice(int Mixer);
 
 	protected: // CAudioInput

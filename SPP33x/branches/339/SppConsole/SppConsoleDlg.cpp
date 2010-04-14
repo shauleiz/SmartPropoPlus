@@ -195,7 +195,7 @@ BOOL CSppConsoleDlg::OnInitDialog()
 
 	/* Initialize Audio source related controls */
 	if (isVista())
-		m_AudioInput = new CAudioInputW7();
+		m_AudioInput = (CAudioInputW7 *) new CAudioInputW7();
 	else
 		m_AudioInput = new CAudioInput();
 	PopulateAudioSource();
@@ -937,6 +937,8 @@ void CSppConsoleDlg::PopulateInputLines()
 	else
 		m_iSelMixer = sel;
 
+	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(sel);
+
 	/* Get the line name list box */
 	CListBox* InputLineNameList = (CListBox*)GetDlgItem(IDC_AUDIO_SRC);
 	if (!InputLineNameList)
@@ -948,7 +950,7 @@ void CSppConsoleDlg::PopulateInputLines()
 	/* Loop on all Input Lines of the selected device */
 	const char * LineName;
 	int nLine = 0;
-	while ((LineName = m_AudioInput->GetMixerDeviceInputLineName(sel, nLine)))
+	while (md && (LineName = md->GetInputLineName(nLine)))
 	{
 		InputLineNameList->InsertString(nLine, LineName);
 		nLine++;
@@ -963,8 +965,8 @@ void CSppConsoleDlg::PopulateInputLines()
 	InputLineNameList->SetCurSel(m_iSelLine);
 
 	/* Activate selected line */
-	if (m_iSelLine > -1)
-		m_AudioInput->SetMixerDeviceSelectInputLine(sel, m_iSelLine);
+	if (md && m_iSelLine > -1)
+		md->SetSelectedInputLine(m_iSelLine);	
 }
 
 void CSppConsoleDlg::OnSelchangeMixerdevice() 
@@ -1007,12 +1009,11 @@ void CSppConsoleDlg::OnSelchangeAudioSrc()
 	m_iSelMixer = MixerList->GetCurSel();
 	if (m_iSelMixer < 0)
 		return;
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(m_iSelMixer);
+	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(m_iSelMixer);
 
 	/* Select the Input Line */
-	//if (md)
-	//	md->SetSelectedInputLine(m_iSelLine);
-	m_AudioInput->SetMixerDeviceSelectInputLine(m_iSelMixer, m_iSelLine);
+	if (md)
+		md->SetSelectedInputLine(m_iSelLine);
 }
 
 void CSppConsoleDlg::OnEnableAudio() 
@@ -1081,10 +1082,9 @@ void CSppConsoleDlg::EnableAudio(int enable)
 		SelLine = GetCurrentInputLine();
 
 		InputLineNameList->SetCurSel(SelLine);
-		//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(SelMixer);
-		//if (md && SelLine > -1)
-		//	md->SetSelectedInputLine(SelLine);	
-		m_AudioInput->SetMixerDeviceSelectInputLine(SelMixer, SelLine);
+		CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(SelMixer);
+		if (md && SelLine > -1)
+			md->SetSelectedInputLine(SelLine);		
 	};
 	
 }
@@ -1146,14 +1146,11 @@ bool CSppConsoleDlg::GetSavedCurrentInputLine(unsigned int *iLine)
 
 	/* Convert Source Line ID into Index */
 	int iMixer = m_AudioInput->GetCurrentMixerDevice();
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
-	//if (md)
-	//{
-	return m_AudioInput->GetMixerDeviceInputLineIndex(iMixer, SrcID, iLine);
-	//	return md->GetInputLineIndex(SrcID, iLine);
-	//}
-	//else
-	//	return false;
+	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
+	if (md)
+		return md->GetInputLineIndex(SrcID, iLine);
+	else
+		return false;
 
 }
 
@@ -1166,13 +1163,13 @@ bool CSppConsoleDlg::GetCurrentInputLineFromSystem(unsigned int *iLine)
 {
 	bool res;
 	int iMixer = m_AudioInput->GetCurrentMixerDevice();
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
-	//if (md)
-	//	res = md->GetSelectedInputLine(iLine);
-	//else
-	//	res = false;
+	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
+	if (md)
+		res = md->GetSelectedInputLine(iLine);
+	else
+		res = false;
 
-	res = m_AudioInput->GetMixerDeviceSelectInputLine(iMixer, iLine);
+
 	return res;
 }
 
@@ -1228,11 +1225,10 @@ void CSppConsoleDlg::SetCurrentInputLine(int iLine)
 	SetCurrentMixerDevice(iMixer);
 
 	/* Get the Source Line ID of the selected line */
+	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
 	unsigned int SrcID;
-	bool res = m_AudioInput->GetMixerDeviceInputLineSrcID(iMixer, &SrcID, iLine);
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);
-	//if (!md || !md->GetInputLineSrcID(&SrcID, iLine))
-	//	return;
+	if (!md || !md->GetInputLineSrcID(&SrcID, iLine))
+		return;
 
 	/* Set the Source Line ID in the registry */
 	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
@@ -1289,22 +1285,22 @@ void CSppConsoleDlg::HearTx(bool hear)
 	if (m_iSelMixer<0 || m_iSelLine<0)
 		return;
 	/* Unmute the selected Input Line */
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(m_iSelMixer);
-	//if (!md)
-	//	return;
+	CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(m_iSelMixer);
+	if (!md)
+		return;
 
 	/* If changed to hear=true then temporarily unmute all */
 	if (hear)
 	{
-		PrevLineMute = m_AudioInput->MuteSelectedInputLine(m_iSelLine, false, true);
-		m_AudioInput->SetSpeakers(false,false);
+		PrevLineMute = md->MuteSelectedInputLine(m_iSelLine, false, true);
+		md->SetSpeakers(false,false);
 	}
 
 	/* If changed to hear=false then restore mute values */
 	else
 	{
-		m_AudioInput->MuteSelectedInputLine(m_iSelLine, PrevLineMute, true);
-		m_AudioInput->SetSpeakers(true);
+		md->MuteSelectedInputLine(m_iSelLine, PrevLineMute, true);
+		md->SetSpeakers(true);
 	};
 
 		ddd = PrevLineMute;
