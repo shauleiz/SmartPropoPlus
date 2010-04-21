@@ -361,6 +361,7 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
 
 struct WAVEINSTRUCT_W7
 {
+	BOOL				Usable;
 	IMMDevice			*pDeviceIn;
 	LPWSTR				DevId;
 	IAudioClient		*pClientIn;
