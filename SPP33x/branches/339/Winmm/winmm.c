@@ -3575,11 +3575,6 @@ HRESULT InitAllEndPoints()
 
 	/** Insert default endpoint in index 0 **/
 	hr = pEnumerator->lpVtbl->GetDefaultAudioEndpoint(pEnumerator,eCapture, eMultimedia, &(WaveInInfoW7[0].pDeviceIn));
-	WaveInInfoW7[0].DevFriendlyName = NULL;
-	WaveInInfoW7[0].DevId = NULL;
-	WaveInInfoW7[0].pClientIn = NULL;
-	WaveInInfoW7[0].WaveFmt = NULL;
-	WaveInInfoW7[0].pCaptureClient = NULL;
 
 
 	// Loop on all devices for the first time - get their IMMDevice interface
@@ -3587,16 +3582,19 @@ HRESULT InitAllEndPoints()
 	{
 		// Get pointer to endpoint number iDev.
 		hr = pDeviceCollect->lpVtbl->Item(pDeviceCollect,iDev, &(WaveInInfoW7[iDev].pDeviceIn));
-		WaveInInfoW7[iDev].DevFriendlyName = NULL;
-		WaveInInfoW7[iDev].DevId = NULL;
-		WaveInInfoW7[iDev].pClientIn = NULL;
-		WaveInInfoW7[iDev].WaveFmt = NULL;
-		WaveInInfoW7[iDev].pCaptureClient = NULL;
 	};
 
 	// Loop again - fill up required data and prepare for streaming
 	for ( iDev = 0; iDev <= count; iDev++)
 	{
+		WaveInInfoW7[iDev].Usable = FALSE;
+		WaveInInfoW7[iDev].DevFriendlyName = NULL;
+		WaveInInfoW7[iDev].DevId = NULL;
+		WaveInInfoW7[iDev].pClientIn = NULL;
+		WaveInInfoW7[iDev].WaveFmt = NULL;
+		WaveInInfoW7[iDev].pCaptureClient = NULL;
+
+
 		if (!WaveInInfoW7[iDev].pDeviceIn)
 			continue;
 
@@ -3629,20 +3627,23 @@ HRESULT InitAllEndPoints()
 		if (FAILED(hr))
 			continue;
 
-		////  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
-		//hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->SetEventHandle(WaveInInfoW7[iDev].pClientIn, hBufferReady);
-		//if (FAILED(hr))
-		//	continue;
+		//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
+		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->SetEventHandle(WaveInInfoW7[iDev].pClientIn, hBufferReady);
+		if (FAILED(hr))
+			continue;
 
-		//hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->GetService(WaveInInfoW7[iDev].pClientIn, &IID_IAudioCaptureClient,(void**)&(WaveInInfoW7[iDev].pCaptureClient));
-		//if (FAILED(hr))
-		//	continue;
+		//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
+		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->GetService(WaveInInfoW7[iDev].pClientIn, &IID_IAudioCaptureClient,(void**)&(WaveInInfoW7[iDev].pCaptureClient));
+		if (FAILED(hr))
+			continue;
 
+		// If got to this point then it means that init for this endpoint was successful
+		WaveInInfoW7[iDev].Usable = TRUE;
 	};
 
 
 
-	return hr;
+	return S_OK;
 
 
 Exit:
@@ -3705,8 +3706,17 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
     FmtTmp.cbSize = 0;
 
 	// check format is supported
-    hr = pClient->lpVtbl->IsFormatSupported(pClient, AUDCLNT_SHAREMODE_SHARED,  &FmtTmp, pFmt);
+	hr = pClient->lpVtbl->IsFormatSupported(pClient, AUDCLNT_SHAREMODE_SHARED,  &FmtTmp, pFmt);
 	if (hr == S_OK)
-		*pFmt = &FmtTmp;
+	{
+		*pFmt = (WAVEFORMATEX *)calloc(1, sizeof(WAVEFORMATEX));
+		(*pFmt)->wFormatTag =  FmtTmp.wFormatTag;
+		(*pFmt)->nChannels =  FmtTmp.nChannels;
+		(*pFmt)->nSamplesPerSec =  FmtTmp.nSamplesPerSec;
+		(*pFmt)->wBitsPerSample =  FmtTmp.wBitsPerSample;
+		(*pFmt)->nBlockAlign =  FmtTmp.nBlockAlign;
+		(*pFmt)->nAvgBytesPerSec =  FmtTmp.nAvgBytesPerSec;
+		(*pFmt)->cbSize =  FmtTmp.cbSize;
+	};
 	return hr;
 }
