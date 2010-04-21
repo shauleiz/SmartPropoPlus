@@ -957,6 +957,10 @@ void CSppConsoleDlg::PopulateInputLines()
 		nLine++;
 	};
 
+	/* If the list is empty then return */
+	if (!nLine)
+		return;
+
 	/* 
 		Get current Input Line from the registry (if possible)
 		In case of impossibility or when the selected mixer is the 'Preferred Mixer' 
@@ -1065,9 +1069,10 @@ void CSppConsoleDlg::EnableAudio(int enable)
 		UINT SystemSelLine;
 		SelMixer = MixerList->GetCurSel();
 		m_AudioInput->Restore();
-		GetCurrentInputLineFromSystem(&SystemSelLine);
+		bool ValidSysLine = GetCurrentInputLineFromSystem(&SystemSelLine);
 		SetCurrentMixerDevice((UINT)-1);
-		InputLineNameList->SetCurSel(SystemSelLine);
+		if (ValidSysLine)
+			InputLineNameList->SetCurSel(SystemSelLine);
 	}
 	else	
 		// Get the stored Mixer Device if exists. If not just get the first one.
@@ -1212,6 +1217,12 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	// Get the name of the actual device from global memory 
 	// Update AudioInput object
 	const char * ActualMixerName = ::GetMixerName();
+	if (!ActualMixerName)
+	{
+		::MessageBox(NULL,"Cannot get Actual Mixer Name", "SmartPropoPlus Message" , MB_SYSTEMMODAL);
+		return;
+	};
+
 	iMixer = SetMixerSelectionByName(ActualMixerName);
 
 	if (iMixer>=0)

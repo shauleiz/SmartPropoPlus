@@ -189,9 +189,10 @@ void SetSwitchMixerRequestStat(enum MDSTAT Stat);
 void SetCurrentInputLine(const char * MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);
 int isVista(void);
+int isVistaSP1OrHigher(void);
 
 
-
+int w2char(LPWSTR wIn, char * cOut, int size);
 void SetNumberOfFilters(const int n);
 int GetNumberOfFilters();
 void SetSelectedFilterIndex(const int i);
