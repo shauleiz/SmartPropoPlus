@@ -17,6 +17,18 @@ void SppMessageBoxWithErrorCode(void)
 	MessageBox(NULL,msg, SPP_ERROR_MSG , MB_SYSTEMMODAL);
 }
 
+int w2char(LPWSTR wIn, char * cOut, int size)
+{
+	int i;
+	for (i=0; i<size ; i++)
+	{
+		cOut[i] = (char)wIn[i];
+		if (!cOut[i])
+			break;
+	};
+	return i;
+}
+
 void SetNumberOfFilters(const int n)
 {
 	SetNumberOfFiltersToGlobalMemory(n);
@@ -265,7 +277,7 @@ far void * CreateDataBlock(struct Modulations * data)
 	return  CreateSharedDataStruct(data);
 }
 
-/* Test if this is a Vista machine */
+/* Test if this is a Vista machine or higher */
 int isVista(void)
 {
 	OSVERSIONINFOEX InfoStruct;
@@ -276,7 +288,29 @@ int isVista(void)
 	InfoStruct.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	InfoStruct.dwMajorVersion = 6; // Vista
 	Mask = VER_MAJORVERSION;
-	VerSetConditionMask(ConditionMask, VER_MAJORVERSION, VER_EQUAL);
+	VerSetConditionMask(ConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+
+	return VerifyVersionInfo(&InfoStruct, Mask, ConditionMask);
+}
+
+/* Test if this is a Vista SP1 machine  or higher */
+int isVistaSP1OrHigher(void)
+{
+	OSVERSIONINFOEX InfoStruct;
+	DWORD Mask;
+	DWORDLONG ConditionMask=0;
+
+	// Init
+	InfoStruct.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	InfoStruct.dwMajorVersion = 6;		// Vista
+	InfoStruct.wServicePackMajor = 1;	// SP1
+	InfoStruct.dwMinorVersion = 0;		// Vista
+	InfoStruct.wServicePackMinor = 0;	// SP1
+	Mask = VER_MAJORVERSION | VER_SERVICEPACKMAJOR | VER_MINORVERSION | VER_SERVICEPACKMINOR;
+	VER_SET_CONDITION(ConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+	VER_SET_CONDITION( ConditionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL );
+	VER_SET_CONDITION(ConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
+	VER_SET_CONDITION( ConditionMask, VER_SERVICEPACKMINOR, VER_GREATER_EQUAL );
 
 	return VerifyVersionInfo(&InfoStruct, Mask, ConditionMask);
 }

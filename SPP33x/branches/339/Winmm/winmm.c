@@ -15,11 +15,11 @@
 #include "SmartPropoPlus.h"
 #include "GlobalMemory.h"
 #include "JsChPostProc.h"
-#include "winmm.h"
 #include <assert.h>
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
 #include <Functiondiscoverykeys_devpkey.h>
+#include "winmm.h"
 
 #ifdef PPJOY
 #include <winioctl.h>
@@ -1829,6 +1829,12 @@ extern __declspec(dllexport) UINT __stdcall   StartPPJoyInterface()
 
 extern __declspec(dllexport) UINT __stdcall   StopPPJoyInterface()
 {
+	if (!hWinmm)
+	{
+		LoadWinmm(0);
+		StartPropo();
+		hJschpostproc = LoadJsChPostProc();
+	};
 	if (hJoy)
 		DisconnectPPJoyDriver();
 	return 0;
@@ -1909,11 +1915,13 @@ void StartPropo(void)
 	}
 	else
 	{
+	// TODO - Fix it	if (!isVistaSP1OrHigher())
+	// TODO - Fix it			MessageBox(NULL,"Your operating system is Vista\r\nYou must install Service Pack 1 (SP1)", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 
 	i=0;
 	closeRequest = FALSE;
 	waveRecording = FALSE;
-
+	InitAllEndPoints();
 	hThread = CreateThread(
         NULL,              // no security attribute
         0,                 // default stack size
@@ -3191,7 +3199,23 @@ extern __declspec(dllexport) UINT __stdcall    StartJsChPostProc(void)
 	return res;
 }
 #endif /* PPJOY */
-DWORD WINAPI ProcThread(void *param){
+
+
+
+/*************************************************  WIndows7/Vista section *************************************************/
+
+/* Thread that does the capturing */
+DWORD WINAPI ProcThread(void *MixerName)
+{
+	/* Open all WASAPI streams - return 0 if OK */
+	if (OpenAllStreamsW7())
+		return -1;
+
+	/* Start streaming the selected Mixer. If mixer not selected then the default endpoint is selected */
+	return StartStreamingW7((const char *)MixerName);
+}
+
+int OpenAllStreamsW7(void){
 
     HRESULT hr = S_OK;
 	IMMDeviceEnumerator *m_pEnumerator = NULL;
@@ -3206,46 +3230,26 @@ DWORD WINAPI ProcThread(void *param){
 //	HRESULT s;
 //    REFERENCE_TIME minBufferDuration;
 //    REFERENCE_TIME defaultBufferDuration;
-    REFERENCE_TIME bufferDuration;
-    UINT32 packetLength;
-    BYTE *pDataIn;
-    UINT32 packetLength2;
-    DWORD flags;
-    UINT32 packetSize;
-	UINT i;
-	UINT  count;
+//    REFERENCE_TIME bufferDuration;
+//    UINT32 packetLength;
+//    BYTE *pDataIn;
+//    UINT32 packetLength2;
+//    DWORD flags;
+//    UINT32 packetSize;
+//	UINT i;
 	PROPVARIANT varName;
 	IPropertyStore *pProps = NULL;
 	LPWSTR pwszID = NULL;
+	size_t size;
+	char * DeviceFriendlyName;
 
-
-
-
-	//BCDE0395-E52F-467C-8E3D-C4579291692E
-	static GUID const CLSID_MMDeviceEnumerator = {
-     0xBCDE0395, 0xE52F, 0x467C, {0x8E,0x3D,0xC4,0x57,0x92,0x91,0x69,0x2E} };
-
-	 //{A95664D2-9614-4F35-A746-DE8DB63617E6}
-	static GUID const CLSID_IMMDeviceEnumerator = {
-     0xA95664D2, 0x9614, 0x4F35, {0xA7,0x46,0xDE,0x8D,0xB6,0x36,0x17,0xE6} };
-
-	 //{1CB9AD4C-DBFA-4C32-B178-C2F568A703B2}
-	static GUID const IID_IAudioClient = {
-     0x1CB9AD4C, 0xDBFA, 0x4C32, {0xB1,0x78,0xC2,0xF5,0x68,0xA7,0x03,0xB2} };
-
-	//{C8ADBD64-E71E-48A0-A4DE-185C395CD317}
-	static GUID const IID_IAudioCaptureClient = {
-     0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
 	//_ASSERT(0);
 	waveRecording = TRUE;
 
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
-	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL,
-                     CLSCTX_ALL, &CLSID_IMMDeviceEnumerator,
-                     (void**)&m_pEnumerator);
-
+	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
 	if (FAILED(hr))
 	{
 		if ((hr==REGDB_E_CLASSNOTREG))
@@ -3253,6 +3257,7 @@ DWORD WINAPI ProcThread(void *param){
 		EXIT_ON_ERROR(hr);
 	};
 
+	
 	// get default endpoint
 	hr = m_pEnumerator->lpVtbl->GetDefaultAudioEndpoint(m_pEnumerator,eCapture, eMultimedia, &m_pDeviceIn);
 	if (FAILED(hr))
@@ -3261,44 +3266,45 @@ DWORD WINAPI ProcThread(void *param){
 		EXIT_ON_ERROR(hr);
 	};
 
+
 	// Create a list of Endpoints
-	hr = m_pEnumerator->lpVtbl->EnumAudioEndpoints(m_pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &m_pDeviceCollect);	   
-	hr = m_pDeviceCollect->lpVtbl->GetCount(m_pDeviceCollect,&count);
+	//hr = m_pEnumerator->lpVtbl->EnumAudioEndpoints(m_pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &m_pDeviceCollect);	   
+	//hr = m_pDeviceCollect->lpVtbl->GetCount(m_pDeviceCollect,&count);
 	// Each loop prints the name of an endpoint device.
-	for ( i = 0; i < count; i++)
-	{
-		// Get pointer to endpoint number i.
-		hr = m_pDeviceCollect->lpVtbl->Item(m_pDeviceCollect,i, &m_pDeviceTmp);
-		EXIT_ON_ERROR(hr)
+	//for ( i = 0; i < count; i++)
+	//{
+	//	// Get pointer to endpoint number i.
+	//	hr = m_pDeviceCollect->lpVtbl->Item(m_pDeviceCollect,i, &m_pDeviceTmp);
+	//	EXIT_ON_ERROR(hr)
 
-		// Get the endpoint ID string.
-		hr = m_pDeviceTmp->lpVtbl->GetId(m_pDeviceTmp, &pwszID);
-		EXIT_ON_ERROR(hr)
+	//	// Get the endpoint ID string.
+	//	hr = m_pDeviceTmp->lpVtbl->GetId(m_pDeviceTmp, &pwszID);
+	//	EXIT_ON_ERROR(hr)
 
-		hr = m_pDeviceTmp->lpVtbl->OpenPropertyStore(
-		m_pDeviceTmp,
-		STGM_READ, &pProps);
-		EXIT_ON_ERROR(hr)
+	//	hr = m_pDeviceTmp->lpVtbl->OpenPropertyStore(
+	//	m_pDeviceTmp,
+	//	STGM_READ, &pProps);
+	//	EXIT_ON_ERROR(hr)
 
-		// Initialize container for property value.
-		PropVariantInit(&varName);
+	//	// Initialize container for property value.
+	//	PropVariantInit(&varName);
 
-		// Get the endpoint's friendly-name property.
-		hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
-		EXIT_ON_ERROR(hr)
+	//	// Get the endpoint's friendly-name property.
+	//	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
+	//	EXIT_ON_ERROR(hr)
 
-		//MessageBoxW(NULL, varName.pwszVal, (LPWSTR)"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+	//	//MessageBoxW(NULL, varName.pwszVal, (LPWSTR)"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 
-			//// Print endpoint friendly name and endpoint ID.
-			//printf("Endpoint %d: \"%S\" (%S)\n",
-			//i, varName.pwszVal, pwszID);
+	//		//// Print endpoint friendly name and endpoint ID.
+	//		//printf("Endpoint %d: \"%S\" (%S)\n",
+	//		//i, varName.pwszVal, pwszID);
 
-		CoTaskMemFree(pwszID);
-		pwszID = NULL;
-		PropVariantClear(&varName);
-		SAFE_RELEASE(pProps)
-			SAFE_RELEASE(m_pDeviceTmp)
-	};
+	//	CoTaskMemFree(pwszID);
+	//	pwszID = NULL;
+	//	PropVariantClear(&varName);
+	//	SAFE_RELEASE(pProps)
+	//		SAFE_RELEASE(m_pDeviceTmp)
+	//};
 
 	
     hr = m_pDeviceIn->lpVtbl->Activate(m_pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&m_pClientIn);
@@ -3308,8 +3314,45 @@ DWORD WINAPI ProcThread(void *param){
 		EXIT_ON_ERROR(hr);
 	};
 
+	
+	// Get the endpoint ID string.
+	hr = m_pDeviceIn->lpVtbl->GetId(m_pDeviceIn, &pwszID);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL,"WASAPI: Could not get ID of audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+
+	
+	/** Getting Endpoint Name ***/
+	hr = m_pDeviceIn->lpVtbl->OpenPropertyStore(m_pDeviceIn, STGM_READ, &pProps);
+	EXIT_ON_ERROR(hr);
+
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+
+	// Get the endpoint's friendly-name property.
+	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
+	EXIT_ON_ERROR(hr);
+
+	// Convert to char
+	size = wcslen(varName.pwszVal);
+	DeviceFriendlyName = (char *)calloc(1,size+2);
+	w2char(varName.pwszVal, DeviceFriendlyName, (int)(size+1));
+
+	// TODO 3.3.9 (GetMixFormat fails):
+	// To get error code 0x8889000a on W7 
+	// you need to make a device (e.g.  CD Audio) Currently unavailable AND default device.
+	// This is atcheived by:
+	// ?????
+
 	// Get a hint of the currently used format
 	hr = m_pClientIn->lpVtbl->GetMixFormat(m_pClientIn,  &pwaveFmtHint );
+	if (FAILED(hr)) 
+	{
+		MessageBox(NULL,"WASAPI: Could not get audio client Mixer Format\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
 
 	// TODO: 3.3.9 - Replace this later
 	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
@@ -3336,7 +3379,7 @@ DWORD WINAPI ProcThread(void *param){
 
 	// Create the capture stream.
     hr = m_pClientIn->lpVtbl->Initialize(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  // shared mode
-                               0,                 // stream flags
+                               0,            // stream flags
                                0,            // buffer duration
                                0,            // periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
                                pwaveFmtCurrent,                   // wave format
@@ -3348,8 +3391,8 @@ DWORD WINAPI ProcThread(void *param){
 	};
 
 
-	hr = m_pClientIn->lpVtbl->GetService(m_pClientIn, &IID_IAudioCaptureClient,
-                               (void**)&pCaptureClient);
+	
+	hr = m_pClientIn->lpVtbl->GetService(m_pClientIn, &IID_IAudioCaptureClient,(void**)&pCaptureClient);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL,"WASAPI: Could not get service (Audio Capture Client)\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
@@ -3357,7 +3400,50 @@ DWORD WINAPI ProcThread(void *param){
 	};
 
 
-    // Start up the capture and rendering streams.
+    
+	return 0;
+
+Exit:
+    SAFE_RELEASE(m_pEnumerator);
+    SAFE_RELEASE(m_pDeviceIn);
+    SAFE_RELEASE(m_pClientIn)
+    SAFE_RELEASE(pCaptureClient)
+	closeRequest = FALSE;
+	waveRecording = FALSE;
+	return -1;
+}
+
+
+DWORD WINAPI  StartStreamingW7(const char * DevName)
+{
+	HRESULT hr = S_OK;
+	IMMDeviceEnumerator *m_pEnumerator = NULL;
+    IMMDevice *m_pDeviceIn = NULL, *m_pDeviceTmp = NULL;
+	IMMDeviceCollection * m_pDeviceCollect = NULL;
+    IAudioClient *m_pClientIn = NULL;
+    IAudioCaptureClient *pCaptureClient = NULL;
+	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
+	//HANDLE hNotificationEvent;
+//	LPWSTR DevId;
+//	DWORD dwState;
+//	HRESULT s;
+//    REFERENCE_TIME minBufferDuration;
+//    REFERENCE_TIME defaultBufferDuration;
+    REFERENCE_TIME bufferDuration;
+    UINT32 packetLength;
+    BYTE *pDataIn;
+    UINT32 packetLength2;
+    DWORD flags;
+    UINT32 packetSize;
+	UINT i;
+//	PROPVARIANT varName;
+	IPropertyStore *pProps = NULL;
+	LPWSTR pwszID = NULL;
+//	size_t size;
+//	char * DeviceFriendlyName;
+
+
+	// Start up the capture and rendering streams.
     hr = m_pClientIn->lpVtbl->Start(m_pClientIn);
 	if (FAILED(hr))
 	{
@@ -3426,7 +3512,7 @@ DWORD WINAPI ProcThread(void *param){
     // Stop the capture stream.
 
 	hr = m_pClientIn->lpVtbl->Stop(m_pClientIn);
-    EXIT_ON_ERROR(hr)
+    EXIT_ON_ERROR(hr);
 
 Exit:
     SAFE_RELEASE(m_pEnumerator);
@@ -3435,6 +3521,192 @@ Exit:
     SAFE_RELEASE(pCaptureClient)
 	closeRequest = FALSE;
 	waveRecording = FALSE;
-	return 0;
+	return -1;
 }
 
+
+HRESULT InitAllEndPoints()
+{
+	HRESULT hr = S_OK;
+	IMMDeviceCollection * pDeviceCollect = NULL;
+	int iDev;
+	IAudioClient * pClientIn = NULL;
+	WAVEFORMATEX * WaveFmt;
+	HANDLE	hBufferReady;
+
+	// Create an event handle and register it for
+    // buffer-event notifications.
+    hBufferReady = CreateEvent(NULL, FALSE, FALSE, NULL);
+    if (hBufferReady == NULL)
+    {
+        hr = E_FAIL;
+        goto Exit;
+    }
+
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
+	/* Create a system-wide device enumerator */
+	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &CLSID_IMMDeviceEnumerator, (void**)&pEnumerator);
+	if (FAILED(hr))
+	{
+		if ((hr==REGDB_E_CLASSNOTREG))
+			MessageBox(NULL,"WASAPI Class not registered - SmartPropoPlus will not function correctly", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+
+	/**** Create a list of end points ****/
+	hr = pEnumerator->lpVtbl->EnumAudioEndpoints(pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &pDeviceCollect);
+	if (FAILED(hr))
+	{			
+		MessageBox(NULL,"WASAPI Enumerating endpoints failed - SmartPropoPlus will not function correctly", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+
+	/** Getting the number of available endpoints **/
+	hr = pDeviceCollect->lpVtbl->GetCount(pDeviceCollect,&count);
+	if (FAILED(hr))
+	{			
+		MessageBox(NULL,"WASAPI Could not get the count of available endpoints - SmartPropoPlus will not function correctly", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+
+	/** Allocating memory for all endpoint structures **/
+	WaveInInfoW7 = (struct WAVEINSTRUCT_W7 *)calloc(count+2, sizeof(struct WAVEINSTRUCT_W7));
+
+	/** Insert default endpoint in index 0 **/
+	hr = pEnumerator->lpVtbl->GetDefaultAudioEndpoint(pEnumerator,eCapture, eMultimedia, &(WaveInInfoW7[0].pDeviceIn));
+	WaveInInfoW7[0].DevFriendlyName = NULL;
+	WaveInInfoW7[0].DevId = NULL;
+	WaveInInfoW7[0].pClientIn = NULL;
+	WaveInInfoW7[0].WaveFmt = NULL;
+	WaveInInfoW7[0].pCaptureClient = NULL;
+
+
+	// Loop on all devices for the first time - get their IMMDevice interface
+	for ( iDev = 1; iDev <= count; iDev++)
+	{
+		// Get pointer to endpoint number iDev.
+		hr = pDeviceCollect->lpVtbl->Item(pDeviceCollect,iDev, &(WaveInInfoW7[iDev].pDeviceIn));
+		WaveInInfoW7[iDev].DevFriendlyName = NULL;
+		WaveInInfoW7[iDev].DevId = NULL;
+		WaveInInfoW7[iDev].pClientIn = NULL;
+		WaveInInfoW7[iDev].WaveFmt = NULL;
+		WaveInInfoW7[iDev].pCaptureClient = NULL;
+	};
+
+	// Loop again - fill up required data and prepare for streaming
+	for ( iDev = 0; iDev <= count; iDev++)
+	{
+		if (!WaveInInfoW7[iDev].pDeviceIn)
+			continue;
+
+		// Activate
+		hr = WaveInInfoW7[iDev].pDeviceIn->lpVtbl->Activate(WaveInInfoW7[iDev].pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&(WaveInInfoW7[iDev].pClientIn));
+		if (FAILED(hr))
+			continue;
+
+		// Get the endpoint ID string.
+		hr = WaveInInfoW7[iDev].pDeviceIn->lpVtbl->GetId(WaveInInfoW7[iDev].pDeviceIn, &(WaveInInfoW7[iDev].DevId));
+		if (FAILED(hr))
+			continue;
+
+		// Get the endpoint friendly name
+		WaveInInfoW7[iDev].DevFriendlyName = GetFriendlyName(WaveInInfoW7[iDev].pDeviceIn);
+
+		// Get the endpoint supported wave format
+		hr = GetWaveFormat(WaveInInfoW7[iDev].pClientIn, &(WaveInInfoW7[iDev].WaveFmt));
+		if (FAILED(hr))
+			continue;
+
+		// Initialize the endpoint
+		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->Initialize(WaveInInfoW7[iDev].pClientIn, 
+			AUDCLNT_SHAREMODE_SHARED,			// shared mode
+			AUDCLNT_STREAMFLAGS_EVENTCALLBACK,	// stream flags - Event callback
+			0,									// buffer duration
+			0,									// periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
+			WaveInInfoW7[iDev].WaveFmt,			// wave format
+			NULL);								// session GUID
+		if (FAILED(hr))
+			continue;
+
+		////  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
+		//hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->SetEventHandle(WaveInInfoW7[iDev].pClientIn, hBufferReady);
+		//if (FAILED(hr))
+		//	continue;
+
+		//hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->GetService(WaveInInfoW7[iDev].pClientIn, &IID_IAudioCaptureClient,(void**)&(WaveInInfoW7[iDev].pCaptureClient));
+		//if (FAILED(hr))
+		//	continue;
+
+	};
+
+
+
+	return hr;
+
+
+Exit:
+    SAFE_RELEASE(pEnumerator);
+	SAFE_RELEASE(pDeviceCollect);
+	return hr;
+
+}
+
+const char * GetFriendlyName(IMMDevice * pDev)
+{
+	HRESULT hr = S_OK;
+	IPropertyStore * pProps;
+	PROPVARIANT varName;
+	size_t size;
+	char * DeviceFriendlyName;
+
+
+	/** Getting Endpoint Name ***/
+	hr = pDev->lpVtbl->OpenPropertyStore(pDev, STGM_READ, &pProps);
+	EXIT_ON_ERROR(hr);
+
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+
+	// Get the endpoint's friendly-name property.
+	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
+	EXIT_ON_ERROR(hr);
+
+	// Convert to char
+	size = wcslen(varName.pwszVal);
+	DeviceFriendlyName = (char *)calloc(1,size+2);
+	w2char(varName.pwszVal, DeviceFriendlyName, (int)(size+1));
+
+	return DeviceFriendlyName;
+
+	Exit:
+    SAFE_RELEASE(pProps);
+	return NULL;
+
+}
+
+HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
+{
+	HRESULT hr;
+	WAVEFORMATEX * pHint=NULL, FmtTmp;
+
+	// Get a hint of the currently used format
+	hr = pClient->lpVtbl->GetMixFormat(pClient,  &pHint );
+	if (FAILED(hr))
+		return hr;
+
+	// setup wave fmt
+    FmtTmp.wFormatTag = WAVE_FORMAT_PCM;
+    FmtTmp.nChannels = 2;
+	FmtTmp.nSamplesPerSec = pHint->nSamplesPerSec;
+    FmtTmp.wBitsPerSample =16;
+    FmtTmp.nBlockAlign = FmtTmp.wBitsPerSample / 8 * FmtTmp.nChannels;
+    FmtTmp.nAvgBytesPerSec = FmtTmp.nSamplesPerSec * FmtTmp.nBlockAlign;
+    FmtTmp.cbSize = 0;
+
+	// check format is supported
+    hr = pClient->lpVtbl->IsFormatSupported(pClient, AUDCLNT_SHAREMODE_SHARED,  &FmtTmp, pFmt);
+	if (hr == S_OK)
+		*pFmt = &FmtTmp;
+	return hr;
+}

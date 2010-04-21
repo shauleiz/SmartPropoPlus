@@ -39,6 +39,8 @@ public:
 	int GetCountMixerDevice(void);
 	int GetMixerDeviceIndex(char * mixer);
 	const char * GetMixerDeviceName(int index);
+	const char * GetMixerDeviceInputLineName(int Mixer, int Line);
+	bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
 
 
 protected:

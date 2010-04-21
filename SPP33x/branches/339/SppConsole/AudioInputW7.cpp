@@ -37,6 +37,7 @@ CAudioInputW7::CAudioInputW7(void)
 	m_nEndPoints = 0;
 	m_ArrayOfEndPointNames = NULL;
 
+
 	//BCDE0395-E52F-467C-8E3D-C4579291692E
 	static GUID const CLSID_MMDeviceEnumerator = {
      0xBCDE0395, 0xE52F, 0x467C, {0x8E,0x3D,0xC4,0x57,0x92,0x91,0x69,0x2E} };
@@ -181,4 +182,15 @@ int CAudioInputW7::GetMixerDeviceIndex(char * mixer)
 	}
 
 	return -1;
+}
+
+const char * CAudioInputW7::GetMixerDeviceInputLineName(int Mixer, int Line)
+{
+	return NULL;
+}
+
+bool CAudioInputW7::GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine)
+{
+	*iLine = -1;
+	return false;
 }
