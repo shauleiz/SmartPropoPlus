@@ -1915,8 +1915,8 @@ void StartPropo(void)
 	}
 	else
 	{
-	// TODO - Fix it	if (!isVistaSP1OrHigher())
-	// TODO - Fix it			MessageBox(NULL,"Your operating system is Vista\r\nYou must install Service Pack 1 (SP1)", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+	if (!isVistaSP1OrHigher())
+		MessageBox(NULL,"Your operating system is Vista\r\nYou must install Service Pack 1 (SP1)", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 
 	i=0;
 	closeRequest = FALSE;
