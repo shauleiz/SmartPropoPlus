@@ -41,7 +41,7 @@ public:
 	const char * GetMixerDeviceName(int index);
 	const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 	bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
-
+	bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
 
 protected:
 	IMMDeviceEnumerator *m_pEnumerator;

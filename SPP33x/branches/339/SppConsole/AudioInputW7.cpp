@@ -194,3 +194,8 @@ bool CAudioInputW7::GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLin
 	*iLine = -1;
 	return false;
 }
+
+bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int Mixer, int Line)
+{
+	return false;
+}
