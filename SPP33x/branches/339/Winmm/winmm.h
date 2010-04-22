@@ -354,10 +354,13 @@ __inline void SetActiveJsChPostProcFunction(struct SharedDataBlock * dBlock);
 	static GUID const IID_IAudioCaptureClient = {0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
 int OpenAllStreamsW7(void);
-DWORD WINAPI  StartStreamingW7(const char * DevName);
+HRESULT  StartStreamingW7(const char * DevName);
+DWORD ChangeStreamingW7(void);
+int GetIndexOfDevice(const char * DevName);
 HRESULT InitAllEndPoints();
 const char * GetFriendlyName(IMMDevice * pDev);
 HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
+DWORD WINAPI CaptureAudioW7(void *);
 
 struct WAVEINSTRUCT_W7
 {
@@ -376,3 +379,5 @@ struct WAVEINSTRUCT_W7 *	WaveInInfoW7;
 struct WAVEINSTRUCT_W7 *	CurrentWaveInInfoW7 = NULL;
 int							iCurrentWaveInInfoW7 = -1;
 int							count = 0;
+HANDLE						hBufferReady = 0;
+
