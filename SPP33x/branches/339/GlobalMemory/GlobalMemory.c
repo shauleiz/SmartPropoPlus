@@ -460,7 +460,7 @@ void SwitchMixerAckViaGlobalMemory(const char * MixerName)
 	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	strncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
-	gpSharedBlock->MixerDeviceStatus = RUNNING;
+	//gpSharedBlock->MixerDeviceStatus = RUNNING;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
