@@ -2187,10 +2187,17 @@ void ReportChange(void)
 	HANDLE hEvent;
 
 	/* Get the name of the current device */
-	pwaveInGetDevCapsA(CurrentWaveInInfo->id, &caps, sizeof(WAVEINCAPS));
+	if (VistaOS)
+		/* Write it to the global memory */
+		SwitchMixerAck(CurrentWaveInInfoW7->DevFriendlyName);
 
-	/* Write it to the global memory */
-	SwitchMixerAck(caps.szPname);
+	else
+	{
+		pwaveInGetDevCapsA(CurrentWaveInInfo->id, &caps, sizeof(WAVEINCAPS));
+		/* Write it to the global memory */
+		SwitchMixerAck(caps.szPname);
+	};
+		
 
 	/* Release waiting GUI */
 	hEvent = OpenEvent(EVENT_MODIFY_STATE , TRUE, EVENT_MIXER);
@@ -2203,6 +2210,7 @@ DWORD WINAPI  ChangeStreaming(const char * DevName)
 	StopStreaming(NULL);
 	StartStreaming(DevName);
 	ReportChange();
+	SetSwitchMixerRequestStat(RUNNING); // TODO: this should be FAILED in some cases
 	return 0;
 }
 
@@ -3199,31 +3207,230 @@ extern __declspec(dllexport) UINT __stdcall    StartJsChPostProc(void)
 /*************************************************  WIndows7/Vista section *************************************************/
 
 /* Thread that does the capturing */
-DWORD WINAPI ProcThread(void *MixerName)
-{
-	/* Open all WASAPI streams - return 0 if OK */
-	if (OpenAllStreamsW7())
-		return -1;
+//DWORD WINAPI ProcThread(void *MixerName)
+//{
+//	/* Open all WASAPI streams - return 0 if OK */
+//	if (OpenAllStreamsW7())
+//		return -1;
+//
+//	/* Start streaming the selected Mixer. If mixer not selected then the default endpoint is selected */
+//	return StartStreamingW7((const char *)MixerName);
+//}
 
-	/* Start streaming the selected Mixer. If mixer not selected then the default endpoint is selected */
-	return StartStreamingW7((const char *)MixerName);
-}
+//int OpenAllStreamsW7(void){
+//
+//    HRESULT hr = S_OK;
+//	IMMDeviceEnumerator *m_pEnumerator = NULL;
+//    IMMDevice *m_pDeviceIn = NULL, *m_pDeviceTmp = NULL;
+//	IMMDeviceCollection * m_pDeviceCollect = NULL;
+//    IAudioClient *m_pClientIn = NULL;
+//    IAudioCaptureClient *pCaptureClient = NULL;
+//	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
+//	//HANDLE hNotificationEvent;
+////	LPWSTR DevId;
+////	DWORD dwState;
+////	HRESULT s;
+////    REFERENCE_TIME minBufferDuration;
+////    REFERENCE_TIME defaultBufferDuration;
+////    REFERENCE_TIME bufferDuration;
+////    UINT32 packetLength;
+////    BYTE *pDataIn;
+////    UINT32 packetLength2;
+////    DWORD flags;
+////    UINT32 packetSize;
+////	UINT i;
+//	PROPVARIANT varName;
+//	IPropertyStore *pProps = NULL;
+//	LPWSTR pwszID = NULL;
+//	size_t size;
+//	char * DeviceFriendlyName;
+//
+//
+//	//_ASSERT(0);
+//	waveRecording = TRUE;
+//
+//	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+//
+//	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
+//	if (FAILED(hr))
+//	{
+//		if ((hr==REGDB_E_CLASSNOTREG))
+//			MessageBox(NULL,"WASAPI Class not registered - SmartPropoPlus will not function correctly", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//	
+//	// get default endpoint
+//	hr = m_pEnumerator->lpVtbl->GetDefaultAudioEndpoint(m_pEnumerator,eCapture, eMultimedia, &m_pDeviceIn);
+//	if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Could not find default audio Endpoint\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//
+//	// Create a list of Endpoints
+//	//hr = m_pEnumerator->lpVtbl->EnumAudioEndpoints(m_pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &m_pDeviceCollect);	   
+//	//hr = m_pDeviceCollect->lpVtbl->GetCount(m_pDeviceCollect,&count);
+//	// Each loop prints the name of an endpoint device.
+//	//for ( i = 0; i < count; i++)
+//	//{
+//	//	// Get pointer to endpoint number i.
+//	//	hr = m_pDeviceCollect->lpVtbl->Item(m_pDeviceCollect,i, &m_pDeviceTmp);
+//	//	EXIT_ON_ERROR(hr)
+//
+//	//	// Get the endpoint ID string.
+//	//	hr = m_pDeviceTmp->lpVtbl->GetId(m_pDeviceTmp, &pwszID);
+//	//	EXIT_ON_ERROR(hr)
+//
+//	//	hr = m_pDeviceTmp->lpVtbl->OpenPropertyStore(
+//	//	m_pDeviceTmp,
+//	//	STGM_READ, &pProps);
+//	//	EXIT_ON_ERROR(hr)
+//
+//	//	// Initialize container for property value.
+//	//	PropVariantInit(&varName);
+//
+//	//	// Get the endpoint's friendly-name property.
+//	//	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
+//	//	EXIT_ON_ERROR(hr)
+//
+//	//	//MessageBoxW(NULL, varName.pwszVal, (LPWSTR)"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//
+//	//		//// Print endpoint friendly name and endpoint ID.
+//	//		//printf("Endpoint %d: \"%S\" (%S)\n",
+//	//		//i, varName.pwszVal, pwszID);
+//
+//	//	CoTaskMemFree(pwszID);
+//	//	pwszID = NULL;
+//	//	PropVariantClear(&varName);
+//	//	SAFE_RELEASE(pProps)
+//	//		SAFE_RELEASE(m_pDeviceTmp)
+//	//};
+//
+//	
+//    hr = m_pDeviceIn->lpVtbl->Activate(m_pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&m_pClientIn);
+//	if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Could not activate audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//	
+//	// Get the endpoint ID string.
+//	hr = m_pDeviceIn->lpVtbl->GetId(m_pDeviceIn, &pwszID);
+//	if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Could not get ID of audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//	
+//	/** Getting Endpoint Name ***/
+//	hr = m_pDeviceIn->lpVtbl->OpenPropertyStore(m_pDeviceIn, STGM_READ, &pProps);
+//	EXIT_ON_ERROR(hr);
+//
+//	// Initialize container for property value.
+//	PropVariantInit(&varName);
+//
+//	// Get the endpoint's friendly-name property.
+//	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
+//	EXIT_ON_ERROR(hr);
+//
+//	// Convert to char
+//	size = wcslen(varName.pwszVal);
+//	DeviceFriendlyName = (char *)calloc(1,size+2);
+//	w2char(varName.pwszVal, DeviceFriendlyName, (int)(size+1));
+//
+//	// TODO 3.3.9 (GetMixFormat fails):
+//	// To get error code 0x8889000a on W7 
+//	// you need to make a device (e.g.  CD Audio) Currently unavailable AND default device.
+//	// This is atcheived by:
+//	// ?????
+//
+//	// Get a hint of the currently used format
+//	hr = m_pClientIn->lpVtbl->GetMixFormat(m_pClientIn,  &pwaveFmtHint );
+//	if (FAILED(hr)) 
+//	{
+//		MessageBox(NULL,"WASAPI: Could not get audio client Mixer Format\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//	// TODO: 3.3.9 - Replace this later
+//	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
+//
+//	// setup wave fmt
+//    CurrentWaveInInfo->waveFmt.wFormatTag = WAVE_FORMAT_PCM;
+//    CurrentWaveInInfo->waveFmt.nChannels = 2;
+//	CurrentWaveInInfo->waveFmt.nSamplesPerSec = pwaveFmtHint->nSamplesPerSec;
+//    CurrentWaveInInfo->waveFmt.wBitsPerSample =16;
+//    CurrentWaveInInfo->waveFmt.nBlockAlign = CurrentWaveInInfo->waveFmt.wBitsPerSample / 8 * CurrentWaveInInfo->waveFmt.nChannels;
+//    CurrentWaveInInfo->waveFmt.nAvgBytesPerSec = CurrentWaveInInfo->waveFmt.nSamplesPerSec * CurrentWaveInInfo->waveFmt.nBlockAlign;
+//    CurrentWaveInInfo->waveFmt.cbSize = 0;
+//
+//	// check format is supported
+//    hr = m_pClientIn->lpVtbl->IsFormatSupported(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  &(CurrentWaveInInfo->waveFmt), &pwaveFmtCurrent);
+//	if (hr == S_OK)
+//		pwaveFmtCurrent = &(CurrentWaveInInfo->waveFmt);
+//	else if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Format not supported\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//
+//	// Create the capture stream.
+//    hr = m_pClientIn->lpVtbl->Initialize(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  // shared mode
+//                               0,            // stream flags
+//                               0,            // buffer duration
+//                               0,            // periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
+//                               pwaveFmtCurrent,                   // wave format
+//                               NULL);                     // session GUID
+//	if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Could not initialize audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//
+//	
+//	hr = m_pClientIn->lpVtbl->GetService(m_pClientIn, &IID_IAudioCaptureClient,(void**)&pCaptureClient);
+//	if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Could not get service (Audio Capture Client)\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//
+//    
+//	return 0;
+//
+//Exit:
+//    SAFE_RELEASE(m_pEnumerator);
+//    SAFE_RELEASE(m_pDeviceIn);
+//    SAFE_RELEASE(m_pClientIn)
+//    SAFE_RELEASE(pCaptureClient)
+//	closeRequest = FALSE;
+//	waveRecording = FALSE;
+//	return -1;
+//}
+//
 
-int OpenAllStreamsW7(void){
-
-    HRESULT hr = S_OK;
-	IMMDeviceEnumerator *m_pEnumerator = NULL;
-    IMMDevice *m_pDeviceIn = NULL, *m_pDeviceTmp = NULL;
-	IMMDeviceCollection * m_pDeviceCollect = NULL;
-    IAudioClient *m_pClientIn = NULL;
-    IAudioCaptureClient *pCaptureClient = NULL;
-	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
-	//HANDLE hNotificationEvent;
-//	LPWSTR DevId;
-//	DWORD dwState;
-//	HRESULT s;
-//    REFERENCE_TIME minBufferDuration;
-//    REFERENCE_TIME defaultBufferDuration;
+//DWORD WINAPI  _StartStreamingW7(const char * DevName)
+//{
+//	HRESULT hr = S_OK;
+//	IMMDeviceEnumerator *m_pEnumerator = NULL;
+//    IMMDevice *m_pDeviceIn = NULL, *m_pDeviceTmp = NULL;
+//	IMMDeviceCollection * m_pDeviceCollect = NULL;
+//    IAudioClient *m_pClientIn = NULL;
+//    IAudioCaptureClient *pCaptureClient = NULL;
+//	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
+//	//HANDLE hNotificationEvent;
+////	LPWSTR DevId;
+////	DWORD dwState;
+////	HRESULT s;
+////    REFERENCE_TIME minBufferDuration;
+////    REFERENCE_TIME defaultBufferDuration;
 //    REFERENCE_TIME bufferDuration;
 //    UINT32 packetLength;
 //    BYTE *pDataIn;
@@ -3231,293 +3438,94 @@ int OpenAllStreamsW7(void){
 //    DWORD flags;
 //    UINT32 packetSize;
 //	UINT i;
-	PROPVARIANT varName;
-	IPropertyStore *pProps = NULL;
-	LPWSTR pwszID = NULL;
-	size_t size;
-	char * DeviceFriendlyName;
-
-
-	//_ASSERT(0);
-	waveRecording = TRUE;
-
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-
-	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
-	if (FAILED(hr))
-	{
-		if ((hr==REGDB_E_CLASSNOTREG))
-			MessageBox(NULL,"WASAPI Class not registered - SmartPropoPlus will not function correctly", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-	
-	// get default endpoint
-	hr = m_pEnumerator->lpVtbl->GetDefaultAudioEndpoint(m_pEnumerator,eCapture, eMultimedia, &m_pDeviceIn);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Could not find default audio Endpoint\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-
-	// Create a list of Endpoints
-	//hr = m_pEnumerator->lpVtbl->EnumAudioEndpoints(m_pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &m_pDeviceCollect);	   
-	//hr = m_pDeviceCollect->lpVtbl->GetCount(m_pDeviceCollect,&count);
-	// Each loop prints the name of an endpoint device.
-	//for ( i = 0; i < count; i++)
-	//{
-	//	// Get pointer to endpoint number i.
-	//	hr = m_pDeviceCollect->lpVtbl->Item(m_pDeviceCollect,i, &m_pDeviceTmp);
-	//	EXIT_ON_ERROR(hr)
-
-	//	// Get the endpoint ID string.
-	//	hr = m_pDeviceTmp->lpVtbl->GetId(m_pDeviceTmp, &pwszID);
-	//	EXIT_ON_ERROR(hr)
-
-	//	hr = m_pDeviceTmp->lpVtbl->OpenPropertyStore(
-	//	m_pDeviceTmp,
-	//	STGM_READ, &pProps);
-	//	EXIT_ON_ERROR(hr)
-
-	//	// Initialize container for property value.
-	//	PropVariantInit(&varName);
-
-	//	// Get the endpoint's friendly-name property.
-	//	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
-	//	EXIT_ON_ERROR(hr)
-
-	//	//MessageBoxW(NULL, varName.pwszVal, (LPWSTR)"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-
-	//		//// Print endpoint friendly name and endpoint ID.
-	//		//printf("Endpoint %d: \"%S\" (%S)\n",
-	//		//i, varName.pwszVal, pwszID);
-
-	//	CoTaskMemFree(pwszID);
-	//	pwszID = NULL;
-	//	PropVariantClear(&varName);
-	//	SAFE_RELEASE(pProps)
-	//		SAFE_RELEASE(m_pDeviceTmp)
-	//};
-
-	
-    hr = m_pDeviceIn->lpVtbl->Activate(m_pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&m_pClientIn);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Could not activate audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-	
-	// Get the endpoint ID string.
-	hr = m_pDeviceIn->lpVtbl->GetId(m_pDeviceIn, &pwszID);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Could not get ID of audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-	
-	/** Getting Endpoint Name ***/
-	hr = m_pDeviceIn->lpVtbl->OpenPropertyStore(m_pDeviceIn, STGM_READ, &pProps);
-	EXIT_ON_ERROR(hr);
-
-	// Initialize container for property value.
-	PropVariantInit(&varName);
-
-	// Get the endpoint's friendly-name property.
-	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
-	EXIT_ON_ERROR(hr);
-
-	// Convert to char
-	size = wcslen(varName.pwszVal);
-	DeviceFriendlyName = (char *)calloc(1,size+2);
-	w2char(varName.pwszVal, DeviceFriendlyName, (int)(size+1));
-
-	// TODO 3.3.9 (GetMixFormat fails):
-	// To get error code 0x8889000a on W7 
-	// you need to make a device (e.g.  CD Audio) Currently unavailable AND default device.
-	// This is atcheived by:
-	// ?????
-
-	// Get a hint of the currently used format
-	hr = m_pClientIn->lpVtbl->GetMixFormat(m_pClientIn,  &pwaveFmtHint );
-	if (FAILED(hr)) 
-	{
-		MessageBox(NULL,"WASAPI: Could not get audio client Mixer Format\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-	// TODO: 3.3.9 - Replace this later
-	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
-
-	// setup wave fmt
-    CurrentWaveInInfo->waveFmt.wFormatTag = WAVE_FORMAT_PCM;
-    CurrentWaveInInfo->waveFmt.nChannels = 2;
-	CurrentWaveInInfo->waveFmt.nSamplesPerSec = pwaveFmtHint->nSamplesPerSec;
-    CurrentWaveInInfo->waveFmt.wBitsPerSample =16;
-    CurrentWaveInInfo->waveFmt.nBlockAlign = CurrentWaveInInfo->waveFmt.wBitsPerSample / 8 * CurrentWaveInInfo->waveFmt.nChannels;
-    CurrentWaveInInfo->waveFmt.nAvgBytesPerSec = CurrentWaveInInfo->waveFmt.nSamplesPerSec * CurrentWaveInInfo->waveFmt.nBlockAlign;
-    CurrentWaveInInfo->waveFmt.cbSize = 0;
-
-	// check format is supported
-    hr = m_pClientIn->lpVtbl->IsFormatSupported(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  &(CurrentWaveInInfo->waveFmt), &pwaveFmtCurrent);
-	if (hr == S_OK)
-		pwaveFmtCurrent = &(CurrentWaveInInfo->waveFmt);
-	else if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Format not supported\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-
-	// Create the capture stream.
-    hr = m_pClientIn->lpVtbl->Initialize(m_pClientIn, AUDCLNT_SHAREMODE_SHARED,  // shared mode
-                               0,            // stream flags
-                               0,            // buffer duration
-                               0,            // periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
-                               pwaveFmtCurrent,                   // wave format
-                               NULL);                     // session GUID
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Could not initialize audio client\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-
-	
-	hr = m_pClientIn->lpVtbl->GetService(m_pClientIn, &IID_IAudioCaptureClient,(void**)&pCaptureClient);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Could not get service (Audio Capture Client)\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-
-    
-	return 0;
-
-Exit:
-    SAFE_RELEASE(m_pEnumerator);
-    SAFE_RELEASE(m_pDeviceIn);
-    SAFE_RELEASE(m_pClientIn)
-    SAFE_RELEASE(pCaptureClient)
-	closeRequest = FALSE;
-	waveRecording = FALSE;
-	return -1;
-}
-
-
-DWORD WINAPI  _StartStreamingW7(const char * DevName)
-{
-	HRESULT hr = S_OK;
-	IMMDeviceEnumerator *m_pEnumerator = NULL;
-    IMMDevice *m_pDeviceIn = NULL, *m_pDeviceTmp = NULL;
-	IMMDeviceCollection * m_pDeviceCollect = NULL;
-    IAudioClient *m_pClientIn = NULL;
-    IAudioCaptureClient *pCaptureClient = NULL;
-	WAVEFORMATEX  /*waveFmt,*/*pwaveFmtCurrent = NULL,*pwaveFmtHint = NULL;		 // WAVE FORMAT (IN)
-	//HANDLE hNotificationEvent;
-//	LPWSTR DevId;
-//	DWORD dwState;
-//	HRESULT s;
-//    REFERENCE_TIME minBufferDuration;
-//    REFERENCE_TIME defaultBufferDuration;
-    REFERENCE_TIME bufferDuration;
-    UINT32 packetLength;
-    BYTE *pDataIn;
-    UINT32 packetLength2;
-    DWORD flags;
-    UINT32 packetSize;
-	UINT i;
-//	PROPVARIANT varName;
-	IPropertyStore *pProps = NULL;
-	LPWSTR pwszID = NULL;
-//	size_t size;
-//	char * DeviceFriendlyName;
-
-
-	// Start up the capture and rendering streams.
-    hr = m_pClientIn->lpVtbl->Start(m_pClientIn);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,"WASAPI: Could not start audio capture\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-
-	// Get device period
-	hr = m_pClientIn->lpVtbl->GetDevicePeriod(m_pClientIn,NULL, &bufferDuration);
-
-    // Each loop below copies one device period's worth of data
-    // from the capture buffer to the rendering buffer.
-    while (!closeRequest)
-    {
-
-            packetLength = 0;
-			hr = pCaptureClient->lpVtbl->GetNextPacketSize(pCaptureClient, &packetLength);
-			if (FAILED(hr))
-			{	// Usually caused by change of sampling frequency while SPP is on
-				MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-				EXIT_ON_ERROR(hr);
-			};
-
-			if (packetLength == 0)
-			{
-				// No capture packet is available right now.
-                // Sleep for half device period...
-				Sleep((DWORD)( bufferDuration/MFTIMES_PER_MILLISEC/2));
-                continue;
-            }
-
-            // Get pointer to next data packet in capture buffer.
-            pDataIn = 0;
-            packetLength2 = 0;
-            flags = 0;
-            hr = pCaptureClient->lpVtbl->GetBuffer(pCaptureClient, &pDataIn, &packetLength2,
-                                           &flags, NULL, NULL);
-			if (FAILED(hr))
-			{
-				MessageBox(NULL,"WASAPI: Could not get size of next data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-				EXIT_ON_ERROR(hr);
-			};
-//            ASSERT(packetLength == packetLength2);
-
-            // Calculate the packet size in bytes.
-            packetSize = packetLength * CurrentWaveInInfo->waveFmt.nBlockAlign;
-
-			if( CurrentWaveInInfo->waveFmt.nBlockAlign == 4) {
-				// 2 channels of 16bit data
-				for (i = 0; i < packetLength; i++) 
-				{
-					ProcessData(((signed short*)(pDataIn))[i*2]);
-				}
-			}
-
-            hr = pCaptureClient->lpVtbl->ReleaseBuffer(pCaptureClient, packetLength);
-			if (FAILED(hr))
-			{
-				MessageBox(NULL,"WASAPI: Could not release data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-				EXIT_ON_ERROR(hr);
-			};
-
-    }
-
-    // Stop the capture stream.
-
-	hr = m_pClientIn->lpVtbl->Stop(m_pClientIn);
-    EXIT_ON_ERROR(hr);
-
-Exit:
-    SAFE_RELEASE(m_pEnumerator);
-    SAFE_RELEASE(m_pDeviceIn);
-    SAFE_RELEASE(m_pClientIn)
-    SAFE_RELEASE(pCaptureClient)
-	closeRequest = FALSE;
-	waveRecording = FALSE;
-	return -1;
-}
-
+////	PROPVARIANT varName;
+//	IPropertyStore *pProps = NULL;
+//	LPWSTR pwszID = NULL;
+////	size_t size;
+////	char * DeviceFriendlyName;
+//
+//
+//	// Start up the capture and rendering streams.
+//    hr = m_pClientIn->lpVtbl->Start(m_pClientIn);
+//	if (FAILED(hr))
+//	{
+//		MessageBox(NULL,"WASAPI: Could not start audio capture\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//
+//	// Get device period
+//	hr = m_pClientIn->lpVtbl->GetDevicePeriod(m_pClientIn,NULL, &bufferDuration);
+//
+//    // Each loop below copies one device period's worth of data
+//    // from the capture buffer to the rendering buffer.
+//    while (!closeRequest)
+//    {
+//
+//            packetLength = 0;
+//			hr = pCaptureClient->lpVtbl->GetNextPacketSize(pCaptureClient, &packetLength);
+//			if (FAILED(hr))
+//			{	// Usually caused by change of sampling frequency while SPP is on
+//				MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//				EXIT_ON_ERROR(hr);
+//			};
+//
+//			if (packetLength == 0)
+//			{
+//				// No capture packet is available right now.
+//                // Sleep for half device period...
+//				Sleep((DWORD)( bufferDuration/MFTIMES_PER_MILLISEC/2));
+//                continue;
+//            }
+//
+//            // Get pointer to next data packet in capture buffer.
+//            pDataIn = 0;
+//            packetLength2 = 0;
+//            flags = 0;
+//            hr = pCaptureClient->lpVtbl->GetBuffer(pCaptureClient, &pDataIn, &packetLength2,
+//                                           &flags, NULL, NULL);
+//			if (FAILED(hr))
+//			{
+//				MessageBox(NULL,"WASAPI: Could not get size of next data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//				EXIT_ON_ERROR(hr);
+//			};
+////            ASSERT(packetLength == packetLength2);
+//
+//            // Calculate the packet size in bytes.
+//            packetSize = packetLength * CurrentWaveInInfo->waveFmt.nBlockAlign;
+//
+//			if( CurrentWaveInInfo->waveFmt.nBlockAlign == 4) {
+//				// 2 channels of 16bit data
+//				for (i = 0; i < packetLength; i++) 
+//				{
+//					ProcessData(((signed short*)(pDataIn))[i*2]);
+//				}
+//			}
+//
+//            hr = pCaptureClient->lpVtbl->ReleaseBuffer(pCaptureClient, packetLength);
+//			if (FAILED(hr))
+//			{
+//				MessageBox(NULL,"WASAPI: Could not release data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+//				EXIT_ON_ERROR(hr);
+//			};
+//
+//    }
+//
+//    // Stop the capture stream.
+//
+//	hr = m_pClientIn->lpVtbl->Stop(m_pClientIn);
+//    EXIT_ON_ERROR(hr);
+//
+//Exit:
+//    SAFE_RELEASE(m_pEnumerator);
+//    SAFE_RELEASE(m_pDeviceIn);
+//    SAFE_RELEASE(m_pClientIn)
+//    SAFE_RELEASE(pCaptureClient)
+//	closeRequest = FALSE;
+//	waveRecording = FALSE;
+//	return -1;
+//}
+//
 
 HRESULT InitAllEndPoints()
 {
@@ -3525,7 +3533,6 @@ HRESULT InitAllEndPoints()
 	IMMDeviceCollection * pDeviceCollect = NULL;
 	int iDev;
 	IAudioClient * pClientIn = NULL;
-	WAVEFORMATEX * WaveFmt;
 
 	// Create an event handle and register it for
     // buffer-event notifications.
@@ -3718,20 +3725,10 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
 HRESULT StartStreamingW7(const char * DevName)
 {
 	HRESULT hr = S_OK;
-	HANDLE hCaptureAudioThread;
-	int i, index=-1;
+	HANDLE hCaptureAudioThread = 0;
+	UINT index=-1;
+	BOOL Capture = TRUE;
 
-	/* Create capturing thread (suspended) */
-	hCaptureAudioThread = CreateThread(
-		NULL,              // no security attribute
-		0,                 // default stack size
-		CaptureAudioW7,
-		NULL,    // thread parameter
-		CREATE_SUSPENDED,                 // not suspended
-		&dwThreadId);      // returns thread ID
-
-	if (!hCaptureAudioThread)
-		return ERROR_ACCESS_DENIED;
 
 	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
 
@@ -3747,22 +3744,36 @@ HRESULT StartStreamingW7(const char * DevName)
 	/* Test selected device */
 	if (!CurrentWaveInInfoW7->Usable)
 	{
+		SetSwitchMixerRequestStat(FAILED);
 		MessageBox(NULL,"Device cannot be used\r\nSelect another input device", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		TerminateThread(hCaptureAudioThread, -1);
-		CloseHandle(hCaptureAudioThread);
-		return -1;
+		//TerminateThread(hCaptureAudioThread, -1);
+		//CloseHandle(hCaptureAudioThread);
+		//return -1;
+		Capture = FALSE;
 	};
 
 	/* Start capture stream for the selected device */
-    hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Start(CurrentWaveInInfoW7->pClientIn);
-	if (FAILED(hr))
+	if (CurrentWaveInInfoW7->Usable)
 	{
-		MessageBox(NULL,"WASAPI: Could not start audio capture\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		return(hr);
+		hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Start(CurrentWaveInInfoW7->pClientIn);
+		if (FAILED(hr))
+		{
+			MessageBox(NULL,"WASAPI: Could not start audio capture\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+			Capture = FALSE;
+		};
 	};
 
-	/* Start capture thread */
-	ResumeThread(hCaptureAudioThread);
+	/* Create capturing thread  */
+	hCaptureAudioThread = CreateThread(
+		NULL,				// no security attribute
+		0,					// default stack size
+		CaptureAudioW7,
+		(void *)Capture,	// thread parameter
+		0,					// not suspended
+		&dwThreadId);		// returns thread ID
+
+	if (!hCaptureAudioThread)
+		return ERROR_ACCESS_DENIED;
 
 	return S_OK;
 }
@@ -3771,58 +3782,65 @@ DWORD WINAPI CaptureAudioW7(void * param)
 {
 	DWORD retval;
 	HRESULT hr = S_OK;
-    BYTE *pDataIn;
-    UINT32 packetLength2, packetLength, packetSize;
-    DWORD flags;
-	int i;
+	BYTE *pDataIn;
+	UINT32 packetLength2, packetLength, packetSize;
+	DWORD flags;
+	UINT i;
+	BOOL capture;
 
+	/* Enable capture? */
+	capture = (BOOL)param;
 
-	/* Loop forever until no capture needed*/
+	/* Loop forever until no capture needed */
+	/* Break if GUI requests change of capture device */
 	while (!closeRequest)
 	{
-		packetLength = 0;
-		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetNextPacketSize(CurrentWaveInInfoW7->pCaptureClient, &packetLength);
-		if (FAILED(hr))
-		{	// Usually caused by change of sampling frequency while SPP is on
-			MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		};
+		if (capture)
+		{ // capture
+			packetLength = 0;
+			hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetNextPacketSize(CurrentWaveInInfoW7->pCaptureClient, &packetLength);
+			if (FAILED(hr))
+			{	// Usually caused by change of sampling frequency while SPP is on
+				MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+			};
 
-		// Wait for next buffer event to be signaled.
-		retval = WaitForSingleObject(hBufferReady, 2000);
+			// Wait for next buffer event to be signaled.
+			retval = WaitForSingleObject(hBufferReady, 2000);
 
-		//TODO: In case of timeout, report and request permission to stop/resume
+			//TODO: In case of timeout, report and request permission to stop/resume
 
-		// Get pointer to next data packet in capture buffer.
-		pDataIn = 0;
-		packetLength2 = 0;
-		flags = 0;
-		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetBuffer(CurrentWaveInInfoW7->pCaptureClient, &pDataIn, &packetLength2,
-			&flags, NULL, NULL);
-		if (FAILED(hr))
-		{
-			//TODO: In case of failure, report and request permission to stop/resume
-		};
-
-		//_ASSERT(packetLength == packetLength2);
-
-		// Calculate the packet size in bytes.
-		packetSize = packetLength * CurrentWaveInInfoW7->WaveFmt->nBlockAlign;
-
-		/* Process the data */
-		if( CurrentWaveInInfoW7->WaveFmt->nBlockAlign == 4) {
-			// 2 channels of 16bit data
-			for (i = 0; i < packetLength; i++) 
+			// Get pointer to next data packet in capture buffer.
+			pDataIn = 0;
+			packetLength2 = 0;
+			flags = 0;
+			hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetBuffer(CurrentWaveInInfoW7->pCaptureClient, &pDataIn, &packetLength2,
+				&flags, NULL, NULL);
+			if (FAILED(hr))
 			{
-				ProcessData(((signed short*)(pDataIn))[i*2]);
-			}
-		}
+				//TODO: In case of failure, report and request permission to stop/resume
+			};
 
-		/* Release the buffer*/
-		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->ReleaseBuffer(CurrentWaveInInfoW7->pCaptureClient, packetLength);
-		if (FAILED(hr))
-		{
-			MessageBox(NULL,"WASAPI: Could not release data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		};
+			//_ASSERT(packetLength == packetLength2);
+
+			// Calculate the packet size in bytes.
+			packetSize = packetLength * CurrentWaveInInfoW7->WaveFmt->nBlockAlign;
+
+			/* Process the data */
+			if( CurrentWaveInInfoW7->WaveFmt->nBlockAlign == 4) {
+				// 2 channels of 16bit data
+				for (i = 0; i < packetLength; i++) 
+				{
+					ProcessData(((signed short*)(pDataIn))[i*2]);
+				}
+			}
+
+			/* Release the buffer*/
+			hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->ReleaseBuffer(CurrentWaveInInfoW7->pCaptureClient, packetLength);
+			if (FAILED(hr))
+			{
+				MessageBox(NULL,"WASAPI: Could not release data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+			};
+		}; // capture
 
 		/* Request to change input mixer device - stop looping, switch mixer and exit thread */
 		if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
@@ -3878,8 +3896,9 @@ DWORD ChangeStreamingW7(void)
 	hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
 	if (FAILED(hr))
 	{
+		ReportChange();
 		SetSwitchMixerRequestStat(FAILED);
-		return -1;
+		//return -1;
 	}
 	else
 		SetSwitchMixerRequestStat(STOPPED);
@@ -3888,11 +3907,16 @@ DWORD ChangeStreamingW7(void)
 	StartStreamingW7(DataBlock->SrcName);
 	if (FAILED(hr))
 	{
+		ReportChange();
 		SetSwitchMixerRequestStat(FAILED);
 		return -1;
 	}
 	else
+	{
 		SetSwitchMixerRequestStat(STARTED);
+		ReportChange();
+		SetSwitchMixerRequestStat(RUNNING);
+	};
 	
 	return 0;
 }
