@@ -1907,6 +1907,10 @@ void StartPropo(void)
 	// Initialize the mutex than prevents simultaneous Start/Stop streaming
 	hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
 
+	// Start a thread that listens to the GUI
+	if (VistaOS) // TODO: Remove this condition
+		StartListening();
+
 	// Initialize all audio streams and start the selected one
 	if (!VistaOS)
 	{
@@ -1943,7 +1947,6 @@ void StopPropo(void)
 	hProcessHeap=NULL;
 	if( waveRecording && hThread != NULL) {
 		/* suppress unused variable warnings */
-		closeRequest = TRUE;
 		while(WaitForSingleObject(hThread, 1000) != WAIT_OBJECT_0){
 		}
 		hThread = NULL;
@@ -1974,6 +1977,9 @@ void ExitPropo(void)
 
 	/* Release Mutex */
 	ReleaseMutex(MUTXWINMM);
+
+	/* Stop listening to GUI */
+	closeRequest = TRUE;
 
 	/* Send closing message to the GUI */
 	WM_INTERSPPAPPS = RegisterWindowMessage(INTERSPPAPPS);
@@ -3581,7 +3587,7 @@ HRESULT InitAllEndPoints()
 	for ( iDev = 1; iDev <= count; iDev++)
 	{
 		// Get pointer to endpoint number iDev.
-		hr = pDeviceCollect->lpVtbl->Item(pDeviceCollect,iDev, &(WaveInInfoW7[iDev].pDeviceIn));
+		hr = pDeviceCollect->lpVtbl->Item(pDeviceCollect,iDev-1, &(WaveInInfoW7[iDev].pDeviceIn));
 	};
 
 	// Loop again - fill up required data and prepare for streaming
@@ -3614,7 +3620,10 @@ HRESULT InitAllEndPoints()
 		// Get the endpoint supported wave format
 		hr = GetWaveFormat(WaveInInfoW7[iDev].pClientIn, &(WaveInInfoW7[iDev].WaveFmt));
 		if (FAILED(hr))
+		{
+			WaveInInfoW7[iDev].Usable = FALSE;
 			continue;
+		};
 
 		// Initialize the endpoint
 		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->Initialize(WaveInInfoW7[iDev].pClientIn, 
@@ -3725,10 +3734,10 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
 HRESULT StartStreamingW7(const char * DevName)
 {
 	HRESULT hr = S_OK;
-	HANDLE hCaptureAudioThread = 0;
 	UINT index=-1;
 	BOOL Capture = TRUE;
 
+	waveRecording = TRUE;
 
 	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
 
@@ -3738,19 +3747,18 @@ HRESULT StartStreamingW7(const char * DevName)
 	/* re-link to selected structure */
 	CurrentWaveInInfoW7 = &(WaveInInfoW7[index]);
 
-	/* XP compatibility */
-	CurrentWaveInInfo->waveFmt = *(CurrentWaveInInfoW7->WaveFmt);
-
 	/* Test selected device */
 	if (!CurrentWaveInInfoW7->Usable)
 	{
 		SetSwitchMixerRequestStat(FAILED);
 		MessageBox(NULL,"Device cannot be used\r\nSelect another input device", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		//TerminateThread(hCaptureAudioThread, -1);
-		//CloseHandle(hCaptureAudioThread);
-		//return -1;
-		Capture = FALSE;
+		waveRecording = FALSE;
+		return AUDCLNT_E_SERVICE_NOT_RUNNING;
 	};
+
+	/* XP compatibility */
+	CurrentWaveInInfo->waveFmt = *(CurrentWaveInInfoW7->WaveFmt);
+
 
 	/* Start capture stream for the selected device */
 	if (CurrentWaveInInfoW7->Usable)
@@ -3759,16 +3767,17 @@ HRESULT StartStreamingW7(const char * DevName)
 		if (FAILED(hr))
 		{
 			MessageBox(NULL,"WASAPI: Could not start audio capture\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-			Capture = FALSE;
+			waveRecording = TRUE;
 		};
 	};
+
 
 	/* Create capturing thread  */
 	hCaptureAudioThread = CreateThread(
 		NULL,				// no security attribute
 		0,					// default stack size
 		CaptureAudioW7,
-		(void *)Capture,	// thread parameter
+		NULL,	// thread parameter
 		0,					// not suspended
 		&dwThreadId);		// returns thread ID
 
@@ -3786,71 +3795,69 @@ DWORD WINAPI CaptureAudioW7(void * param)
 	UINT32 packetLength2, packetLength, packetSize;
 	DWORD flags;
 	UINT i;
-	BOOL capture;
 
-	/* Enable capture? */
-	capture = (BOOL)param;
 
-	/* Loop forever until no capture needed */
-	/* Break if GUI requests change of capture device */
-	while (!closeRequest)
+	/* Loop  until no DLL is released */
+	while (waveRecording)
 	{
-		if (capture)
-		{ // capture
-			packetLength = 0;
-			hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetNextPacketSize(CurrentWaveInInfoW7->pCaptureClient, &packetLength);
-			if (FAILED(hr))
-			{	// Usually caused by change of sampling frequency while SPP is on
-				MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-			};
+		packetLength = 0;
+		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetNextPacketSize(CurrentWaveInInfoW7->pCaptureClient, &packetLength);
+		if (FAILED(hr))
+		{	// Usually caused by change of sampling frequency while SPP is on
+			MessageBox(NULL,"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+			return hr;
+		};
 
-			// Wait for next buffer event to be signaled.
-			retval = WaitForSingleObject(hBufferReady, 2000);
+		// Wait for next buffer event to be signaled.
+		retval = WaitForSingleObject(hBufferReady, 2000);
 
-			//TODO: In case of timeout, report and request permission to stop/resume
+		//In case of timeout, report and request permission to stop/resume
+		if (retval == WAIT_TIMEOUT)
+		{
+			retval = MessageBox(NULL,"Audio input interrupded\r\nWould you like to retry?", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR|MB_YESNO);
+			if (retval == IDNO)
+				return -1;
+		};
 
-			// Get pointer to next data packet in capture buffer.
-			pDataIn = 0;
-			packetLength2 = 0;
-			flags = 0;
-			hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetBuffer(CurrentWaveInInfoW7->pCaptureClient, &pDataIn, &packetLength2,
-				&flags, NULL, NULL);
-			if (FAILED(hr))
+		// Get pointer to next data packet in capture buffer.
+		pDataIn = 0;
+		packetLength2 = 0;
+		flags = 0;
+		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetBuffer(CurrentWaveInInfoW7->pCaptureClient, &pDataIn, &packetLength2,
+			&flags, NULL, NULL);
+		if (FAILED(hr))
+		{
+			// In case of failure, report and request permission to stop/resume
+
+			retval = MessageBox(NULL,"Audio buffer failure\r\nWould you like to retry?", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR|MB_YESNO);
+			if (retval == IDNO)
+				return hr;
+		};
+
+		//_ASSERT(packetLength == packetLength2);
+
+		// Calculate the packet size in bytes.
+		packetSize = packetLength * CurrentWaveInInfoW7->WaveFmt->nBlockAlign;
+
+		/* Process the data */
+		if( CurrentWaveInInfoW7->WaveFmt->nBlockAlign == 4) {
+			// 2 channels of 16bit data
+			for (i = 0; i < packetLength; i++) 
 			{
-				//TODO: In case of failure, report and request permission to stop/resume
-			};
-
-			//_ASSERT(packetLength == packetLength2);
-
-			// Calculate the packet size in bytes.
-			packetSize = packetLength * CurrentWaveInInfoW7->WaveFmt->nBlockAlign;
-
-			/* Process the data */
-			if( CurrentWaveInInfoW7->WaveFmt->nBlockAlign == 4) {
-				// 2 channels of 16bit data
-				for (i = 0; i < packetLength; i++) 
-				{
-					ProcessData(((signed short*)(pDataIn))[i*2]);
-				}
+				ProcessData(((signed short*)(pDataIn))[i*2]);
 			}
+		}
 
-			/* Release the buffer*/
-			hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->ReleaseBuffer(CurrentWaveInInfoW7->pCaptureClient, packetLength);
-			if (FAILED(hr))
-			{
-				MessageBox(NULL,"WASAPI: Could not release data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-			};
-		}; // capture
-
-		/* Request to change input mixer device - stop looping, switch mixer and exit thread */
-		if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
-			break;
-
+		/* Release the buffer*/
+		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->ReleaseBuffer(CurrentWaveInInfoW7->pCaptureClient, packetLength);
+		if (FAILED(hr))
+		{
+			MessageBox(NULL,"WASAPI: Could not release data buffer\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		};
 
 	}; // while
 
-	if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
-		return ChangeStreamingW7();
+	hCaptureAudioThread = 0;
 
 	return 0;
 }
@@ -3918,5 +3925,66 @@ DWORD ChangeStreamingW7(void)
 		SetSwitchMixerRequestStat(RUNNING);
 	};
 	
+	return 0;
+}
+
+void StartListening(void)
+{
+	DWORD threadId;
+
+	/* Create capturing thread  */
+	hThreadListen = CreateThread(
+		NULL,				// no security attribute
+		0,					// default stack size
+		ListenToGui,
+		NULL,	// thread parameter
+		0,					// not suspended
+		&dwThreadId);		// returns thread ID
+
+}
+
+DWORD WINAPI ListenToGui(void * param)
+{
+	HRESULT hr;
+
+	/* Loop while DLL is active */
+	while (!closeRequest)
+	{
+		/* Test status every 1/4 second */
+		Sleep(250);
+		if (DataBlock->MixerDeviceStatus == RUNNING || DataBlock->MixerDeviceStatus == FAILED)
+			continue;
+
+		/* Request to change device - kill capture thread */
+		if (DataBlock->MixerDeviceStatus == CHANGE_REQ)
+		{
+			SetSwitchMixerRequestStat(STOPPING);
+			waveRecording = FALSE;
+			if (CurrentWaveInInfoW7 && CurrentWaveInInfoW7->pClientIn)
+				CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
+		};
+
+		/* If capture thread does not exist*/
+		if (!hCaptureAudioThread && DataBlock->MixerDeviceStatus == STOPPING)
+			SetSwitchMixerRequestStat(STOPPED);
+
+		/* Start the new capture stream */
+		if (DataBlock->MixerDeviceStatus == STOPPED)
+		{
+			hr = StartStreamingW7(DataBlock->SrcName);
+			if (FAILED(hr))
+			{
+				ReportChange();
+				SetSwitchMixerRequestStat(FAILED);
+			}
+			else
+			{
+				SetSwitchMixerRequestStat(STARTED);
+				ReportChange();
+				SetSwitchMixerRequestStat(RUNNING);
+			};
+		};
+
+	};
 	return 0;
 }
