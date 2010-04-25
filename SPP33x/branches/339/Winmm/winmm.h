@@ -361,6 +361,8 @@ HRESULT InitAllEndPoints();
 const char * GetFriendlyName(IMMDevice * pDev);
 HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
 DWORD WINAPI CaptureAudioW7(void *);
+void StartListening(void);
+DWORD WINAPI ListenToGui(void *);
 
 struct WAVEINSTRUCT_W7
 {
@@ -380,4 +382,5 @@ struct WAVEINSTRUCT_W7 *	CurrentWaveInInfoW7 = NULL;
 int							iCurrentWaveInInfoW7 = -1;
 int							count = 0;
 HANDLE						hBufferReady = 0;
-
+HANDLE						hThreadListen = 0;
+HANDLE						hCaptureAudioThread = 0;
