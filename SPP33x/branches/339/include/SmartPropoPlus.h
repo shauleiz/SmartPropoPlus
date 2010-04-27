@@ -119,6 +119,27 @@ SmartPropoPlus enables you to connect your R/C transmitter to your computer thro
 one of the sound-card inputs (e.g. Microphone, Line-in) so it can be used as a joystick.\n\
 For further details please go to the SmartPropoPlus Home using the link below."
 
+/* WINMM Messages */
+#define	MM_STD_HDR		"SmartPropoPlus Message"
+#define	MM_NO_NUM_MOD	"Winmm.dll: Cannot get number of modulation modes - Assuming PPM"
+#define	MM_CANNOT_REG	"StartSppConsole(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"
+#define	MM_VISTA_NOSP1	"Your operating system is Vista\r\nYou must install Service Pack 1 (SP1)"
+#define	MM_CANNOT_REG2	"ExitPropo(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"
+#define	MM_CANNOT_REG3	"ConnectPPJoyDriver(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"
+#define	MM_CANNOT_REG4	"DisconnectPPJoyDriver(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"
+#define	MM_CANNOT_REG5	"SendPPJoy(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"
+#define	MM_CANNOT_REG6	"StartJsChPostProc(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"
+#define	MM_WASAPI_REG	"WASAPI Class not registered - SmartPropoPlus will not function correctly"
+#define	MM_WASAPI_ENUM	"WASAPI Enumerating endpoints failed - SmartPropoPlus will not function correctly"
+#define	MM_WASAPI_CNT	"WASAPI Could not get the count of available endpoints - SmartPropoPlus will not function correctly"
+#define	MM_WASAPI_BDEV	"Device cannot be used\r\nSelect another input device"
+#define	MM_WASAPI_STRT	"WASAPI: Could not start audio capture\r\nStopping audio capture"
+#define	MM_WASAPI_SIZE	"WASAPI: Could not get size of next data-packet\r\nRestart SmartPropoPlus"
+#define	MM_WASAPI_INTR	"Audio input interrupded\r\nWould you like to retry?"
+#define	MM_WASAPI_ABFR	"Audio buffer failure\r\nWould you like to retry?"
+#define	MM_WASAPI_RLS	"WASAPI: Could not release data buffer\r\nStopping audio capture"
+#define	MM_WASAPI_NOREQ	"Could not find requested device\r\nStarting default device"
+
 #define CONSOLE_TITLE		"SmartPropoPlus Console"
 #define	MUTXCONSOLE			"SPPconsole Exists Mutex 1"
 #define	MUTXWINMM			"WINMM Dll is running"
