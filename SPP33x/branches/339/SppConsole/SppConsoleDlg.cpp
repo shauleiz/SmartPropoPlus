@@ -1247,7 +1247,7 @@ void CSppConsoleDlg::SetCurrentInputLine(int iLine)
 	// CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer); //MD
 	unsigned int SrcID;
 	// if (!md || !md->GetInputLineSrcID(&SrcID, iLine)) // MD
-	if (m_AudioInput->GetMixerDeviceInputLineSrcID(iMixer, &SrcID, iLine)) // MD
+	if (!m_AudioInput->GetMixerDeviceInputLineSrcID(iMixer, &SrcID, iLine)) // MD
 		return;
 
 	/* Set the Source Line ID in the registry */
