@@ -1843,17 +1843,12 @@ extern __declspec(dllexport) UINT __stdcall   StopPPJoyInterface()
 
 BOOL PropoStarted(void)
 {
+	BOOL	static Started=FALSE;
+	BOOL	AlreadyStarted;
 
-	/* Test if another SPP DLL is running */
-	if (OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXPROPOSTARTED))
-	{	// another instance is already running 
-		return TRUE;
-	}
-	else
-	{
-		CreateMutex(NULL, FALSE, MUTXPROPOSTARTED);
-		return FALSE;
-	};
+	AlreadyStarted = Started;
+	Started = TRUE;
+	return AlreadyStarted;
 }
 
 
