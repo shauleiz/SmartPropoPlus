@@ -27,7 +27,7 @@
 #endif /* PPJOY */
 
 #define MESSAGE(msg,type) Message(msg, type,  __FILE__, __LINE__)
-#define	INITWINMM	if (!hWinmm) {LoadWinmm( __LINE__); TlsSetValue(TlsIndex, hWinmm); hJschpostproc = LoadJsChPostProc(); StartPropo();};
+#define	INITWINMM	if (!hWinmm) {LoadWinmm( __LINE__); TlsSetValue(TlsIndex, hWinmm); hJschpostproc = LoadJsChPostProc(); /*StartPropo();*/};
 
 #define DEBUG_W2K "Version 5"
 #undef DEBUG_W2K
@@ -1656,7 +1656,7 @@ int StartSppConsole()
 	}
 	else
 	{
-		DWORD rc = WaitForSingleObject(ProcessInformation.hProcess, 1000); // 1 second time out
+		DWORD rc = WaitForInputIdle(ProcessInformation.hProcess, 9000); // 9 second time out
 		//out =  ProcessInformation.hProcess;
 		
 	};
@@ -1678,6 +1678,8 @@ int StartSppConsole()
 		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_JSCHPPEVAIL, (long)res);
 	};
 
+	//CloseHandle(ProcessInformation.hProcess);
+	//CloseHandle(ProcessInformation.hThread);
 	return 1;
 }
 
@@ -2231,6 +2233,11 @@ int GetPosition(int ch)
 // Exported function.
 extern __declspec(dllexport) UINT __stdcall   joyGetDevCapsA(UINT uJoyID, LPJOYCAPS pjc, UINT cbjc) 
 {
+
+#ifdef PPJOY
+	/* If a filter file is loaded - send filter info to the GUI */
+	return pjoyGetDevCapsA( uJoyID,  pjc,  cbjc);
+#else /* PPJOY */
 	/* 
 		If the GUI console has not been started yet by the simulator then start it
 		Assumption - FMS (and any other simulator) will use this function but the GUI will not
@@ -2239,10 +2246,8 @@ extern __declspec(dllexport) UINT __stdcall   joyGetDevCapsA(UINT uJoyID, LPJOYC
 	if (!console_started)
 		console_started = StartSppConsole();
 
-#ifdef PPJOY
-	/* If a filter file is loaded - send filter info to the GUI */
-	return pjoyGetDevCapsA( uJoyID,  pjc,  cbjc);
-#else /* PPJOY */
+	/*Start SPP - it will start only once */
+	StartPropo();
 
 	/* Create joystick name string */
 	if (!gDebugLevel)
