@@ -120,6 +120,7 @@ bool CAudioInputW7::CreateArrayOfEndPointNames(void)
 	IMMDevice *pDeviceIn = NULL;
 	PROPVARIANT varName;
 	IPropertyStore *pProps = NULL;
+	IAudioClient * pClientIn = NULL;
 	LPWSTR pwszID = NULL;
 	bool Ret = false;
 
@@ -145,6 +146,14 @@ bool CAudioInputW7::CreateArrayOfEndPointNames(void)
 		// Get the endpoint ID string.
 		hr = pDeviceIn->GetId( &pwszID);
 		EXIT_ON_ERROR(hr);
+
+		// TODO
+		//// Test if device is usable
+		// Activate
+		//hr = pDeviceIn->Activate(&IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&pClientIn);
+		//EXIT_ON_ERROR(hr);
+
+
 
 		hr = pDeviceIn->OpenPropertyStore(STGM_READ, &pProps);
 		EXIT_ON_ERROR(hr);
