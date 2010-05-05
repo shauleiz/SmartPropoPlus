@@ -97,7 +97,7 @@ BEGIN
     GROUPBOX        "Modulation",IDC_STATIC,18,4,150,68
     PUSHBUTTON      "&Hide",IDC_HIDE,127,191,50,14
     GROUPBOX        "Audio Source",IDC_STATIC,17,81,150,88
-    COMBOBOX        IDC_MIXERDEVICE,22,103,141,51,CBS_DROPDOWN | CBS_SORT | 
+    COMBOBOX        IDC_MIXERDEVICE,22,103,141,91,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "&Enable Audio input selection",IDC_ENABLE_AUDIO,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,22,90,109,10

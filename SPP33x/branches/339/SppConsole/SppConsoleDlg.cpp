@@ -990,6 +990,7 @@ void CSppConsoleDlg::OnSelchangeMixerdevice()
 	/* Set the selected Mixer Device as current one in the registry */
 	SetCurrentMixerDevice(sel);
 	PopulateInputLines();
+	OnSelchangeAudioSrc();
 }
 
 void CSppConsoleDlg::OnSelchangeAudioSrc() 
