@@ -849,7 +849,9 @@ CString CSppConsoleDlg::GetStatusString()
 			tmp="";
 		else
 			InputLineNameList->GetText(sel, tmp);
-		Audio.Format(BALOON_DLL_AUDIO, tmp);
+
+		if (tmp.GetLength())
+			Audio.Format(BALOON_DLL_AUDIO, tmp);
 	};
 
 	Out = Mod+Auto+Shift+Audio;
