@@ -347,12 +347,17 @@ int SetVolumeValue(HMIXER hMixerDevice, unsigned int ControlID, long  value)
 	Object represents the audio system (single object)
 	members consist of list of mixer devices & index of current mixer device
 ***************************************************************************************/
+CAudioInput::CAudioInput(bool dummy)
+{
+	m_CurrentMixerDevice = -1;
+}
 
 CAudioInput::CAudioInput()
 {
 
 	CMixerDevice * mixer;
 	m_CurrentMixerDevice = -1;
+
 
 	// Get the number of mixer devices
 	unsigned int nMixDev = mixerGetNumDevs();
@@ -367,6 +372,7 @@ CAudioInput::CAudioInput()
 	};
 
 }
+
 
 CAudioInput::~CAudioInput()
 {
@@ -512,12 +518,11 @@ void CAudioInput::Restore()
 {
 	CMixerDevice * mixer;
 
-	// Get the number of mixer devices
-	int nMixDev = mixerGetNumDevs();
-	if (!nMixDev)
+	INT_PTR size = m_ArrayMixerDevice.GetSize();
+	if (!size)
 		return;
 
-	for (int index=0; index<nMixDev ; index++)
+	for (int index=0; index<size ; index++)
 	{
 		mixer = m_ArrayMixerDevice.GetAt(index);
 		mixer->Restore();

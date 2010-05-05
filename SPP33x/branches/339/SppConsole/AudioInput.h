@@ -125,6 +125,7 @@ protected:
 		virtual int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
 		virtual int GetCountMixerDevice(void);
 		CAudioInput();
+		CAudioInput(bool dummy);
 		virtual ~CAudioInput();
 		
 	protected: // CAudioInput

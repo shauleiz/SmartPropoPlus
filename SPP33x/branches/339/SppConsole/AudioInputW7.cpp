@@ -26,7 +26,7 @@ int w2char(LPWSTR wIn, char * cOut, int size)
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-CAudioInputW7::CAudioInputW7(void)
+CAudioInputW7::CAudioInputW7(void) : CAudioInput(false)
 {
 	HRESULT hr = S_OK;
 
