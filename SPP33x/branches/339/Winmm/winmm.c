@@ -199,6 +199,104 @@ int Message(const char * in_msg, UINT type ,const char * file_name,  int line_nu
 	return out;
 }
 
+/* Translate WASAPI error codes to English */
+BOOL GetWasapiText(DWORD code, char * text, UINT length)
+{
+	switch (code)
+	{
+	case	AUDCLNT_E_NOT_INITIALIZED:
+		strncpy(text, "The audio stream has not been successfully initialized", length-1);
+		return TRUE;
+	case	AUDCLNT_E_ALREADY_INITIALIZED:
+		strncpy(text, "The IAudioClient object is already initialized", length-1);
+		return TRUE;
+	case	AUDCLNT_E_WRONG_ENDPOINT_TYPE:
+		strncpy(text, "Wrong Endpoint Type", length-1);
+		return TRUE;
+	case	AUDCLNT_E_DEVICE_INVALIDATED:
+		strncpy(text, "Device Invalidated", length-1);
+		return TRUE;
+	case	AUDCLNT_E_NOT_STOPPED:
+		strncpy(text, "The audio stream was not stopped", length-1);
+		return TRUE;
+	case	AUDCLNT_E_BUFFER_TOO_LARGE:
+		strncpy(text, "The number of requested frames exceeds the available buffer space ", length-1);
+		return TRUE;
+	case	AUDCLNT_E_OUT_OF_ORDER:
+		strncpy(text, "Out of Order", length-1);
+		return TRUE;
+	case	AUDCLNT_E_UNSUPPORTED_FORMAT:
+		strncpy(text, "Unsupported Format", length-1);
+		return TRUE;
+	case	AUDCLNT_E_INVALID_SIZE:
+		strncpy(text, "Invalid Size", length-1);
+		return TRUE;
+	case	AUDCLNT_E_DEVICE_IN_USE:
+		strncpy(text, "The endpoint device is already in use", length-1);
+		return TRUE;
+	case	AUDCLNT_E_BUFFER_OPERATION_PENDING:
+		strncpy(text, "Buffer cannot be accessed because a stream reset is in progress", length-1);
+		return TRUE;
+	case	AUDCLNT_E_THREAD_NOT_REGISTERED:
+		strncpy(text, "Thread not registered", length-1);
+		return TRUE;
+	case	AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:
+		strncpy(text, "Exclusive mode not allowed", length-1);
+		return TRUE;
+	case	AUDCLNT_E_ENDPOINT_CREATE_FAILED:
+		strncpy(text, "Creation of Endpoint failed", length-1);
+		return TRUE;
+	case	AUDCLNT_E_SERVICE_NOT_RUNNING:
+		strncpy(text, "Service not Running", length-1);
+		return TRUE;
+	case	AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:
+		strncpy(text, "The audio stream was not initialized for event-driven buffering", length-1);
+		return TRUE;
+	case	AUDCLNT_E_EXCLUSIVE_MODE_ONLY:
+		strncpy(text, "Exclusive Mode Only", length-1);
+		return TRUE;
+	case	AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL:
+		strncpy(text, "parameters Buffer Duration and Periodicity are not equal", length-1);
+		return TRUE;
+	case	AUDCLNT_E_EVENTHANDLE_NOT_SET:
+		strncpy(text, "Eventhandle Not Set", length-1);
+		return TRUE;
+	case	AUDCLNT_E_INCORRECT_BUFFER_SIZE:
+		strncpy(text, "Incorrect Buffer Size", length-1);
+		return TRUE;
+	case	AUDCLNT_E_BUFFER_SIZE_ERROR:
+		strncpy(text, "Buffer Size Error", length-1);
+		return TRUE;
+	case	AUDCLNT_E_CPUUSAGE_EXCEEDED:
+		strncpy(text, "CPU Usage Exceeded", length-1);
+		return TRUE;
+	default:
+		return FALSE;
+	};
+		return FALSE;
+
+}
+
+/* Specific WASAPI message box */
+int WasAPIMessageBox(const char * device, const char * msg, DWORD error, UINT uType)
+{
+	char CodeMsg[511];
+	char Combined[1023];
+	char Message[4000];
+	BOOL CodeOK;
+
+	CodeOK = GetWasapiText(error, CodeMsg, 510);
+	if (CodeOK)
+		sprintf(Combined,"WASAPI Error %s (0x%x)",CodeMsg, error);
+	else
+		sprintf(Combined,"WASAPI Error 0x%x",error);
+
+	if (device)
+		sprintf(Message, "Device: %s\r\n%s\r\n\r\n%s",device, msg,Combined);
+	else
+		sprintf(Message, "%s\r\n\r\n%s",msg,Combined);
+	return MessageBox(NULL,Message, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+}
 
 /* Improved DLL loader */
 HINSTANCE LoadOrigDll(const char * dll, int line)
@@ -2222,6 +2320,15 @@ DWORD WINAPI  ChangeStreaming(const char * DevName)
 	return 0;
 }
 
+/*
+	Get the best Wave format possible
+*/
+BOOL GetBestWaveFmt(WAVEFORMATEX * wFmt)
+{
+	if (!wFmt)
+		return FALSE;
+}
+
 //---------------------------------------------------------------------------
 int GetPosition(int ch)
 {
@@ -3262,7 +3369,7 @@ HRESULT InitAllEndPoints()
 	if (FAILED(hr))
 	{
 		if ((hr==REGDB_E_CLASSNOTREG))
-			MessageBox(NULL,MM_WASAPI_REG, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+			WasAPIMessageBox(NULL, MM_WASAPI_REG, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -3270,7 +3377,7 @@ HRESULT InitAllEndPoints()
 	hr = pEnumerator->lpVtbl->EnumAudioEndpoints(pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &pDeviceCollect);
 	if (FAILED(hr))
 	{			
-		MessageBox(NULL,MM_WASAPI_ENUM, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+		WasAPIMessageBox(NULL, MM_WASAPI_ENUM, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -3278,7 +3385,7 @@ HRESULT InitAllEndPoints()
 	hr = pDeviceCollect->lpVtbl->GetCount(pDeviceCollect,&count);
 	if (FAILED(hr))
 	{			
-		MessageBox(NULL,MM_WASAPI_CNT, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+		WasAPIMessageBox(NULL, MM_WASAPI_CNT, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -3397,7 +3504,7 @@ HRESULT StartStreamingW7(const char * DevName)
 	if (!CurrentWaveInInfoW7->Usable)
 	{
 		SetSwitchMixerRequestStat(FAILED);
-		MessageBox(NULL,MM_WASAPI_BDEV, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+		WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_BDEV, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 		waveRecording = FALSE;
 		return AUDCLNT_E_SERVICE_NOT_RUNNING;
 	};
@@ -3412,7 +3519,7 @@ HRESULT StartStreamingW7(const char * DevName)
 		hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Start(CurrentWaveInInfoW7->pClientIn);
 		if (FAILED(hr))
 		{
-			MessageBox(NULL,MM_WASAPI_STRT, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+			WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_STRT, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 			waveRecording = TRUE;
 		};
 	};
@@ -3454,7 +3561,7 @@ DWORD WINAPI CaptureAudioW7(void * param)
 		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->GetNextPacketSize(CurrentWaveInInfoW7->pCaptureClient, &packetLength);
 		if (FAILED(hr))
 		{	// Usually caused by change of sampling frequency while SPP is on
-			MessageBox(NULL,MM_WASAPI_SIZE, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+			WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_SIZE, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 			return hr;
 		};
 
@@ -3464,7 +3571,7 @@ DWORD WINAPI CaptureAudioW7(void * param)
 		//In case of timeout, report and request permission to stop/resume
 		if (retval == WAIT_TIMEOUT)
 		{
-			retval = MessageBox(NULL,MM_WASAPI_INTR, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR|MB_YESNO);
+			retval = WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_INTR, hr, MB_SYSTEMMODAL|MB_ICONERROR|MB_YESNO);
 			if (retval == IDNO)
 				return -1;
 		};
@@ -3478,8 +3585,7 @@ DWORD WINAPI CaptureAudioW7(void * param)
 		if (FAILED(hr))
 		{
 			// In case of failure, report and request permission to stop/resume
-
-			retval = MessageBox(NULL,MM_WASAPI_ABFR, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR|MB_YESNO);
+			retval = WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_ABFR, hr, MB_SYSTEMMODAL|MB_ICONERROR|MB_YESNO);
 			if (retval == IDNO)
 				return hr;
 		};
@@ -3501,9 +3607,7 @@ DWORD WINAPI CaptureAudioW7(void * param)
 		/* Release the buffer*/
 		hr = CurrentWaveInInfoW7->pCaptureClient->lpVtbl->ReleaseBuffer(CurrentWaveInInfoW7->pCaptureClient, packetLength);
 		if (FAILED(hr))
-		{
-			MessageBox(NULL,MM_WASAPI_RLS, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
-		};
+			WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_RLS, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 
 	}; // while
 
@@ -3676,8 +3780,8 @@ int GetIndexOfDevice(const char * DevName)
 	/* If not found - use the default device */
 	if (index<0)
 	{
-		index = 0;	
-		MessageBox(NULL,MM_WASAPI_NOREQ, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
+		index = 0;
+		WasAPIMessageBox(NULL, MM_WASAPI_NOREQ, -1, MB_SYSTEMMODAL|MB_ICONERROR);
 	};
 
 	return index;
