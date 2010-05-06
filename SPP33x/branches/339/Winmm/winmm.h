@@ -262,7 +262,6 @@ extern WINMM_API UINT waveInReset(HWAVEIN) ;
 //extern WINMM_API UINT joyGetNumDevs(void);
 
 BOOL LoadWinmm(int line);
-
 extern void GetPointerToOriginalFunc(void);
 
 
@@ -323,6 +322,7 @@ DWORD WINAPI  ChangeStreaming(const char * DevName);
 DWORD WINAPI  StartStreaming(const char * DevName);
 DWORD WINAPI StopStreaming(void * pDummy);
 void ReportChange(void);
+BOOL GetBestWaveFmt(int DeviceId, WAVEFORMATEX * wFmt);
 
 int		OpenAllStreams();
 HWAVEIN	OpenStream(struct WAVEINSTRUCT * wi);
