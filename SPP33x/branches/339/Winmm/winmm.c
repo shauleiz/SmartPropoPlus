@@ -2148,12 +2148,16 @@ HWAVEIN  OpenStream(struct WAVEINSTRUCT * wi)
 		return NULL;
 	};
 
+	/* Get the best format (or default if fails) */
+	if (!GetBestWaveFmt(wi->id, &(wi->waveFmt)))
+	{
+		wi->waveFmt.nSamplesPerSec = 44100;
+		wi->waveFmt.wBitsPerSample =16;
+	};
 
 	/* Wave format structure initialization */
     wi->waveFmt.wFormatTag = WAVE_FORMAT_PCM;
     wi->waveFmt.nChannels = 1;
-    wi->waveFmt.nSamplesPerSec = 44100;
-    wi->waveFmt.wBitsPerSample =16;
     wi->waveFmt.nBlockAlign = wi->waveFmt.wBitsPerSample / 8 * wi->waveFmt.nChannels;
     wi->waveFmt.nAvgBytesPerSec = wi->waveFmt.nSamplesPerSec * wi->waveFmt.nBlockAlign;
     wi->waveFmt.cbSize = 0;
@@ -2178,17 +2182,6 @@ HWAVEIN  OpenStream(struct WAVEINSTRUCT * wi)
         pwaveInAddBuffer(wi->hWaveInDev , wi->waveBuf[i], sizeof(WAVEHDR));
 	}
 
-	///* Begin listening to WAVE IN */
-	//waveRecording = TRUE; /* Start recording */
-	//waveInStartFailed = pwaveInStart(WaveInInfo[iDev].hWaveInDev);
-	//_ASSERTE(!waveInStartFailed);
-	//if (waveInStartFailed)
-	//{
-	//	MessageBox(NULL, "waveInStart Failed" ,"StartStreaming Failed", MB_OK);
-	//	ReleaseMutex(hMutexStartStop);
-	//	return NULL;
-	//};
-
 	ReleaseMutex(hMutexStartStop);
 	return wi->hWaveInDev;
 }
@@ -2205,7 +2198,7 @@ DWORD WINAPI  StartStreaming(const char * DevName)
 
 	if (WaitForSingleObject(hMutexStartStop, 3000))
 	{
-		MessageBox(NULL, "WaitForSingleObject Failed" ,"StopStreaming Failed", MB_OK);
+		MessageBox(NULL, "WaitForSingleObject Failed" ,"StartStreaming Failed", MB_OK);
 		ReleaseMutex(hMutexStartStop);
 		return -3;
 	};
@@ -2321,12 +2314,46 @@ DWORD WINAPI  ChangeStreaming(const char * DevName)
 }
 
 /*
-	Get the best Wave format possible
+	Get the best Wave format possible for a given device
 */
-BOOL GetBestWaveFmt(WAVEFORMATEX * wFmt)
+BOOL GetBestWaveFmt(int DeviceId, WAVEFORMATEX * wFmt)
 {
+	WAVEINCAPS caps;
+	DWORD res;
+
 	if (!wFmt)
 		return FALSE;
+
+	/* Get Mixer capabilities */
+	res = pwaveInGetDevCapsA(DeviceId, &caps, sizeof(WAVEINCAPS));
+	if (res)
+		return FALSE;
+
+	/* Support only 16 bit samples */
+	wFmt->wBitsPerSample = 16;
+
+	/* 96000 Samples/Second (16bit) */
+	if ((caps.dwFormats & WAVE_FORMAT_96S16) || (caps.dwFormats & WAVE_FORMAT_96M16))
+	{
+		wFmt->nSamplesPerSec = 96000;
+		return TRUE;
+	};
+
+	/* 48000 Samples/Second (16bit) */
+	if ((caps.dwFormats & WAVE_FORMAT_48S16) || (caps.dwFormats & WAVE_FORMAT_48M16))
+	{
+		wFmt->nSamplesPerSec = 48000;
+		return TRUE;
+	};
+
+	/* 44100 Samples/Second (16bit) */
+	if ((caps.dwFormats & WAVE_FORMAT_44S16) || (caps.dwFormats & WAVE_FORMAT_44M16))
+	{
+		wFmt->nSamplesPerSec = 44100;
+		return TRUE;
+	};
+
+	return FALSE;
 }
 
 //---------------------------------------------------------------------------
