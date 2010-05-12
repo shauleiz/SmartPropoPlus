@@ -12,13 +12,14 @@
 //
 //#include <KsMedia.h>
 //#include <functiondiscoverykeys.h>  // PKEY_Device_FriendlyName
-
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
 #include <Functiondiscoverykeys_devpkey.h>
 #ifndef STANDALONE
 #include "audioinput.h"
 #endif
+#include <devicetopology.h>
+
 
 
 #define EXIT_ON_ERROR(hres)  \
@@ -48,6 +49,7 @@ protected:
 	IMMDeviceCollection * m_pDeviceCollect;
 	UINT m_nEndPoints;
 	char ** m_ArrayOfEndPointNames;
+	IPart * p;
 
 protected:
 	bool CreateArrayOfEndPointNames(void);
