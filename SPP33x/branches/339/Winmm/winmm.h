@@ -353,6 +353,8 @@ __inline void SetActiveJsChPostProcFunction(struct SharedDataBlock * dBlock);
 	//{C8ADBD64-E71E-48A0-A4DE-185C395CD317}
 	static GUID const IID_IAudioCaptureClient = {0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
+
+
 int OpenAllStreamsW7(void);
 HRESULT  StartStreamingW7(const char * DevName);
 DWORD ChangeStreamingW7(void);

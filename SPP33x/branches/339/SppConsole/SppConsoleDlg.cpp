@@ -1197,8 +1197,8 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 
 	// If DLL connected (Let's assume it is) then 
-	// 1. Get the name of the new mixer device
-	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
+	// 1. Get the name of the new mixer device (as needed by winmm)
+	const char * MixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
 	// 2. Compare to the name of the current mixer device
 	int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
 	// 3. If they are identical then NOP

@@ -116,6 +116,7 @@ protected:
 		virtual int GetMixerDeviceIndex(char * mixer);
 		virtual void Restore(void);
 		virtual const char * GetMixerDeviceName(int index);
+		virtual const char * GetMixerDeviceUniqueName(int index);
 		virtual const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 		virtual bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
 		virtual bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
