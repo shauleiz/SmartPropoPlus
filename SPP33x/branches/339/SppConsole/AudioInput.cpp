@@ -404,6 +404,10 @@ const char * CAudioInput::GetMixerDeviceName(int index)
 		return "WAVE_MAPPER";
 }
 
+const char * CAudioInput::GetMixerDeviceUniqueName(int index)
+{
+	return GetMixerDeviceName(index);
+}
 
 
 
