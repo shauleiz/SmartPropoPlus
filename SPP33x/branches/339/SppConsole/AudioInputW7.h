@@ -55,7 +55,10 @@ public:
 	const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 	bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
 	bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
-	int CAudioInputW7::GetNumRealMixerDevices();
+	const char * GetMixerDeviceUniqueName(int iMixer, int iLine);
+	bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
+	bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
+	//bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
 
 protected:
 	IMMDeviceEnumerator *m_pEnumerator;
@@ -66,7 +69,6 @@ protected:
 	CMixerDevice ** m_MixerDevices;
 
 protected:
-	bool	CreateArrayOfEndPointNames(void);
 	int		CreateListDeviceNames(LPWSTR * ListMixerDeviceNames);
 	bool	Create(void);
 
@@ -78,27 +80,38 @@ protected:
 		CMixerDevice();
 		CMixerDevice(LPWSTR Name);
 		bool Init(IMMDeviceCollection * pDevCollect);
+		char * GetNameA(void);
+		const char * GetInputLineName(int Line);
+		const char * GetInputLineEPName(int Line);
+		int GetInputLineSrcID(int iLine);
+		int GetInputLineIndex(unsigned int  SrcID);
+
 
 	protected:
 		int CreateArrayOfInputLines(void);
 		LPWSTR GetName(void);
 		IPart * FindMuteControl(IPart * pIn, IPart * pPartMute = NULL );
+		bool GetMuteStat(IPart * pMute);
 
 	protected:
 		struct LineMute {
 			IPart * p;
 			bool OrigStatus;
 			bool CurrentStatus;
-		};
+		} ;
 		struct InputLine { // Represents entry in array of inputs to the audio device(s)
 			IPart * p;
 			LPWSTR Name;
+			char * NameA;
+			LPWSTR EndPointName;
+			char * EndPointNameA;
 			LPWSTR GlobalId;
 			LineMute lMute;
 		};
 
 	protected:
 		LPWSTR m_Name;
+		char * m_NameA;
 		int m_nInputLines;
 		InputLine * m_ArrayInputLines;
 	}; // class CMixerDevice
