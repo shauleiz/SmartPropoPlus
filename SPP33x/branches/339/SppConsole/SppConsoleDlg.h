@@ -126,6 +126,7 @@ protected:
 	void SetCurrentMixerDevice(unsigned int iMixer);
 	bool GetCurrentInputLineFromSystem(unsigned int * iLine);
 	bool GetSavedCurrentInputLine(unsigned int * iLine);
+	bool GetSavedInputLine(const char * Mixer, unsigned int *iLine);
 	int GetCurrentInputLine(void);
 	void EnableAudio(int enable=1);
 	void PopulateInputLines(void);

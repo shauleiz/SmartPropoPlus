@@ -14,6 +14,7 @@ void SetCurrentAudioStateToRegistry(int Active);
 char * GetCurrentMixerDeviceFromRegistry();
 void SetCurrentMixerDeviceToRegistry(const char * MixerName);
 int GetCurrentInputLineFromRegistry(unsigned int *SrcID);
+int GetInputLineFromRegistry(const char * MixerName, unsigned int *SrcID);
 void SetCurrentInputLineToRegistry(const char * MixerName, unsigned int SrcID);
 int SetActiveModeToRegistry(const char * selected);
 void SetShiftAutoDetectToRegistry(const int sel);

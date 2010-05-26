@@ -203,6 +203,7 @@ void SetCurrentPpjoyState(int Active);
 char * GetMixerName(void);
 char * GetCurrentMixerDevice();
 int GetCurrentInputLine(unsigned int *SrcID);
+int GetInputLineSrcId(const char * MixerName, unsigned int *SrcID);
 void SetCurrentMixerDevice(const char * MixerName);
 void SwitchMixerRequest(const char * MixerName);
 void SwitchMixerAck(const char * MixerName);

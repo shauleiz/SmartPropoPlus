@@ -352,6 +352,35 @@ int GetCurrentInputLineFromRegistry(unsigned int *SrcID)
 	return 1;
 }
 
+/*
+	If the correct registry structure exists:
+	1. Get the given Mixer Device
+	2. Get the Input Line assosoated with this device
+*/
+int GetInputLineFromRegistry(const char * MixerName, unsigned int *SrcID)
+{
+	LONG res;
+	HKEY hkAud;
+	unsigned long  ValueDataSize = MAX_VAL_NAME;
+
+	char * mdName = MixerName;
+	if (!mdName)
+		return 0;
+
+
+	/* Open SPP Audio Sources key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_QUERY_VALUE , &hkAud);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	
+	res = RegQueryValueEx(hkAud, mdName, NULL, NULL, (unsigned char *)SrcID,  &ValueDataSize);
+	if (res != ERROR_SUCCESS)
+		return 0;
+
+	RegCloseKey(hkAud);
+	return 1;
+}
 
 
 void SetCurrentMixerDeviceToRegistry(const char * MixerName)

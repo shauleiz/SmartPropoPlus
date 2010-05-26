@@ -17,7 +17,7 @@
 	Endpoint devices are also called Mixer (devices)
 ***************************************************************************************/
 /////////////////// Helper functions //////////////////////////////////////////////////
-
+#ifdef STANDALONE
 int w2char(LPWSTR wIn, char * cOut, int size)
 {
 	int i;
@@ -29,6 +29,7 @@ int w2char(LPWSTR wIn, char * cOut, int size)
 	};
 	return i;
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -182,7 +183,7 @@ const char * CAudioInputW7::GetMixerDeviceName(int index)
 }
 
 
-int CAudioInputW7::GetMixerDeviceIndex(char * mixer)
+int CAudioInputW7::GetMixerDeviceIndex(const char * mixer)
 {
 	if (!m_MixerDevices)
 		return -1;
@@ -218,13 +219,22 @@ bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int Mixer, int Line)
 	return false;
 }
 
-const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer, int iLine)
+const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 {
 	// Sanity checks
 	if ((UINT)iMixer >= m_nMixers || iMixer<0 || m_nMixers<=0 || !m_MixerDevices)
 		return NULL;
 
 	CMixerDevice * Mixer = m_MixerDevices[iMixer];
+
+	/* Convert Source Line ID into Index */
+	UINT SrcID;
+	int res = ::GetInputLineSrcId(Mixer->GetNameA(), &SrcID);
+	if (!res)
+		return NULL;
+
+	UINT iLine;
+	GetMixerDeviceInputLineIndex(iMixer, SrcID, &iLine);
 	return Mixer->GetInputLineEPName(iLine);
 
 }
@@ -272,7 +282,7 @@ CAudioInputW7::CMixerDevice::CMixerDevice(LPWSTR name)
 
 	size_t len = wcslen(m_Name);
 	m_NameA = (char *)calloc(len+1, sizeof(char));
-	w2char(m_Name, m_NameA, len); 
+	w2char(m_Name, m_NameA, (int)len); 
 }
 
 CAudioInputW7::CMixerDevice::CMixerDevice()
@@ -366,7 +376,7 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pDevCollect)
 		// Input pin Name (ASCII)
 		len = wcslen(m_ArrayInputLines[m_nInputLines].Name);
 		m_ArrayInputLines[m_nInputLines].NameA = (char *)calloc(len+1, sizeof(char));
-		w2char(m_ArrayInputLines[m_nInputLines].Name, m_ArrayInputLines[m_nInputLines].NameA, len);
+		w2char(m_ArrayInputLines[m_nInputLines].Name, m_ArrayInputLines[m_nInputLines].NameA, (int)len);
 
 		// Corresponding Endpoint name
 		hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
@@ -375,7 +385,7 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pDevCollect)
 		// Corresponding Endpoint name (ASCII)
 		len = wcslen(m_ArrayInputLines[m_nInputLines].EndPointName);
 		m_ArrayInputLines[m_nInputLines].EndPointNameA = (char *)calloc(len+1, sizeof(char));
-		w2char(m_ArrayInputLines[m_nInputLines].EndPointName, m_ArrayInputLines[m_nInputLines].EndPointNameA, len);
+		w2char(m_ArrayInputLines[m_nInputLines].EndPointName, m_ArrayInputLines[m_nInputLines].EndPointNameA, (int)len);
 
 		// Get Global ID
 		hr = pPart->GetGlobalId(&(m_ArrayInputLines[m_nInputLines].GlobalId));

@@ -19,6 +19,7 @@
 #include "audioinput.h"
 #endif
 #include <devicetopology.h>
+#include "smartpropoplus.h"
 
 #ifndef GUID_DEF
 #define GUID_DEF
@@ -50,12 +51,12 @@ public:
 	CAudioInputW7(void);
 	virtual ~CAudioInputW7(void);
 	int GetCountMixerDevice(void);
-	int GetMixerDeviceIndex(char * mixer);
+	int GetMixerDeviceIndex(const char * mixer);
 	const char * GetMixerDeviceName(int index);
 	const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 	bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
 	bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
-	const char * GetMixerDeviceUniqueName(int iMixer, int iLine);
+	const char * GetMixerDeviceUniqueName(int iMixer);
 	bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
 	bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
 	//bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
