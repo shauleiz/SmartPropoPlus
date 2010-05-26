@@ -1167,6 +1167,20 @@ bool CSppConsoleDlg::GetSavedCurrentInputLine(unsigned int *iLine)
 
 }
 
+bool CSppConsoleDlg::GetSavedInputLine(const char * Mixer, unsigned int *iLine)
+{
+	/* Get the Source Line ID from the registry */
+	unsigned int SrcID;
+
+	/* Convert Source Line ID into Index */
+	int iMixer = m_AudioInput->GetMixerDeviceIndex(Mixer);
+	int res = ::GetInputLineSrcId(Mixer, &SrcID);
+	if (!res)
+		return false;
+	return m_AudioInput->GetMixerDeviceInputLineIndex(iMixer, SrcID, iLine);
+
+}
+
 /*
 	Get Input Line Index from the system via the AudioInput object
 	1. Get current Mixer Device
@@ -1193,8 +1207,6 @@ bool CSppConsoleDlg::GetCurrentInputLineFromSystem(unsigned int *iLine)
 */
 void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 {
-
-
 
 	// If DLL connected (Let's assume it is) then 
 	// 1. Get the name of the new mixer device (as needed by winmm)
@@ -1243,8 +1255,8 @@ void CSppConsoleDlg::SetCurrentInputLine(int iLine)
 {
 	/* Get the current Mixer Device */
 	int iMixer = GetCurrentMixerDevice();
-	/* Set the current Mixer Device in the registry */
-	SetCurrentMixerDevice(iMixer);
+	/* Set the current Mixer Device in the registry
+	SetCurrentMixerDevice(iMixer); */
 
 	/* Get the Source Line ID of the selected line */
 	// CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer); //MD

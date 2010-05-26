@@ -406,7 +406,9 @@ const char * CAudioInput::GetMixerDeviceName(int index)
 
 const char * CAudioInput::GetMixerDeviceUniqueName(int index)
 {
-	return GetMixerDeviceName(index);
+	const char * DeviceName = GetMixerDeviceName(index);
+
+	return DeviceName;
 }
 
 
@@ -533,7 +535,7 @@ void CAudioInput::Restore()
 	};
 }
 
-int CAudioInput::GetMixerDeviceIndex(char *mixer)
+int CAudioInput::GetMixerDeviceIndex(const char *mixer)
 {
 	const char * MixerName;
 

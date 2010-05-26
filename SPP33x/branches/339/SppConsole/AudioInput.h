@@ -113,7 +113,7 @@ protected:
 	public: // CAudioInput
 		virtual int GetCurrentMixerDevice(void);
 		virtual bool SetCurrentMixerDevice(int i);
-		virtual int GetMixerDeviceIndex(char * mixer);
+		virtual int GetMixerDeviceIndex(const char * mixer);
 		virtual void Restore(void);
 		virtual const char * GetMixerDeviceName(int index);
 		virtual const char * GetMixerDeviceUniqueName(int index);
