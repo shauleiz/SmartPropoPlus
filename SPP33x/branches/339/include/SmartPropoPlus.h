@@ -49,6 +49,7 @@ extern "C"
 #define SHIFT_AUTO	"Shift-Auto-Detect"
 #define DEBUG_LEVEL	"Debug-Level"
 #define	MIXER_DEV	"Mixer-Device"
+#define	ENDPOINT	"EndPoint-Device"
 #define	AUDIO		"Audio"
 
 #define	SEL_FLTR	"Selected-Filter"
@@ -202,9 +203,11 @@ int GetCurrentPpjoyState();
 void SetCurrentPpjoyState(int Active);
 char * GetMixerName(void);
 char * GetCurrentMixerDevice();
+char * GetCurrentEndpointDevice();
 int GetCurrentInputLine(unsigned int *SrcID);
 int GetInputLineSrcId(const char * MixerName, unsigned int *SrcID);
 void SetCurrentMixerDevice(const char * MixerName);
+void SetCurrentEndpointDevice(const char * MixerName);
 void SwitchMixerRequest(const char * MixerName);
 void SwitchMixerAck(const char * MixerName);
 void SetSwitchMixerRequestStat(enum MDSTAT Stat);

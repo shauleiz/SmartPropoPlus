@@ -321,6 +321,34 @@ char * GetCurrentMixerDeviceFromRegistry()
 	return strdup(Active);
 }
 
+char * GetCurrentEndpointDeviceFromRegistry()
+{
+	LONG res;
+	HKEY hkSpp;
+	char Active[MAX_VAL_NAME] = "";
+	unsigned long ValueDataSize;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP  key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_QUERY_VALUE , &hkSpp);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+
+	/* Get  data */	
+	ValueDataSize = MAX_VAL_NAME;
+	res = RegQueryValueEx(hkSpp, ENDPOINT,  NULL, NULL, (unsigned char *)&(Active[0]),  &ValueDataSize);
+	if (res != ERROR_SUCCESS)
+		return NULL;
+
+	return strdup(Active);
+}
+
 
 /*
 	If the correct registry structure exists:
@@ -363,7 +391,7 @@ int GetInputLineFromRegistry(const char * MixerName, unsigned int *SrcID)
 	HKEY hkAud;
 	unsigned long  ValueDataSize = MAX_VAL_NAME;
 
-	char * mdName = MixerName;
+	const char * mdName = MixerName;
 	if (!mdName)
 		return 0;
 
@@ -402,6 +430,29 @@ void SetCurrentMixerDeviceToRegistry(const char * MixerName)
 
 	/* Set Active entry */
 	RegSetValueEx(hkMixer, MIXER_DEV,0, REG_SZ, (const unsigned char *)MixerName, 1+(DWORD)strlen(MixerName));
+
+	RegCloseKey(hkMixer);
+}
+
+void SetCurrentEndpointDeviceToRegistry(const char * MixerName)
+{
+	LONG res;
+	HKEY hkMixer;
+
+	/* Test Registry - Create default entries if does not exist */
+	if (!isFmsRegistryExist())
+		CreateEmptyFmsRegistry();
+
+	if (!isSppRegistryExist())
+		CreateDefaultSppRegistry();
+
+	/* Open SPP key for data query */
+	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_SPP, 0, KEY_ALL_ACCESS , &hkMixer);
+	if (res != ERROR_SUCCESS)
+		return ;
+
+	/* Set Active entry */
+	RegSetValueEx(hkMixer, ENDPOINT,0, REG_SZ, (const unsigned char *)MixerName, 1+(DWORD)strlen(MixerName));
 
 	RegCloseKey(hkMixer);
 }

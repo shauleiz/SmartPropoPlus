@@ -1210,7 +1210,8 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 	// If DLL connected (Let's assume it is) then 
 	// 1. Get the name of the new mixer device (as needed by winmm)
-	const char * MixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
+	const char * UniqueMixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
+	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 	// 2. Compare to the name of the current mixer device
 	int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
 	// 3. If they are identical then NOP
@@ -1222,7 +1223,7 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	AfxGetApp()->DoWaitCursor(1);
 
 	//  B. Place request on the global memory for the DLL to switch mixer device
-	::SwitchMixerRequest(MixerName);
+	::SwitchMixerRequest(UniqueMixerName);
 
 	//  C. Wait for ack from DLL or timeout
 	DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
@@ -1240,10 +1241,13 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 		return;
 	};
 
-	iMixer = SetMixerSelectionByName(ActualMixerName);
+	iMixer = SetMixerSelectionByName(MixerName);
 
 	if (iMixer>=0)
-		::SetCurrentMixerDevice(ActualMixerName);
+	{
+		::SetCurrentMixerDevice(MixerName);
+		::SetCurrentEndpointDevice(ActualMixerName);
+	};
 	m_AudioInput->SetCurrentMixerDevice(iMixer);
 }
 
