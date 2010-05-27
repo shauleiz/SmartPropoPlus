@@ -241,6 +241,11 @@ char * GetCurrentMixerDevice()
 	return GetCurrentMixerDeviceFromRegistry();	
 }
 
+char * GetCurrentEndpointDevice()
+{
+	return GetCurrentEndpointDeviceFromRegistry();	
+}
+
 int GetCurrentInputLine(unsigned int *SrcID)
 {
 	return GetCurrentInputLineFromRegistry(SrcID);
@@ -254,6 +259,11 @@ int GetInputLineSrcId(const char * MixerName, unsigned int *SrcID)
 void SetCurrentMixerDevice(const char * MixerName)
 {
 	SetCurrentMixerDeviceToRegistry(MixerName);
+}
+
+void SetCurrentEndpointDevice(const char * MixerName)
+{
+	SetCurrentEndpointDeviceToRegistry(MixerName);
 }
 
 void SwitchMixerRequest(const char * MixerName)

@@ -12,7 +12,9 @@ int SetDefaultVolumeValueToRegistry(unsigned long SrcType, unsigned long  Volume
 int GetCurrentAudioStateFromRegistry();
 void SetCurrentAudioStateToRegistry(int Active);
 char * GetCurrentMixerDeviceFromRegistry();
+char * GetCurrentEndpointDeviceFromRegistry();
 void SetCurrentMixerDeviceToRegistry(const char * MixerName);
+void SetCurrentEndpointDeviceToRegistry(const char * MixerName);
 int GetCurrentInputLineFromRegistry(unsigned int *SrcID);
 int GetInputLineFromRegistry(const char * MixerName, unsigned int *SrcID);
 void SetCurrentInputLineToRegistry(const char * MixerName, unsigned int SrcID);

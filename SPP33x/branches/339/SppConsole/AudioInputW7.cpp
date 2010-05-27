@@ -177,7 +177,7 @@ const char * CAudioInputW7::GetMixerDeviceName(int index)
 {
 	// Sanity checks
 	if ((UINT)index >= m_nMixers || index<0 || m_nMixers<=0 || !m_MixerDevices)
-		return NULL;
+		return "WAVE_MAPPER";
 
 	return m_MixerDevices[index]->GetNameA();
 }
@@ -223,7 +223,7 @@ const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 {
 	// Sanity checks
 	if ((UINT)iMixer >= m_nMixers || iMixer<0 || m_nMixers<=0 || !m_MixerDevices)
-		return NULL;
+		return "WAVE_MAPPER";
 
 	CMixerDevice * Mixer = m_MixerDevices[iMixer];
 
@@ -231,7 +231,7 @@ const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 	UINT SrcID;
 	int res = ::GetInputLineSrcId(Mixer->GetNameA(), &SrcID);
 	if (!res)
-		return NULL;
+		return  Mixer->GetInputLineEPName(0);
 
 	UINT iLine;
 	GetMixerDeviceInputLineIndex(iMixer, SrcID, &iLine);

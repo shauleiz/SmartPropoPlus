@@ -2021,7 +2021,7 @@ void StartPropo(void)
 		closeRequest = FALSE;
 		waveRecording = FALSE;
 		InitAllEndPoints();
-		StartStreamingW7(MixerName);
+		StartStreamingW7(GetCurrentEndpointDevice());
 	} 
 
 }
@@ -3790,7 +3790,7 @@ int GetIndexOfDevice(const char * DevName)
 	for (i=0; i<count; i++)
 	{
 		/* In no device requested then default device assumed */
-		if (!DevName || !strlen(DevName))
+		if (!DevName || !strlen(DevName) || !strcmp(DevName,"WAVE_MAPPER"))
 		{
 			index = 0;
 			break;
