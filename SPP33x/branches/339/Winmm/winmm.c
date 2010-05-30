@@ -3790,7 +3790,7 @@ int GetIndexOfDevice(const char * DevName)
 	for (i=0; i<count; i++)
 	{
 		/* In no device requested then default device assumed */
-		if (!DevName || !strlen(DevName) || !strcmp(DevName,"WAVE_MAPPER"))
+		if (!DevName || !strlen(DevName) || !strcmp(DevName,DEFLT_WAVE))
 		{
 			index = 0;
 			break;

@@ -52,7 +52,10 @@ public:
 	virtual ~CAudioInputW7(void);
 	int GetCountMixerDevice(void);
 	int GetMixerDeviceIndex(const char * mixer);
+	int GetDefaultMixerDeviceIndex(void);
 	const char * GetMixerDeviceName(int index);
+	const char * GetDefaultMixerDeviceName();
+	const char * GetDefaultEndpointName();
 	const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 	bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
 	bool SetMixerDeviceSelectInputLine(int Mixer, int Line);

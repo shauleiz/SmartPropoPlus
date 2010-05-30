@@ -147,6 +147,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define	MUTXPROPOSTARTED	"WINMM Dll - Propo Started"
 #define	INTERSPPCONSOLE		"Inter SPPconsole Message 1"
 #define	INTERSPPAPPS		"Inter SPP Application Message 2"
+#define DEFLT_WAVE			"WAVE_MAPPER"
 
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1
