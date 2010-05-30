@@ -401,7 +401,7 @@ const char * CAudioInput::GetMixerDeviceName(int index)
 	if (index>=0 && index<GetCountMixerDevice())
 		return m_ArrayMixerDevice.GetAt(index)->GetName();
 	else
-		return "WAVE_MAPPER";
+		return DEFLT_WAVE;
 }
 
 const char * CAudioInput::GetMixerDeviceUniqueName(int index)

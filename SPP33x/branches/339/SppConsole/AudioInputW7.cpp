@@ -69,7 +69,7 @@ bool CAudioInputW7::Create(void)
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
 	if (FAILED(hr))
 	{
-		MessageBox(NULL,"WASAPI (CAudioInputW7): Could not find default audio Endpoint\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		MessageBox(NULL,"WASAPI (CAudioInputW7): Could not create audio Endpoint enumerator \r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -177,16 +177,81 @@ const char * CAudioInputW7::GetMixerDeviceName(int index)
 {
 	// Sanity checks
 	if ((UINT)index >= m_nMixers || index<0 || m_nMixers<=0 || !m_MixerDevices)
-		return "WAVE_MAPPER";
+		return GetDefaultMixerDeviceName();
 
 	return m_MixerDevices[index]->GetNameA();
 }
 
+const char * CAudioInputW7::GetDefaultMixerDeviceName(void)
+{
+	HRESULT hr = S_OK;
+	IMMDevice * pDefaultDevice = NULL;
+	IPropertyStore * pProps = NULL;
+	PROPVARIANT varName;
+
+	m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	EXIT_ON_ERROR(hr);
+
+	hr = pDefaultDevice->OpenPropertyStore(STGM_READ, &pProps);
+	EXIT_ON_ERROR(hr);
+
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+
+	// Get the Device's friendly-name property.
+	hr = pProps->GetValue(PKEY_DeviceInterface_FriendlyName, &varName);
+	EXIT_ON_ERROR(hr);
+
+	// Device's Name (ASCII)
+	size_t len = wcslen(varName.pwszVal);
+	char * out = (char *)calloc(len+1, sizeof(char));
+	w2char(varName.pwszVal, out, (int)len);
+
+Exit:
+	SAFE_RELEASE(pDefaultDevice);
+	SAFE_RELEASE(pProps);
+
+	return out;
+}
+
+const char * CAudioInputW7::GetDefaultEndpointName(void)
+{
+	HRESULT hr = S_OK;
+	IMMDevice * pDefaultDevice = NULL;
+	IPropertyStore * pProps = NULL;
+	PROPVARIANT varName;
+
+	m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	EXIT_ON_ERROR(hr);
+
+	hr = pDefaultDevice->OpenPropertyStore(STGM_READ, &pProps);
+	EXIT_ON_ERROR(hr);
+
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+
+	// Get the Endpoint's friendly-name property.
+	hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+	EXIT_ON_ERROR(hr);
+
+	// Device's Name (ASCII)
+	size_t len = wcslen(varName.pwszVal);
+	char * out = (char *)calloc(len+1, sizeof(char));
+	w2char(varName.pwszVal, out, (int)len);
+
+Exit:
+	SAFE_RELEASE(pDefaultDevice);
+	SAFE_RELEASE(pProps);
+
+	return out;
+}
 
 int CAudioInputW7::GetMixerDeviceIndex(const char * mixer)
 {
 	if (!m_MixerDevices)
 		return -1;
+
+	// Special case - Default device
 
 	for (UINT index=0; index<m_nMixers ; index++)
 	{
@@ -197,6 +262,15 @@ int CAudioInputW7::GetMixerDeviceIndex(const char * mixer)
 
 	return -1;
 }
+
+int CAudioInputW7::GetDefaultMixerDeviceIndex(void)
+{
+	const char * DefaultMixerDeviceName = GetDefaultMixerDeviceName();
+	int index = GetMixerDeviceIndex(DefaultMixerDeviceName);
+	free((void *)DefaultMixerDeviceName);
+	return index;
+}
+
 
 const char * CAudioInputW7::GetMixerDeviceInputLineName(int iMixer, int iLine)
 {
@@ -223,7 +297,7 @@ const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 {
 	// Sanity checks
 	if ((UINT)iMixer >= m_nMixers || iMixer<0 || m_nMixers<=0 || !m_MixerDevices)
-		return "WAVE_MAPPER";
+		return GetDefaultMixerDeviceName();
 
 	CMixerDevice * Mixer = m_MixerDevices[iMixer];
 
