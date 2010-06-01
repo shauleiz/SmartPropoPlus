@@ -1023,6 +1023,8 @@ void CSppConsoleDlg::OnSelchangeAudioSrc()
 	m_AudioInput->SetMixerDeviceSelectInputLine(m_iSelMixer, m_iSelLine);// MD
 	//if (md)// MD
 	//	md->SetSelectedInputLine(m_iSelLine);// MD
+
+	SetCurrentMixerDevice(m_iSelMixer);
 }
 
 void CSppConsoleDlg::OnEnableAudio() 
@@ -1116,12 +1118,6 @@ int CSppConsoleDlg::GetCurrentMixerDevice()
 		return 0; // Default 
 }
 
-/* IFAIK - there is no such thing, so I just return the first one */
-//DEL bool CSppConsoleDlg::GetCurrentMixerDeviceFromSystem(int *iMixer)
-//DEL {
-//DEL 	*iMixer=0;
-//DEL 	return true;
-//DEL }
 
 /*
 	Get the last-used input line
@@ -1158,12 +1154,7 @@ bool CSppConsoleDlg::GetSavedCurrentInputLine(unsigned int *iLine)
 
 	/* Convert Source Line ID into Index */
 	int iMixer = m_AudioInput->GetCurrentMixerDevice();
-	return m_AudioInput->GetMixerDeviceInputLineIndex(iMixer, SrcID, iLine); //MD
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer); //MD
-	//if (md) //MD
-	//	return md->GetInputLineIndex(SrcID, iLine); //MD
-	//else //MD
-	//	return false; //MD
+	return m_AudioInput->GetMixerDeviceInputLineIndex(iMixer, SrcID, iLine); 
 
 }
 
@@ -1190,14 +1181,7 @@ bool CSppConsoleDlg::GetCurrentInputLineFromSystem(unsigned int *iLine)
 {
 	bool res;
 	int iMixer = m_AudioInput->GetCurrentMixerDevice();
-	res = m_AudioInput->GetMixerDeviceSelectInputLine(iMixer, iLine); //MD
-	// CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(iMixer);// MD
-	// if (md) //MD
-		// res = md->GetSelectedInputLine(iLine); //MD
-	//else //MD
-		//res = false; //MD
-
-
+	res = m_AudioInput->GetMixerDeviceSelectInputLine(iMixer, iLine); 
 	return res;
 }
 
@@ -1213,10 +1197,10 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	const char * UniqueMixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
 	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 	// 2. Compare to the name of the current mixer device
-	int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
+	//int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
 	// 3. If they are identical then NOP
-	if (iCurMixer == iMixer)
-		return;
+	//if (iCurMixer == iMixer)
+	//	return;
 
 	//  A. Enter Wait state (Cursor)
 	HANDLE hMixerSwitchEvent = CreateEvent(NULL, FALSE, FALSE, EVENT_MIXER);
@@ -1246,7 +1230,7 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	if (iMixer>=0)
 	{
 		::SetCurrentMixerDevice(MixerName);
-		::SetCurrentEndpointDevice(ActualMixerName);
+		::SetCurrentEndpointDevice(ActualMixerName);		
 	};
 	m_AudioInput->SetCurrentMixerDevice(iMixer);
 }
