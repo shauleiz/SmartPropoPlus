@@ -188,8 +188,12 @@ const char * CAudioInputW7::GetDefaultMixerDeviceName(void)
 	IMMDevice * pDefaultDevice = NULL;
 	IPropertyStore * pProps = NULL;
 	PROPVARIANT varName;
+	IMMDeviceEnumerator * pEnum = NULL;
 
-	m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&pEnum);
+	EXIT_ON_ERROR(hr);
+
+	pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
 	EXIT_ON_ERROR(hr);
 
 	hr = pDefaultDevice->OpenPropertyStore(STGM_READ, &pProps);
@@ -210,6 +214,7 @@ const char * CAudioInputW7::GetDefaultMixerDeviceName(void)
 Exit:
 	SAFE_RELEASE(pDefaultDevice);
 	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pEnum);
 
 	return out;
 }
@@ -220,8 +225,12 @@ const char * CAudioInputW7::GetDefaultEndpointName(void)
 	IMMDevice * pDefaultDevice = NULL;
 	IPropertyStore * pProps = NULL;
 	PROPVARIANT varName;
+	IMMDeviceEnumerator * pEnum = NULL;
 
-	m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&pEnum);
+	EXIT_ON_ERROR(hr);
+
+	pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
 	EXIT_ON_ERROR(hr);
 
 	hr = pDefaultDevice->OpenPropertyStore(STGM_READ, &pProps);
@@ -242,6 +251,7 @@ const char * CAudioInputW7::GetDefaultEndpointName(void)
 Exit:
 	SAFE_RELEASE(pDefaultDevice);
 	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pEnum);
 
 	return out;
 }
@@ -282,10 +292,25 @@ const char * CAudioInputW7::GetMixerDeviceInputLineName(int iMixer, int iLine)
 	return Mixer->GetInputLineName(iLine);
 }
 
-bool CAudioInputW7::GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine)
+bool CAudioInputW7::GetMixerDeviceSelectInputLine(int iMixer, unsigned int * iLine)
 {
-	*iLine = -1;
-	return false;
+	// Sanity checks
+	if ((UINT)iMixer >= m_nMixers || iMixer<0 || m_nMixers<=0 || !m_MixerDevices)
+		return false;
+
+	if (GetDefaultMixerDeviceIndex() != iMixer)
+		return false;
+
+	const char * DefaultEndpointName = GetDefaultEndpointName();
+	if (!DefaultEndpointName)
+		return false;
+
+	CMixerDevice * Mixer = m_MixerDevices[iMixer];
+	*iLine = Mixer->GetInputLineIndexByEP(DefaultEndpointName);
+	if (iLine>=0)
+		return true;
+	else
+		return false;
 }
 
 bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int Mixer, int Line)
@@ -297,7 +322,7 @@ const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 {
 	// Sanity checks
 	if ((UINT)iMixer >= m_nMixers || iMixer<0 || m_nMixers<=0 || !m_MixerDevices)
-		return GetDefaultMixerDeviceName();
+		return GetDefaultEndpointName();
 
 	CMixerDevice * Mixer = m_MixerDevices[iMixer];
 
@@ -628,5 +653,24 @@ LPWSTR CAudioInputW7::CMixerDevice::GetName(void)
 	 };
 	 return -1;
  }
+
+  int CAudioInputW7::CMixerDevice::GetInputLineIndexByEP(const char * EndpointName)
+ {
+	 const char * CurEndpointName;
+	 int out = -1;
+
+	 for (int i=0; i<m_nInputLines; i++)
+	 {
+		 CurEndpointName = GetInputLineEPName(i);
+		 if (!strcmp(CurEndpointName, EndpointName))
+		 {
+			 out = i;
+			 break;
+		 };
+	 };
+
+	 return out;
+ }
+
 
 //////////////////// Mixer Device  (End)//////////////////////////////////////////////////////////////////

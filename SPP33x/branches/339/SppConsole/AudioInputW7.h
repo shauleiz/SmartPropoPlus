@@ -89,6 +89,7 @@ protected:
 		const char * GetInputLineEPName(int Line);
 		int GetInputLineSrcID(int iLine);
 		int GetInputLineIndex(unsigned int  SrcID);
+		int GetInputLineIndexByEP(const char * EndpointName);
 
 
 	protected:
