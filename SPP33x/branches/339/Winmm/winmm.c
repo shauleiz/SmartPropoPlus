@@ -3401,7 +3401,7 @@ HRESULT InitAllEndPoints()
 	};
 
 	/**** Create a list of end points ****/
-	hr = pEnumerator->lpVtbl->EnumAudioEndpoints(pEnumerator,eCapture, DEVICE_STATE_ACTIVE, &pDeviceCollect);
+	hr = pEnumerator->lpVtbl->EnumAudioEndpoints(pEnumerator,eCapture, DEVICE_STATEMASK_ALL, &pDeviceCollect);
 	if (FAILED(hr))
 	{			
 		WasAPIMessageBox(NULL, MM_WASAPI_ENUM, hr, MB_SYSTEMMODAL|MB_ICONERROR);
@@ -3422,6 +3422,7 @@ HRESULT InitAllEndPoints()
 
 	/** Insert default endpoint in index 0 **/
 	hr = pEnumerator->lpVtbl->GetDefaultAudioEndpoint(pEnumerator,eCapture, eMultimedia, &(WaveInInfoW7[0].pDeviceIn));
+	EXIT_ON_ERROR(hr);
 
 
 	// Loop on all devices for the first time - get their IMMDevice interface

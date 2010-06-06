@@ -632,6 +632,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 		gpSharedBlock->VersionGui = 0;
 		gpSharedBlock->i_sel_fltr = -1;
 		gpSharedBlock->MixerDeviceStatus = RUNNING;
+		strcpy(gpSharedBlock->SrcName, "");
 
 	};
 	

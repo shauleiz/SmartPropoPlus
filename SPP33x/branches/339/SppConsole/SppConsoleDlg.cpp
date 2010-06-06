@@ -1218,11 +1218,12 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 	// Get the name of the actual device from global memory 
 	// Update AudioInput object
-	const char * ActualMixerName = ::GetMixerName();
+	char * ActualMixerName = ::GetMixerName();
 	if (!ActualMixerName)
 	{
-		::MessageBox(NULL,"Cannot get Actual Mixer Name", "SmartPropoPlus Message" , MB_SYSTEMMODAL);
-		return;
+		strcpy(ActualMixerName, "");
+	//	::MessageBox(NULL,"Cannot get Actual Mixer Name", "SmartPropoPlus Message" , MB_SYSTEMMODAL);
+	//	return;
 	};
 
 	iMixer = SetMixerSelectionByName(MixerName);
