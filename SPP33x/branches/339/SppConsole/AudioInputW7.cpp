@@ -334,6 +334,9 @@ const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 
 	UINT iLine;
 	GetMixerDeviceInputLineIndex(iMixer, SrcID, &iLine);
+
+	if ((int)iLine <0)
+		iLine=0;
 	return Mixer->GetInputLineEPName(iLine);
 
 }
