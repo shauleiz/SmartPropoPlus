@@ -91,7 +91,7 @@ protected:
 			bool MuteOutputLine(unsigned long SrcID, bool mute=true, bool temporary=false);
 			bool SetSelectedInputLine(unsigned int line);
 			const char * GetInputLineName(int i);
-			const char * GetName();
+			LPCWSTR GetName();
 			virtual ~CMixerDevice();
 			CMixerDevice(int Index);
 
@@ -103,7 +103,7 @@ protected:
 		protected: //CMixerDevice
 			HMIXER m_hMixerDevice;
 			int m_ID;
-			char * m_name;
+			LPWSTR m_name;
 			long m_CurrentSrcID;
 			CArray< CInputLine *,CInputLine *> m_ArrayInputLine;
 			CArray< CPhysicalDevice *,CPhysicalDevice *> m_ArrayPhysicalDev;
@@ -113,10 +113,10 @@ protected:
 	public: // CAudioInput
 		virtual int GetCurrentMixerDevice(void);
 		virtual bool SetCurrentMixerDevice(int i);
-		virtual int GetMixerDeviceIndex(const char * mixer);
+		virtual int GetMixerDeviceIndex(LPCWSTR mixer);
 		virtual void Restore(void);
-		virtual const char * GetMixerDeviceName(int index);
-		virtual const char * GetMixerDeviceUniqueName(int index);
+		virtual LPCWSTR GetMixerDeviceName(int index);
+		virtual LPCWSTR GetMixerDeviceUniqueName(int index);
 		virtual const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 		virtual bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
 		virtual bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);

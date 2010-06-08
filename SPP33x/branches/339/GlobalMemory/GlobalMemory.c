@@ -404,9 +404,9 @@ struct Modulations * GetModulationFromGlobalMemory()
 }
 
 
-char * GetMixerNameFromGlobalMemory(void)
+LPWSTR GetMixerNameFromGlobalMemory(void)
 {	
-	char * MixerName;
+	LPWSTR MixerName;
 
 	if (!isGlobalMemoryExist())
 		return NULL;
@@ -418,7 +418,7 @@ char * GetMixerNameFromGlobalMemory(void)
 	/* Lock access to global memory */
 	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
-	MixerName = strdup(gpSharedBlock->SrcName);
+	MixerName = wcsdup(gpSharedBlock->SrcName);
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
@@ -427,7 +427,7 @@ char * GetMixerNameFromGlobalMemory(void)
 
 }
 
-void SwitchMixerRequestViaGlobalMemory(const char * MixerName)
+void SwitchMixerRequestViaGlobalMemory(LPCWSTR MixerName)
 {
 	if (!isGlobalMemoryExist())
 		return;
@@ -439,7 +439,7 @@ void SwitchMixerRequestViaGlobalMemory(const char * MixerName)
 	/* Lock access to global memory */
 	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
-	strncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
+	wcsncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
 	gpSharedBlock->MixerDeviceStatus = CHANGE_REQ;
 
 	/* Release acces lock */
@@ -447,7 +447,7 @@ void SwitchMixerRequestViaGlobalMemory(const char * MixerName)
 
 }
 
-void SwitchMixerAckViaGlobalMemory(const char * MixerName)
+void SwitchMixerAckViaGlobalMemory(LPWSTR MixerName)
 {
 	if (!isGlobalMemoryExist())
 		return;
@@ -459,7 +459,7 @@ void SwitchMixerAckViaGlobalMemory(const char * MixerName)
 	/* Lock access to global memory */
 	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
-	strncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
+	wcsncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
 	//gpSharedBlock->MixerDeviceStatus = RUNNING;
 
 	/* Release acces lock */
@@ -632,7 +632,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 		gpSharedBlock->VersionGui = 0;
 		gpSharedBlock->i_sel_fltr = -1;
 		gpSharedBlock->MixerDeviceStatus = RUNNING;
-		strcpy(gpSharedBlock->SrcName, "");
+		wcscpy(gpSharedBlock->SrcName, L"");
 
 	};
 	

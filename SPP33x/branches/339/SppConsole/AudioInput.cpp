@@ -396,7 +396,7 @@ int CAudioInput::GetCountMixerDevice()
 
 
 
-const char * CAudioInput::GetMixerDeviceName(int index)
+LPCWSTR CAudioInput::GetMixerDeviceName(int index)
 {
 	if (index>=0 && index<GetCountMixerDevice())
 		return m_ArrayMixerDevice.GetAt(index)->GetName();
@@ -404,9 +404,10 @@ const char * CAudioInput::GetMixerDeviceName(int index)
 		return DEFLT_WAVE;
 }
 
-const char * CAudioInput::GetMixerDeviceUniqueName(int index)
+
+LPCWSTR CAudioInput::GetMixerDeviceUniqueName(int index)
 {
-	const char * DeviceName = GetMixerDeviceName(index);
+	LPCWSTR DeviceName = GetMixerDeviceName(index);
 
 	return DeviceName;
 }
@@ -535,16 +536,16 @@ void CAudioInput::Restore()
 	};
 }
 
-int CAudioInput::GetMixerDeviceIndex(const char *mixer)
+int CAudioInput::GetMixerDeviceIndex(LPCWSTR mixer)
 {
-	const char * MixerName;
+	LPCWSTR MixerName;
 
 	int cMixer = GetCountMixerDevice();
 	for  (int Mixer=0 ; Mixer<cMixer ; Mixer++)
 	{
 		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
 		MixerName = md->GetName();
-		if (!strcmp(MixerName,mixer))
+		if (!wcscmp(MixerName,mixer))
 			return Mixer;
 	};
 
@@ -613,7 +614,7 @@ CAudioInput::CMixerDevice::~CMixerDevice()
 CAudioInput::CMixerDevice::CMixerDevice(int index)
 {
 	unsigned int mmres;
-	MIXERCAPS mixCaps;
+	MIXERCAPSW mixCaps;
 
 	/* Initialize Mixer Device */
 	m_ID = index;
@@ -625,11 +626,11 @@ CAudioInput::CMixerDevice::CMixerDevice(int index)
 		return;
 
 	/* Get Mixer Device' capabilities */
-	mmres = mixerGetDevCaps((UINT_PTR)m_hMixerDevice, (LPMIXERCAPS) &mixCaps,	sizeof(MIXERCAPS));
+	mmres = mixerGetDevCapsW((UINT_PTR)m_hMixerDevice,  &mixCaps,	sizeof(MIXERCAPSW));
 	if(mmres != MMSYSERR_NOERROR) return;
 
 	/* Device name */
-	m_name = strdup(mixCaps.szPname);
+	m_name = wcsdup((LPWSTR)mixCaps.szPname);
 
 	/* Create an array of input lines for this mixer device */
 	int nInputLines = CreateInputLineArray();
@@ -876,7 +877,7 @@ bool CAudioInput::CMixerDevice::GetInputLineSrcID(unsigned int *SrcID, unsigned 
 }
 
 
-const char * CAudioInput::CMixerDevice::GetName()
+LPCWSTR CAudioInput::CMixerDevice::GetName()
 {
 	return m_name;
 }
