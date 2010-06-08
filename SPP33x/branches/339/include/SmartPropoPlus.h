@@ -48,8 +48,8 @@ extern "C"
 #define SHIFT_POS	"Positive-Shift"
 #define SHIFT_AUTO	"Shift-Auto-Detect"
 #define DEBUG_LEVEL	"Debug-Level"
-#define	MIXER_DEV	"Mixer-Device"
-#define	ENDPOINT	"EndPoint-Device"
+#define	MIXER_DEV	L"Mixer-Device"
+#define	ENDPOINT	L"EndPoint-Device"
 #define	AUDIO		"Audio"
 
 #define	SEL_FLTR	"Selected-Filter"
@@ -147,7 +147,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define	MUTXPROPOSTARTED	"WINMM Dll - Propo Started"
 #define	INTERSPPCONSOLE		"Inter SPPconsole Message 1"
 #define	INTERSPPAPPS		"Inter SPP Application Message 2"
-#define DEFLT_WAVE			"WAVE_MAPPER"
+#define DEFLT_WAVE			L"WAVE_MAPPER"
 
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1
@@ -202,17 +202,17 @@ int GetCurrentAudioState();
 void SetCurrentAudioState(int Active);
 int GetCurrentPpjoyState();
 void SetCurrentPpjoyState(int Active);
-char * GetMixerName(void);
-char * GetCurrentMixerDevice();
-char * GetCurrentEndpointDevice();
+LPWSTR GetMixerName(void);
+LPWSTR GetCurrentMixerDevice();
+LPWSTR GetCurrentEndpointDevice();
 int GetCurrentInputLine(unsigned int *SrcID);
-int GetInputLineSrcId(const char * MixerName, unsigned int *SrcID);
-void SetCurrentMixerDevice(const char * MixerName);
-void SetCurrentEndpointDevice(const char * MixerName);
-void SwitchMixerRequest(const char * MixerName);
-void SwitchMixerAck(const char * MixerName);
+int GetInputLineSrcId(LPCWSTR MixerName, unsigned int *SrcID);
+void SetCurrentMixerDevice(LPCWSTR MixerName);
+void SetCurrentEndpointDevice(LPCWSTR MixerName);
+void SwitchMixerRequest(LPCWSTR MixerName);
+void SwitchMixerAck(LPWSTR MixerName);
 void SetSwitchMixerRequestStat(enum MDSTAT Stat);
-void SetCurrentInputLine(const char * MixerName, unsigned int SrcID);
+void SetCurrentInputLine(LPCWSTR MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);
 int isVista(void);
 int isVistaSP1OrHigher(void);

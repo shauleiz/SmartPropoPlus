@@ -126,12 +126,12 @@ protected:
 	void SetCurrentMixerDevice(unsigned int iMixer);
 	bool GetCurrentInputLineFromSystem(unsigned int * iLine);
 	bool GetSavedCurrentInputLine(unsigned int * iLine);
-	bool GetSavedInputLine(const char * Mixer, unsigned int *iLine);
+	bool GetSavedInputLine(LPCWSTR Mixer, unsigned int *iLine);
 	int GetCurrentInputLine(void);
 	void EnableAudio(int enable=1);
 	void PopulateInputLines(void);
 	void PopulateAudioSource();
-	int  SetMixerSelectionByName(const char * MixerName);
+	int  SetMixerSelectionByName(LPCWSTR MixerName);
 	BOOL TaskBarIconToolTip(UINT uID, const char *ToolTipText);
 	bool isDllActive(void);
 	afx_msg LRESULT OnInterSppConsole(WPARAM wParam, LPARAM lParam);

@@ -230,18 +230,18 @@ void SetCurrentPpjoyState(int Active)
 	SetCurrentPpjoyStateToRegistry(Active);
 }
 
-char * GetMixerName(void)
+LPWSTR GetMixerName(void)
 {
 	return GetMixerNameFromGlobalMemory();
 }
 
 
-char * GetCurrentMixerDevice()
+LPWSTR GetCurrentMixerDevice()
 {
 	return GetCurrentMixerDeviceFromRegistry();	
 }
 
-char * GetCurrentEndpointDevice()
+LPWSTR GetCurrentEndpointDevice()
 {
 	return GetCurrentEndpointDeviceFromRegistry();	
 }
@@ -251,27 +251,27 @@ int GetCurrentInputLine(unsigned int *SrcID)
 	return GetCurrentInputLineFromRegistry(SrcID);
 }
 
-int GetInputLineSrcId(const char * MixerName, unsigned int *SrcID)
+int GetInputLineSrcId(LPCWSTR MixerName, unsigned int *SrcID)
 {
 	return GetInputLineFromRegistry(MixerName, SrcID);
 }
 
-void SetCurrentMixerDevice(const char * MixerName)
+void SetCurrentMixerDevice(LPCWSTR MixerName)
 {
 	SetCurrentMixerDeviceToRegistry(MixerName);
 }
 
-void SetCurrentEndpointDevice(const char * MixerName)
+void SetCurrentEndpointDevice(LPCWSTR MixerName)
 {
 	SetCurrentEndpointDeviceToRegistry(MixerName);
 }
 
-void SwitchMixerRequest(const char * MixerName)
+void SwitchMixerRequest(LPCWSTR MixerName)
 {
 	SwitchMixerRequestViaGlobalMemory(MixerName);
 }
 
-void SwitchMixerAck(const char * MixerName)
+void SwitchMixerAck(LPWSTR MixerName)
 {
 	SwitchMixerAckViaGlobalMemory(MixerName);
 }
@@ -282,7 +282,7 @@ void SetSwitchMixerRequestStat(enum MDSTAT Stat)
 	SetSwitchMixerRequestStatToGlobalMemory(Stat);
 }
 
-void SetCurrentInputLine(const char * MixerName, unsigned int SrcID)
+void SetCurrentInputLine(LPCWSTR MixerName, unsigned int SrcID)
 {
 	SetCurrentInputLineToRegistry(MixerName, SrcID);
 }

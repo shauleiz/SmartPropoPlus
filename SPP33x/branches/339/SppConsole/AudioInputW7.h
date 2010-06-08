@@ -19,7 +19,6 @@
 #include "audioinput.h"
 #endif
 #include <devicetopology.h>
-#include "smartpropoplus.h"
 
 #ifndef GUID_DEF
 #define GUID_DEF
@@ -51,15 +50,16 @@ public:
 	CAudioInputW7(void);
 	virtual ~CAudioInputW7(void);
 	int GetCountMixerDevice(void);
-	int GetMixerDeviceIndex(const char * mixer);
+	int GetMixerDeviceIndex(LPCWSTR mixer);
 	int GetDefaultMixerDeviceIndex(void);
-	const char * GetMixerDeviceName(int index);
-	const char * GetDefaultMixerDeviceName();
-	const char * GetDefaultEndpointName();
+	LPCWSTR GetMixerDeviceName(int index);
+	LPCWSTR GetDefaultMixerDeviceName();
+	LPCWSTR GetDefaultEndpointName();
+	LPWSTR GetDefaultEndpointID(void);
 	const char * GetMixerDeviceInputLineName(int Mixer, int Line);
 	bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
 	bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
-	const char * GetMixerDeviceUniqueName(int iMixer);
+	LPCWSTR GetMixerDeviceUniqueName(int iMixer);
 	bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
 	bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
 	//bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
@@ -85,16 +85,17 @@ protected:
 		CMixerDevice(LPWSTR Name);
 		bool Init(IMMDeviceCollection * pDevCollect);
 		char * GetNameA(void);
+		LPWSTR GetName(void);
 		const char * GetInputLineName(int Line);
-		const char * GetInputLineEPName(int Line);
+		LPCWSTR GetInputLineEPName(int Line);
+		LPWSTR GetInputLineEPID(int Line);
 		int GetInputLineSrcID(int iLine);
 		int GetInputLineIndex(unsigned int  SrcID);
-		int GetInputLineIndexByEP(const char * EndpointName);
+		int GetInputLineIndexByEP(LPCWSTR EndpointName);
 
 
 	protected:
 		int CreateArrayOfInputLines(void);
-		LPWSTR GetName(void);
 		IPart * FindMuteControl(IPart * pIn, IPart * pPartMute = NULL );
 		bool GetMuteStat(IPart * pMute);
 
@@ -110,6 +111,7 @@ protected:
 			char * NameA;
 			LPWSTR EndPointName;
 			char * EndPointNameA;
+			LPWSTR EndPointID;
 			LPWSTR GlobalId;
 			LineMute lMute;
 		};

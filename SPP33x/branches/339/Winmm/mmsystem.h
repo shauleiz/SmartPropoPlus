@@ -159,6 +159,17 @@ typedef struct {
     WORD      wReserved1; 
 } WAVEINCAPS; 
 
+typedef struct tagWAVEINCAPSW {
+    WORD    wMid;                    /* manufacturer ID */
+    WORD    wPid;                    /* product ID */
+    UINT	vDriverVersion;        /* version of the driver */
+    WCHAR   szPname[MAXPNAMELEN];    /* product name (NULL terminated string) */
+    DWORD   dwFormats;               /* formats supported */
+    WORD    wChannels;               /* number of channels supported */
+    WORD    wReserved1;              /* structure packing */
+} WAVEINCAPSW, *PWAVEINCAPSW, *NPWAVEINCAPSW, *LPWAVEINCAPSW;
+
+
 typedef UINT        MMVERSION;  /* major (high byte), minor (low byte) */
 typedef struct { 
     WORD      wMid; 

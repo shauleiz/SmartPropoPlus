@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <stdlib.h>
 #include "shlwapi.h"
 #include "SppConsole.h"
 #include "SppConsoleDlg.h"
@@ -878,8 +879,6 @@ BOOL CSppConsoleDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
     return(FALSE);
 }
 
-
-
 void CSppConsoleDlg::PopulateAudioSource()
 {
 	/*** Mixer Device combo box ***/
@@ -892,7 +891,14 @@ void CSppConsoleDlg::PopulateAudioSource()
 	/* Loop on the list and populate the combo box */
 	int nAudioDev = m_AudioInput->GetCountMixerDevice();
 	for (int i=0 ; i<nAudioDev ; i++)
-		MixerList->InsertString(i, m_AudioInput->GetMixerDeviceName(i));
+	{
+		LPCWSTR DeviceName = m_AudioInput->GetMixerDeviceName(i);
+		size_t lenDeviceName = wcslen(DeviceName);
+		char * DeviceNameT = (char *)calloc(lenDeviceName+2, sizeof(char));
+		wcstombs(DeviceNameT, DeviceName, lenDeviceName+1);
+		MixerList->InsertString(i, DeviceNameT);
+		free(DeviceNameT);
+	}
 
 	/* No audio device detected */
 	if (nAudioDev < 1)
@@ -913,7 +919,7 @@ void CSppConsoleDlg::PopulateAudioSource()
 	PopulateInputLines();
 }
 
-int CSppConsoleDlg::SetMixerSelectionByName(const char * MixerName)
+int CSppConsoleDlg::SetMixerSelectionByName(LPCWSTR MixerName)
 {
 
 	/* Get the Mixer Device Box */
@@ -921,7 +927,7 @@ int CSppConsoleDlg::SetMixerSelectionByName(const char * MixerName)
 	if (!MixerList)
 		return CB_ERR;
 
-	return MixerList->FindStringExact(-1, MixerName);
+	return MixerList->FindStringExact(-1, (LPCTSTR)MixerName);
 }
 
 void CSppConsoleDlg::PopulateInputLines()
@@ -1111,7 +1117,7 @@ void CSppConsoleDlg::EnableAudio(int enable)
 */
 int CSppConsoleDlg::GetCurrentMixerDevice()
 {
-	char * mixer = ::GetCurrentMixerDevice();
+	LPWSTR mixer = ::GetCurrentMixerDevice();
 	if (mixer)
 		return m_AudioInput->GetMixerDeviceIndex(mixer);
 	else
@@ -1158,7 +1164,7 @@ bool CSppConsoleDlg::GetSavedCurrentInputLine(unsigned int *iLine)
 
 }
 
-bool CSppConsoleDlg::GetSavedInputLine(const char * Mixer, unsigned int *iLine)
+bool CSppConsoleDlg::GetSavedInputLine(LPCWSTR Mixer, unsigned int *iLine)
 {
 	/* Get the Source Line ID from the registry */
 	unsigned int SrcID;
@@ -1194,8 +1200,8 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 	// If DLL connected (Let's assume it is) then 
 	// 1. Get the name of the new mixer device (as needed by winmm)
-	const char * UniqueMixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
-	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
+	LPCWSTR UniqueMixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
+	LPCWSTR MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 	// 2. Compare to the name of the current mixer device
 	//int iCurMixer = m_AudioInput->GetCurrentMixerDevice();
 	// 3. If they are identical then NOP
@@ -1207,7 +1213,11 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	AfxGetApp()->DoWaitCursor(1);
 
 	//  B. Place request on the global memory for the DLL to switch mixer device
-	::SwitchMixerRequest(UniqueMixerName);
+	if (isVista())
+		::SwitchMixerRequest(UniqueMixerName);
+	else
+		::SwitchMixerRequest(MixerName);
+
 
 	//  C. Wait for ack from DLL or timeout
 	DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
@@ -1218,10 +1228,10 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 
 	// Get the name of the actual device from global memory 
 	// Update AudioInput object
-	char * ActualMixerName = ::GetMixerName();
+	LPWSTR ActualMixerName = ::GetMixerName();
 	if (!ActualMixerName)
 	{
-		strcpy(ActualMixerName, "");
+		wcscpy(ActualMixerName, L"");
 	//	::MessageBox(NULL,"Cannot get Actual Mixer Name", "SmartPropoPlus Message" , MB_SYSTEMMODAL);
 	//	return;
 	};
@@ -1255,7 +1265,7 @@ void CSppConsoleDlg::SetCurrentInputLine(int iLine)
 		return;
 
 	/* Set the Source Line ID in the registry */
-	const char * MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
+	LPCWSTR MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 	::SetCurrentInputLine(MixerName, SrcID);
 }
 

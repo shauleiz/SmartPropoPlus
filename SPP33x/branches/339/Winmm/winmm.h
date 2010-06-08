@@ -318,8 +318,8 @@ extern void StopPropo(void);
 extern void ExitPropo(void);
 
 DWORD WINAPI ProcThread(void *param);
-DWORD WINAPI  ChangeStreaming(const char * DevName);
-DWORD WINAPI  StartStreaming(const char * DevName);
+DWORD WINAPI  ChangeStreaming(LPCWSTR DevName);
+DWORD WINAPI  StartStreaming(LPCWSTR DevName);
 DWORD WINAPI StopStreaming(void * pDummy);
 void ReportChange(void);
 BOOL GetBestWaveFmt(int DeviceId, WAVEFORMATEX * wFmt);
@@ -354,28 +354,31 @@ __inline void SetActiveJsChPostProcFunction(struct SharedDataBlock * dBlock);
 	static GUID const IID_IAudioCaptureClient = {0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
 
-
-int OpenAllStreamsW7(void);
-HRESULT  StartStreamingW7(const char * DevName);
-DWORD ChangeStreamingW7(void);
-int GetIndexOfDevice(const char * DevName);
-HRESULT InitAllEndPoints();
-const char * GetFriendlyName(IMMDevice * pDev);
-HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
-DWORD WINAPI CaptureAudioW7(void *);
-void StartListening(void);
-DWORD WINAPI ListenToGui(void *);
-
 struct WAVEINSTRUCT_W7
 {
 	BOOL				Usable;
 	IMMDevice			*pDeviceIn;
 	LPWSTR				DevId;
 	IAudioClient		*pClientIn;
-	char const			*DevFriendlyName;
+	LPWSTR				DevFriendlyName;
 	WAVEFORMATEX		*WaveFmt;
 	IAudioCaptureClient *pCaptureClient;
 };
+
+
+int OpenAllStreamsW7(void);
+HRESULT  StartStreamingW7(LPCWSTR DevName);
+DWORD ChangeStreamingW7(void);
+int GetIndexOfDevice(LPCWSTR DevName);
+HRESULT Init();
+HRESULT InitAllEndPoints();
+HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct);
+HRESULT ReleaseEndPoint(struct WAVEINSTRUCT_W7 * pEndPointStruct);
+LPCWSTR GetFriendlyName(IMMDevice * pDev);
+HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
+DWORD WINAPI CaptureAudioW7(void *);
+void StartListening(void);
+DWORD WINAPI ListenToGui(void *);
 
 IMMDeviceEnumerator *pEnumerator = NULL;
 IMMDeviceCollection *pDeviceCollect = NULL;

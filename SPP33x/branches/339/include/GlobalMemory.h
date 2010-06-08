@@ -27,7 +27,7 @@ struct SharedDataBlock
 	int nModulations;
 	char __based( gpSharedBlock ) *pInternalModName[MAX_MODS];
 	//int nSrcName;
-	char SrcName[MAX_MODS];
+	WCHAR SrcName[MAX_MODS];
 	//int iActiveSrc; // Index of active source
 	enum MDSTAT 
 	{
@@ -72,9 +72,9 @@ void SetFilterNamesToGlobalMemory(const char ** name);
 char * GetFilterIdByIndexFromGlobalMemory(const int i);
 int GetFilterIndexByNameFromGlobalMemory(const char * name);
 
-char * GetMixerNameFromGlobalMemory(void);
-void SwitchMixerRequestViaGlobalMemory(const char * MixerName);
-void SwitchMixerAckViaGlobalMemory(const char * MixerName);
+LPWSTR GetMixerNameFromGlobalMemory(void);
+void SwitchMixerRequestViaGlobalMemory(LPCWSTR MixerName);
+void SwitchMixerAckViaGlobalMemory(LPWSTR MixerName);
 void SetSwitchMixerRequestStatToGlobalMemory(enum MDSTAT Stat);
 
 far void * CreateSharedDataStruct(struct Modulations * data);

@@ -278,7 +278,7 @@ BOOL GetWasapiText(DWORD code, char * text, UINT length)
 }
 
 /* Specific WASAPI message box */
-int WasAPIMessageBox(const char * device, const char * msg, DWORD error, UINT uType)
+int WasAPIMessageBox(LPCWSTR device, const char * msg, DWORD error, UINT uType)
 {
 	char CodeMsg[511];
 	char Combined[1023];
@@ -292,7 +292,7 @@ int WasAPIMessageBox(const char * device, const char * msg, DWORD error, UINT uT
 		sprintf(Combined,"WASAPI Error 0x%x",error);
 
 	if (device)
-		sprintf(Message, "Device: %s\r\n%s\r\n\r\n%s",device, msg,Combined);
+		sprintf(Message, "Device: %ws\r\n%s\r\n\r\n%s",device, msg,Combined);
 	else
 		sprintf(Message, "%s\r\n\r\n%s",msg,Combined);
 	return MessageBox(NULL,Message, MM_STD_HDR , MB_SYSTEMMODAL|MB_ICONERROR);
@@ -1974,7 +1974,7 @@ void StartPropo(void)
 	char ChnlLogFileName[2000] = {""};
 	//WAVEINCAPS Capabilities;
 	int res=0;
-	char * MixerName=NULL;
+	LPWSTR MixerName=NULL;
 
 	if (PropoStarted())
 		return;
@@ -1984,7 +1984,7 @@ void StartPropo(void)
 	/* Download configuration from the registry (if exists) */
 	Modulation = GetModulation(0);		// Modulation type: PPM/PCM(JR) ....
 	if (GetCurrentAudioState())			// Get  Mixer Device (selected or preferred) 
-		MixerName = strdup(GetCurrentMixerDevice());	// Selected
+		MixerName = wcsdup(GetCurrentMixerDevice());	// Selected
 	else
 		MixerName=NULL;									// Preferred
 
@@ -2020,8 +2020,9 @@ void StartPropo(void)
 		i=0;
 		closeRequest = FALSE;
 		waveRecording = FALSE;
-		InitAllEndPoints();
-		StartStreamingW7(GetCurrentEndpointDevice());
+		Init();
+		// StartStreamingW7(GetCurrentEndpointDevice());
+		StartStreamingW7(L"{0.0.1.00000000}.{053c8250-895c-477c-a6cb-2f4010ce2c8e}");
 	} 
 
 }
@@ -2190,10 +2191,10 @@ HWAVEIN  OpenStream(struct WAVEINSTRUCT * wi)
 	Given Mixer Device name - start WaveIn streaming for this device
 	If device name is NULL/Empty/Does not exist - Start 'Preferred device' (WAVE_MAPPER)
 */
-DWORD WINAPI  StartStreaming(const char * DevName)
+DWORD WINAPI  StartStreaming(LPCWSTR DevName)
 {
 	int iDev=-1, nGoodDevs=0;
-	WAVEINCAPS caps;
+	WAVEINCAPSW caps;
 	UINT waveInStartFailed;
 
 	if (WaitForSingleObject(hMutexStartStop, 3000))
@@ -2208,8 +2209,8 @@ DWORD WINAPI  StartStreaming(const char * DevName)
 		iDev++;
 		if (DevName)
 		{
-			pwaveInGetDevCapsA(WaveInInfo[iDev].id, &caps, sizeof(WAVEINCAPS));
-			if (!strcmp(caps.szPname, DevName))
+			pwaveInGetDevCapsW(WaveInInfo[iDev].id, &caps, sizeof(WAVEINCAPSW));
+			if (!wcscmp((LPWSTR)caps.szPname, DevName))
 				break;
 		};
 
@@ -2279,17 +2280,22 @@ void ReportChange(void)
 {
 	WAVEINCAPS caps;
 	HANDLE hEvent;
+	size_t lenName;
+	LPWSTR NameW;
 
 	/* Get the name of the current device */
 	if (VistaOS)
 		/* Write it to the global memory */
 		SwitchMixerAck(CurrentWaveInInfoW7->DevFriendlyName);
-
 	else
 	{
 		pwaveInGetDevCapsA(CurrentWaveInInfo->id, &caps, sizeof(WAVEINCAPS));
-		/* Write it to the global memory */
-		SwitchMixerAck(caps.szPname);
+		
+		/* Write it to the global memory (first convert to UNICODE) */
+		lenName = strlen(caps.szPname);
+		NameW = (LPWSTR)calloc(lenName+2, sizeof(WCHAR));
+		mbstowcs(NameW, caps.szPname, lenName);
+		SwitchMixerAck(NameW);
 	};
 		
 
@@ -2299,7 +2305,7 @@ void ReportChange(void)
 		SetEvent(hEvent);
 }
 
-DWORD WINAPI  ChangeStreaming(const char * DevName)
+DWORD WINAPI  ChangeStreaming(LPCWSTR DevName)
 {
 	DWORD res;
 
@@ -3350,6 +3356,150 @@ extern __declspec(dllexport) UINT __stdcall    StartJsChPostProc(void)
 
 
 /*************************************************  WIndows7/Vista section *************************************************/
+HRESULT Init()
+{
+	HRESULT hr = S_OK;
+	IMMDeviceCollection * pDeviceCollect = NULL;
+
+	InitAllEndPoints();
+
+	// Initialize pointer to structure that holds the current WAVE information
+	if (!CurrentWaveInInfoW7)
+		CurrentWaveInInfoW7 = (struct WAVEINSTRUCT_W7 *)calloc(1, sizeof(struct WAVEINSTRUCT_W7));
+	if (!CurrentWaveInInfoW7)
+    {
+        hr = E_FAIL;
+        goto Exit;
+    }
+	else
+	{
+		CurrentWaveInInfoW7->DevFriendlyName = NULL;
+		CurrentWaveInInfoW7->DevId = NULL;
+		CurrentWaveInInfoW7->pCaptureClient = NULL;
+		CurrentWaveInInfoW7->pClientIn = NULL;
+		CurrentWaveInInfoW7->pDeviceIn = NULL;
+		CurrentWaveInInfoW7->Usable = FALSE;
+		CurrentWaveInInfoW7->WaveFmt = NULL;
+	};
+
+	// Create an event handle and register it for
+    // buffer-event notifications.
+    hBufferReady = CreateEvent(NULL, FALSE, FALSE, NULL);
+    if (hBufferReady == NULL)
+    {
+        hr = E_FAIL;
+        goto Exit;
+    }
+
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
+	/* Create a system-wide device enumerator */
+	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, &CLSID_IMMDeviceEnumerator, (void**)&pEnumerator);
+	if (FAILED(hr))
+	{
+		if ((hr==REGDB_E_CLASSNOTREG))
+			WasAPIMessageBox(NULL, MM_WASAPI_REG, hr, MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+
+	return hr;
+
+Exit:
+	SAFE_RELEASE(pEnumerator);
+	return hr;
+}
+
+/*
+	Initialize a single capture endpoint by its Endpont ID String
+	
+	Parameters:
+		pwstrId:			Endpont ID String
+		pEndPointStruct:	Pointer to structure in which this function fills-in the details
+
+	Returns:
+		S_OK:	If all is ok
+		Any other error code otherwise
+
+	Remarks:
+		It is assumed that pEndPointStruct is pointing to already initialized structure
+		It is assumed that the global enumeartor (pEnumerator) is already initialized
+
+*/
+HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct)
+{
+	HRESULT hr=S_OK;
+	IMMDevice * pDevice = NULL;
+
+	_ASSERTE(pEndPointStruct);
+	if (!pwstrId || wcslen(pwstrId)<2)
+	{
+		hr = E_FAIL;
+		goto Exit;
+	};
+
+	/**** Get the target endpoint by its ID ****/
+	_ASSERTE(pEnumerator);
+	hr = pEnumerator->lpVtbl->GetDevice(pEnumerator, pwstrId, &pDevice);
+	EXIT_ON_ERROR(hr);
+	pEndPointStruct->pDeviceIn = pDevice;
+
+	// Activate
+	hr = pDevice->lpVtbl->Activate(pDevice, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&(pEndPointStruct->pClientIn));
+	EXIT_ON_ERROR(hr);
+
+	// Get the endpoint friendly name
+	pEndPointStruct->DevFriendlyName = (LPWSTR)GetFriendlyName(pEndPointStruct->pDeviceIn);
+
+	// Get the endpoint supported wave format
+	hr = GetWaveFormat(pEndPointStruct->pClientIn, &(pEndPointStruct->WaveFmt));
+	EXIT_ON_ERROR(hr);
+
+	// Initialize the endpoint
+	hr = pEndPointStruct->pClientIn->lpVtbl->Initialize(pEndPointStruct->pClientIn, 
+		AUDCLNT_SHAREMODE_SHARED,			// shared mode
+		AUDCLNT_STREAMFLAGS_EVENTCALLBACK,	// stream flags - Event callback
+		0,									// buffer duration
+		0,									// periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
+		pEndPointStruct->WaveFmt,			// wave format
+		NULL);								// session GUID
+	EXIT_ON_ERROR(hr);
+
+	//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
+	hr = pEndPointStruct->pClientIn->lpVtbl->SetEventHandle(pEndPointStruct->pClientIn, hBufferReady);
+	EXIT_ON_ERROR(hr);
+
+	//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
+	hr = pEndPointStruct->pClientIn->lpVtbl->GetService(pEndPointStruct->pClientIn, &IID_IAudioCaptureClient,(void**)&(pEndPointStruct->pCaptureClient));
+	EXIT_ON_ERROR(hr);
+
+	// If got to this point then it means that init for this endpoint was successful
+	pEndPointStruct->Usable = TRUE;
+	return hr;
+
+Exit:
+	SAFE_RELEASE(pDevice);
+	return hr;
+}
+
+
+HRESULT ReleaseEndPoint(struct WAVEINSTRUCT_W7 * pEndPointStruct)
+{
+	HRESULT hr=S_OK;
+
+	if (!pEndPointStruct)
+		return hr;
+
+	if (pEndPointStruct->DevId)
+		free(pEndPointStruct->DevId);
+	if (pEndPointStruct->DevFriendlyName)
+		free((void *)pEndPointStruct->DevFriendlyName);
+
+	SAFE_RELEASE(pEndPointStruct->pClientIn);
+	SAFE_RELEASE(pEndPointStruct->pDeviceIn);
+	SAFE_RELEASE(pEndPointStruct->pCaptureClient);
+
+	return hr;
+}
 
 
 /* 
@@ -3457,7 +3607,7 @@ HRESULT InitAllEndPoints()
 			continue;
 
 		// Get the endpoint friendly name
-		WaveInInfoW7[iDev].DevFriendlyName = GetFriendlyName(WaveInInfoW7[iDev].pDeviceIn);
+		WaveInInfoW7[iDev].DevFriendlyName = (LPWSTR)GetFriendlyName(WaveInInfoW7[iDev].pDeviceIn);
 
 		// Get the endpoint supported wave format
 		hr = GetWaveFormat(WaveInInfoW7[iDev].pClientIn, &(WaveInInfoW7[iDev].WaveFmt));
@@ -3513,20 +3663,14 @@ Exit:
 	* Create Capturing thread. This tread loops while 'waveRecording' is TRUE 
 */
 
-HRESULT StartStreamingW7(const char * DevName)
+HRESULT StartStreamingW7(LPCWSTR DevID)
 {
 	HRESULT hr = S_OK;
 	UINT index=-1;
 	BOOL Capture = TRUE;
 
 	waveRecording = TRUE;
-
-
-	/* Find the index of the selected mixer */
-	index = GetIndexOfDevice(DevName);
-
-	/* re-link to selected structure */
-	CurrentWaveInInfoW7 = &(WaveInInfoW7[index]);
+	InitEndPoint(DevID, CurrentWaveInInfoW7);
 
 	/* Test selected device */
 	if (!CurrentWaveInInfoW7->Usable)
@@ -3691,7 +3835,10 @@ DWORD WINAPI ListenToGui(void * param)
 
 		/* If capture thread does not exist*/
 		if (!hCaptureAudioThread && DataBlock->MixerDeviceStatus == STOPPING)
+		{
 			SetSwitchMixerRequestStat(STOPPED);
+			ReleaseEndPoint(CurrentWaveInInfoW7);
+		};
 
 		/* Start the new capture stream */
 		if (DataBlock->MixerDeviceStatus == STOPPED)
@@ -3713,14 +3860,11 @@ DWORD WINAPI ListenToGui(void * param)
 	};
 	return 0;
 }
-const char * GetFriendlyName(IMMDevice * pDev)
+LPCWSTR GetFriendlyName(IMMDevice * pDev)
 {
 	HRESULT hr = S_OK;
 	IPropertyStore * pProps;
 	PROPVARIANT varName;
-	size_t size;
-	char * DeviceFriendlyName;
-
 
 	/** Getting Endpoint Name ***/
 	hr = pDev->lpVtbl->OpenPropertyStore(pDev, STGM_READ, &pProps);
@@ -3733,12 +3877,7 @@ const char * GetFriendlyName(IMMDevice * pDev)
 	hr = pProps->lpVtbl->GetValue(pProps,&PKEY_Device_FriendlyName, &varName);
 	EXIT_ON_ERROR(hr);
 
-	// Convert to char
-	size = wcslen(varName.pwszVal);
-	DeviceFriendlyName = (char *)calloc(1,size+2);
-	w2char(varName.pwszVal, DeviceFriendlyName, (int)(size+1));
-
-	return DeviceFriendlyName;
+	return varName.pwszVal;
 
 	Exit:
     SAFE_RELEASE(pProps);
@@ -3758,7 +3897,7 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
 
 	// setup wave fmt
 	FmtTmp.wFormatTag = WAVE_FORMAT_PCM;
-	FmtTmp.nChannels = 2;
+	FmtTmp.nChannels = pHint->nChannels;
 	FmtTmp.nSamplesPerSec = pHint->nSamplesPerSec;
 	FmtTmp.wBitsPerSample =16;
 	FmtTmp.nBlockAlign = FmtTmp.wBitsPerSample / 8 * FmtTmp.nChannels;
@@ -3784,21 +3923,21 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
 
 
 
-int GetIndexOfDevice(const char * DevName)
+int GetIndexOfDevice(LPCWSTR DevName)
 {
 	int i, index=-1;
 
 	for (i=0; i<count; i++)
 	{
 		/* In no device requested then default device assumed */
-		if (!DevName || !strlen(DevName) || !strcmp(DevName,DEFLT_WAVE))
+		if (!DevName || !wcslen(DevName) || !wcscmp(DevName,DEFLT_WAVE))
 		{
 			index = 0;
 			break;
 		};
 
 		/* Look for entry that matches the requested device */
-		if (!strcmp(WaveInInfoW7[i].DevFriendlyName,DevName))
+		if (WaveInInfoW7[i].DevId && !wcscmp(WaveInInfoW7[i].DevFriendlyName,DevName))
 		{
 			index = i;
 			break;

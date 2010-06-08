@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include ".\audioinputw7.h"
 #include <wchar.h>
+#include "smartpropoplus.h"
 
 	//{A95664D2-9614-4F35-A746-DE8DB63617E6}
 	static GUID const CLSID_IMMDeviceEnumerator = {0xA95664D2, 0x9614, 0x4F35, {0xA7,0x46,0xDE,0x8D,0xB6,0x36,0x17,0xE6} };
@@ -173,16 +174,16 @@ int CAudioInputW7::GetCountMixerDevice()
 	return m_nMixers;
 };
 
-const char * CAudioInputW7::GetMixerDeviceName(int index)
+LPCWSTR CAudioInputW7::GetMixerDeviceName(int index)
 {
 	// Sanity checks
 	if ((UINT)index >= m_nMixers || index<0 || m_nMixers<=0 || !m_MixerDevices)
 		return GetDefaultMixerDeviceName();
 
-	return m_MixerDevices[index]->GetNameA();
+	return m_MixerDevices[index]->GetName();
 }
 
-const char * CAudioInputW7::GetDefaultMixerDeviceName(void)
+LPCWSTR CAudioInputW7::GetDefaultMixerDeviceName(void)
 {
 	HRESULT hr = S_OK;
 	IMMDevice * pDefaultDevice = NULL;
@@ -207,19 +208,19 @@ const char * CAudioInputW7::GetDefaultMixerDeviceName(void)
 	EXIT_ON_ERROR(hr);
 
 	// Device's Name (ASCII)
-	size_t len = wcslen(varName.pwszVal);
-	char * out = (char *)calloc(len+1, sizeof(char));
-	w2char(varName.pwszVal, out, (int)len);
+	//size_t len = wcslen(varName.pwszVal);
+	//char * out = (char *)calloc(len+1, sizeof(char));
+	//w2char(varName.pwszVal, out, (int)len);
 
 Exit:
 	SAFE_RELEASE(pDefaultDevice);
 	SAFE_RELEASE(pProps);
 	SAFE_RELEASE(pEnum);
 
-	return out;
+	return varName.pwszVal;
 }
 
-const char * CAudioInputW7::GetDefaultEndpointName(void)
+LPCWSTR CAudioInputW7::GetDefaultEndpointName(void)
 {
 	HRESULT hr = S_OK;
 	IMMDevice * pDefaultDevice = NULL;
@@ -244,19 +245,42 @@ const char * CAudioInputW7::GetDefaultEndpointName(void)
 	EXIT_ON_ERROR(hr);
 
 	// Device's Name (ASCII)
-	size_t len = wcslen(varName.pwszVal);
-	char * out = (char *)calloc(len+1, sizeof(char));
-	w2char(varName.pwszVal, out, (int)len);
+	//size_t len = wcslen(varName.pwszVal);
+	//char * out = (char *)calloc(len+1, sizeof(char));
+	//w2char(varName.pwszVal, out, (int)len);
 
 Exit:
 	SAFE_RELEASE(pDefaultDevice);
 	SAFE_RELEASE(pProps);
 	SAFE_RELEASE(pEnum);
 
-	return out;
+	return varName.pwszVal;
 }
 
-int CAudioInputW7::GetMixerDeviceIndex(const char * mixer)
+LPWSTR CAudioInputW7::GetDefaultEndpointID(void)
+{
+	HRESULT hr = S_OK;
+	IMMDevice * pDefaultDevice = NULL;
+	IPropertyStore * pProps = NULL;
+	IMMDeviceEnumerator * pEnum = NULL;
+	LPWSTR ID = NULL;
+
+	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&pEnum);
+	EXIT_ON_ERROR(hr);
+
+	pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	EXIT_ON_ERROR(hr);
+
+	pDefaultDevice->GetId(&ID);
+
+Exit:
+	SAFE_RELEASE(pDefaultDevice);
+	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pEnum);
+
+	return ID;
+}
+int CAudioInputW7::GetMixerDeviceIndex(LPCWSTR mixer)
 {
 	if (!m_MixerDevices)
 		return -1;
@@ -265,8 +289,8 @@ int CAudioInputW7::GetMixerDeviceIndex(const char * mixer)
 
 	for (UINT index=0; index<m_nMixers ; index++)
 	{
-		char * MixerName = m_MixerDevices[index]->GetNameA();
-		if (!strcmp(MixerName, mixer))
+		LPWSTR MixerName = m_MixerDevices[index]->GetName();
+		if (!wcscmp(MixerName, mixer))
 			return index;
 	}
 
@@ -275,7 +299,7 @@ int CAudioInputW7::GetMixerDeviceIndex(const char * mixer)
 
 int CAudioInputW7::GetDefaultMixerDeviceIndex(void)
 {
-	const char * DefaultMixerDeviceName = GetDefaultMixerDeviceName();
+	LPCWSTR DefaultMixerDeviceName = GetDefaultMixerDeviceName();
 	int index = GetMixerDeviceIndex(DefaultMixerDeviceName);
 	free((void *)DefaultMixerDeviceName);
 	return index;
@@ -301,7 +325,7 @@ bool CAudioInputW7::GetMixerDeviceSelectInputLine(int iMixer, unsigned int * iLi
 	if (GetDefaultMixerDeviceIndex() != iMixer)
 		return false;
 
-	const char * DefaultEndpointName = GetDefaultEndpointName();
+	LPCWSTR DefaultEndpointName = GetDefaultEndpointName();
 	if (!DefaultEndpointName)
 		return false;
 
@@ -318,26 +342,26 @@ bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int Mixer, int Line)
 	return false;
 }
 
-const char * CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
+LPCWSTR CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
 {
 	// Sanity checks
 	if ((UINT)iMixer >= m_nMixers || iMixer<0 || m_nMixers<=0 || !m_MixerDevices)
-		return GetDefaultEndpointName();
+		return GetDefaultEndpointID();
 
 	CMixerDevice * Mixer = m_MixerDevices[iMixer];
 
 	/* Convert Source Line ID into Index */
 	UINT SrcID;
-	int res = ::GetInputLineSrcId(Mixer->GetNameA(), &SrcID);
+	int res = ::GetInputLineSrcId(Mixer->GetName(), &SrcID);
 	if (!res)
-		return  Mixer->GetInputLineEPName(0);
+		return  Mixer->GetInputLineEPID(0);
 
 	UINT iLine;
 	GetMixerDeviceInputLineIndex(iMixer, SrcID, &iLine);
 
 	if ((int)iLine <0)
 		iLine=0;
-	return Mixer->GetInputLineEPName(iLine);
+	return Mixer->GetInputLineEPID(iLine);
 
 }
 
@@ -430,6 +454,10 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pDevCollect)
 
 		// Get pointer to endpoint number i.
 		hr = pDevCollect->Item(iEndPoint, &pDevice);
+		EXIT_ON_ERROR(hr);
+
+		// Get endpoint ID
+		hr = pDevice->GetId(&(m_ArrayInputLines[m_nInputLines].EndPointID));
 		EXIT_ON_ERROR(hr);
 
 		hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
@@ -623,13 +651,22 @@ LPWSTR CAudioInputW7::CMixerDevice::GetName(void)
 	 return m_ArrayInputLines[Line].NameA;
  }
 
- const char * CAudioInputW7::CMixerDevice::GetInputLineEPName(int Line)
+ LPCWSTR CAudioInputW7::CMixerDevice::GetInputLineEPName(int Line)
  {
 	 if (!m_nInputLines || Line<0 || Line>=m_nInputLines)
 		 return NULL;
 
-	 return m_ArrayInputLines[Line].EndPointNameA;
+	 return m_ArrayInputLines[Line].EndPointName;
  }
+
+ LPWSTR CAudioInputW7::CMixerDevice::GetInputLineEPID(int Line)
+ {
+	 if (!m_nInputLines || Line<0 || Line>=m_nInputLines)
+		 return NULL;
+
+	 return m_ArrayInputLines[Line].EndPointID;
+ }
+
 
  int CAudioInputW7::CMixerDevice::GetInputLineSrcID(int iLine)
  {
@@ -657,15 +694,15 @@ LPWSTR CAudioInputW7::CMixerDevice::GetName(void)
 	 return -1;
  }
 
-  int CAudioInputW7::CMixerDevice::GetInputLineIndexByEP(const char * EndpointName)
+  int CAudioInputW7::CMixerDevice::GetInputLineIndexByEP(LPCWSTR EndpointName)
  {
-	 const char * CurEndpointName;
+	 LPCWSTR CurEndpointName;
 	 int out = -1;
 
 	 for (int i=0; i<m_nInputLines; i++)
 	 {
 		 CurEndpointName = GetInputLineEPName(i);
-		 if (!strcmp(CurEndpointName, EndpointName))
+		 if (!wcscmp(CurEndpointName, EndpointName))
 		 {
 			 out = i;
 			 break;
