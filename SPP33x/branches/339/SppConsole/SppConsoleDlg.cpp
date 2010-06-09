@@ -927,7 +927,12 @@ int CSppConsoleDlg::SetMixerSelectionByName(LPCWSTR MixerName)
 	if (!MixerList)
 		return CB_ERR;
 
-	return MixerList->FindStringExact(-1, (LPCTSTR)MixerName);
+	// Convert string format
+	size_t lenMixerName = wcslen(MixerName);
+	char * MixerNameT = (char *)calloc(lenMixerName+2, sizeof(char));
+	wcstombs(MixerNameT, MixerName, lenMixerName+1);
+
+	return MixerList->FindStringExact(-1, MixerNameT);
 }
 
 void CSppConsoleDlg::PopulateInputLines()

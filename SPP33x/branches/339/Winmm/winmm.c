@@ -3491,12 +3491,10 @@ HRESULT ReleaseEndPoint(struct WAVEINSTRUCT_W7 * pEndPointStruct)
 
 	if (pEndPointStruct->DevId)
 		free(pEndPointStruct->DevId);
-	if (pEndPointStruct->DevFriendlyName)
-		free((void *)pEndPointStruct->DevFriendlyName);
 
 	SAFE_RELEASE(pEndPointStruct->pClientIn);
-	SAFE_RELEASE(pEndPointStruct->pDeviceIn);
-	SAFE_RELEASE(pEndPointStruct->pCaptureClient);
+	// TODO SAFE_RELEASE(pEndPointStruct->pDeviceIn);
+	// TODO SAFE_RELEASE(pEndPointStruct->pCaptureClient);
 
 	return hr;
 }
