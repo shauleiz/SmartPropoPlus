@@ -301,7 +301,6 @@ int CAudioInputW7::GetDefaultMixerDeviceIndex(void)
 {
 	LPCWSTR DefaultMixerDeviceName = GetDefaultMixerDeviceName();
 	int index = GetMixerDeviceIndex(DefaultMixerDeviceName);
-	free((void *)DefaultMixerDeviceName);
 	return index;
 }
 
