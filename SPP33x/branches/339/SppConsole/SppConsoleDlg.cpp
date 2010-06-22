@@ -1028,12 +1028,9 @@ void CSppConsoleDlg::OnSelchangeAudioSrc()
 	m_iSelMixer = MixerList->GetCurSel();
 	if (m_iSelMixer < 0)
 		return;
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(m_iSelMixer); // MD
 
 	///* Select the Input Line */
 	m_AudioInput->SetMixerDeviceSelectInputLine(m_iSelMixer, m_iSelLine);// MD
-	//if (md)// MD
-	//	md->SetSelectedInputLine(m_iSelLine);// MD
 
 	SetCurrentMixerDevice(m_iSelMixer);
 }

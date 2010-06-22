@@ -287,9 +287,9 @@ int WasAPIMessageBox(LPCWSTR device, const char * msg, DWORD error, UINT uType)
 
 	CodeOK = GetWasapiText(error, CodeMsg, 510);
 	if (CodeOK)
-		sprintf(Combined,"WASAPI Error %s (0x%x)",CodeMsg, error);
+		sprintf(Combined,"WASAPI Error: %s (0x%x)",CodeMsg, error);
 	else
-		sprintf(Combined,"WASAPI Error 0x%x",error);
+		sprintf(Combined,"WASAPI Error: 0x%x",error);
 
 	if (device)
 		sprintf(Message, "Device: %ws\r\n%s\r\n\r\n%s",device, msg,Combined);
@@ -2021,8 +2021,9 @@ void StartPropo(void)
 		closeRequest = FALSE;
 		waveRecording = FALSE;
 		Init();
-		// StartStreamingW7(GetCurrentEndpointDevice());
-		StartStreamingW7(L"{0.0.1.00000000}.{053c8250-895c-477c-a6cb-2f4010ce2c8e}");
+		StartStreamingW7(GetCurrentEndpointDevice());
+		//StartStreamingW7(L"{0.0.1.00000000}.{1946d88f-c5bf-4896-89e0-c857c7bd1c4c}"); // W7-Creative-Mic
+		//StartStreamingW7(L"{0.0.1.00000000}.{4e55ebe2-99a6-4a2e-885c-3f3e561328e9}"); // W7-Creative-LineIn
 	} 
 
 }
@@ -2286,7 +2287,7 @@ void ReportChange(void)
 	/* Get the name of the current device */
 	if (VistaOS)
 		/* Write it to the global memory */
-		SwitchMixerAck(CurrentWaveInInfoW7->DevFriendlyName);
+		SwitchMixerAck(CurrentWaveInInfoW7->DevId);
 	else
 	{
 		pwaveInGetDevCapsA(CurrentWaveInInfo->id, &caps, sizeof(WAVEINCAPS));
@@ -3363,6 +3364,10 @@ HRESULT Init()
 
 	InitAllEndPoints();
 
+
+	// Initialize pointer to structure that holds the current WAVE information (XP Style)
+	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
+
 	// Initialize pointer to structure that holds the current WAVE information
 	if (!CurrentWaveInInfoW7)
 		CurrentWaveInInfoW7 = (struct WAVEINSTRUCT_W7 *)calloc(1, sizeof(struct WAVEINSTRUCT_W7));
@@ -3437,11 +3442,14 @@ HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct)
 		goto Exit;
 	};
 
+
 	/**** Get the target endpoint by its ID ****/
 	_ASSERTE(pEnumerator);
 	hr = pEnumerator->lpVtbl->GetDevice(pEnumerator, pwstrId, &pDevice);
 	EXIT_ON_ERROR(hr);
 	pEndPointStruct->pDeviceIn = pDevice;
+	pEndPointStruct->DevId = wcsdup(pwstrId);
+	pEndPointStruct->Usable = FALSE;
 
 	// Activate
 	hr = pDevice->lpVtbl->Activate(pDevice, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&(pEndPointStruct->pClientIn));
@@ -3490,11 +3498,15 @@ HRESULT ReleaseEndPoint(struct WAVEINSTRUCT_W7 * pEndPointStruct)
 		return hr;
 
 	if (pEndPointStruct->DevId)
+	{
 		free(pEndPointStruct->DevId);
+		pEndPointStruct->DevId = NULL;
+	};
+
 
 	SAFE_RELEASE(pEndPointStruct->pClientIn);
+	SAFE_RELEASE(pEndPointStruct->pCaptureClient);
 	// TODO SAFE_RELEASE(pEndPointStruct->pDeviceIn);
-	// TODO SAFE_RELEASE(pEndPointStruct->pCaptureClient);
 
 	return hr;
 }
@@ -3525,7 +3537,6 @@ HRESULT InitAllEndPoints()
 {
 	HRESULT hr = S_OK;
 	IMMDeviceCollection * pDeviceCollect = NULL;
-	int iDev;
 	IAudioClient * pClientIn = NULL;
 
 	// Create an event handle and register it for
@@ -3547,99 +3558,99 @@ HRESULT InitAllEndPoints()
 			WasAPIMessageBox(NULL, MM_WASAPI_REG, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
 	};
-
-	/**** Create a list of end points ****/
-	hr = pEnumerator->lpVtbl->EnumAudioEndpoints(pEnumerator,eCapture, DEVICE_STATEMASK_ALL, &pDeviceCollect);
-	if (FAILED(hr))
-	{			
-		WasAPIMessageBox(NULL, MM_WASAPI_ENUM, hr, MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-	/** Getting the number of available endpoints **/
-	hr = pDeviceCollect->lpVtbl->GetCount(pDeviceCollect,&count);
-	if (FAILED(hr))
-	{			
-		WasAPIMessageBox(NULL, MM_WASAPI_CNT, hr, MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
-
-	/** Allocating memory for all endpoint structures **/
-	WaveInInfoW7 = (struct WAVEINSTRUCT_W7 *)calloc(count+2, sizeof(struct WAVEINSTRUCT_W7));
-	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
-
-	/** Insert default endpoint in index 0 **/
-	hr = pEnumerator->lpVtbl->GetDefaultAudioEndpoint(pEnumerator,eCapture, eMultimedia, &(WaveInInfoW7[0].pDeviceIn));
-	EXIT_ON_ERROR(hr);
-
-
-	// Loop on all devices for the first time - get their IMMDevice interface
-	for ( iDev = 1; iDev <= count; iDev++)
-	{
-		// Get pointer to endpoint number iDev.
-		hr = pDeviceCollect->lpVtbl->Item(pDeviceCollect,iDev-1, &(WaveInInfoW7[iDev].pDeviceIn));
-	};
-
-	// Loop again - fill up required data and prepare for streaming
-	for ( iDev = 0; iDev <= count; iDev++)
-	{
-		WaveInInfoW7[iDev].Usable = FALSE;
-		WaveInInfoW7[iDev].DevFriendlyName = NULL;
-		WaveInInfoW7[iDev].DevId = NULL;
-		WaveInInfoW7[iDev].pClientIn = NULL;
-		WaveInInfoW7[iDev].WaveFmt = NULL;
-		WaveInInfoW7[iDev].pCaptureClient = NULL;
-
-
-		if (!WaveInInfoW7[iDev].pDeviceIn)
-			continue;
-
-		// Activate
-		hr = WaveInInfoW7[iDev].pDeviceIn->lpVtbl->Activate(WaveInInfoW7[iDev].pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&(WaveInInfoW7[iDev].pClientIn));
-		if (FAILED(hr))
-			continue;
-
-		// Get the endpoint ID string.
-		hr = WaveInInfoW7[iDev].pDeviceIn->lpVtbl->GetId(WaveInInfoW7[iDev].pDeviceIn, &(WaveInInfoW7[iDev].DevId));
-		if (FAILED(hr))
-			continue;
-
-		// Get the endpoint friendly name
-		WaveInInfoW7[iDev].DevFriendlyName = (LPWSTR)GetFriendlyName(WaveInInfoW7[iDev].pDeviceIn);
-
-		// Get the endpoint supported wave format
-		hr = GetWaveFormat(WaveInInfoW7[iDev].pClientIn, &(WaveInInfoW7[iDev].WaveFmt));
-		if (FAILED(hr))
-		{
-			WaveInInfoW7[iDev].Usable = FALSE;
-			continue;
-		};
-
-		// Initialize the endpoint
-		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->Initialize(WaveInInfoW7[iDev].pClientIn, 
-			AUDCLNT_SHAREMODE_SHARED,			// shared mode
-			AUDCLNT_STREAMFLAGS_EVENTCALLBACK,	// stream flags - Event callback
-			0,									// buffer duration
-			0,									// periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
-			WaveInInfoW7[iDev].WaveFmt,			// wave format
-			NULL);								// session GUID
-		if (FAILED(hr))
-			continue;
-
-		//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
-		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->SetEventHandle(WaveInInfoW7[iDev].pClientIn, hBufferReady);
-		if (FAILED(hr))
-			continue;
-
-		//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
-		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->GetService(WaveInInfoW7[iDev].pClientIn, &IID_IAudioCaptureClient,(void**)&(WaveInInfoW7[iDev].pCaptureClient));
-		if (FAILED(hr))
-			continue;
-
-		// If got to this point then it means that init for this endpoint was successful
-		WaveInInfoW7[iDev].Usable = TRUE;
-	};
-
+//
+//	/**** Create a list of end points ****/
+//	hr = pEnumerator->lpVtbl->EnumAudioEndpoints(pEnumerator,eCapture, DEVICE_STATEMASK_ALL, &pDeviceCollect);
+//	if (FAILED(hr))
+//	{			
+//		WasAPIMessageBox(NULL, MM_WASAPI_ENUM, hr, MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//	/** Getting the number of available endpoints **/
+//	hr = pDeviceCollect->lpVtbl->GetCount(pDeviceCollect,&count);
+//	if (FAILED(hr))
+//	{			
+//		WasAPIMessageBox(NULL, MM_WASAPI_CNT, hr, MB_SYSTEMMODAL|MB_ICONERROR);
+//		EXIT_ON_ERROR(hr);
+//	};
+//
+//	/** Allocating memory for all endpoint structures **/
+//	WaveInInfoW7 = (struct WAVEINSTRUCT_W7 *)calloc(count+2, sizeof(struct WAVEINSTRUCT_W7));
+//	CurrentWaveInInfo = (struct WAVEINSTRUCT *)calloc(1, sizeof(struct WAVEINSTRUCT));
+//
+//	/** Insert default endpoint in index 0 **/
+//	hr = pEnumerator->lpVtbl->GetDefaultAudioEndpoint(pEnumerator,eCapture, eMultimedia, &(WaveInInfoW7[0].pDeviceIn));
+//	EXIT_ON_ERROR(hr);
+//
+//
+//	// Loop on all devices for the first time - get their IMMDevice interface
+//	for ( iDev = 1; iDev <= count; iDev++)
+//	{
+//		// Get pointer to endpoint number iDev.
+//		hr = pDeviceCollect->lpVtbl->Item(pDeviceCollect,iDev-1, &(WaveInInfoW7[iDev].pDeviceIn));
+//	};
+//
+//	// Loop again - fill up required data and prepare for streaming
+//	for ( iDev = 0; iDev <= count; iDev++)
+//	{
+//		WaveInInfoW7[iDev].Usable = FALSE;
+//		WaveInInfoW7[iDev].DevFriendlyName = NULL;
+//		WaveInInfoW7[iDev].DevId = NULL;
+//		WaveInInfoW7[iDev].pClientIn = NULL;
+//		WaveInInfoW7[iDev].WaveFmt = NULL;
+//		WaveInInfoW7[iDev].pCaptureClient = NULL;
+//
+//
+//		if (!WaveInInfoW7[iDev].pDeviceIn)
+//			continue;
+//
+//		// Activate
+//		hr = WaveInInfoW7[iDev].pDeviceIn->lpVtbl->Activate(WaveInInfoW7[iDev].pDeviceIn, &IID_IAudioClient, CLSCTX_ALL,  NULL, (void**)&(WaveInInfoW7[iDev].pClientIn));
+//		if (FAILED(hr))
+//			continue;
+//
+//		// Get the endpoint ID string.
+//		hr = WaveInInfoW7[iDev].pDeviceIn->lpVtbl->GetId(WaveInInfoW7[iDev].pDeviceIn, &(WaveInInfoW7[iDev].DevId));
+//		if (FAILED(hr))
+//			continue;
+//
+//		// Get the endpoint friendly name
+//		WaveInInfoW7[iDev].DevFriendlyName = (LPWSTR)GetFriendlyName(WaveInInfoW7[iDev].pDeviceIn);
+//
+//		// Get the endpoint supported wave format
+//		hr = GetWaveFormat(WaveInInfoW7[iDev].pClientIn, &(WaveInInfoW7[iDev].WaveFmt));
+//		if (FAILED(hr))
+//		{
+//			WaveInInfoW7[iDev].Usable = FALSE;
+//			continue;
+//		};
+//
+//		// Initialize the endpoint
+//		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->Initialize(WaveInInfoW7[iDev].pClientIn, 
+//			AUDCLNT_SHAREMODE_SHARED,			// shared mode
+//			AUDCLNT_STREAMFLAGS_EVENTCALLBACK,	// stream flags - Event callback
+//			0,									// buffer duration
+//			0,									// periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
+//			WaveInInfoW7[iDev].WaveFmt,			// wave format
+//			NULL);								// session GUID
+//		if (FAILED(hr))
+//			continue;
+//
+//		//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
+//		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->SetEventHandle(WaveInInfoW7[iDev].pClientIn, hBufferReady);
+//		if (FAILED(hr))
+//			continue;
+//
+//		//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
+//		hr = WaveInInfoW7[iDev].pClientIn->lpVtbl->GetService(WaveInInfoW7[iDev].pClientIn, &IID_IAudioCaptureClient,(void**)&(WaveInInfoW7[iDev].pCaptureClient));
+//		if (FAILED(hr))
+//			continue;
+//
+//		// If got to this point then it means that init for this endpoint was successful
+//		WaveInInfoW7[iDev].Usable = TRUE;
+//	};
+//
 
 
 	return S_OK;
@@ -3667,8 +3678,13 @@ HRESULT StartStreamingW7(LPCWSTR DevID)
 	UINT index=-1;
 	BOOL Capture = TRUE;
 
-	waveRecording = TRUE;
-	InitEndPoint(DevID, CurrentWaveInInfoW7);
+	waveRecording = FALSE;
+
+	//If DevID=NULL then get Dev ID of default device
+	if (!DevID)
+		DevID = GetDefaultEndpointID();
+	ReleaseEndPoint(CurrentWaveInInfoW7);
+	hr = InitEndPoint(DevID, CurrentWaveInInfoW7);
 
 	/* Test selected device */
 	if (!CurrentWaveInInfoW7->Usable)
@@ -3689,6 +3705,7 @@ HRESULT StartStreamingW7(LPCWSTR DevID)
 		hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Start(CurrentWaveInInfoW7->pClientIn);
 		if (FAILED(hr))
 		{
+			_ASSERT(0);
 			WasAPIMessageBox(CurrentWaveInInfoW7->DevFriendlyName, MM_WASAPI_STRT, hr, MB_SYSTEMMODAL|MB_ICONERROR);
 			waveRecording = TRUE;
 		};
@@ -3707,6 +3724,7 @@ HRESULT StartStreamingW7(LPCWSTR DevID)
 	if (!hCaptureAudioThread)
 		return ERROR_ACCESS_DENIED;
 
+	waveRecording = TRUE;
 	return S_OK;
 }
 
@@ -3828,7 +3846,7 @@ DWORD WINAPI ListenToGui(void * param)
 			SetSwitchMixerRequestStat(STOPPING);
 			waveRecording = FALSE;
 			if (CurrentWaveInInfoW7 && CurrentWaveInInfoW7->pClientIn)
-				CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
+				hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
 		};
 
 		/* If capture thread does not exist*/
@@ -3849,9 +3867,9 @@ DWORD WINAPI ListenToGui(void * param)
 			}
 			else
 			{
-				SetSwitchMixerRequestStat(STARTED);
 				ReportChange();
-				//SetSwitchMixerRequestStat(RUNNING);
+				//SetSwitchMixerRequestStat(STARTED);
+				SetSwitchMixerRequestStat(RUNNING);
 			};
 		};
 
@@ -3921,35 +3939,60 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt)
 
 
 
-int GetIndexOfDevice(LPCWSTR DevName)
+//int GetIndexOfDevice(LPCWSTR DevName)
+//{
+//	int i, index=-1;
+//
+//	for (i=0; i<count; i++)
+//	{
+//		/* In no device requested then default device assumed */
+//		if (!DevName || !wcslen(DevName) || !wcscmp(DevName,DEFLT_WAVE))
+//		{
+//			index = 0;
+//			break;
+//		};
+//
+//		/* Look for entry that matches the requested device */
+//		if (WaveInInfoW7[i].DevId && !wcscmp(WaveInInfoW7[i].DevFriendlyName,DevName))
+//		{
+//			index = i;
+//			break;
+//		};
+//	};
+//
+//	/* If not found - use the default device */
+//	if (index<0)
+//	{
+//		index = 0;
+//		WasAPIMessageBox(NULL, MM_WASAPI_NOREQ, -1, MB_SYSTEMMODAL|MB_ICONERROR);
+//	};
+//
+//	return index;
+//}
+//
+//
+
+
+LPWSTR GetDefaultEndpointID(void)
 {
-	int i, index=-1;
+	HRESULT hr = S_OK;
+	IMMDevice * pDefaultDevice = NULL;
+	IPropertyStore * pProps = NULL;
+	IMMDeviceEnumerator * pEnum = NULL;
+	LPWSTR ID = NULL;
 
-	for (i=0; i<count; i++)
-	{
-		/* In no device requested then default device assumed */
-		if (!DevName || !wcslen(DevName) || !wcscmp(DevName,DEFLT_WAVE))
-		{
-			index = 0;
-			break;
-		};
+	hr = CoCreateInstance(&CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL,  &CLSID_IMMDeviceEnumerator, (void**)&pEnum);
+	EXIT_ON_ERROR(hr);
 
-		/* Look for entry that matches the requested device */
-		if (WaveInInfoW7[i].DevId && !wcscmp(WaveInInfoW7[i].DevFriendlyName,DevName))
-		{
-			index = i;
-			break;
-		};
-	};
+	pEnum->lpVtbl->GetDefaultAudioEndpoint(pEnum, eCapture, eMultimedia, &pDefaultDevice);
+	EXIT_ON_ERROR(hr);
 
-	/* If not found - use the default device */
-	if (index<0)
-	{
-		index = 0;
-		WasAPIMessageBox(NULL, MM_WASAPI_NOREQ, -1, MB_SYSTEMMODAL|MB_ICONERROR);
-	};
+	pDefaultDevice->lpVtbl->GetId(pDefaultDevice, &ID);
 
-	return index;
+Exit:
+	SAFE_RELEASE(pDefaultDevice);
+	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pEnum);
+
+	return ID;
 }
-
-

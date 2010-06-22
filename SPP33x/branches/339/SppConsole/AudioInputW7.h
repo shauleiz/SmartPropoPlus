@@ -92,11 +92,15 @@ protected:
 		int GetInputLineSrcID(int iLine);
 		int GetInputLineIndex(unsigned int  SrcID);
 		int GetInputLineIndexByEP(LPCWSTR EndpointName);
+		bool CMixerDevice::SetSelectedInputLine(int iLine);
+		bool SelectInputLine(int iLine);
+		bool MuteOutputLine(int iLine, bool mute = true, bool temporary = false);
 
 
 	protected:
 		int CreateArrayOfInputLines(void);
 		IPart * FindMuteControl(IPart * pIn, IPart * pPartMute = NULL );
+		IPart * FindInputSelectorControl(IPart * pIn, bool * isSelected , UINT * FeedingID, IPart * pFeedingPart = NULL, IPart * pPartMute = NULL );
 		bool GetMuteStat(IPart * pMute);
 
 	protected:
@@ -105,6 +109,12 @@ protected:
 			bool OrigStatus;
 			bool CurrentStatus;
 		} ;
+		struct LineSelector {
+			IPart * p;				// Pointer to Input Selector IPart
+			bool	OrigStatus;		// True if this line is originally selected
+			bool	CurrentStatus;	// True if this line is currently selected
+			UINT	FeederID;		// LocalID of feeding IPart
+		};
 		struct InputLine { // Represents entry in array of inputs to the audio device(s)
 			IPart * p;
 			LPWSTR Name;
@@ -114,6 +124,7 @@ protected:
 			LPWSTR EndPointID;
 			LPWSTR GlobalId;
 			LineMute lMute;
+			LineSelector lSelect;
 		};
 
 	protected:
