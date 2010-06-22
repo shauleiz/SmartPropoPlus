@@ -20,7 +20,7 @@
 // TODO: reference additional headers your program requires here
 
 extern long _ftol( double ); //defined by VC6 C libs
-extern long _ftol2( double dblSource ) { return _ftol( dblSource ); }
+//extern long _ftol2( double dblSource ) { return _ftol( dblSource ); }
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
