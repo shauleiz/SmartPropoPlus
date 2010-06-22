@@ -74,7 +74,7 @@ bool CAudioInputW7::Create(void)
 		EXIT_ON_ERROR(hr);
 	};
 
-	// Create a list of  Capture Endpoints
+	// Create a list of ACTIVE Capture Endpoints
 	hr = m_pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &m_pDeviceCollect);
 	if (FAILED(hr))
 	{
@@ -336,9 +336,14 @@ bool CAudioInputW7::GetMixerDeviceSelectInputLine(int iMixer, unsigned int * iLi
 		return false;
 }
 
-bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int Mixer, int Line)
+bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int iMixer, int iLine)
 {
-	return false;
+	_ASSERTE(m_MixerDevices);
+	CMixerDevice * Mixer = m_MixerDevices[iMixer];
+	if (!Mixer)
+		return false;
+
+	return Mixer->SetSelectedInputLine(iLine);
 }
 
 LPCWSTR CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
@@ -520,7 +525,8 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pDevCollect)
 		hr = pPart->GetGlobalId(&(m_ArrayInputLines[m_nInputLines].GlobalId));
 		EXIT_ON_ERROR(hr);
 
-		// Init Mute structure
+		//// Mute ///
+		// Find IPart of the mute control 
 		m_ArrayInputLines[m_nInputLines].lMute.p = FindMuteControl(pPart);
 
 		// Initialize lmute structure (Mute status)
@@ -529,6 +535,20 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pDevCollect)
 			Muted = GetMuteStat(m_ArrayInputLines[m_nInputLines].lMute.p);
 		m_ArrayInputLines[m_nInputLines].lMute.OrigStatus = m_ArrayInputLines[m_nInputLines].lMute.CurrentStatus = Muted;
 
+#ifdef _DEBUG
+		bool skip = false;
+		if (skip)
+			goto JustInCase;
+#endif
+		//// Input Selector
+		bool selected=FALSE;
+		UINT FeederID=0;
+		m_ArrayInputLines[m_nInputLines].lSelect.p = FindInputSelectorControl(pPart, &selected, &FeederID);
+		m_ArrayInputLines[m_nInputLines].lSelect.FeederID = FeederID;
+		m_ArrayInputLines[m_nInputLines].lSelect.OrigStatus = selected;
+		m_ArrayInputLines[m_nInputLines].lSelect.CurrentStatus = selected;
+
+JustInCase:
 		// Keep a pointer to the interface (Just in case ...)
 		m_ArrayInputLines[m_nInputLines].p = pPart;
 
@@ -612,7 +632,8 @@ Exit:
 
 }
 
- bool CAudioInputW7::CMixerDevice::GetMuteStat(IPart * pMutePart)
+
+bool CAudioInputW7::CMixerDevice::GetMuteStat(IPart * pMutePart)
  {
     IAudioMute *pMute = NULL;
 	BOOL out = false;
@@ -633,6 +654,104 @@ Exit:
 	else
 		return false;
  }
+
+
+/*
+	Find the Input Selector control (mux) corresponding to a given input
+
+	Parameters:
+		pIn:			Pointer to IPart
+		isSelected:		Pointer to BOOL value. must be set to to FALSE. Becomes TRUE if mux selects this input
+		pFeedingPart:	Pointer to IPart of the part feeding pIn (=NULL)
+		pPartMux:		Pointer to IPart of the mux (=NULL)
+
+	Returns
+		Pointer to IPart of the mux (If found)
+
+*/
+IPart * CAudioInputW7::CMixerDevice::FindInputSelectorControl(IPart * pIn, bool * isSelected, UINT * pFeedingID, IPart * pFeedingPart /*=NULL*/, IPart * pPartMux/*=NULL*/ )
+{
+	HRESULT hr = S_OK;
+	IAudioInputSelector *pMux = NULL;
+	IPart * pFoundPartMux = NULL;
+	IConnector * pConnector=NULL;
+
+	// If mux part not already found - keep on looking for it
+	if (!pPartMux)
+	{	// see if this is a mux node part
+		hr = pIn->Activate(CLSCTX_ALL, __uuidof(IAudioInputSelector), (void**)&pMux);
+		if (E_NOINTERFACE == hr) 
+		{ 
+			//hr=+0;/* not a mux node */
+		} 
+		else if (FAILED(hr)) 
+		{
+			EXIT_ON_ERROR(hr);  
+		}   
+		else 
+		{// it's a mux node...
+			pPartMux = pIn;	// Save it
+			// Is connected?
+			if (pFeedingPart)
+			{
+				UINT SelectedID=NULL, FeedingID=NULL;
+				pMux->GetSelection(&SelectedID);
+				pFeedingPart->GetLocalId(&FeedingID);
+				*pFeedingID = FeedingID;
+				if (SelectedID==FeedingID)
+					*isSelected=TRUE;
+			};
+
+		}
+	}; // if (!pPartMux)
+
+	// get the list of outgoing parts
+   IPartsList *pConnectedParts = NULL;
+   hr = pIn->EnumPartsOutgoing(&pConnectedParts);
+
+   // If reached the end of path - verify that this is a rendering device
+   if (E_NOTFOUND == hr) 
+   {		
+        // not an error... we've just reached the end of the path
+		ConnectorType Type;
+		hr = pIn->QueryInterface(__uuidof(IConnector), (void **)&pConnector);
+		pConnector->GetType(&Type);
+		
+		if (Type == Software_IO || Software_Fixed)
+			return pPartMux;
+		else
+			return NULL;
+    };
+   EXIT_ON_ERROR(hr);
+
+   // This part is nither MUX nor a rendering device - so let's continue
+   UINT nParts = 0;
+   hr = pConnectedParts->GetCount(&nParts);
+   EXIT_ON_ERROR(hr);
+
+   IPart *pConnectedPart = NULL;
+   // walk the tree on each outgoing part recursively
+   for (UINT n = 0; n < nParts; n++) {
+	   hr = pConnectedParts->GetPart(n, &pConnectedPart);
+	   EXIT_ON_ERROR(hr);
+
+	   pFoundPartMux = FindInputSelectorControl(pConnectedPart, isSelected, pFeedingID, pIn, pPartMux);
+	   SAFE_RELEASE(pConnectedPart);
+
+	   if (pFoundPartMux)
+		   break;
+
+   }
+
+Exit:
+    SAFE_RELEASE(pConnectedParts);
+    SAFE_RELEASE(pMux);
+	SAFE_RELEASE(pConnector);
+
+	return pFoundPartMux;
+
+}
+
 
 LPWSTR CAudioInputW7::CMixerDevice::GetName(void)
 {
@@ -711,5 +830,74 @@ LPWSTR CAudioInputW7::CMixerDevice::GetName(void)
 	 return out;
  }
 
+bool CAudioInputW7::CMixerDevice::SetSelectedInputLine(int iLine)
+{
+	// Test scope
+	if (!m_nInputLines || iLine >= m_nInputLines || iLine<0)
+		return false;
+
+#ifdef _DEBUG
+	bool escape = false;
+	if (escape)
+		return true;
+#endif
+
+	bool selected	= SelectInputLine(iLine);
+	bool muted		= MuteOutputLine(iLine);
+
+	return selected;
+}
+
+bool CAudioInputW7::CMixerDevice::SelectInputLine(int iLine)
+{
+	HRESULT hr = S_OK;
+	IAudioInputSelector * pMux = NULL;
+	UINT sel=0;
+	//static const GUID AudioSessionSelInput = { 0x2715279f, 0x4139, 0x4ba0, { 0x9c, 0xb2, 0xb3, 0x52, 0xf2, 0xb5, 0x8a, 0x4a } };
+	IPart * pPartMux = m_ArrayInputLines[iLine].lSelect.p;
+	
+	if (!pPartMux)
+		return false;
+
+	hr = pPartMux->Activate(CLSCTX_ALL, __uuidof(IAudioInputSelector), (void**)&pMux);
+	if (E_NOINTERFACE == hr || FAILED(hr)) 
+	{
+		return false;
+	} 
+	else 
+	{   // it's a mux node...
+		hr = pMux->SetSelection(m_ArrayInputLines[iLine].lSelect.FeederID, NULL /*&AudioSessionSelInput*/);
+		pMux->GetSelection(&sel);
+	};
+
+	SAFE_RELEASE(pMux);
+	return FAILED(hr);
+}
+
+bool CAudioInputW7::CMixerDevice::MuteOutputLine(int iLine, bool mute , bool temporary )
+{
+	// TODO - Implement the temporary behaviour
+    IAudioMute *pMute = NULL;
+	BOOL out = false;
+	IPart * pMutePart = m_ArrayInputLines[iLine].lMute.p;
+	HRESULT hr = S_OK;
+
+	if (!pMutePart)
+		return false;
+
+    hr = pMutePart->Activate(CLSCTX_ALL, __uuidof(IAudioMute), (void**)&pMute);
+	if (E_NOINTERFACE == hr || FAILED(hr)) 
+	{
+		return false;
+	} 
+	else 
+	{   // it's a mute node...
+		hr = pMute->SetMute(mute,NULL);
+	};
+
+	SAFE_RELEASE(pMute);
+	return (FAILED(hr));
+
+}
 
 //////////////////// Mixer Device  (End)//////////////////////////////////////////////////////////////////

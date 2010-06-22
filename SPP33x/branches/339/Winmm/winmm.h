@@ -379,10 +379,11 @@ HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
 DWORD WINAPI CaptureAudioW7(void *);
 void StartListening(void);
 DWORD WINAPI ListenToGui(void *);
+LPWSTR GetDefaultEndpointID(void);
 
 IMMDeviceEnumerator *pEnumerator = NULL;
 IMMDeviceCollection *pDeviceCollect = NULL;
-struct WAVEINSTRUCT_W7 *	WaveInInfoW7;
+//struct WAVEINSTRUCT_W7 *	WaveInInfoW7;
 struct WAVEINSTRUCT_W7 *	CurrentWaveInInfoW7 = NULL;
 int							iCurrentWaveInInfoW7 = -1;
 int							count = 0;
