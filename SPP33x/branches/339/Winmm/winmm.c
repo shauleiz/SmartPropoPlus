@@ -2021,7 +2021,7 @@ void StartPropo(void)
 		closeRequest = FALSE;
 		waveRecording = FALSE;
 		Init();
-		StartStreamingW7(GetCurrentEndpointDevice());
+		//StartStreamingW7(GetCurrentEndpointDevice());
 		//StartStreamingW7(L"{0.0.1.00000000}.{1946d88f-c5bf-4896-89e0-c857c7bd1c4c}"); // W7-Creative-Mic
 		//StartStreamingW7(L"{0.0.1.00000000}.{4e55ebe2-99a6-4a2e-885c-3f3e561328e9}"); // W7-Creative-LineIn
 	} 
