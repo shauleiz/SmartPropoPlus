@@ -62,11 +62,14 @@ public:
 	LPCWSTR GetMixerDeviceUniqueName(int iMixer);
 	bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
 	bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
-	//bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
+	bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
+	void Restore(void);
+	int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
 
 protected:
 	IMMDeviceEnumerator *m_pEnumerator;
-	IMMDeviceCollection * m_pDeviceCollect;
+	IMMDeviceCollection * m_pCaptureDeviceCollect;
+	IMMDeviceCollection * m_pRenderDeviceCollect;
 	UINT m_nEndPoints;
 	char ** m_ArrayOfEndPointNames;
 	UINT m_nMixers;
@@ -83,7 +86,7 @@ protected:
 		virtual ~CMixerDevice();
 		CMixerDevice();
 		CMixerDevice(LPWSTR Name);
-		bool Init(IMMDeviceCollection * pDevCollect);
+		bool Init(IMMDeviceCollection * pDevCollect, IMMDeviceCollection * pRenderCollect);
 		char * GetNameA(void);
 		LPWSTR GetName(void);
 		const char * GetInputLineName(int Line);
@@ -95,13 +98,9 @@ protected:
 		bool CMixerDevice::SetSelectedInputLine(int iLine);
 		bool SelectInputLine(int iLine);
 		bool MuteOutputLine(int iLine, bool mute = true, bool temporary = false);
+		void Restore(void);
+		int SetSpeakers(bool restore=false, bool mute=true);
 
-
-	protected:
-		int CreateArrayOfInputLines(void);
-		IPart * FindMuteControl(IPart * pIn, IPart * pPartMute = NULL );
-		IPart * FindInputSelectorControl(IPart * pIn, bool * isSelected , UINT * FeedingID, IPart * pFeedingPart = NULL, IPart * pPartMute = NULL );
-		bool GetMuteStat(IPart * pMute);
 
 	protected:
 		struct LineMute {
@@ -125,12 +124,26 @@ protected:
 			LPWSTR GlobalId;
 			LineMute lMute;
 			LineSelector lSelect;
-		};
+		};	
+	
+	protected:
+		int CreateArrayOfInputLines(void);
+		IPart * FindMuteControl(IPart * pIn, IPart * pPartMute = NULL );
+		IPart * FindMasterMuteControl(IPart * pIn, IPart * pPartMute = NULL );
+		IPart * FindInputSelectorControl(IPart * pIn, bool * isSelected , UINT * FeedingID, IPart * pFeedingPart = NULL, IPart * pPartMute = NULL );
+		bool GetMuteStat(IPart * pMute);
+		void RestoreMute(int iInputLine);
+		void RestoreMute(LineMute * plMute);
+		void FindMasterMute(IMMDevice  * pDevice);
+		void Mute(LineMute * plMute, bool mute=true);
+
+
 
 	protected:
 		LPWSTR m_Name;
 		char * m_NameA;
 		int m_nInputLines;
 		InputLine * m_ArrayInputLines;
+		LineMute MasterMute;
 	}; // class CMixerDevice
 };
