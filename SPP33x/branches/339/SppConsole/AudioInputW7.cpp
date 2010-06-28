@@ -535,6 +535,13 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 		hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL, (void**)&pDT);
 		EXIT_ON_ERROR(hr);
 
+#ifdef _DEBUG
+		int iConn=1;
+		LPWSTR DevId;
+		pDT->GetConnector(iConn, &pConnEndpoint);
+		pDT->GetDeviceId(&DevId);
+#endif
+
 		// get the single connector for that endpoint
 		hr = pDT->GetConnector(0, &pConnEndpoint);
 		EXIT_ON_ERROR(hr);
@@ -546,6 +553,12 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 		// QI on the device's connector for IPart
 		hr = pConnDevice->QueryInterface(__uuidof(IPart), (void**)&pPart);
 		EXIT_ON_ERROR(hr);
+
+#ifdef _DEBUG
+		IDeviceTopology *pPartDT = NULL;
+		pPart->GetTopologyObject(&pPartDT);
+		pPartDT->GetDeviceId(&DevId);
+#endif
 
 		////////////// Now, that pPart points to the input pin of the Mixer, we can collect the data we need
 		
@@ -756,6 +769,29 @@ void CAudioInputW7::CMixerDevice::FindMasterMute(IMMDevice  * pDevice)
 	hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL, (void**)&pDT);
 	EXIT_ON_ERROR(hr);
 
+#ifdef _DEBUG
+	LPWSTR id;
+	IPropertyStore * pProps = NULL;
+	PROPVARIANT varName;
+
+	LPWSTR DevId;
+	pDT->GetDeviceId(&DevId);
+
+	pDevice->GetId(&id);
+	pDevice->OpenPropertyStore(STGM_READ, &pProps);
+
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+
+	// Get the Device's friendly-name property.
+	pProps->GetValue(PKEY_DeviceInterface_FriendlyName, &varName);
+	pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+
+
+	SAFE_RELEASE(pProps);
+
+#endif
+
 	// get the single connector for that endpoint
 	hr = pDT->GetConnector(0, &pConnEndpoint);
 	EXIT_ON_ERROR(hr);
@@ -767,6 +803,12 @@ void CAudioInputW7::CMixerDevice::FindMasterMute(IMMDevice  * pDevice)
 	// QI on the device's connector for IPart
 	hr = pConnDevice->QueryInterface(__uuidof(IPart), (void**)&pPart);
 	EXIT_ON_ERROR(hr);
+
+#ifdef _DEBUG
+		IDeviceTopology *pPartDT = NULL;
+		pPart->GetTopologyObject(&pPartDT);
+		pPartDT->GetDeviceId(&DevId);
+#endif
 
 	// Find Master Mute Control IPart interface
 	MasterMute.p = FindMasterMuteControl(pPart);
@@ -1076,14 +1118,19 @@ bool CAudioInputW7::CMixerDevice::MuteOutputLine(int iLine, bool mute , bool tem
 		else 
 		{   // it's a mute node...
 			if (i == iLine)
-			{
+			{	// Selected line: Save current state, set new mute state and save it is NOT temporary
 				hr = pMute->GetMute(&WasMuted);
 				hr = pMute->SetMute(mute,NULL);
 				if (!FAILED(hr) && !temporary)
 					m_ArrayInputLines[i].lMute.CurrentStatus = mute;
 			}
 			else
-				RestoreMute(i);
+			{	// Not the selected line:
+				if (!temporary)
+					RestoreMute(i); // If not temporary then just restore line to original value
+				else
+					pMute->SetMute(!mute,NULL);// Temporary: Inverse mute values
+			};
 		};
 
 		SAFE_RELEASE(pMute);

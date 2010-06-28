@@ -1321,15 +1321,10 @@ void CSppConsoleDlg::HearTx(bool hear)
 	if (m_iSelMixer<0 || m_iSelLine<0)
 		return;
 	/* Unmute the selected Input Line */
-	//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(m_iSelMixer); //MD
-	//if (!md)//MD
-	//	return;//MD
 
 	/* If changed to hear=true then temporarily unmute all */
 	if (hear)
 	{
-		//PrevLineMute = md->MuteSelectedInputLine(m_iSelLine, false, true); //MD
-		//md->SetSpeakers(false,false); //MD
 		PrevLineMute = m_AudioInput->MuteSelectedInputLine(m_iSelMixer, m_iSelLine, false, true); //MD
 		m_AudioInput->SetSpeakers(m_iSelMixer, false,false); //MD
 	}
@@ -1337,8 +1332,6 @@ void CSppConsoleDlg::HearTx(bool hear)
 	/* If changed to hear=false then restore mute values */
 	else
 	{
-		//md->MuteSelectedInputLine(m_iSelLine, PrevLineMute, true); //MD
-		//md->SetSpeakers(true);//MD
 		m_AudioInput->MuteSelectedInputLine(m_iSelMixer,m_iSelLine, PrevLineMute, true); //MD
 		m_AudioInput->SetSpeakers(m_iSelMixer,true);//MD
 	};
