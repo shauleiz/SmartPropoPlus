@@ -1325,14 +1325,14 @@ void CSppConsoleDlg::HearTx(bool hear)
 	/* If changed to hear=true then temporarily unmute all */
 	if (hear)
 	{
-		PrevLineMute = m_AudioInput->MuteSelectedInputLine(m_iSelMixer, m_iSelLine, false, true); //MD
+		PrevLineMute = m_AudioInput->MuteSelectedInputLine(m_iSelMixer, m_iSelLine, false, false); //MD
 		m_AudioInput->SetSpeakers(m_iSelMixer, false,false); //MD
 	}
 
 	/* If changed to hear=false then restore mute values */
 	else
 	{
-		m_AudioInput->MuteSelectedInputLine(m_iSelMixer,m_iSelLine, PrevLineMute, true); //MD
+		m_AudioInput->MuteSelectedInputLine(m_iSelMixer,m_iSelLine, true, PrevLineMute); //MD
 		m_AudioInput->SetSpeakers(m_iSelMixer,true);//MD
 	};
 
