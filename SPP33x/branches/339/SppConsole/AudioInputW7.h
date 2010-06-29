@@ -62,7 +62,7 @@ public:
 	LPCWSTR GetMixerDeviceUniqueName(int iMixer);
 	bool GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, unsigned int Index);
 	bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
-	bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
+	bool MuteSelectedInputLine(int Mixer, unsigned int line, bool restore=false, bool mute=true);
 	void Restore(void);
 	int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
 
@@ -100,6 +100,7 @@ protected:
 		bool MuteOutputLine(int iLine, bool mute = true, bool temporary = false);
 		void Restore(void);
 		int SetSpeakers(bool restore=false, bool mute=true);
+		bool MuteSelectedInputLine(unsigned int line, bool restore=false,bool mute=true);
 
 
 	protected:

@@ -351,15 +351,34 @@ bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int iMixer, int iLine)
 	return Mixer->SetSelectedInputLine(iLine);
 }
 
-bool CAudioInputW7::MuteSelectedInputLine(int iMixer, unsigned int iLine, bool mute, bool temporary)
+/*
+	Set the specified Input Line to be (un)muted
+	The role of parameter restore:
+		true:	Mute value for all other lines (on all mixers) is restored
+		false:	All other lines (on all mixers) are temporarily muted
+
+	Return former mute value
+*/
+bool CAudioInputW7::MuteSelectedInputLine(int Mixer, unsigned int line, bool restore, bool mute)
 {
 	_ASSERTE(m_MixerDevices);
-	CMixerDevice * Mixer = m_MixerDevices[iMixer];
-	if (!Mixer)
-		return false;
+	_ASSERTE(m_nMixers);
 
-	return Mixer->MuteOutputLine(iLine, mute, temporary);
+	bool res = false;
 
+	for (UINT iMixer=0; iMixer<m_nMixers; iMixer++)
+	{
+		CMixerDevice * md = m_MixerDevices[iMixer];
+		if (!md)
+			continue;
+
+		if (iMixer==Mixer)
+			res = md->MuteSelectedInputLine(line, restore, mute);
+		else
+			md->MuteSelectedInputLine(-1, restore, mute);
+	};
+
+	return res;
 }
 
 LPCWSTR CAudioInputW7::GetMixerDeviceUniqueName(int iMixer)
@@ -1201,5 +1220,51 @@ int CAudioInputW7::CMixerDevice::SetSpeakers(bool restore, bool mute)
 
 	return 1;
 }
+
+/*
+	Set Input Line number 'iLine' to be (un)muted
+	If iLine is (-1) then none of the Input Lines is selected to be (un)muted.
+
+	The role of parameter restore:
+		true:	Mute value for all other lines is restored
+		false:	All other lines are (temporarily) muted
+
+	Return former mute value
+*/
+bool CAudioInputW7::CMixerDevice::MuteSelectedInputLine(unsigned int iLine, bool restore, bool mute)
+{
+	int i;
+	bool res = false;
+
+	/* Test scope */
+	if ((int)iLine >= m_nInputLines)
+		return false;
+
+
+	/* Loop on every line on this mixer device */
+	for (i=0; i<m_nInputLines; i++)
+	{		
+		// Skip if no mute control for this line
+		if (!m_ArrayInputLines[i].lMute.p)
+			continue;
+
+		if (i==iLine)
+		{	// This is the selected line. Save current status and (un)mute
+			res = m_ArrayInputLines[i].lMute.CurrentStatus;
+			Mute(&m_ArrayInputLines[i].lMute, mute);
+		}
+		else
+		{	// Treat all other line according 'restore': restore value or force temporary mute
+			if (restore)
+				RestoreMute(&m_ArrayInputLines[i].lMute);
+			else
+				Mute(&m_ArrayInputLines[i].lMute);
+		}
+
+	};
+
+	return res;
+}
+
 
 //////////////////// Mixer Device  (End)//////////////////////////////////////////////////////////////////
