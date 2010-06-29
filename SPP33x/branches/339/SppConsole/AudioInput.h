@@ -80,7 +80,7 @@ protected:
 
 		public: //CMixerDevice
 			int SetSpeakers(bool restore=false, bool mute=true);
-			bool MuteSelectedInputLine(unsigned int line, bool mute=true, bool temporary=false);
+			bool MuteSelectedInputLine(unsigned int line, bool restore=false,bool mute=true);
 			void RestoreSelectedInputLine(unsigned int line);
 			bool GetInputLineSrcID(unsigned int * SrcID, unsigned int Index);
 			bool GetInputLineIndex(unsigned int SrcID, unsigned int * Index);
@@ -99,6 +99,7 @@ protected:
 			CMixerDevice();
 			int CreatePhysicalDevArray(void);
 			int CreateInputLineArray(void);
+
 
 		protected: //CMixerDevice
 			HMIXER m_hMixerDevice;
@@ -122,7 +123,7 @@ protected:
 		virtual bool GetMixerDeviceInputLineIndex(int Mixer, unsigned int SrcID, unsigned int * Index);
 		virtual bool SetMixerDeviceSelectInputLine(int Mixer, int Line);
 		virtual bool GetMixerDeviceSelectInputLine(int Mixer, unsigned int * iLine);
-		virtual bool MuteSelectedInputLine(int Mixer, unsigned int line, bool mute=true, bool temporary=false);
+		virtual bool MuteSelectedInputLine(int Mixer, unsigned int line, bool restore=false, bool mute=true);
 		virtual int SetSpeakers(int Mixer, bool restore=false, bool mute=true);
 		virtual int GetCountMixerDevice(void);
 		CAudioInput();

@@ -479,17 +479,34 @@ bool CAudioInput::GetMixerDeviceInputLineSrcID(int Mixer, unsigned int * SrcID, 
 		return false;
 }
 
-bool CAudioInput::MuteSelectedInputLine(int Mixer, unsigned int line, bool mute, bool temporary)
+/*
+	Set the specified Input Line to be (un)muted
+	The role of parameter restore:
+		true:	Mute value for all other lines (on all mixers) is restored
+		false:	All other lines (on all mixers) are temporarily muted
+
+	Return former mute value
+*/
+bool CAudioInput::MuteSelectedInputLine(int Mixer, unsigned int line, bool restore, bool mute)
 {
-	if (Mixer>=0 && Mixer<GetCountMixerDevice())
-	{
-		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
-		if (!md)
-			return false;
-		return md->MuteSelectedInputLine(line, mute, temporary);
-	}
-	else
+	bool res = false;
+	int nMixers = GetCountMixerDevice();
+	if (Mixer<0 || Mixer>=nMixers)
 		return false;
+
+	for (int iMixer=0; iMixer<nMixers; iMixer++)
+	{
+		CMixerDevice * md = m_ArrayMixerDevice.GetAt(iMixer);
+		if (!md)
+			continue;
+
+		if (iMixer==Mixer)
+			res = md->MuteSelectedInputLine(line, restore, mute);
+		else
+			md->MuteSelectedInputLine(-1, restore, mute);
+	};
+
+	return res;
 
 }
 
@@ -986,21 +1003,45 @@ bool CAudioInput::CMixerDevice::MuteOutputLine(unsigned long SrcID, bool mute, b
 
 
 /*
-	Set the specified Input Line to be (un)muted
-	Return former value
+	Set Input Line number 'iLine' to be (un)muted
+	If iLine is (-1) then none of the Input Lines is selected to be (un)muted.
+
+	The role of parameter restore:
+		true:	Mute value for all other lines is restored
+		false:	All other lines are (temporarily) muted
+
+	Return former mute value
 */
-bool CAudioInput::CMixerDevice::MuteSelectedInputLine(unsigned int line, bool mute, bool temporary)
+bool CAudioInput::CMixerDevice::MuteSelectedInputLine(unsigned int iLine, bool restore, bool mute)
 {
+	int i;
+	bool res = false;
+
 	/* Test scope */
-	if (((int)line) >= m_ArrayInputLine.GetSize() || ((int)line)<0)
+	INT_PTR nInputLines = m_ArrayInputLine.GetSize();
+	if (((int)iLine) >= nInputLines)
 		return false;
 
-	/* Get the source line ID */
-	CInputLine * il = m_ArrayInputLine.GetAt(line);
-	unsigned long SrcID = il->GetSrcID();
+	for (i=0; i<nInputLines; i++)
+	{
+		CInputLine * il = m_ArrayInputLine.GetAt(i);
+		
+		if (i==iLine)
+			res = il->SetMute(mute, true);
+		else
+		{	// Treat all other line according 'restore': restore value or force temporary mute
+			if (restore)
+				il->RestoreMute();
+			else
+				il->SetMute(true, true); 
+		}
 
-	return MuteOutputLine(SrcID, mute, temporary);
+
+	};
+
+	return res;
 }
+
 
 /*
 	Restore the specified Input Line (Mute + Volume Values)
