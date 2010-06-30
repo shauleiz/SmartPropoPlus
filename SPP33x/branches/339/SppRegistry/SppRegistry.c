@@ -369,14 +369,22 @@ int GetCurrentInputLineFromRegistry(unsigned int *SrcID)
 	/* Open SPP Audio Sources key for data query */
 	res = RegOpenKeyEx(HKEY_CURRENT_USER,REG_AUD, 0, KEY_QUERY_VALUE , &hkAud);
 	if (res != ERROR_SUCCESS)
+	{
+		free((void *)mdName);
 		return 0;
+	};
 
 	
 	res = RegQueryValueExW(hkAud, mdName, NULL, NULL, (unsigned char *)SrcID,  &ValueDataSize);
 	if (res != ERROR_SUCCESS)
+	{
+		free((void *)mdName);
 		return 0;
+	};
+
 
 	RegCloseKey(hkAud);
+	free((void *)mdName);
 	return 1;
 }
 
@@ -790,7 +798,7 @@ struct Modulations * GetModulationFromRegistry(int Create)
 	ValueDataSize = MaxValueDataLength+1;
 	res = RegQueryValueEx(hkResult, MOD_ACTIVE, NULL, NULL, (unsigned char *)Active,  &ValueDataSize);
 
-	Mod = (struct Modulation **)malloc((1+nValues)*sizeof(struct Modulation *));
+	Mod = (struct Modulation **)malloc((nValues)*sizeof(struct Modulation *));
 	for (i=0 ; i<nValues ; i++)
 	{
 		if (res != ERROR_SUCCESS)
