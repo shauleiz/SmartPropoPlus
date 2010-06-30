@@ -65,8 +65,8 @@ extern "C"
 #define MUTEX_LABEL	"SPP Global Shared memory Mutex"
 #define BLOCK_LABEL	"SPP Global Shared memory Block"
 #define EVENT_MIXER	"Mixer Switching Event"
-#define	VER_DLL		0x00030307 /* DLL File Version */
-#define	VER_GUI		0x00030307 /* GUI File Version */
+#define	VER_DLL		0x00030309 /* DLL File Version */
+#define	VER_GUI		0x00030309 /* GUI File Version */
 
 
 #define TX_VOLUME_MIC		5

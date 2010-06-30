@@ -153,8 +153,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,3,3,7
- PRODUCTVERSION 0,3,3,7
+ FILEVERSION 0,3,3,9
+ PRODUCTVERSION 0,3,3,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -172,12 +172,12 @@ BEGIN
             VALUE "Comments", "SmartPropoPro - Created by Shaul Eizikovich (Based on Tsutomu Seki's SmartPropo)"
             VALUE "Email", "support@SmartPropoPlus.com"
             VALUE "FileDescription", "SppConsole  - SmartPropoPlus Console Application"
-            VALUE "FileVersion", "0, 3, 3, 7"
+            VALUE "FileVersion", "0, 3, 3, 9"
             VALUE "InternalName", "SppConsole"
-            VALUE "LegalCopyright", "Copyright © 2006-2008 Shaul Eizikovich"
+            VALUE "LegalCopyright", "Copyright © 2006-2010 Shaul Eizikovich"
             VALUE "OriginalFilename", "SppConsole.EXE"
             VALUE "ProductName", "SppConsole Application"
-            VALUE "ProductVersion", "0, 3, 3, 7"
+            VALUE "ProductVersion", "0, 3, 3, 9"
         END
     END
     BLOCK "VarFileInfo"
