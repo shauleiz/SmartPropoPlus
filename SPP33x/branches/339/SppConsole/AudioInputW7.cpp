@@ -631,7 +631,9 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 		m_ArrayInputLines[m_nInputLines].lSelect.OrigStatus = selected;
 		m_ArrayInputLines[m_nInputLines].lSelect.CurrentStatus = selected;
 
+#ifdef _DEBUG
 JustInCase:
+#endif
 		// Keep a pointer to the interface (Just in case ...)
 		m_ArrayInputLines[m_nInputLines].p = pPart;
 

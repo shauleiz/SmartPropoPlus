@@ -1984,7 +1984,7 @@ void StartPropo(void)
 	/* Download configuration from the registry (if exists) */
 	Modulation = GetModulation(0);		// Modulation type: PPM/PCM(JR) ....
 	if (GetCurrentAudioState())			// Get  Mixer Device (selected or preferred) 
-		MixerName = wcsdup(GetCurrentMixerDevice());	// Selected
+		MixerName = GetCurrentMixerDevice();	// Selected
 	else
 		MixerName=NULL;									// Preferred
 
@@ -2026,6 +2026,7 @@ void StartPropo(void)
 		//StartStreamingW7(L"{0.0.1.00000000}.{4e55ebe2-99a6-4a2e-885c-3f3e561328e9}"); // W7-Creative-LineIn
 	} 
 
+	free(MixerName);
 }
 //---------------------------------------------------------------------------
 

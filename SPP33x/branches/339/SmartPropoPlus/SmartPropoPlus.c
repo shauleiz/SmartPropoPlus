@@ -50,6 +50,8 @@ void SetSelectedFilterIndex(const int i)
 		SetSelectedFilterNameToRegistry(name);
 	else
 		SetSelectedFilterNameToRegistry("");
+
+	free(name);
 }
 
 
@@ -69,6 +71,8 @@ int GetSelectedFilterIndex()
 
 	/* Update the global memory */
 	SetSelectedFilterIndexToGlobalMemory(index);
+
+	free(name);
 	return index;
 }
 
@@ -128,6 +132,22 @@ struct Modulations * GetModulation(int Create)
 		return Out;
 	else
 		return GetModulationFromRegistry(Create);
+}
+void FreeModulation(struct Modulations * modulation)
+{
+	int iModulation=0;
+
+	do
+	{
+		free(modulation->ModulationList[iModulation]->ModTypeDisplay);
+		free(modulation->ModulationList[iModulation]->ModTypeInternal);
+		free(modulation->ModulationList[iModulation]);
+		iModulation++;
+	} while (modulation->ModulationList[iModulation]) ;
+
+	free(modulation->ModulationList[iModulation]);
+	free(modulation->ModulationList);
+	free(modulation);
 }
 
 /*

@@ -169,7 +169,7 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_BOOLEAN list,
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_BOOLEAN);
 	mixDetails.paDetails = list;
 	mmres = mixerSetControlDetails((HMIXEROBJ)hmxobj, (LPMIXERCONTROLDETAILS) &mixDetails,	MIXER_SETCONTROLDETAILSF_VALUE);
@@ -189,7 +189,7 @@ MMRESULT SetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_UNSIGNED list
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
 	mixDetails.paDetails = list;
 	mmres = mixerSetControlDetails((HMIXEROBJ)hmxobj, (LPMIXERCONTROLDETAILS) &mixDetails,	MIXER_SETCONTROLDETAILSF_VALUE);
@@ -241,7 +241,7 @@ MMRESULT GetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_LISTTEXT list
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_LISTTEXT);
 	mixDetails.paDetails = list;
 	mmres = mixerGetControlDetails((HMIXEROBJ)hmxobj,(LPMIXERCONTROLDETAILS) &mixDetails, MIXER_GETCONTROLDETAILSF_LISTTEXT);
@@ -263,7 +263,7 @@ MMRESULT GetControlDetailList(HMIXER hmxobj, LPMIXERCONTROLDETAILS_BOOLEAN list,
 	mixDetails.cbStruct = sizeof(MIXERCONTROLDETAILS);
 	mixDetails.dwControlID = dwControlID;
 	mixDetails.cChannels = 1;
-	mixDetails.hwndOwner = (HWND)cMultipleItems;
+	mixDetails.hwndOwner = (HWND)((__int64 )cMultipleItems);
 	mixDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_BOOLEAN);
 	mixDetails.paDetails = list;
 	mmres = mixerGetControlDetails((HMIXEROBJ)hmxobj,(LPMIXERCONTROLDETAILS) &mixDetails, MIXER_GETCONTROLDETAILSF_VALUE);
@@ -563,7 +563,10 @@ int CAudioInput::GetMixerDeviceIndex(LPCWSTR mixer)
 		CMixerDevice * md = m_ArrayMixerDevice.GetAt(Mixer);
 		MixerName = md->GetName();
 		if (!wcscmp(MixerName,mixer))
+		{
+			if (mixer) free((void *)mixer);
 			return Mixer;
+		};
 	};
 
 	return 0; // Default
@@ -626,6 +629,8 @@ CAudioInput::CMixerDevice::~CMixerDevice()
 		m_ArrayPhysicalDev.RemoveAt(0);
 	};
 	m_ArrayPhysicalDev.RemoveAll();
+
+	free(m_name);
 }
 
 CAudioInput::CMixerDevice::CMixerDevice(int index)
@@ -1234,6 +1239,7 @@ CAudioInput::CMixerDevice::CInputLine::~CInputLine()
 {
 	m_ArrayMuteControl->RemoveAll();
 	delete(m_ArrayMuteControl);
+	free((void *)m_Name);
 }
 
 CAudioInput::CMixerDevice::CInputLine::CInputLine(HMIXER hMixerDevice, unsigned long id, const char * Name, unsigned long Type, long Selected)
@@ -1346,6 +1352,7 @@ CArray<  CAudioInput::CMixerDevice::CInputLine::sMuteLine , CAudioInput::CMixerD
 					MuteArray->Add(*ml);
 					found++;
 					iSrc++; // next
+					delete ml;
 					break;
 					
 				};

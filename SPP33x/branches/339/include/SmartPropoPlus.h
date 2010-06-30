@@ -194,6 +194,7 @@ int SetActiveMode(const char * selected);
 void SetShiftAutoDetect(const int sel);
 void SetPositiveShift(const int sel);
 struct Modulations * GetModulation(int Create);
+void FreeModulation(struct Modulations * modulation);
 int GetDebugLevel(void);
 const char * ModeDisplayFromInternalName(const char * internal);
 int GetDefaultVolumeValue(unsigned long SrcType);

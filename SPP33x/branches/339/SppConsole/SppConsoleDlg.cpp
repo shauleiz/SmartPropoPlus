@@ -391,6 +391,8 @@ int CSppConsoleDlg::PopulateModulation()
 		ShowShiftRB(false);
 	else
 		ShowShiftRB();
+
+	FreeModulation(Modulation);
 	return selected;
 }
 
@@ -932,7 +934,9 @@ int CSppConsoleDlg::SetMixerSelectionByName(LPCWSTR MixerName)
 	char * MixerNameT = (char *)calloc(lenMixerName+2, sizeof(char));
 	wcstombs(MixerNameT, MixerName, lenMixerName+1);
 
-	return MixerList->FindStringExact(-1, MixerNameT);
+	int res =  MixerList->FindStringExact(-1, MixerNameT);
+	 free(MixerNameT);
+	 return res;
 }
 
 void CSppConsoleDlg::PopulateInputLines()
@@ -963,10 +967,11 @@ void CSppConsoleDlg::PopulateInputLines()
 	/* Loop on all Input Lines of the selected device */
 	const char * LineName;
 	int nLine = 0;
-	// MD while (md && (LineName = md->GetInputLineName(nLine)))
+	
 	while (LineName = m_AudioInput->GetMixerDeviceInputLineName(sel, nLine)) //MD
 	{
 		InputLineNameList->InsertString(nLine, LineName);
+		//free((void *)LineName);
 		nLine++;
 	};
 
@@ -982,9 +987,6 @@ void CSppConsoleDlg::PopulateInputLines()
 	m_iSelLine = GetCurrentInputLine();
 	InputLineNameList->SetCurSel(m_iSelLine);
 
-	/* Activate selected line */ // Seems to be a bug here
-	//if (md && m_iSelLine > -1)
-	//	md->SetSelectedInputLine(m_iSelLine);	
 }
 
 void CSppConsoleDlg::OnSelchangeMixerdevice() 
@@ -1244,6 +1246,9 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 		::SetCurrentEndpointDevice(ActualMixerName);		
 	};
 	m_AudioInput->SetCurrentMixerDevice(iMixer);
+
+	if (wcslen(ActualMixerName))
+		free(ActualMixerName);
 }
 
 
@@ -1603,11 +1608,13 @@ void CSppConsoleDlg::UpdateFilterMenu()
 	int res = pFilterMenu->CreatePopupMenu( );
 	for (int index = 0; index<nFilters; index++)
 	{
-		CString item = GetFilterNameByIndex(index);
+		char * item = GetFilterNameByIndex(index);
 		if (m_iSelFilter == index)
 			pFilterMenu->AppendMenu(MF_STRING|MF_CHECKED, IDC_FILTER_0+index, item);
 		else
 			pFilterMenu->AppendMenu(MF_STRING|MF_UNCHECKED, IDC_FILTER_0+index, item);
+
+		free(item);
 	};
 
 	/* If does not exist, create as third  and attach the filter menu */
@@ -1629,6 +1636,7 @@ void CSppConsoleDlg::UpdateFilterMenu()
 	/* Set the selected item */
 	SetSelectedFilterIndex(m_iSelFilter);
 
+	delete pFilterMenu;
 
 }
 
