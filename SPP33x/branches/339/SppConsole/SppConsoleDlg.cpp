@@ -1233,9 +1233,7 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 	LPWSTR ActualMixerName = ::GetMixerName();
 	if (!ActualMixerName)
 	{
-		wcscpy(ActualMixerName, L"");
-	//	::MessageBox(NULL,"Cannot get Actual Mixer Name", "SmartPropoPlus Message" , MB_SYSTEMMODAL);
-	//	return;
+		ActualMixerName = wcsdup(L"");
 	};
 
 	iMixer = SetMixerSelectionByName(MixerName);
