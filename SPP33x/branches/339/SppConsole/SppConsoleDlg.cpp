@@ -1484,7 +1484,7 @@ void CSppConsoleDlg::OnAudioPrint()
 	// Success?
 	GetExitCodeProcess(ProcessInformation.hProcess, &ExitCode);
 	if (ExitCode)
-		MessageBox("Output file is: AudioStatus.txt\n It is on your Desctop");
+		MessageBox("Output file is: AudioStatus.txt\n It is on your Desktop");
 	else
 		MessageBox("Cannot Create output file", NULL, MB_ICONERROR);
 
