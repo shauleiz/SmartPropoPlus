@@ -1104,10 +1104,7 @@ void CSppConsoleDlg::EnableAudio(int enable)
 		SelLine = GetCurrentInputLine();
 
 		InputLineNameList->SetCurSel(SelLine);
-		//CAudioInput::CMixerDevice * md = m_AudioInput->GetMixerDevice(SelMixer);//MD
-		//if (md && SelLine > -1)//MD
-		//	md->SetSelectedInputLine(SelLine);//MD	
-		if (SelLine > -1)//MD
+		if (SelLine > -1)
 			m_AudioInput->SetMixerDeviceSelectInputLine(SelMixer, SelLine);//MD	
 	};
 	
@@ -1121,11 +1118,15 @@ void CSppConsoleDlg::EnableAudio(int enable)
 */
 int CSppConsoleDlg::GetCurrentMixerDevice()
 {
+	int res=0;
 	LPWSTR mixer = ::GetCurrentMixerDevice();
 	if (mixer)
-		return m_AudioInput->GetMixerDeviceIndex(mixer);
-	else
-		return 0; // Default 
+	{
+		res = m_AudioInput->GetMixerDeviceIndex(mixer);
+		free(mixer);
+	};
+		
+	return res; 
 }
 
 

@@ -1,5 +1,8 @@
 // pcpp : Defines the entry point for the DLL application.
 //
+#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
 
 #include "stdafx.h"
 #include "math.h"
@@ -1978,6 +1981,11 @@ void StartPropo(void)
 
 	if (PropoStarted())
 		return;
+
+	_CrtDumpMemoryLeaks();
+	i=141;
+	_CrtSetBreakAlloc(i);
+
 
 	VistaOS = isVista(); // Vista (or Windows7)
 

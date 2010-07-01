@@ -1,5 +1,9 @@
 // SppConsole.cpp : Defines the class behaviors for the application.
 //
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 
 #include "stdafx.h"
 #include "SppConsole.h"
@@ -29,6 +33,10 @@ END_MESSAGE_MAP()
 
 CSppConsoleApp::CSppConsoleApp()
 {
+	_CrtDumpMemoryLeaks();
+	int i=105;
+	_CrtSetBreakAlloc(i);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -56,6 +56,10 @@ CAudioInputW7::~CAudioInputW7(void)
     SAFE_RELEASE(m_pCaptureDeviceCollect);
 	Restore();
 	delete[] m_ArrayOfEndPointNames;
+
+	for (UINT iMixer=0; iMixer<m_nMixers; iMixer++)
+		delete m_MixerDevices[iMixer];
+	delete[] m_MixerDevices;
 }
 
 bool CAudioInputW7::Create(void)
@@ -108,6 +112,9 @@ bool CAudioInputW7::Create(void)
 		m_MixerDevices[iMixer]->Init(m_pCaptureDeviceCollect, m_pRenderDeviceCollect);
 	}
 
+	// Cleaning up
+	for (UINT i=0; i<m_nMixers; i++)
+		free(ListMixerDeviceNames[i]);
 	delete [] ListMixerDeviceNames;
 	return true;
 
@@ -476,6 +483,22 @@ CAudioInputW7::CMixerDevice::CMixerDevice()
 
 CAudioInputW7::CMixerDevice::~CMixerDevice()
 {
+	for (int i=0; i<m_nInputLines; i++)
+	{
+		free(m_ArrayInputLines[i].NameA);
+		//free(m_ArrayInputLines[i].Name);
+		free(m_ArrayInputLines[i].EndPointNameA);
+		free(m_ArrayInputLines[i].EndPointName);
+
+		SAFE_RELEASE(m_ArrayInputLines[i].lMute.p);
+		SAFE_RELEASE(m_ArrayInputLines[i].lSelect.p);
+		SAFE_RELEASE(m_ArrayInputLines[i].p);
+
+	};
+	
+	free(m_ArrayInputLines);
+	free(m_Name);
+	free(m_NameA);
 }
 bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IMMDeviceCollection * pRenderCollect)
 {
