@@ -35,7 +35,6 @@
 #define DEBUG_W2K "Version 5"
 #undef DEBUG_W2K
 
-
 /** Helper functions **/
 
 /**  Get the Debug level from the registry  - Default is 0 **/
@@ -1900,8 +1899,7 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
         }
 
 		/* Requests the audio device to refill the current buffer */
-		if (CurrentWaveInInfo->waveRecording && CurrentWaveInInfo->id == (int)(lpUser)) 
-			pwaveInAddBuffer(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[buf->dwUser], sizeof(WAVEHDR));
+		pwaveInAddBuffer(CurrentWaveInInfo->hWaveInDev, CurrentWaveInInfo->waveBuf[buf->dwUser], sizeof(WAVEHDR));
 
 		/* Request to change input mixer device */
 		if (DataBlock->MixerDeviceStatus == CHANGE_REQ && !ChangingMixer)
@@ -1910,6 +1908,7 @@ static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, void *lpUser, WAVEHDR *b
 			SetSwitchMixerRequestStat(STOPPING);
 			hThread = CreateThread(NULL, 0, ChangeStreaming, DataBlock->SrcName,  0, &dwThreadId);
 			ChangingMixer = FALSE;
+			CloseHandle(hThread);
 		};
 
     }
@@ -1982,11 +1981,6 @@ void StartPropo(void)
 	if (PropoStarted())
 		return;
 
-	_CrtDumpMemoryLeaks();
-	i=141;
-	_CrtSetBreakAlloc(i);
-
-
 	VistaOS = isVista(); // Vista (or Windows7)
 
 	/* Download configuration from the registry (if exists) */
@@ -2012,7 +2006,7 @@ void StartPropo(void)
 
 	// Start a thread that listens to the GUI
 	if (VistaOS) // TODO: Remove this condition
-		StartListening();
+	StartListening();
 
 	// Initialize all audio streams and start the selected one
 	if (!VistaOS)
@@ -2029,9 +2023,6 @@ void StartPropo(void)
 		closeRequest = FALSE;
 		waveRecording = FALSE;
 		Init();
-		//StartStreamingW7(GetCurrentEndpointDevice());
-		//StartStreamingW7(L"{0.0.1.00000000}.{1946d88f-c5bf-4896-89e0-c857c7bd1c4c}"); // W7-Creative-Mic
-		//StartStreamingW7(L"{0.0.1.00000000}.{4e55ebe2-99a6-4a2e-885c-3f3e561328e9}"); // W7-Creative-LineIn
 	} 
 
 	free(MixerName);
@@ -2043,14 +2034,12 @@ void StopPropo(void)
     int i;
 	char tbuffer [9];
 	static UINT NEAR WM_INTERSPPAPPS;
-	HANDLE hProcessHeap;
 
 	if (!VistaOS)
 		StopStreaming(NULL);
 	else 
 	{// WASAPI
 	i=0;
-	hProcessHeap=NULL;
 	if( waveRecording && hThread != NULL) {
 		/* suppress unused variable warnings */
 		while(WaitForSingleObject(hThread, 1000) != WAIT_OBJECT_0){
@@ -2250,7 +2239,6 @@ DWORD WINAPI  StartStreaming(LPCWSTR DevName)
 
 DWORD WINAPI StopStreaming(void * pDummy)
 {
-	HANDLE hProcessHeap;
 	UINT waveInStopFailed;
 
 	if (WaitForSingleObject(hMutexStartStop, 3000))
@@ -2268,9 +2256,8 @@ DWORD WINAPI StopStreaming(void * pDummy)
 	};
 
 	CurrentWaveInInfo->waveRecording = FALSE;
-	hProcessHeap = GetProcessHeap();
 
-	if (CurrentWaveInInfo->hWaveInDev && hProcessHeap && !VistaOS)
+	if (CurrentWaveInInfo->hWaveInDev  && !VistaOS)
 	{
 		waveInStopFailed = pwaveInStop(CurrentWaveInInfo->hWaveInDev);
 		if (waveInStopFailed)
@@ -2281,6 +2268,7 @@ DWORD WINAPI StopStreaming(void * pDummy)
 		};
 	};
 
+
 	SetSwitchMixerRequestStat(STOPPED);
 	ReleaseMutex(hMutexStartStop);
 	return 0;
@@ -2290,7 +2278,6 @@ void ReportChange(void)
 {
 	WAVEINCAPS caps;
 	HANDLE hEvent;
-	size_t lenName;
 	LPWSTR NameW;
 
 	/* Get the name of the current device */
@@ -2302,17 +2289,21 @@ void ReportChange(void)
 		pwaveInGetDevCapsA(CurrentWaveInInfo->id, &caps, sizeof(WAVEINCAPS));
 		
 		/* Write it to the global memory (first convert to UNICODE) */
-		lenName = strlen(caps.szPname);
-		NameW = (LPWSTR)calloc(lenName+2, sizeof(WCHAR));
-		mbstowcs(NameW, caps.szPname, lenName);
+		//lenName = strlen(caps.szPname);
+		NameW = (LPWSTR)calloc(32+2, sizeof(WCHAR));
+		mbstowcs(NameW, caps.szPname, 32);
 		SwitchMixerAck(NameW);
+		free(NameW);
 	};
 		
 
 	/* Release waiting GUI */
 	hEvent = OpenEvent(EVENT_MODIFY_STATE , TRUE, EVENT_MIXER);
 	if (hEvent)
+	{
 		SetEvent(hEvent);
+		CloseHandle(hEvent);
+	};
 }
 
 DWORD WINAPI  ChangeStreaming(LPCWSTR DevName)
@@ -3823,11 +3814,11 @@ void StartListening(void)
 {
 
 	/* Create capturing thread  */
-	hThreadListen = CreateThread(
+		hThreadListen = CreateThread(
 		NULL,				// no security attribute
 		0,					// default stack size
 		ListenToGui,
-		NULL,	// thread parameter
+		NULL,				// thread parameter
 		0,					// not suspended
 		&dwThreadId);		// returns thread ID
 
@@ -3885,6 +3876,8 @@ DWORD WINAPI ListenToGui(void * param)
 	};
 	return 0;
 }
+
+
 LPCWSTR GetFriendlyName(IMMDevice * pDev)
 {
 	HRESULT hr = S_OK;

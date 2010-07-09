@@ -564,7 +564,7 @@ int CAudioInput::GetMixerDeviceIndex(LPCWSTR mixer)
 		MixerName = md->GetName();
 		if (!wcscmp(MixerName,mixer))
 		{
-			if (mixer) free((void *)mixer);
+			//if (mixer) free((void *)mixer);
 			return Mixer;
 		};
 	};
