@@ -1799,6 +1799,8 @@ _inline double CalcThreshold(int value)
 	// RCAudio V 3.0 : (C) Philippe G.De Coninck 2007
 
 	static double aud_max_val, aud_min_val;
+	static cAboveThr, cBelowThr;
+	double threthold;
 	double delta_max = fabs(value - aud_max_val);
 	double delta_min = fabs(value - aud_min_val);
 
@@ -1810,7 +1812,23 @@ _inline double CalcThreshold(int value)
 		aud_min_val = aud_min_val - 1;
 	}
 
-	return((aud_max_val + aud_min_val)/2); 
+	threthold = (aud_max_val + aud_min_val)/2;
+
+	/* Patch: reset threshold if nothing happens */
+	if (value > threthold)
+	{
+		cAboveThr++;
+		cBelowThr=0;
+	}
+	else
+	{
+		cAboveThr=0;
+		cBelowThr++;
+	};
+	if (cAboveThr>=10000 || cBelowThr>=10000)
+		aud_max_val=aud_min_val=0;
+
+	return(threthold); 
 }
 
 /*
