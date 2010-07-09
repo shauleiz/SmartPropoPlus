@@ -378,6 +378,7 @@ LPCWSTR GetFriendlyName(IMMDevice * pDev);
 HRESULT GetWaveFormat(IAudioClient * pClient, WAVEFORMATEX ** pFmt);
 DWORD WINAPI CaptureAudioW7(void *);
 void StartListening(void);
+DWORD WINAPI ListenToGuiW7(void *);
 DWORD WINAPI ListenToGui(void *);
 LPWSTR GetDefaultEndpointID(void);
 

@@ -14,12 +14,13 @@ void SetNumberOfFiltersToGlobalMemory(const int n)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	gpSharedBlock->n_fltr = n;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return;
 }
@@ -36,12 +37,13 @@ int GetNumberOfFiltersFromGlobalMemory()
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	n = gpSharedBlock->n_fltr;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return n;
 }
@@ -57,12 +59,13 @@ void SetSelectedFilterIndexToGlobalMemory(const int i)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	gpSharedBlock->i_sel_fltr = i;
 
 	/* Release acces lock */
-	ReleaseMutex(ghDataLock);
+	ReleaseMutex(ghDataLock); 
+	CloseHandle(ghDataLock);
 
 	return;
 }
@@ -80,12 +83,13 @@ int GetSelectedFilterIndexFromGlobalMemory()
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	i = gpSharedBlock->i_sel_fltr;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return i;
 }
@@ -108,7 +112,7 @@ void SetFilterNamesToGlobalMemory(const char ** name)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 	
 	// Find the begining of the list (just after the list of modulation names)
 	for (index = 0 ; index < gpSharedBlock->nModulations ; index++)
@@ -134,6 +138,8 @@ void SetFilterNamesToGlobalMemory(const char ** name)
 	
 
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
+
 }
 
 char * GetFilterNameByIndexFromGlobalMemory(const int i)
@@ -152,12 +158,14 @@ char * GetFilterNameByIndexFromGlobalMemory(const int i)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 	
 	out = strdup((char *)gpSharedBlock->name_fltr[i]);
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
+
 	return out;
 }
 
@@ -176,7 +184,7 @@ int GetFilterIndexByNameFromGlobalMemory(const char * name)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 	
 	/* Go over all entries and compair to input string */
 	for (i=0; i<MAX_FLTRS; i++)
@@ -191,6 +199,7 @@ int GetFilterIndexByNameFromGlobalMemory(const char * name)
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 	return out;
 }
 
@@ -208,7 +217,7 @@ int SetActiveModeToGlobalMemory(const char * selected)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	/* Convert Display Name to Internal Name */
 	while (DefMods[nMod*2])
@@ -229,6 +238,7 @@ int SetActiveModeToGlobalMemory(const char * selected)
 		iMod = nMod;
 
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return iMod;
 }
@@ -244,12 +254,13 @@ int SetShiftAutoDetectToGlobalMemory(const int sel)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	gpSharedBlock->ActiveModulation.AutoDetectModShift = sel;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return sel;
 
@@ -281,17 +292,21 @@ int GetModulationIndexFromGlobalMemory(const char * InternalModName)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 	
 	for (index = 0 ; index < gpSharedBlock->nModulations ; index++)
 	{
 		if (strcmp((char *)gpSharedBlock->pInternalModName[index], InternalModName))
 			continue;
 		ReleaseMutex(ghDataLock);
-		return index;
+		
+
+	return index;
 	}
 
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
+
 	return -1;
 }
 
@@ -306,7 +321,7 @@ far void * OpenSharedDataStruct(void)
 	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
 	WaitForSingleObject(ghDataLock, INFINITE);
 
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 	
     hFileMapping = OpenFileMapping
 		(
@@ -318,6 +333,8 @@ far void * OpenSharedDataStruct(void)
 	if (!hFileMapping)
 	{ 		
 		ReleaseMutex(ghDataLock);
+		CloseHandle(ghDataLock);
+
 		return NULL;
 	};
 	
@@ -352,12 +369,13 @@ void SetPositiveShiftToGlobalMemory(const int sel)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	gpSharedBlock->ActiveModulation.ActiveModShift = sel;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 }
 
@@ -377,7 +395,7 @@ struct Modulations * GetModulationFromGlobalMemory()
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	VersionDll = gpSharedBlock->VersionDll;
 
@@ -399,6 +417,7 @@ struct Modulations * GetModulationFromGlobalMemory()
 	out->ShiftAutoDetect = gpSharedBlock->ActiveModulation.AutoDetectModShift;
 	
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return out;
 }
@@ -416,12 +435,13 @@ LPWSTR GetMixerNameFromGlobalMemory(void)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	//// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	MixerName = wcsdup(gpSharedBlock->SrcName);
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 	return MixerName;
 
@@ -437,13 +457,14 @@ void SwitchMixerRequestViaGlobalMemory(LPCWSTR MixerName)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	//// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	wcsncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
 	gpSharedBlock->MixerDeviceStatus = CHANGE_REQ;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
+	CloseHandle(ghDataLock);
 
 }
 
@@ -457,14 +478,14 @@ void SwitchMixerAckViaGlobalMemory(LPWSTR MixerName)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	//// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	wcsncpy(gpSharedBlock->SrcName, MixerName, MAX_MODS);
 	//gpSharedBlock->MixerDeviceStatus = RUNNING;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
-
+	CloseHandle(ghDataLock);
 }
 
 
@@ -478,13 +499,13 @@ void SetSwitchMixerRequestStatToGlobalMemory(enum MDSTAT Stat)
 	WaitForSingleObject(ghDataLock, INFINITE);
 	
 	/* Lock access to global memory */
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
+	//// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
 	gpSharedBlock->MixerDeviceStatus = Stat;
 
 	/* Release acces lock */
 	ReleaseMutex(ghDataLock);
-
+	CloseHandle(ghDataLock);
 }
 
 /*
@@ -530,6 +551,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 	{ 
 		SppMessageBoxWithErrorCode();
 		ReleaseMutex(ghDataLock);
+		CloseHandle(ghDataLock);
 		return NULL;
 	};
 
@@ -547,6 +569,7 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 		/* Version 3.3.2 */
 		SppMessageBoxWithErrorCode();
 		ReleaseMutex(ghDataLock);
+		CloseHandle(ghDataLock);
 		return NULL;
 	};
 

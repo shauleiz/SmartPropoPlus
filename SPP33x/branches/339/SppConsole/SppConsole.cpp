@@ -34,7 +34,7 @@ END_MESSAGE_MAP()
 CSppConsoleApp::CSppConsoleApp()
 {
 	_CrtDumpMemoryLeaks();
-	int i=105;
+	int i=-1;
 	_CrtSetBreakAlloc(i);
 
 }

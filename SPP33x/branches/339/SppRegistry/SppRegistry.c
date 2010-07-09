@@ -318,6 +318,7 @@ LPWSTR GetCurrentMixerDeviceFromRegistry()
 	if (res != ERROR_SUCCESS)
 		return NULL;
 
+	RegCloseKey(hkSpp);
 	return wcsdup(Active);
 }
 
@@ -346,6 +347,7 @@ LPWSTR GetCurrentEndpointDeviceFromRegistry()
 	if (res != ERROR_SUCCESS)
 		return NULL;
 
+	RegCloseKey(hkSpp);
 	return wcsdup(Active);
 }
 
@@ -831,6 +833,7 @@ struct Modulations * GetModulationFromRegistry(int Create)
 	Out->PositiveShift = PositiveShift;
 	Out->ShiftAutoDetect = ShiftAutoDetect;
 	
+	RegCloseKey(hkSpp);
 	RegCloseKey(hkResult);
 	return Out;
 }
@@ -1002,6 +1005,7 @@ char * GetSelectedFilterNameFromRegistry()
 	if (res != ERROR_SUCCESS)
 		return NULL;
 
+	RegCloseKey(hkSpp);
 	return strdup(Active);
 }
 
