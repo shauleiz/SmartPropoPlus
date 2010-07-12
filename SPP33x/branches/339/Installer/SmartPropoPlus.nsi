@@ -76,11 +76,11 @@
 ;--------------------------------
 ;Pages
 
-  !define 		MUI_PAGE_CUSTOMFUNCTION_LEAVE  ComponentLeaveFunction
+  !define 	MUI_PAGE_CUSTOMFUNCTION_LEAVE  ComponentLeaveFunction
   !insertmacro	MUI_PAGE_COMPONENTS
   !insertmacro	MUI_PAGE_DIRECTORY
   !insertmacro	MUI_PAGE_INSTFILES
-  !define 		MUI_PAGE_CUSTOMFUNCTION_PRE FinishPreFunction
+  !define 	MUI_PAGE_CUSTOMFUNCTION_PRE FinishPreFunction
   !insertmacro	MUI_PAGE_FINISH
   
  !insertmacro	MUI_UNPAGE_COMPONENTS
@@ -124,15 +124,8 @@ Section /o "!SmartPropoPlus for FMS" SPP4FMS
 	file ..\..\AudioStudy\Release\AudioStudy.exe
 	file ..\..\filters\JsChPostProc\Release\JsChPostProc.dll
 	file ..\SppConsole\Release\SppConsole.exe
-   ${If} ${AtLeastWinVista}
-   ; Vista
- 	file ..\winmm\Release_WASAPI\winmm.dll
-	!insertmacro GetLocalFileVer "..\winmm\Release_WASAPI\winmm.dll" "$VERSION" ; DLL Version manipulation	
-  ${Else}
-   ; Non-Vista
 	file ..\winmm\Release\winmm.dll
 	!insertmacro GetLocalFileVer "..\winmm\Release\winmm.dll" "$VERSION" ; DLL Version manipulation	
-   ${EndIf}
 
 
   ; Start Menu
@@ -156,10 +149,9 @@ Section /o "!SmartPropoPlus for FMS" SPP4FMS
   ; Enter the installation location of this section to enable later the uninstaller to remove only it
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus" "FolderSPP4FMS" "$INSTDIR"
   
-  ; Vista only: Run in XP-SP2 compatibility mode
+  ; Vista/W7 only: Remove compatibility mode
   ${If} ${AtLeastWinVista}
-  ;WriteRegStr HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
-  WriteRegStr HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
+  DeleteRegValue HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe"
   ${Endif}
   
   SetAutoClose false
@@ -187,16 +179,8 @@ Section "!Generic SmartPropoPlus" GenSPP
   	file ..\..\filters\JsChPostProc\Release\JsChPostProc.dll
   	file ..\SppConsole\Release\SppConsole.exe
   	file ..\winmm\Release_PPJoy\PPJoyEx.dll
-   ${If} ${AtLeastWinVista}
-   ; Vista
-	file ..\winmm\Release_PPJoy_WASAPI\PPJoyEx.dll
-	!insertmacro GetLocalFileVer "..\winmm\Release_PPJoy_WASAPI\PPJoyEx.dll" "$VERSION" ; DLL Version manipulation	
-  ${Else}
-   ; Non-Vista
 	file ..\winmm\Release_PPJoy\PPJoyEx.dll
 	!insertmacro GetLocalFileVer "..\winmm\Release_PPJoy\PPJoyEx.dll" "$VERSION" ; DLL Version manipulation	
-   ${EndIf}
-  		
 
   ; Start Menu
 	CreateDirectory "$SMPROGRAMS\SmartPropoPlus"
@@ -222,10 +206,9 @@ Section "!Generic SmartPropoPlus" GenSPP
   ; Enter the installation location of this section to enable later the uninstaller to remove only it
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus" "FolderGenSpp" "$INSTDIR"
   
-  ; Vista only: Run in XP-SP2 compatibility mode
+  ; Vista/W7 only: Do not run in compatibility mode
   ${If} ${AtLeastWinVista}
-;  WriteRegStr HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
-  WriteRegStr HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe" "WINXPSP2"
+  DeleteRegValue HKLM "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$OUTDIR\SppConsole.exe"
   ${Endif}
   
   SetAutoClose false
