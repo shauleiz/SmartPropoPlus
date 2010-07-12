@@ -123,7 +123,7 @@ protected:
 	void HearTx(bool hear=TRUE);
 	void CheckAudioCB(void);
 	void SetCurrentInputLine(int iLine);
-	void SetCurrentMixerDevice(unsigned int iMixer);
+	void SetCurrentMixerDevice(unsigned int iMixer, bool Request=true);
 	bool GetCurrentInputLineFromSystem(unsigned int * iLine);
 	bool GetSavedCurrentInputLine(unsigned int * iLine);
 	bool GetSavedInputLine(LPCWSTR Mixer, unsigned int *iLine);
