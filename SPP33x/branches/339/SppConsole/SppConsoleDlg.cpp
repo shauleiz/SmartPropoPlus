@@ -998,7 +998,7 @@ void CSppConsoleDlg::OnSelchangeMixerdevice()
 		return;
 
 	/* Set the selected Mixer Device as current one in the registry */
-	SetCurrentMixerDevice(sel);
+	SetCurrentMixerDevice(sel, false);
 	PopulateInputLines();
 	OnSelchangeAudioSrc();
 }
@@ -1197,7 +1197,7 @@ bool CSppConsoleDlg::GetCurrentInputLineFromSystem(unsigned int *iLine)
 /*
 	Set the selected (current) mixer device
 */
-void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
+void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer, bool Request)
 {
 
 	// If DLL connected (Let's assume it is) then 
@@ -1209,19 +1209,22 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer)
 		HANDLE hMixerSwitchEvent = CreateEvent(NULL, FALSE, FALSE, EVENT_MIXER);
 		AfxGetApp()->DoWaitCursor(1);
 
-		//  B. Place request on the global memory for the DLL to switch mixer device
-		if (isVista())
-			::SwitchMixerRequest(UniqueMixerName);
-		else
-			::SwitchMixerRequest(MixerName);
+		if (Request)
+		{
+			//  B. Place request on the global memory for the DLL to switch mixer device
+			if (isVista())
+				::SwitchMixerRequest(UniqueMixerName);
+			else
+				::SwitchMixerRequest(MixerName);
 
 
-		//  C. Wait for ack from DLL or timeout
-		DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
-		if (res == WAIT_TIMEOUT) // For debug
-			res+0;
-		CloseHandle(hMixerSwitchEvent);
-		AfxGetApp()->DoWaitCursor(-1);
+			//  C. Wait for ack from DLL or timeout
+			DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
+			if (res == WAIT_TIMEOUT) // For debug
+				res+0;
+			CloseHandle(hMixerSwitchEvent);
+			AfxGetApp()->DoWaitCursor(-1);
+		};
 
 	// Get the name of the actual device from global memory 
 	// Update AudioInput object

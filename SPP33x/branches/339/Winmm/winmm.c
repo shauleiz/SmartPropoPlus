@@ -3854,7 +3854,7 @@ DWORD WINAPI ListenToGui(void * param)
 	while (!closeRequest)
 	{
 		/* Test status every 1/4 second */
-		Sleep(250);
+		Sleep(100);
 		if (DataBlock->MixerDeviceStatus == RUNNING || DataBlock->MixerDeviceStatus == FAILED)
 			continue;
 
