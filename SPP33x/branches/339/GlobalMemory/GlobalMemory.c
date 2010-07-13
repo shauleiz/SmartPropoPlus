@@ -283,29 +283,29 @@ int isGlobalMemoryExist()
 int GetModulationIndexFromGlobalMemory(const char * InternalModName)
 {
 	int index;
+	HANDLE hLock;
 
 	if (!isGlobalMemoryExist() || !InternalModName)
 		return 0;
 	
 	/* Open Mutex and Wait for it */
-	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
-	WaitForSingleObject(ghDataLock, INFINITE);
+	hLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
+	WaitForSingleObject(hLock, INFINITE);
 	
 	/* Lock access to global memory */
 	// --> ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
-	
+
 	for (index = 0 ; index < gpSharedBlock->nModulations ; index++)
 	{
 		if (strcmp((char *)gpSharedBlock->pInternalModName[index], InternalModName))
 			continue;
-		ReleaseMutex(ghDataLock);
-		
-
-	return index;
+		ReleaseMutex(hLock);
+		CloseHandle(hLock);
+		return index;
 	}
 
-	ReleaseMutex(ghDataLock);
-	CloseHandle(ghDataLock);
+	ReleaseMutex(hLock);
+	CloseHandle(hLock);
 
 	return -1;
 }
