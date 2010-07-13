@@ -1205,26 +1205,26 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer, bool Request)
 	LPCWSTR UniqueMixerName = m_AudioInput->GetMixerDeviceUniqueName(iMixer);
 	LPCWSTR MixerName = m_AudioInput->GetMixerDeviceName(iMixer);
 
+	if (Request)
+	{
 		//  A. Enter Wait state (Cursor)
 		HANDLE hMixerSwitchEvent = CreateEvent(NULL, FALSE, FALSE, EVENT_MIXER);
 		AfxGetApp()->DoWaitCursor(1);
 
-		if (Request)
-		{
-			//  B. Place request on the global memory for the DLL to switch mixer device
-			if (isVista())
-				::SwitchMixerRequest(UniqueMixerName);
-			else
-				::SwitchMixerRequest(MixerName);
+		//  B. Place request on the global memory for the DLL to switch mixer device
+		if (isVista())
+			::SwitchMixerRequest(UniqueMixerName);
+		else
+			::SwitchMixerRequest(MixerName);
 
 
-			//  C. Wait for ack from DLL or timeout
-			DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
-			if (res == WAIT_TIMEOUT) // For debug
-				res+0;
-			CloseHandle(hMixerSwitchEvent);
-			AfxGetApp()->DoWaitCursor(-1);
-		};
+		//  C. Wait for ack from DLL or timeout
+		DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
+		if (res == WAIT_TIMEOUT) // For debug
+			res+0;
+		CloseHandle(hMixerSwitchEvent);
+		AfxGetApp()->DoWaitCursor(-1);
+	};
 
 	// Get the name of the actual device from global memory 
 	// Update AudioInput object
