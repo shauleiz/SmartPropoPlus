@@ -353,6 +353,8 @@ __inline void SetActiveJsChPostProcFunction(struct SharedDataBlock * dBlock);
 	//{C8ADBD64-E71E-48A0-A4DE-185C395CD317}
 	static GUID const IID_IAudioCaptureClient = {0xC8ADBD64, 0xE71E, 0x48A0, {0xA4,0xDE,0x18,0x5C,0x39,0x5C,0xD3,0x17} };
 
+	// {5CDF2C82-841E-4546-9722-0CF74078229A}
+	static GUID const IID_IAudioEndpointVolume  = {0x5CDF2C82, 0x841E, 0x4546, {0x97,0x22,0x0c,0xf7,0x40,0x78,0x22,0x9a} };
 
 struct WAVEINSTRUCT_W7
 {

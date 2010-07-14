@@ -142,6 +142,8 @@ copy .\Release_PPJoy\PPJoyEx.dll  ..\SppConsole\Release\.
 				Name="VCPostBuildEventTool"
 				CommandLine="echo Copy PPJoyEx.Dll to SppConsole\debug
 copy .\Debug_PPJoy\PPJoyEx.dll  ..\SppConsole\Debug\.
+copy .\Debug_PPJoy\PPJoyEx.pdb  ..\SppConsole\Debug\.
+copy .\Debug_PPJoy\PPJoyEx.map  ..\SppConsole\Debug\.
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
