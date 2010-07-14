@@ -1015,7 +1015,7 @@ void CSppConsoleDlg::OnSelchangeAudioSrc()
 	if (m_iSelLine < 0)
 		return;
 
-	/* Set the selectedInput Line as current one in the registry */
+	/* Set the selected Input Line as current one in the registry */
 	SetCurrentInputLine(m_iSelLine);
 
 	/* Get the Mixer Device Box */
@@ -1028,7 +1028,7 @@ void CSppConsoleDlg::OnSelchangeAudioSrc()
 	if (m_iSelMixer < 0)
 		return;
 
-	///* Select the Input Line */
+	/* Select the Input Line */
 	m_AudioInput->SetMixerDeviceSelectInputLine(m_iSelMixer, m_iSelLine);// MD
 
 	SetCurrentMixerDevice(m_iSelMixer);

@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
+#include <Endpointvolume.h>
 #include <Functiondiscoverykeys_devpkey.h>
 #include "winmm.h"
 
@@ -3452,6 +3453,8 @@ HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct)
 {
 	HRESULT hr=S_OK;
 	IMMDevice * pDevice = NULL;
+	IAudioEndpointVolume *pEndptVol = NULL;
+	BOOL epMute;
 
 	_ASSERTE(pEndPointStruct);
 	if (!pwstrId || wcslen(pwstrId)<2)
@@ -3480,6 +3483,11 @@ HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct)
 	hr = GetWaveFormat(pEndPointStruct->pClientIn, &(pEndPointStruct->WaveFmt));
 	EXIT_ON_ERROR(hr);
 
+	// Get the current Endpoint master mute status
+	hr = pDevice->lpVtbl->Activate(pDevice, &IID_IAudioEndpointVolume, CLSCTX_ALL,  NULL, (void**)&pEndptVol);
+	EXIT_ON_ERROR(hr);
+	pEndptVol->lpVtbl->GetMute(pEndptVol, &epMute);
+
 	// Initialize the endpoint
 	hr = pEndPointStruct->pClientIn->lpVtbl->Initialize(pEndPointStruct->pClientIn, 
 		AUDCLNT_SHAREMODE_SHARED,			// shared mode
@@ -3489,6 +3497,10 @@ HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct)
 		pEndPointStruct->WaveFmt,			// wave format
 		NULL);								// session GUID
 	EXIT_ON_ERROR(hr);
+
+	// Restore the Endpoint master mute status
+	Sleep(20);
+	pEndptVol->lpVtbl->SetMute(pEndptVol, epMute, NULL);
 
 	//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
 	hr = pEndPointStruct->pClientIn->lpVtbl->SetEventHandle(pEndPointStruct->pClientIn, hBufferReady);
@@ -3500,10 +3512,12 @@ HRESULT InitEndPoint(LPCWSTR pwstrId, struct WAVEINSTRUCT_W7 * pEndPointStruct)
 
 	// If got to this point then it means that init for this endpoint was successful
 	pEndPointStruct->Usable = TRUE;
+	SAFE_RELEASE(pEndptVol);
 	return hr;
 
 Exit:
 	SAFE_RELEASE(pDevice);
+	SAFE_RELEASE(pEndptVol);
 	return hr;
 }
 
@@ -3524,7 +3538,6 @@ HRESULT ReleaseEndPoint(struct WAVEINSTRUCT_W7 * pEndPointStruct)
 
 	SAFE_RELEASE(pEndPointStruct->pClientIn);
 	SAFE_RELEASE(pEndPointStruct->pCaptureClient);
-	// TODO SAFE_RELEASE(pEndPointStruct->pDeviceIn);
 
 	return hr;
 }

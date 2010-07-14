@@ -8,7 +8,7 @@
 //#include <mmdeviceapi.h>
 ////#include <Avrt.h>
 //#include <audioclient.h>
-////#include <Endpointvolume.h>
+#include <Endpointvolume.h>
 //
 //#include <KsMedia.h>
 //#include <functiondiscoverykeys.h>  // PKEY_Device_FriendlyName
@@ -98,6 +98,7 @@ protected:
 		bool CMixerDevice::SetSelectedInputLine(int iLine);
 		bool SelectInputLine(int iLine);
 		bool MuteOutputLine(int iLine, bool mute = true, bool temporary = false);
+		bool MuteCaptureEndpoint(int iLine, bool mute=true);
 		void Restore(void);
 		int SetSpeakers(bool restore=false, bool mute=true);
 		bool MuteSelectedInputLine(unsigned int line, bool restore=false,bool mute=true);
@@ -109,22 +110,33 @@ protected:
 			bool OrigStatus;
 			bool CurrentStatus;
 		} ;
+
 		struct LineSelector {
 			IPart * p;				// Pointer to Input Selector IPart
 			bool	OrigStatus;		// True if this line is originally selected
 			bool	CurrentStatus;	// True if this line is currently selected
 			UINT	FeederID;		// LocalID of feeding IPart
 		};
+
+		struct epVolume {
+			IAudioEndpointVolume * p;
+			float	OrigVolume;
+			float	CurrentVolume;
+			bool	OrigMuteStatus;
+			bool	CurrentMuteStatus;
+		};
+
 		struct InputLine { // Represents entry in array of inputs to the audio device(s)
-			IPart * p;
-			LPWSTR Name;
-			char * NameA;
-			LPWSTR EndPointName;
-			char * EndPointNameA;
-			LPWSTR EndPointID;
-			LPWSTR GlobalId;
-			LineMute lMute;
-			LineSelector lSelect;
+			IPart * p;				// Input pin
+			LPWSTR Name;			// Input line Name (Unicode)
+			char * NameA;			// Input line Name (ASCII)
+			LPWSTR EndPointName;	// Corresponding EP Name (Unicode)
+			char * EndPointNameA;	// Corresponding EP Name (ASCII)
+			LPWSTR EndPointID;		// Unique ID of the Corresponding EP
+			LPWSTR GlobalId;		
+			LineMute lMute;			// Line mute (Structure)
+			LineSelector lSelect;	// Input selector  (Structure)
+			epVolume	epVolume;		// Endpoint volume & Mute (Structure)
 		};	
 	
 	protected:
@@ -137,8 +149,7 @@ protected:
 		void RestoreMute(LineMute * plMute);
 		void FindMasterMute(IMMDevice  * pDevice);
 		void Mute(LineMute * plMute, bool mute=true);
-
-
+		void RestoreCaptureEndpoint(int iInputLine);
 
 	protected:
 		LPWSTR m_Name;

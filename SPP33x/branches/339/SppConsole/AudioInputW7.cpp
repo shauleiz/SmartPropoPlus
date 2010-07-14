@@ -510,6 +510,7 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
     IConnector *pConnEndpoint = NULL;
     IConnector *pConnDevice = NULL;
 	IPart *pPart = NULL;
+	IAudioEndpointVolume *pEndptVol = NULL;
 
 	// Sanity check
 	if (!pCaptureCollect)
@@ -533,6 +534,7 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 		SAFE_RELEASE(pDT);
 		SAFE_RELEASE(pConnEndpoint);
 		SAFE_RELEASE(pConnDevice);
+		//SAFE_RELEASE(pEndptVol);
 
 		// Get pointer to endpoint number i.
 		hr = pCaptureCollect->Item(iEndPoint, &pDevice);
@@ -641,11 +643,6 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 			Muted = GetMuteStat(m_ArrayInputLines[m_nInputLines].lMute.p);
 		m_ArrayInputLines[m_nInputLines].lMute.OrigStatus = m_ArrayInputLines[m_nInputLines].lMute.CurrentStatus = Muted;
 
-#ifdef _DEBUG
-		bool skip = false;
-		if (skip)
-			goto JustInCase;
-#endif
 		//// Input Selector ////
 		bool selected=FALSE;
 		UINT FeederID=0;
@@ -654,9 +651,35 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 		m_ArrayInputLines[m_nInputLines].lSelect.OrigStatus = selected;
 		m_ArrayInputLines[m_nInputLines].lSelect.CurrentStatus = selected;
 
-#ifdef _DEBUG
-JustInCase:
-#endif
+		//// Endpoint Volume (epVolume) and Endpoint Mute (epMute) ////
+		// get device topology object for that endpoint
+		hr = pDevice->Activate(__uuidof(IAudioEndpointVolume),CLSCTX_ALL, NULL, (void**)&pEndptVol);
+		m_ArrayInputLines[m_nInputLines].epVolume.p = pEndptVol;
+		if (pEndptVol)
+		{
+			float epVolume=0;
+			BOOL epMute;
+
+			// Get the current volume level (dB)
+			hr = pEndptVol->GetMasterVolumeLevel(&epVolume);
+			m_ArrayInputLines[m_nInputLines].epVolume.OrigVolume = epVolume;
+			m_ArrayInputLines[m_nInputLines].epVolume.CurrentVolume = epVolume;
+
+			// Get the current Mute state
+			hr = pEndptVol->GetMute(&epMute);
+			if (epMute)
+			{
+				m_ArrayInputLines[m_nInputLines].epVolume.OrigMuteStatus = true;
+				m_ArrayInputLines[m_nInputLines].epVolume.CurrentMuteStatus = true;
+			}
+			else
+			{
+				m_ArrayInputLines[m_nInputLines].epVolume.OrigMuteStatus = false;
+				m_ArrayInputLines[m_nInputLines].epVolume.CurrentMuteStatus = false;
+			}
+		};
+
+
 		// Keep a pointer to the interface (Just in case ...)
 		m_ArrayInputLines[m_nInputLines].p = pPart;
 
@@ -672,6 +695,7 @@ Exit:
 	SAFE_RELEASE(pDT);
 	SAFE_RELEASE(pConnEndpoint);
 	SAFE_RELEASE(pConnDevice);
+	//SAFE_RELEASE(pEndptVol);
 
 	if (FAILED(hr))
 		return false;
@@ -900,6 +924,17 @@ bool CAudioInputW7::CMixerDevice::GetMuteStat(IPart * pMutePart)
 	 RestoreMute(&m_ArrayInputLines[iInputLine].lMute);
  }
 
+ void CAudioInputW7::CMixerDevice::RestoreCaptureEndpoint(int iInputLine)
+ {
+	 if (iInputLine<0 || iInputLine >= m_nInputLines || !m_ArrayInputLines[iInputLine].epVolume.p)
+		 return;
+
+	 bool OrigMuteStatus = m_ArrayInputLines[iInputLine].epVolume.OrigMuteStatus;
+	 HRESULT hr = m_ArrayInputLines[iInputLine].epVolume.p->SetMute(OrigMuteStatus, NULL);
+	 if (hr = S_OK)
+		 m_ArrayInputLines[iInputLine].epVolume.CurrentMuteStatus = OrigMuteStatus;
+
+ }
  void CAudioInputW7::CMixerDevice::RestoreMute(LineMute * plMute)
  {
 	 if (!plMute || !plMute->p)
@@ -1110,6 +1145,7 @@ bool CAudioInputW7::CMixerDevice::SetSelectedInputLine(int iLine)
 
 	bool selected	= SelectInputLine(iLine);
 	bool muted		= MuteOutputLine(iLine);
+	bool epMuted	= MuteCaptureEndpoint(iLine, false);
 
 	return selected;
 }
@@ -1187,6 +1223,43 @@ bool CAudioInputW7::CMixerDevice::MuteOutputLine(int iLine, bool mute , bool tem
 
 }
 
+// Mute/Un-mute the capture Endpoint coresponding to a given input line
+// Restore all other lines
+bool CAudioInputW7::CMixerDevice::MuteCaptureEndpoint(int iLine, bool mute)
+{
+    IAudioEndpointVolume *pEpVolume = NULL;
+	BOOL WasMuted = FALSE;
+	HRESULT hr = S_OK;
+
+	// Go over all the lines. Mute line iLine and restore all others
+	for (int i=0; i<m_nInputLines; i++)
+	{
+		pEpVolume =  m_ArrayInputLines[i].epVolume.p;
+		if (!pEpVolume)
+			return false;
+
+		if (i == iLine)
+		{	// Selected line: Save current state, set new mute state and save it is NOT temporary
+			hr = pEpVolume->GetMute(&WasMuted);
+			hr = pEpVolume->SetMute(mute,NULL);
+			if (!FAILED(hr))
+				m_ArrayInputLines[i].epVolume.CurrentMuteStatus = mute;
+		}
+		else
+			pEpVolume->SetMute(m_ArrayInputLines[i].epVolume.OrigMuteStatus,NULL);
+
+	};
+
+	if (WasMuted)
+		return (true);
+	else
+		return (false);
+
+}
+
+
+
+
 // Restore original setup of this device including:
 //	Selected input
 //  Mute setting of every input
@@ -1207,6 +1280,8 @@ void CAudioInputW7::CMixerDevice::Restore()
 
 		// Restore this line's original mute status
 		RestoreMute(iInputLine);
+		// Restore the corresponding Endpoint original mute status
+		RestoreCaptureEndpoint(iInputLine);
 	};
 }
 
