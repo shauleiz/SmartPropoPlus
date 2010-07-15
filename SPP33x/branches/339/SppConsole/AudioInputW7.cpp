@@ -350,12 +350,28 @@ bool CAudioInputW7::GetMixerDeviceSelectInputLine(int iMixer, unsigned int * iLi
 
 bool  CAudioInputW7::SetMixerDeviceSelectInputLine(int iMixer, int iLine)
 {
-	_ASSERTE(m_MixerDevices);
-	CMixerDevice * Mixer = m_MixerDevices[iMixer];
-	if (!Mixer)
-		return false;
 
-	return Mixer->SetSelectedInputLine(iLine);
+	_ASSERTE(m_MixerDevices);
+	_ASSERTE(m_nMixers);
+
+	bool res = false;
+
+	for (UINT i=0; i<m_nMixers; i++)
+	{
+		CMixerDevice * md = m_MixerDevices[i];
+		if (!md)
+			continue;
+
+		if (i==iMixer)
+			res = md->SetSelectedInputLine(iLine);
+		else
+		{
+			md->MuteSelectedInputLine(-1);
+			md->MuteCaptureEndpoint(-1);
+		}
+	};
+
+	return res;
 }
 
 /*
@@ -1134,7 +1150,7 @@ LPWSTR CAudioInputW7::CMixerDevice::GetName(void)
 bool CAudioInputW7::CMixerDevice::SetSelectedInputLine(int iLine)
 {
 	// Test scope
-	if (!m_nInputLines || iLine >= m_nInputLines || iLine<0)
+	if (!m_nInputLines || iLine >= m_nInputLines )
 		return false;
 
 #ifdef _DEBUG
@@ -1143,9 +1159,11 @@ bool CAudioInputW7::CMixerDevice::SetSelectedInputLine(int iLine)
 		return true;
 #endif
 
-	bool selected	= SelectInputLine(iLine);
-	bool muted		= MuteOutputLine(iLine);
-	bool epMuted	= MuteCaptureEndpoint(iLine, false);
+	bool selected=false, muted, epMuted;
+
+	selected	= SelectInputLine(iLine);
+	muted		= MuteOutputLine(iLine);
+	epMuted		= MuteCaptureEndpoint(iLine, false);
 
 	return selected;
 }

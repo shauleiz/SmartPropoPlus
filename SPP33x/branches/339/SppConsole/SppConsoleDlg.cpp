@@ -1029,9 +1029,9 @@ void CSppConsoleDlg::OnSelchangeAudioSrc()
 		return;
 
 	/* Select the Input Line */
-	m_AudioInput->SetMixerDeviceSelectInputLine(m_iSelMixer, m_iSelLine);// MD
-
 	SetCurrentMixerDevice(m_iSelMixer);
+	m_AudioInput->SetMixerDeviceSelectInputLine(m_iSelMixer, m_iSelLine);
+
 }
 
 void CSppConsoleDlg::OnEnableAudio() 
@@ -1220,8 +1220,7 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer, bool Request)
 
 		//  C. Wait for ack from DLL or timeout
 		DWORD res = WaitForSingleObject(hMixerSwitchEvent,2000);
-		if (res == WAIT_TIMEOUT) // For debug
-			res+0;
+		ASSERT(res != WAIT_TIMEOUT);
 		CloseHandle(hMixerSwitchEvent);
 		AfxGetApp()->DoWaitCursor(-1);
 	};
