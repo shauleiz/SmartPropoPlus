@@ -34,14 +34,14 @@
 ;--------------------------------
 ;General
 
-   VAR  PPJoyExist			; Boolean: 1 if PPJoy installed
-   VAR  FmsExist			; Boolean: 1 if FMS installed
-   VAR  VERSION				; SPP DLL file version (3.3.3)
+   VAR	PPJoyExist              ; Boolean: 1 if PPJoy installed
+   VAR  FmsExist		; Boolean: 1 if FMS installed
+   VAR  VERSION			; SPP DLL file version (3.3.3)
    VAR	FolderSPP4FMS		; Destination folder for SPP for FMS
    VAR	FolderGenSpp		; Destination folder for Generic SPP
-   VAR	FolderUtils			; Destination folder for Utilities
-   VAR	SubText				; Subtext for finishing page
-   VAR	FinishText			; Text for finishing page
+   VAR	FolderUtils		; Destination folder for Utilities
+   VAR	SubText			; Subtext for finishing page
+   VAR	FinishText		; Text for finishing page
    VAR	RadioButtonStart	; Default Selected Section
    VAR	SPP4FMSremoved		; Boolean: 1 if SPP for FMS component was removed
    VAR	GenSPPremoved		; Boolean: 1 if Generic SPP component was removed
@@ -688,6 +688,12 @@ Function GetFmsFolder
 	IntCmp $R2 0 Nothing
 ;CopyString:
 	Push $R0
+	StrLen $R3 $R0		; Found Folder?
+	IntCmp $R3 0 NoFms
+	StrCpy $FolderSPP4FMS $R0
+	goto Nothing
+NoFms:
+	StrCpy $FolderSPP4FMS "$PROGRAMFILES\FMS"
 Nothing:
 FunctionEnd
 
@@ -710,7 +716,16 @@ Function ComponentLeaveFunction
  	
 	
 isGen:
-	; Test is SPP for FMS is installed
+	; Test if PPJoy is installed - if not installed then prevent from instalation
+        ${If} $PPJoyExist = 0
+        DetailPrint "[MB] Installing Generic SmartPropoPlus. PPJoy not installed. Aborting ..."
+        MessageBox MB_ICONEXCLAMATION "\
+        You chose to install Generic SmartPropoPlus$\n\
+        Please install PPJoy before installing Generic SmartPropoPlus$\n"
+        Abort
+        ${Endif}
+      
+	; Test if SPP for FMS is installed
 	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus" "FolderSPP4FMS"
 	StrLen $R2 $R0 
   	IntCmp $R2 0 PopAll
@@ -722,6 +737,20 @@ isGen:
 	goto PopAll
 	
 isFMS:
+        ; Get FMS folder
+        call  GetFmsFolder
+        StrCpy $INSTDIR $FolderSPP4FMS
+        
+	; Test if FMS is installed - if not installed then prevent from instalation
+	call isFmsInstalled
+        ${If} $FmsExist = 0
+        DetailPrint "[MB] Installing SmartPropoPlus for FMS. FMS not installed. Aborting ..."
+        MessageBox MB_ICONEXCLAMATION "\
+        You chose to install SmartPropoPlus for FMS$\n\
+        Please install FMS before installing SmartPropoPlus for FMS$\n"
+        Abort
+        ${Endif}
+
 	; Test if Generic SPP is installed
 	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus" "FolderGenSpp"
 	StrLen $R2 $R0 
@@ -731,7 +760,7 @@ isFMS:
 	You are trying to install SmartPropoPlus for FMS$\n\
 	Generic SmartPropoPlus is already installed$\n\
 	Are you sure you want to continue?" IDYES yes IDNO no
-	
+	goto PopAll
 yes:
 	Pop $R0
 	Pop $R1
