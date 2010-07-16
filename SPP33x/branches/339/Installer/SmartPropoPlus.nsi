@@ -717,6 +717,7 @@ Function ComponentLeaveFunction
 	
 isGen:
 	; Test if PPJoy is installed - if not installed then prevent from instalation
+	Call  isPPJoyInstalled
         ${If} $PPJoyExist = 0
         DetailPrint "[MB] Installing Generic SmartPropoPlus. PPJoy not installed. Aborting ..."
         MessageBox MB_ICONEXCLAMATION "\
