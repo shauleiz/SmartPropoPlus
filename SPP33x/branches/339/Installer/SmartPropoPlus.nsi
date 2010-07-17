@@ -7,6 +7,7 @@
 ;!include "Sections.nsh"
 
 !include "FileFunc.nsh"	; File functions
+!include "nsDialogs.nsh"
 !insertmacro GetParent
 
 !include "WinVer.nsh" ; Window Version Functions
@@ -77,15 +78,18 @@
 ;Pages
 
   !define 	MUI_PAGE_CUSTOMFUNCTION_LEAVE  ComponentLeaveFunction
+ ;UninstPage custom    un.WipeRegistyDialogFunction
   !insertmacro	MUI_PAGE_COMPONENTS
   !insertmacro	MUI_PAGE_DIRECTORY
-  !insertmacro	MUI_PAGE_INSTFILES
+  !define MUI_PAGE_CUSTOMFUNCTION_PRE dir_pre
+   Page custom    WipeRegistyDialogFunction
+ !insertmacro	MUI_PAGE_INSTFILES
   !define 	MUI_PAGE_CUSTOMFUNCTION_PRE FinishPreFunction
   !insertmacro	MUI_PAGE_FINISH
-  
- !insertmacro	MUI_UNPAGE_COMPONENTS
- !insertmacro	MUI_UNPAGE_INSTFILES
-  
+
+  !insertmacro	MUI_UNPAGE_COMPONENTS
+  !insertmacro	MUI_UNPAGE_INSTFILES
+
 
 ;--------------------------------
 ;Installation Types
@@ -108,6 +112,7 @@ RequestExecutionLevel admin
 
 ;--------------------------------
 ;Installer Sections
+
 
 Section /o "!SmartPropoPlus for FMS" SPP4FMS
 
@@ -317,7 +322,7 @@ DetailPrint "[I] Removing Utility files from $FolderUtils" ; Debug
   	RMDir  $FolderUtils
   	RMDir  $FolderSPP4FMS
  	  	
-; Moove short cuts
+; Move short cuts
 	IfFileExists 	"$FolderGenSPP\Utilities" ReplaceUtils DeleteUtils
 ReplaceUtils:
 	DetailPrint "[I] Moving Utility file shortcuts to $FolderGenSPP\Utilities" ; Debug
@@ -434,6 +439,7 @@ Remove:
 EndUninstUtils:
 SectionEnd ; UnUtils
 */
+
 
 Section "-un.install"
 
@@ -783,5 +789,50 @@ PopAll:
 	Pop $R2
 	Pop $R3
 	Pop $R5
+FunctionEnd
+
+; Custom Page function
+; Dialog box that ofers to wipe-clean all SPP registry entries
+Var Dialog
+Var Label
+Var Text
+Var hCheck
+
+Function WipeRegistyDialogFunction
+
+         !insertmacro MUI_HEADER_TEXT "Wipe-clean Registry" "Remove SmartPropoPlus set-up data from the registry"
+	nsDialogs::Create 1018
+	;nsDialogs::Create 1040
+	Pop $Dialog
+
+	${If} $Dialog == error
+		Abort
+	${EndIf}
+
+	${NSD_CreateLabel} 0 0 100% 30u "It is recomended to leave the set-up data$\n\
+        Wipe-clean only if you intend to re-install SmartPropoPlus from scratch"
+	Pop $Label
+
+	;${NSD_CreateText} 0 13u 100% -13u "Type something here..."
+	;Pop $Text
+
+        ${NSD_CreateCheckBox} 0 40u 100% 30u "Remove SmartPropoPlus set-up data from the registry"
+        Pop $hCheck
+        ${NSD_Uncheck} $hCheck
+        
+        ; Replace the text of the "Next" button
+         GetDlgItem $0 $HWNDPARENT 1
+         SendMessage $0 ${WM_SETTEXT} "0" "STR:&Remove >"
+         
+	nsDialogs::Show
+
+FunctionEnd
+
+Function dir_pre
+
+GetDlgItem $0 $HWNDPARENT 1
+
+SendMessage $0 ${WM_SETTEXT} "0" "STR:Do Not Agree"
+
 FunctionEnd
 ;--------------------------------
