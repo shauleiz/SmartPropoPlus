@@ -49,6 +49,8 @@
    VAR	Utilsremoved		; Boolean: 1 if Utilities component was removed
    VAR	RunAppOnFinish		; The application to run at the end of the installation
    VAR	RunAppOnFinishText	; The text nexr to the checkbox of the application to run
+   Var  RemovingAll             ; All installed components are selected to be removed
+
   
  ;Name and file
   Name "SmartPropoPlus"
@@ -78,16 +80,16 @@
 ;Pages
 
   !define 	MUI_PAGE_CUSTOMFUNCTION_LEAVE  ComponentLeaveFunction
- ;UninstPage custom    un.WipeRegistyDialogFunction
   !insertmacro	MUI_PAGE_COMPONENTS
   !insertmacro	MUI_PAGE_DIRECTORY
-  !define MUI_PAGE_CUSTOMFUNCTION_PRE dir_pre
-   Page custom    WipeRegistyDialogFunction
+  ;Page custom    WipeRegistyDialogFunction WipeRegistyDialogFunctionLeave
  !insertmacro	MUI_PAGE_INSTFILES
   !define 	MUI_PAGE_CUSTOMFUNCTION_PRE FinishPreFunction
   !insertmacro	MUI_PAGE_FINISH
 
-  !insertmacro	MUI_UNPAGE_COMPONENTS
+    !define 	MUI_PAGE_CUSTOMFUNCTION_LEAVE  un.ComponentLeaveFunction
+!insertmacro	MUI_UNPAGE_COMPONENTS 
+  UninstPage custom    un.WipeRegistyDialogFunction un.WipeRegistyDialogFunctionLeave
   !insertmacro	MUI_UNPAGE_INSTFILES
 
 
@@ -469,7 +471,7 @@ CleanAll:
 
 ; Remove registry key
 	DetailPrint "[I] Removing SmartPropoPlus entry from registry" ; Debug
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus"
+        DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus"
   
 EndUninst:
 SectionEnd
@@ -791,48 +793,80 @@ PopAll:
 	Pop $R5
 FunctionEnd
 
+
+Function un.ComponentLeaveFunction
+; Test which components were offered and which were selected
+  StrCpy $0 0
+  Call un.GetInstallFolders
+  StrCpy $RemovingAll 1
+
+Fms:
+  StrLen $0 $FolderSPP4FMS
+  IntCmp $0 0 Generic
+  SectionGetFlags ${UnSPP4FMS} $0
+  IntOp $1 $0 & ${SF_SELECTED}
+  ${If} $1 == 0
+        StrCpy $RemovingAll 0
+        goto Nothing
+  ${EndIf}
+  
+Generic:
+  StrLen $0 $FolderGenSpp
+  IntCmp $0 0 Nothing
+  SectionGetFlags ${UnGenSPP} $0
+  IntOp $1 $0 & ${SF_SELECTED}
+  ${If} $1 == 0
+        StrCpy $RemovingAll 0
+        goto Nothing
+  ${EndIf}
+
+Nothing:
+FunctionEnd
+
+
 ; Custom Page function
 ; Dialog box that ofers to wipe-clean all SPP registry entries
 Var Dialog
 Var Label
 Var Text
 Var hCheck
+Var Checkbox_State
 
-Function WipeRegistyDialogFunction
+Function un.WipeRegistyDialogFunction
 
          !insertmacro MUI_HEADER_TEXT "Wipe-clean Registry" "Remove SmartPropoPlus set-up data from the registry"
 	nsDialogs::Create 1018
-	;nsDialogs::Create 1040
+	
 	Pop $Dialog
 
-	${If} $Dialog == error
+	${If} $RemovingAll == 0
 		Abort
 	${EndIf}
 
-	${NSD_CreateLabel} 0 0 100% 30u "It is recomended to leave the set-up data$\n\
-        Wipe-clean only if you intend to re-install SmartPropoPlus from scratch"
+	${NSD_CreateLabel} 0 0 100% 30u "It is recomended to leave the set-up data.$\n\
+        Wipe-clean only if you intend to re-install SmartPropoPlus from scratch."
 	Pop $Label
 
-	;${NSD_CreateText} 0 13u 100% -13u "Type something here..."
-	;Pop $Text
-
-        ${NSD_CreateCheckBox} 0 40u 100% 30u "Remove SmartPropoPlus set-up data from the registry"
+        ${NSD_CreateCheckBox} 0 40u 100% 30u "Remove SmartPropoPlus set-up data from the registry (not recommended)"
         Pop $hCheck
         ${NSD_Uncheck} $hCheck
         
-        ; Replace the text of the "Next" button
+        ; Control the text of the "Next" button
          GetDlgItem $0 $HWNDPARENT 1
-         SendMessage $0 ${WM_SETTEXT} "0" "STR:&Remove >"
+         SendMessage $0 ${WM_SETTEXT} "0" "STR:&Next >"
          
 	nsDialogs::Show
 
 FunctionEnd
 
-Function dir_pre
-
-GetDlgItem $0 $HWNDPARENT 1
-
-SendMessage $0 ${WM_SETTEXT} "0" "STR:Do Not Agree"
+Function un.WipeRegistyDialogFunctionLeave
+         ${NSD_GetState} $hCheck $Checkbox_State
+         ${If} $Checkbox_State == ${BST_CHECKED}
+               DetailPrint "[I] Wiping set-up data from registry"
+               DeleteRegKey HKCU "Software\Flying-Model-Simulator\SmartPropoPlus"
+         ${Else}
+               DetailPrint "[I] Keeping set-up data on registry"
+         ${EndIf}
 
 FunctionEnd
 ;--------------------------------
