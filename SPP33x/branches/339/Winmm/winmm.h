@@ -297,7 +297,7 @@ FAR HMODULE hWinmm = 0;
 DWORD TlsIndex;
 //BOOL DoStartPropo;
 char path[1024];
-static	struct SharedDataBlock * DataBlock;
+static	struct SharedDataBlock * DataBlock = NULL;
 PP ProcessPulse;
 int gDebugLevel;
 FILE * gCtrlLogFile, * gDataLogFile, * gChnlLogFile;

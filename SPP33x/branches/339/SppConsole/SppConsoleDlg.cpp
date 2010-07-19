@@ -191,7 +191,7 @@ BOOL CSppConsoleDlg::OnInitDialog()
 	/* PPJoy interface */
 	m_PpJoyExVer = GetDllVersion(PPJDLL_NAME);	// Get info about the DLL
 	m_hPpJoyExDll = NULL;						// Initialize handle to DLL
-	PpJoyExShowCtrl();							// Display/Hide check box. Check/uncheck it
+	PpJoyExShowCtrl();							// Display/Hide check box. Check/uncheck it	
 	OnPpjoyex();								// Start PPJoy according to checkbox state
 
 	/* Initialize Audio source related controls */
@@ -749,7 +749,7 @@ LRESULT CSppConsoleDlg::OnInterSppApps(WPARAM wParam, LPARAM lParam)
 	if (wParam == MSG_JSCHPPEVAIL)
 	{
 
-//		ASSERT(0);
+		//ASSERT(0);
 		if (lParam == 0)
 			m_JsChPostProcEvail = false;
 		else

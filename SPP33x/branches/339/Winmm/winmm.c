@@ -2011,7 +2011,8 @@ void StartPropo(void)
 
 
 	/* Create the Global memory area (a.k.a. Shared Data) and upload configuration to it */
-	DataBlock =  CreateDataBlock(Modulation);
+	if (!DataBlock)
+		DataBlock =  CreateDataBlock(Modulation);
 
 	/* SetActiveProcessPulseFunction(DataBlock); */
 	nActiveModulations = LoadProcessPulseFunctions(DataBlock);
@@ -2398,11 +2399,20 @@ extern __declspec(dllexport) UINT __stdcall   joyGetDevCapsA(UINT uJoyID, LPJOYC
 	/* If a filter file is loaded - send filter info to the GUI */
 	return pjoyGetDevCapsA( uJoyID,  pjc,  cbjc);
 #else /* PPJOY */
+	static char  jc_name[50];
+	struct Modulations *  Modulation;
+
+	/* Create the Global memory area (a.k.a. Shared Data) and upload configuration to it */
+	if (!DataBlock)
+	{
+		Modulation = GetModulation(0);		// Modulation type: PPM/PCM(JR) ....
+		DataBlock =  CreateDataBlock(Modulation);
+	};
+
 	/* 
 		If the GUI console has not been started yet by the simulator then start it
 		Assumption - FMS (and any other simulator) will use this function but the GUI will not
 		Not assumed - the GUI console is not active yet.*/
-	static char  jc_name[50];
 	if (!console_started)
 		console_started = StartSppConsole();
 
