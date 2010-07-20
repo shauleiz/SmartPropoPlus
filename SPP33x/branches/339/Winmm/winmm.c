@@ -1773,6 +1773,7 @@ int StartSppConsole()
 
 	/* If a filter file is loaded - send filter info to the GUI */
 	//WM_INTERSPPAPPS = RegisterWindowMessage(INTERSPPAPPS);/* 3.3.1 */
+	hJschpostproc = LoadJsChPostProc();
 	if (hJschpostproc)
 	{
 		res = GetJsChPostProcInfo(hJschpostproc);
