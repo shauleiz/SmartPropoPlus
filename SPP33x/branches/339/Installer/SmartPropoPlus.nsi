@@ -646,15 +646,23 @@ FunctionEnd
 
 Function "isPPJoyInstalled"
 	
-	;DetailPrint "[I] Searching for PPJoy in the registry"
-	; Get the Display name of PPJoy and test it
+	; Get the Display name of PPJoy (32bit) and test it
 	ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Parallel Port Joystick" "DisplayName"
+	StrLen $1 $0
+	; If found and length longer than 0 set $PPJoyExist to 1. Else set to 0
+	IntCmp $1 0 Test64bit
+	IntOp $PPJoyExist 0 + 1 ; Installed
+	goto end
+
+Test64bit:
+	; Get the Display name of PPJoy (64bit) and test it
+	ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PPJoy Joystick Driver" "DisplayName"
 	StrLen $1 $0
 	; If found and length longer than 0 set $PPJoyExist to 1. Else set to 0
 	IntCmp $1 0 NotInstalled
 	IntOp $PPJoyExist 0 + 1 ; Installed
 	goto end
-		
+
 NotInstalled:
 	IntOp $PPJoyExist 0 + 0 ; PPJoy NOT  installed 
 	
