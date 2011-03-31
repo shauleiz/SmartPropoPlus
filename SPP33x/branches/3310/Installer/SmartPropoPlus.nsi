@@ -242,9 +242,9 @@ Section /o "-Utilities" Utils_SPP4FMS
 ;SkipAssFolder:
     ; Utilities
   	SetOutPath "$FolderUtils"
-  	file "C:\Program Files\Osc\WinScope.*" 
-   	file "C:\Program Files\Osc\RCAudio.exe" 
-    file "C:\Program Files\Osc\AudPPMV.exe" 
+  	file ".\Utilities\WinScope.*"
+   	file ".\Utilities\RCAudio.exe"
+        file ".\Utilities\AudPPMV.exe"
 
     ; Start menu utility folder
 	CreateDirectory "$SMPROGRAMS\SmartPropoPlus\SmartPropoPlus Utilities"
@@ -634,9 +634,9 @@ isGen:
   	call isPPJoyInstalled
   	IntCmp $PPJoyExist 1 NoNeedToRemind
   	MessageBox MB_OK|MB_ICONINFORMATION \
-  	"PPJoy not installed$\n\
-  	Please install it"
-  	DetailPrint "[MB] Please install PPJoy"
+  	"Virtual joystick driver not installed$\n\
+  	Please install vJoy (or PPJoy)"
+  	DetailPrint "[MB] Please install vJoy (or PPJoy)"
   	Abort
   	
 NoNeedToRemind:  
@@ -657,6 +657,15 @@ Function "isPPJoyInstalled"
 Test64bit:
 	; Get the Display name of PPJoy (64bit) and test it
 	ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PPJoy Joystick Driver" "DisplayName"
+	StrLen $1 $0
+	; If found and length longer than 0 set $PPJoyExist to 1. Else set to 0
+	IntCmp $1 0 Test_vJoy
+	IntOp $PPJoyExist 0 + 1 ; Installed
+	goto end
+
+Test_vJoy:
+	; Get the Display name of PPJoy (64bit) and test it
+	ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Enum\Root\HIDCLASS\0000" "Service"
 	StrLen $1 $0
 	; If found and length longer than 0 set $PPJoyExist to 1. Else set to 0
 	IntCmp $1 0 NotInstalled
@@ -735,10 +744,10 @@ isGen:
 	; Test if PPJoy is installed - if not installed then prevent from instalation
 	Call  isPPJoyInstalled
         ${If} $PPJoyExist = 0
-        DetailPrint "[MB] Installing Generic SmartPropoPlus. PPJoy not installed. Aborting ..."
+        DetailPrint "[MB] Installing Generic SmartPropoPlus. Virtual Joystick Driver not installed. Aborting ..."
         MessageBox MB_ICONEXCLAMATION "\
         You chose to install Generic SmartPropoPlus$\n\
-        Please install PPJoy before installing Generic SmartPropoPlus$\n"
+        Please install vJoy (or PPJoy) before installing Generic SmartPropoPlus$\n"
         Abort
         ${Endif}
       
