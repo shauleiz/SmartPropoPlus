@@ -453,6 +453,9 @@ void SwitchMixerRequestViaGlobalMemory(LPCWSTR MixerName)
 	if (!isGlobalMemoryExist())
 		return;
 
+	if (!MixerName)
+		return;
+
 	/* Open Mutex and Wait for it */
 	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
 	WaitForSingleObject(ghDataLock, INFINITE);

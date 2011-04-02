@@ -1213,9 +1213,17 @@ void CSppConsoleDlg::SetCurrentMixerDevice(unsigned int iMixer, bool Request)
 
 		//  B. Place request on the global memory for the DLL to switch mixer device
 		if (isVista())
+		{
+			if (!UniqueMixerName)
+				return;
 			::SwitchMixerRequest(UniqueMixerName);
+		}
 		else
+		{
+			if (!MixerName)
+				return;
 			::SwitchMixerRequest(MixerName);
+		};
 
 
 		//  C. Wait for ack from DLL or timeout
