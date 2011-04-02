@@ -102,7 +102,12 @@ bool CAudioInputW7::Create(void)
 
 	// Create an array of Mixer Device Names
 	LPWSTR* ListMixerDeviceNames = new LPWSTR[m_nEndPoints+1];
-	CreateListDeviceNames(ListMixerDeviceNames);
+	int nMixerDev = CreateListDeviceNames(ListMixerDeviceNames);
+	if (!nMixerDev)
+	{
+		MessageBox(NULL,"WASAPI (CAudioInputW7): Could not create a list of Mixer Device Names\r\nStopping audio capture", "SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		goto Exit;
+	};
 
 	// Create array of mixer devices
 	m_MixerDevices = new CMixerDevice*[m_nMixers];
@@ -203,17 +208,19 @@ LPCWSTR CAudioInputW7::GetDefaultMixerDeviceName(void)
 	PROPVARIANT varName;
 	IMMDeviceEnumerator * pEnum = NULL;
 
+	
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+	varName.pwszVal = NULL;
+
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&pEnum);
 	EXIT_ON_ERROR(hr);
 
-	pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	hr = pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
 	EXIT_ON_ERROR(hr);
 
 	hr = pDefaultDevice->OpenPropertyStore(STGM_READ, &pProps);
 	EXIT_ON_ERROR(hr);
-
-	// Initialize container for property value.
-	PropVariantInit(&varName);
 
 	// Get the Device's friendly-name property.
 	hr = pProps->GetValue(PKEY_DeviceInterface_FriendlyName, &varName);
@@ -243,7 +250,7 @@ LPCWSTR CAudioInputW7::GetDefaultEndpointName(void)
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&pEnum);
 	EXIT_ON_ERROR(hr);
 
-	pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	hr = pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
 	EXIT_ON_ERROR(hr);
 
 	hr = pDefaultDevice->OpenPropertyStore(STGM_READ, &pProps);
@@ -280,7 +287,7 @@ LPWSTR CAudioInputW7::GetDefaultEndpointID(void)
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&pEnum);
 	EXIT_ON_ERROR(hr);
 
-	pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
+	hr = pEnum->GetDefaultAudioEndpoint(eCapture, eMultimedia, &pDefaultDevice);
 	EXIT_ON_ERROR(hr);
 
 	pDefaultDevice->GetId(&ID);

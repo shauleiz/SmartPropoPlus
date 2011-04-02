@@ -99,7 +99,7 @@ copy .\Release\SppConsole.exe  ..\.
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;N:\WINDDK\5483\inc\api"
+				AdditionalIncludeDirectories="../include;b:\Include;k:\7600.16385.1\inc\api"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
