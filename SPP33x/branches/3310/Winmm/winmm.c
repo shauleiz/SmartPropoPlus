@@ -26,8 +26,10 @@
 #include "winmm.h"
 
 #ifdef PPJOY
+#include <hidsdi.h>
 #include <winioctl.h>
 #include "ppjoyex.h"
+#include <vjoy.h>
 #endif /* PPJOY */
 
 #define MESSAGE(msg,type) Message(msg, type,  __FILE__, __LINE__)
@@ -3201,6 +3203,9 @@ int ConnectPPJoyDriver()
 	int i;
 	static UINT NEAR WM_INTERSPPAPPS;
 	char msg[1000];
+	HIDD_ATTRIBUTES HidAttrib;
+	BOOL bRes;
+
 	
 	/* Make sure we could open the device! */
 	WM_INTERSPPAPPS = RegisterWindowMessage(INTERSPPAPPS);
@@ -3212,7 +3217,7 @@ int ConnectPPJoyDriver()
 
 	/* Open a handle to the control device for the first virtual joystick. */
 	/* Virtual joystick devices are names PPJoyIOCTL1 to PPJoyIOCTL16. */
-	hJoy= CreateFile(JOYSTICK_IOCTL1,GENERIC_WRITE,FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
+	hJoy= CreateFile(JOYSTICK_IOCTL1,GENERIC_WRITE | GENERIC_READ, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL,OPEN_EXISTING,0,NULL);
 	
 	if (hJoy==INVALID_HANDLE_VALUE)
 	{
@@ -3220,7 +3225,15 @@ int ConnectPPJoyDriver()
 		return 0;
 	}
 	else
+	{
+		// Handle OK: Inform GUI of joystick type (and version when it is vJoy), then that it is OK
+		int vjoyver = isvjoy(hJoy);
+		if (vjoyver)
+			PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_ISVJOY, vjoyver);
+		else
+			PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_ISPPJOY, 0);
 		PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLPPJSTAT, 0);
+	}
 
 	
 	/* Initialise the IOCTL data structure */
@@ -3231,6 +3244,12 @@ int ConnectPPJoyDriver()
 		JoyState.Analog[i] = (PPJOY_AXIS_MIN+PPJOY_AXIS_MAX)/2;
 
 	PpjActive = 1;
+
+
+	//***  TESTING ***/
+	HidAttrib.Size = sizeof(HIDD_ATTRIBUTES);
+	bRes = HidD_GetAttributes(hJoy,   &HidAttrib);
+
 	return 1;
 	
 }
@@ -3324,7 +3343,7 @@ void SendPPJoy(int nChannels, int *Channel)
 	else
 	{	/* Cannot send data to PPJoy */
 		/* Try to reconnect - if timeout and change if return status post status to GUI */
-		hJoy= CreateFile(JOYSTICK_IOCTL1,GENERIC_WRITE,FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
+		hJoy= CreateFile(JOYSTICK_IOCTL1,GENERIC_WRITE | GENERIC_READ, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL,OPEN_EXISTING,0,NULL);
 		rc= GetLastError();
 		time(&t1);
 		if (t1-t0>1 && rc != prev_rc)
@@ -3337,7 +3356,14 @@ void SendPPJoy(int nChannels, int *Channel)
 			if (hJoy == INVALID_HANDLE_VALUE)
 				PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLPPJSTAT, rc);
 			else
+			{
+				// Handle OK: Inform GUI of joystick type then that it is OK
+				if (isvjoy(hJoy))
+					PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_ISVJOY, 0);
+				else
+					PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_ISPPJOY, 0);
 				PostMessage(HWND_BROADCAST, WM_INTERSPPAPPS, MSG_DLLPPJSTAT, 0);
+			}
 			prev_rc = rc;
 		};
 	};
@@ -4027,4 +4053,24 @@ Exit:
 	SAFE_RELEASE(pEnum);
 
 	return ID;
+}
+
+/*
+	Tests is the input handle belongs to a vjoy driver
+	Returns version of if vJoy, 0 otherwise
+*/
+int isvjoy(HANDLE h)
+{
+	BOOL res;
+	HID_DEVICE_ATTRIBUTES attrib;
+	ULONG bytes;
+	res = DeviceIoControl(h, IOCTL_VJOY_GET_ATTRIB, NULL, 0, &(attrib), sizeof (HID_DEVICE_ATTRIBUTES), &bytes, NULL);
+	if (!res)
+		return res;
+
+	if (attrib.ProductID == PRODUCT_N_ID || attrib.VendorID == VENDOR_N_ID)
+		return attrib.VersionNumber;
+	else
+		return 0;
+
 }

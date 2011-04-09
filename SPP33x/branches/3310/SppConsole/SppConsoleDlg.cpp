@@ -30,6 +30,9 @@ CSppConsoleDlg::CSppConsoleDlg(CWnd* pParent /*=NULL*/)
 	m_AudioInput = NULL;
 	m_iSelMixer = -1;
 	m_iSelLine = -1;
+	m_isPpJoy = false;
+	m_isvJoy  = false;
+
 }
 
 void CSppConsoleDlg::DoDataExchange(CDataExchange* pDX)
@@ -721,13 +724,20 @@ LRESULT CSppConsoleDlg::OnInterSppApps(WPARAM wParam, LPARAM lParam)
 
 	if (wParam == MSG_DLLPPJSTAT)
 	{
+		/* Display baloon */
+		CString Msg = "";
+		if (m_isPpJoy)
+			Msg = "PPJoy:";
+		if (m_isvJoy)
+			Msg = "vJoy:";
+
 		if (!lParam)
 		{	// lParam == 0 -> OK
-			TaskBarIconBaloon(IDR_MAINFRAME, BALOON_PPJ_CNCT);
+			TaskBarIconBaloon(IDR_MAINFRAME, BALOON_PPJ_CNCT,Msg);
 		} else
 		if (lParam == 2)
 		{ // Underlying joystick device deleted
-			TaskBarIconBaloon(IDR_MAINFRAME, BALOON_PPJ_NOTFND );
+			TaskBarIconBaloon(IDR_MAINFRAME, BALOON_PPJ_NOTFND, Msg );
 		} else
 		if (lParam == 6)
 		{ // The joystick device handle is invalid
@@ -735,16 +745,31 @@ LRESULT CSppConsoleDlg::OnInterSppApps(WPARAM wParam, LPARAM lParam)
 		} else
 		if (lParam == MSG_DPPJSTAT_DISCN)
 		{ // The joystick disconnected (intentially)
-			TaskBarIconBaloon(IDR_MAINFRAME, BALOON_PPJ_DISCNCT);
+			TaskBarIconBaloon(IDR_MAINFRAME, BALOON_PPJ_DISCNCT, Msg);
 		} else
 		{
 			CString msg;
-			msg.Format("PPJoy error: %d", lParam);
+			msg.Format("Virtual Joystick error: %d", lParam);
 			TaskBarIconBaloon(IDR_MAINFRAME, msg );
 		};
 		return 1;
 	}
-	
+
+	if (wParam == MSG_ISVJOY)
+	{
+		m_isPpJoy = false;
+		m_isvJoy  = true;
+		return 1;
+	};
+
+	if (wParam == MSG_ISPPJOY)
+	{
+		m_isPpJoy = true;
+		m_isvJoy  = false;
+		return 1;
+	};
+
+
 	/* Message from WINMM about joystick filter status */
 	if (wParam == MSG_JSCHPPEVAIL)
 	{

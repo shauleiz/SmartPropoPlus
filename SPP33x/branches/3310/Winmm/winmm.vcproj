@@ -116,7 +116,7 @@ copy .\Release_PPJoy\PPJoyEx.dll  ..\SppConsole\Release\.
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="smartpropoplus.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="smartpropoplus.lib uuid.lib odbc32.lib odbccp32.lib libcd.lib K:\6000\lib\wxp\i386\hid.lib"
 				OutputFile="Debug_PPJoy/PPJoyEx.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
