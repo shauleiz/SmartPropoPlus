@@ -141,8 +141,7 @@ copy .\Release\SppConsole.exe  ..\.
 				TypeLibraryName=".\Debug/SppConsole.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="copy .\debug\SppConsole.exe &quot;C:\Program Files\FMS8\.&quot;"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

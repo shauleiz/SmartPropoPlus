@@ -156,6 +156,8 @@ protected:
 	bool m_JsChPostProcEvail;
 	int m_iSelFilter;	// index of selected filter
 	HMENU m_hFilterMenu; // Handle to the filter menu
+	bool m_isPpJoy;
+	bool m_isvJoy;
 
 
 	// Generated message map functions

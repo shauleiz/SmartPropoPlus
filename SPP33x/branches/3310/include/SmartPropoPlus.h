@@ -160,8 +160,10 @@ For further details please go to the SmartPropoPlus Home using the link below."
 /* User Defined Window-Message parameters */
 #define MSG_DLLSTOPPING		1280	// WPARAM: Inform GUI that DLL is stopping
 #define MSG_DLLSTARTING		1281	// WPARAM: Inform GUI that DLL is starting
-#define MSG_DLLPPJSTAT		1282	// WPARAM: Inform GUI of PPJoy connection status
+#define MSG_DLLPPJSTAT		1282	// WPARAM: Inform GUI of PPJoy/vJoy connection status
 #define MSG_JSCHPPEVAIL		1283	// WPARAM: Inform GUI that Joystick channel postprocessor is evalable/unevailable
+#define MSG_ISPPJOY			1284	// WPARAM: Inform GUI that Virtual Joystick type is PPJoy
+#define MSG_ISVJOY			1285	// WPARAM: Inform GUI that Virtual Joystick type is vJoy
 
 
 #define MSG_DPPJSTAT_DISCN	1984	// LPARAM: Intentional disconnection

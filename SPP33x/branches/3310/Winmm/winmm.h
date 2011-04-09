@@ -328,6 +328,7 @@ int		OpenAllStreams();
 HWAVEIN	OpenStream(struct WAVEINSTRUCT * wi);
 
 BOOL PropoStarted(void);
+int isvjoy(HANDLE h);
 
 //-------------- JsChPostProc.dll interface ---------------------------------
 
