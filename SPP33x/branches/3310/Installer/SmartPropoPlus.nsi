@@ -50,11 +50,24 @@
    VAR	RunAppOnFinish		; The application to run at the end of the installation
    VAR	RunAppOnFinishText	; The text nexr to the checkbox of the application to run
    Var  RemovingAll             ; All installed components are selected to be removed
+   
 
   
  ;Name and file
   Name "SmartPropoPlus"
   OutFile "InstallSPP.exe"
+  
+; Version/File details
+  !define PROD_VERSION  "0.3.3.10"
+  VIProductVersion "${PROD_VERSION}"
+  VIAddVersionKey  "ProductVersion"  "${PROD_VERSION}"
+  VIAddVersionKey  "ProductName" "SmartPropoPlus"
+  VIAddVersionKey  "FileVersion" "${PROD_VERSION}"
+  VIAddVersionKey  "LegalCopyright" "Copyright © 2006-2011 Shaul Eizikovich"
+  VIAddVersionKey  "FileDescription" "SmartPropoPlus installer"
+  
+
+
   !define MUI_ICON  "..\SppConsole\res\SppConsole.ico" /* Icon */
   !define MUI_UNICON  "UnInstaller.ico" /* Uninstall Icon */
 
@@ -114,6 +127,7 @@ RequestExecutionLevel admin
 
 ;--------------------------------
 ;Installer Sections
+
 
 
 Section /o "!SmartPropoPlus for FMS" SPP4FMS
