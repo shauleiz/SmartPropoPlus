@@ -3203,8 +3203,8 @@ int ConnectPPJoyDriver()
 	int i;
 	static UINT NEAR WM_INTERSPPAPPS;
 	char msg[1000];
-	HIDD_ATTRIBUTES HidAttrib;
-	BOOL bRes;
+	//HIDD_ATTRIBUTES HidAttrib;
+	//BOOL bRes;
 
 	
 	/* Make sure we could open the device! */
@@ -3246,9 +3246,9 @@ int ConnectPPJoyDriver()
 	PpjActive = 1;
 
 
-	//***  TESTING ***/
+	/***  TESTING 
 	HidAttrib.Size = sizeof(HIDD_ATTRIBUTES);
-	bRes = HidD_GetAttributes(hJoy,   &HidAttrib);
+	bRes = HidD_GetAttributes(hJoy,   &HidAttrib);***/
 
 	return 1;
 	
@@ -4055,6 +4055,7 @@ Exit:
 	return ID;
 }
 
+#ifdef PPJOY
 /*
 	Tests is the input handle belongs to a vjoy driver
 	Returns version of if vJoy, 0 otherwise
@@ -4074,3 +4075,4 @@ int isvjoy(HANDLE h)
 		return 0;
 
 }
+#endif
