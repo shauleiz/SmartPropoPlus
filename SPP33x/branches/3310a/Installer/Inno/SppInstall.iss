@@ -5,6 +5,7 @@
 #define MyAppVersion "3.3.10"
 #define MyAppURL "http://www.smartpropoplus.com/"
 #define MyAppExeName "SppConsole.exe"
+#define AppUtilsName  "SmartPropoPlus Utilities"
 
 
 [Setup]
@@ -38,23 +39,42 @@ VersionInfoVersion=3.3.10.1
 VersionInfoCompany=Shaul Eizikovich
 AppCopyright=Copyright (c) 2005-2011 by Shaul Eizikovich
 DisableDirPage=auto
+DisableProgramGroupPage=yes
+DisableReadyMemo=yes
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+;Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
+; Files needed to run SPP
 Source: ..\SppConsole\Release\SppConsole.exe; DestDir: {app}; Flags: recursesubdirs promptifolder createallsubdirs; 
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: ..\ReleaseNotes.pdf; DestDir: {app}; Flags:  promptifolder
+Source: ..\..\msvcr71.dll; DestDir: {app}; Flags:  promptifolder ;
+Source: ..\..\MFC71.dll; DestDir: {app}; Flags:  promptifolder ;
+Source: ..\..\filters\JsChPostProc\Release\JsChPostProc.dll; DestDir: {app}; Flags:  promptifolder ;
+Source: ..\winmm\Release\winmm.dll; DestDir: {app}; Flags:  promptifolder ;  Components:  FMS
+Source: ..\..\AudioStudy\Release\AudioStudy.exe; DestDir: {app}; Flags:  promptifolder ; Components:  Generic
+Source: ..\winmm\Release_PPJoy\PPJoyEx.dll; DestDir: {app}; Flags:  promptifolder ; Components:  Generic
+
+; Utilities
+Source: Utilities\*; DestDir: {app}\Utilities; Flags:  promptifolder ; 
+
+
+
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
-Name: ..\; Filename: ..\..\SppConsole\res\SppConsole.ico; IconFilename: {app}\SppConsole.exe; Tasks: "desktopicon quicklaunchicon"; 
+Name: "{group}\{#AppUtilsName}"; Filename: "{app}\Utilities" ; WorkingDir: "{app}\Utilities" ; flags: foldershortcut
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+;Name: ..\; Filename: ..\..\SppConsole\res\SppConsole.ico; IconFilename: {app}\SppConsole.exe;  
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
+; Generic: Run SppConsole after installation
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: Generic
+; FMS: Run FMS
+; <TODO>
 
 [Types]
 ;Name: "full"; Description: "Full installation"
