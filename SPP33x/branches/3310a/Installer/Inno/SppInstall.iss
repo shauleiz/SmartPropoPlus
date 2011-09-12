@@ -38,9 +38,10 @@ UninstallLogMode=append
 VersionInfoVersion=3.3.10.1
 VersionInfoCompany=Shaul Eizikovich
 AppCopyright=Copyright (c) 2005-2011 by Shaul Eizikovich
-DisableDirPage=auto
+DisableDirPage=yes
 DisableProgramGroupPage=yes
 DisableReadyMemo=yes
+;UninstallFilesDir={code:GetAppFolder}
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -48,33 +49,43 @@ DisableReadyMemo=yes
 
 [Files]
 ; Files needed to run SPP
-Source: ..\SppConsole\Release\SppConsole.exe; DestDir: {app}; Flags: recursesubdirs promptifolder createallsubdirs; 
+Source: ..\SppConsole\Release\SppConsole.exe; DestDir: {code:GetAppFolder}; Flags: recursesubdirs promptifolder createallsubdirs; 
 Source: ..\ReleaseNotes.pdf; DestDir: {app}; Flags:  promptifolder
-Source: ..\..\msvcr71.dll; DestDir: {app}; Flags:  promptifolder ;
-Source: ..\..\MFC71.dll; DestDir: {app}; Flags:  promptifolder ;
-Source: ..\..\filters\JsChPostProc\Release\JsChPostProc.dll; DestDir: {app}; Flags:  promptifolder ;
-Source: ..\winmm\Release\winmm.dll; DestDir: {app}; Flags:  promptifolder ;  Components:  FMS
-Source: ..\..\AudioStudy\Release\AudioStudy.exe; DestDir: {app}; Flags:  promptifolder ; Components:  Generic
-Source: ..\winmm\Release_PPJoy\PPJoyEx.dll; DestDir: {app}; Flags:  promptifolder ; Components:  Generic
+Source: ..\..\msvcr71.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ;
+Source: ..\..\MFC71.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ;
+Source: ..\..\filters\JsChPostProc\Release\JsChPostProc.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ;
+Source: ..\winmm\Release\winmm.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ;  Components:  FMS
+Source: ..\..\AudioStudy\Release\AudioStudy.exe; DestDir: {code:GetAppFolder}; Flags:  promptifolder ; Components:  Generic
+Source: ..\winmm\Release_PPJoy\PPJoyEx.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ; Components:  Generic
 
 ; Utilities
 Source: Utilities\*; DestDir: {app}\Utilities; Flags:  promptifolder ; 
+Source: .\UnInstaller.ico; DestDir: {app}; Attribs: Hidden; 
 
 
 
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"
-Name: "{group}\{#AppUtilsName}"; Filename: "{app}\Utilities" ; WorkingDir: "{app}\Utilities" ; flags: foldershortcut
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-;Name: ..\; Filename: ..\..\SppConsole\res\SppConsole.ico; IconFilename: {app}\SppConsole.exe;  
+; System menu
+Name: "{group}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}" ; WorkingDir: "{code:GetAppFolder}" ; Components:  Generic
+Name: "{group}\ReleaseNotes.pdf"; Filename: "{app}\ReleaseNotes.pdf" ; WorkingDir: "{code:GetAppFolder}"
+Name: "{group}\SmartPropoPlus Web Site"; Filename: "http://www.SmartPropoPlus.com" ; WorkingDir: "{code:GetAppFolder}"
+Name: "{group}\Uninstall SmartPropoPlus"; Filename: {uninstallexe}; IconFilename: {code:GetAppFolder}\UnInstaller.ico; 
+Name: {group}\{#AppUtilsName}\AudPPMV; Filename: {app}\Utilities\AudPPMV.exe; WorkingDir: {code:GetAppFolder}\Utilities; 
+Name: {group}\{#AppUtilsName}\RCAudio (PPM Thermometer); Filename: {app}\Utilities\RCAudio.exe; WorkingDir: {code:GetAppFolder}\Utilities; 
+Name: {group}\{#AppUtilsName}\Winscope; Filename: {app}\Utilities\WINSCOPE.exe; WorkingDir: {code:GetAppFolder}\Utilities; 
+
+; Desktop
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}"
+;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}"
+;Name: ..\; Filename: ..\..\SppConsole\res\SppConsole.ico; IconFilename: {code:GetAppFolder}\SppConsole.exe;  
 
 [Run]
 ; Generic: Run SppConsole after installation
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: Generic
+Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: Generic
 ; FMS: Run FMS
-; <TODO>
+Filename: "{code:GetFmsFolder}\FMS.exe"; Description: "{cm:LaunchProgram,{#StringChange('FMS', "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: FMS
+
 
 [Types]
 ;Name: "full"; Description: "Full installation"
@@ -90,6 +101,26 @@ Name: Generic/vJoy; Description: vJoy; Check: DisplayvJoyComponent and ( isFmsIn
 Name: Generic/vJoy; Description: vJoy; Check: DisplayvJoyComponent and ( not isFmsInstalled) ; Flags: checkablealone; Types: custom; 
 
 [code]
+var
+FolderApp: String;
+
+// Returns FMS folder if exists
+// Else return ""
+function GetFmsFolder(Param: String): String;
+var
+  RegValFms, Name, Path: String;
+  Len: Integer;
+  Res: Boolean;
+
+begin
+  RegValFms := 'Software\Flying-Model-Simulator';
+  Name := 'InstallationPath';
+  Res := RegQueryStringValue(HKEY_CURRENT_USER, RegValFms, Name, Path);
+  if Res then Len := Length(Path) else Len := 0;
+  if (Len > 0) then Result := Path  else    Result := '';
+end;
+
+
 function IsX64: Boolean;
 begin
   Result := Is64BitInstallMode and (ProcessorArchitecture = paX64);
@@ -132,7 +163,27 @@ begin
     Result := False;
 end;
 
+
+//  If FMS flavour selected then Set FMS folder as target
+//  If Generic flavour selected then Set SmartPropoPlus default folder as target
+function NextButtonClick(PageID: Integer): Boolean;
+begin
+  if ((PageID = wpSelectComponents) and isFmsInstalled()) then 
+  begin
+    if IsComponentSelected('FMS') then
+      FolderApp := GetFmsFolder('Dummy')
+     else
+      FolderApp := ExpandConstant('{app}');
+  end;
+    Result := TRUE 
+end;
+
+function GetAppFolder(Param: String): String;
+begin
+  Result := FolderApp;
+end;
+
+
 [InnoIDE_Settings]
 LogFile=C:\Users\Shaul\Documents\SmartPropoPlus\HEAD\SPP33x\branches\3310\Installer\Inno\SppInstall.log
 LogFileOverwrite=false
-
