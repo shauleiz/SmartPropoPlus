@@ -7,6 +7,10 @@
 #define MyAppExeName "SppConsole.exe"
 #define AppUtilsName  "SmartPropoPlus Utilities"
 
+#define vJoyBaseDir "C:\WinDDK\vjoy1" ; You will have to change it!!!
+#define vJoyInstx86 "install\objfre_wxp_x86\i386"
+#define vJoyInstx64 "install\objfre_wlh_amd64\amd64"
+
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -62,29 +66,34 @@ Source: ..\winmm\Release_PPJoy\PPJoyEx.dll; DestDir: {code:GetAppFolder}; Flags:
 Source: Utilities\*; DestDir: {app}\Utilities; Flags:  promptifolder ; 
 Source: .\UnInstaller.ico; DestDir: {app}; Attribs: Hidden; 
 
-
+; vJoy Installer
+Source: {#vJoyBaseDir}\{#vJoyInstx86}\*; DestDir: {app}\vJoy; Flags:  promptifolder ; Components:  Generic/vJoy ; Check: IsOtherArch
+Source: {#vJoyBaseDir}\{#vJoyInstx64}\*; DestDir: {app}\vJoy; Flags:  promptifolder ; Components:  Generic/vJoy ; Check: IsX64
 
 
 [Icons]
 ; System menu
 Name: "{group}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}" ; WorkingDir: "{code:GetAppFolder}" ; Components:  Generic
+Name: "{group}\FMS"; Filename: "{code:GetAppFolder}\FMS.exe" ; WorkingDir: "{code:GetAppFolder}" ; Components:  FMS
 Name: "{group}\ReleaseNotes.pdf"; Filename: "{app}\ReleaseNotes.pdf" ; WorkingDir: "{code:GetAppFolder}"
 Name: "{group}\SmartPropoPlus Web Site"; Filename: "http://www.SmartPropoPlus.com" ; WorkingDir: "{code:GetAppFolder}"
-Name: "{group}\Uninstall SmartPropoPlus"; Filename: {uninstallexe}; IconFilename: {code:GetAppFolder}\UnInstaller.ico; 
+Name: "{group}\Uninstall SmartPropoPlus"; Filename: {uninstallexe}; IconFilename: {app}\UnInstaller.ico; 
 Name: {group}\{#AppUtilsName}\AudPPMV; Filename: {app}\Utilities\AudPPMV.exe; WorkingDir: {code:GetAppFolder}\Utilities; 
 Name: {group}\{#AppUtilsName}\RCAudio (PPM Thermometer); Filename: {app}\Utilities\RCAudio.exe; WorkingDir: {code:GetAppFolder}\Utilities; 
 Name: {group}\{#AppUtilsName}\Winscope; Filename: {app}\Utilities\WINSCOPE.exe; WorkingDir: {code:GetAppFolder}\Utilities; 
 
 ; Desktop
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}" ; WorkingDir: "{code:GetAppFolder}" ; Components:  Generic
 ;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeName}"
 ;Name: ..\; Filename: ..\..\SppConsole\res\SppConsole.ico; IconFilename: {code:GetAppFolder}\SppConsole.exe;  
 
 [Run]
+; Install vJoy (if requested)
+Filename: {app}\vJoy\vJoyInstall.exe ;  Components:  Generic/vJoy ; Flags: waituntilterminated runhidden
 ; Generic: Run SppConsole after installation
 Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: Generic
-; FMS: Run FMS
-Filename: "{code:GetFmsFolder}\FMS.exe"; Description: "{cm:LaunchProgram,{#StringChange('FMS', "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: FMS
+; FMS: Run Simulator
+Filename: "{code:GetFmsFolder}\FMS.exe"; Description: "{cm:LaunchProgram,{#StringChange('FMS', "&", "&&")}}";  Components: FMS; Flags: nowait postinstall 
 
 
 [Types]
@@ -97,8 +106,8 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 ;Name: SmartPropoPlus; Description: "Top App"; Flags: dontinheritcheck; MinVersion: 0,5.1.2600; Languages: english hebrew; 
 Name: FMS; Description: "SmartPropoPlus For Fms"; Flags: exclusive checkablealone; Check: isFmsInstalled; Types: custom; 
 Name: Generic; Description: "Generic SmartPropoPlus"; Flags: exclusive; 
-Name: Generic/vJoy; Description: vJoy; Check: DisplayvJoyComponent and ( isFmsInstalled); Flags: checkablealone;
-Name: Generic/vJoy; Description: vJoy; Check: DisplayvJoyComponent and ( not isFmsInstalled) ; Flags: checkablealone; Types: custom; 
+Name: Generic/vJoy; Description: vJoy; Check: isFmsInstalled; Flags: checkablealone;
+Name: Generic/vJoy; Description: vJoy; Check:  ( not isFmsInstalled) ; Flags: checkablealone; Types: custom; 
 
 [code]
 var
@@ -134,11 +143,6 @@ end;
 function IsOtherArch: Boolean;
 begin
   Result := not IsX64 and not IsIA64;
-end;
-
-function DisplayvJoyComponent(): Boolean;
-begin
-  Result := True;
 end;
 
 function isFmsInstalled: Boolean;
