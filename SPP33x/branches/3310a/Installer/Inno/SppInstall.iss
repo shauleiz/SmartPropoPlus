@@ -104,10 +104,12 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 ;Name: SmartPropoPlus; Description: "Top App"; Flags: dontinheritcheck; MinVersion: 0,5.1.2600; Languages: english hebrew; 
-Name: FMS; Description: "SmartPropoPlus For Fms"; Flags: exclusive checkablealone; Check: isFmsInstalled; Types: custom; 
+Name: FMS; Description: "SmartPropoPlus For Fms"; Flags: exclusive checkablealone; Check: isFmsInstalled; Types: custom
 Name: Generic; Description: "Generic SmartPropoPlus"; Flags: exclusive; 
-Name: Generic/vJoy; Description: vJoy; Check: isFmsInstalled; Flags: checkablealone;
-Name: Generic/vJoy; Description: vJoy; Check:  ( not isFmsInstalled) ; Flags: checkablealone; Types: custom; 
+Name: Generic/vJoy; Description: vJoy; Check:  ( not isFmsInstalled)  and (not IsPPJoyInstalled); Flags:  dontinheritcheck; Types: custom; 
+Name: Generic/vJoy; Description: vJoy; Check:  ( not isFmsInstalled) and (IsPPJoyInstalled); Flags:  dontinheritcheck;  
+Name: Generic/vJoy; Description: vJoy; Check: isFmsInstalled and (not IsPPJoyInstalled); 
+Name: Generic/vJoy; Description: vJoy; Check: isFmsInstalled and IsPPJoyInstalled; Flags: dontinheritcheck;
 
 [code]
 var
@@ -152,6 +154,7 @@ var
   FmsLen: Longint;
   
 begin  
+
   RegValFms := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\FMS';
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValFms, 'DisplayName', Fms) then
    begin
