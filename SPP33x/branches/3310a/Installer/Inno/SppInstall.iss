@@ -53,7 +53,7 @@ DisableReadyMemo=yes
 
 [Files]
 ; Files needed to run SPP
-Source: ..\SppConsole\Release\SppConsole.exe; DestDir: {code:GetAppFolder}; Flags: recursesubdirs promptifolder createallsubdirs; 
+Source: ..\SppConsole\Release\SppConsole.exe; DestDir: {code:GetAppFolder}; Flags: recursesubdirs promptifolder createallsubdirs; BeforeInstall: OldSpp; 
 Source: ..\ReleaseNotes.pdf; DestDir: {app}; Flags:  promptifolder
 Source: ..\..\msvcr71.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ;
 Source: ..\..\MFC71.dll; DestDir: {code:GetAppFolder}; Flags:  promptifolder ;
@@ -89,9 +89,9 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeN
 
 [Run]
 ; Install vJoy (if requested)
-Filename: {app}\vJoy\vJoyInstall.exe ;  Components:  Generic/vJoy ; Flags: waituntilterminated runhidden
+Filename: {app}\vJoy\vJoyInstall.exe; Components: Generic/vJoy; Flags: waituntilterminated runhidden; StatusMsg: "Installing vJoy device (May take up to 5 minutes)"; 
 ; Generic: Run SppConsole after installation
-Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent ; Components: Generic
+Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall ; Components: Generic
 ; FMS: Run Simulator
 Filename: "{code:GetFmsFolder}\FMS.exe"; Description: "{cm:LaunchProgram,{#StringChange('FMS', "&", "&&")}}";  Components: FMS; Flags: nowait postinstall 
 
@@ -187,7 +187,106 @@ begin
   Result := FolderApp;
 end;
 
+// Test if PPJoy is installed
+// There are two types of PPJoy: Old and New
+// The Old is marked here with index 1 and the new with index 2.
+function IsPPJoyInstalled(): Boolean;
+var
+  Name, RegValPpj1, RegValPpj2, Path1, Path2: String;
+  Len1, Len2: Longint;
+  Res1, Res2: Boolean;
 
-[InnoIDE_Settings]
-LogFile=C:\Users\Shaul\Documents\SmartPropoPlus\HEAD\SPP33x\branches\3310\Installer\Inno\SppInstall.log
-LogFileOverwrite=false
+begin
+  RegValPpj1 := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Parallel Port Joystick';
+  RegValPpj2 := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PPJoy Joystick Driver';
+  Name := 'DisplayName';
+  Res1 := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValPpj1, Name, Path1);
+  Res2 := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValPpj2, Name, Path2);
+  if Res1 then Len1 := Length(Path1) else Len1 := 0;
+  if Res2 then Len2 := Length(Path2) else Len2 := 0;
+  if ((Len1 > 0) or (Len2 > 0)) then Result := true  else    Result := false;
+end;
+
+// Test if vJoy is installed
+function IsVjoyInstalled(): Boolean;
+var
+  Name, RegValVjoy, Path: String;
+  Len: Longint;
+  Res: Boolean;
+
+begin
+  RegValVjoy := 'SYSTEM\CurrentControlSet\Enum\Root\HIDCLASS\0000';
+  Name := 'Service';
+  Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValVjoy, Name, Path);
+  if Res then Len := Length(Path) else Len := 0;
+  if (Len > 0) then Result := true  else    Result := false;
+end;
+
+// Test if NSIS-installed SPP is already installed
+function IsOldSppInstalled(): Boolean;
+var
+  RegValSpp, Name, Path: String;
+  Len: Integer;
+  Res: Boolean;
+
+begin
+   RegValSpp := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus';
+   Name := 'DisplayName';
+   Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValSpp, Name, Path);
+  if Res then Len := Length(Path) else Len := 0;
+  if (Len > 0) then Result := true  else    Result := false;
+end;
+
+// Uninstall NSIS-installed SPP if already installed
+// Return Value:
+//  0: OK
+//  1: Old SPP not found
+//  2: UninstallString not found
+//  3: Uninstaller file not found
+//  4: Operation failed
+function RemoveOldSpp(): Integer;
+var
+  RegValSpp, Name, Path: String;
+  Len: Integer;
+  Res: Boolean;
+  ResultCode: Integer;
+  
+begin
+  // Test: Old SPP exists?
+  if (not IsOldSppInstalled()) then
+  begin
+    Result := 1;
+    exit;
+  end;
+  
+  // Get Uninstaller string
+  RegValSpp := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SmartPropoPlus';
+  Name := 'UninstallString';
+  Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValSpp, Name, Path);
+  if not (Res and (Length(Path)>0)) then
+  begin
+    Result := 2;
+    exit;
+  end;
+  
+  // Test that the uninstaller file exists
+  if not FileExists(Path) then
+  begin
+    Result := 3;
+    exit;
+  end;
+
+  // Execute the uninstaller
+  Res := Exec(Path, '', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+  if Res then
+    Result := 0
+  else 
+    Result := 4;
+  
+end;
+
+procedure OldSpp();
+begin
+  RemoveOldSpp();
+end;
+
