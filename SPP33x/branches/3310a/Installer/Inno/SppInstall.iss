@@ -88,7 +88,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeN
 ;Name: ..\; Filename: ..\..\SppConsole\res\SppConsole.ico; IconFilename: {code:GetAppFolder}\SppConsole.exe;  
 
 [Run]
-; Install vJoy (if requested)
+; Install vJoy (if requested) - first, go to testsigning mode
 Filename: {app}\vJoy\vJoyInstall.exe; Components: Generic/vJoy; Flags: waituntilterminated runhidden; StatusMsg: "Installing vJoy device (May take up to 5 minutes)"; 
 ; Generic: Run SppConsole after installation
 Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall ; Components: Generic
@@ -99,19 +99,27 @@ Filename: "{code:GetFmsFolder}\FMS.exe"; Description: "{cm:LaunchProgram,{#Strin
 [Types]
 ;Name: "full"; Description: "Full installation"
 ;Name: "compact"; Description: "Compact installation"
-Name: "custom"; Description: "Custom installation"; Flags: iscustom
+Name: "custom"; Description: "Custom installation"; Flags: iscustom;
 
 
 [Components]
 ;Name: SmartPropoPlus; Description: "Top App"; Flags: dontinheritcheck; MinVersion: 0,5.1.2600; Languages: english hebrew; 
 Name: FMS; Description: "SmartPropoPlus For Fms"; Flags: exclusive checkablealone; Check: isFmsInstalled; Types: custom
-Name: Generic; Description: "Generic SmartPropoPlus"; Flags: exclusive; 
+Name: Generic; Description: "Generic SmartPropoPlus"; Flags: exclusive;
+;Name: Generic; Description: "Generic SmartPropoPlus";  Flags: exclusive;
 Name: Generic/vJoy; Description: vJoy; Check:  ( not isFmsInstalled)  and (not IsPPJoyInstalled); Flags:  dontinheritcheck; Types: custom; 
 Name: Generic/vJoy; Description: vJoy; Check:  ( not isFmsInstalled) and (IsPPJoyInstalled); Flags:  dontinheritcheck;  
 Name: Generic/vJoy; Description: vJoy; Check: isFmsInstalled and (not IsPPJoyInstalled); 
 Name: Generic/vJoy; Description: vJoy; Check: isFmsInstalled and IsPPJoyInstalled; Flags: dontinheritcheck;
 
 [code]
+const
+  (* Constants related to registry *)
+    GUID_WINDOWS_BOOTMGR      = '{9DEA862C-5CDD-4E70-ACC1-F32B344D4795}';
+    DefaultObjec              = '23000003';
+    AllowPrereleaseSignatures = '16000049';
+    BCDRoot                   = 'BCD00000000';
+
 var
 FolderApp: String;
 
@@ -174,8 +182,9 @@ end;
 //  If FMS flavour selected then Set FMS folder as target
 //  If Generic flavour selected then Set SmartPropoPlus default folder as target
 function NextButtonClick(PageID: Integer): Boolean;
-begin
-  if ((PageID = wpSelectComponents) and isFmsInstalled()) then 
+
+begin  
+if ((PageID = wpSelectComponents) and isFmsInstalled()) then 
   begin
     if IsComponentSelected('FMS') then
       FolderApp := GetFmsFolder('Dummy')
@@ -293,3 +302,111 @@ begin
   RemoveOldSpp();
 end;
 
+(*
+  Check if computer in testsigning mode
+  How: 
+  Go to the BCD in the registry and look for the Boot manager entry
+  Inside, get the GUID of the defoalt loader.
+  Inside the default loader, get the value of the testsigning mode
+  Note: If does not exist = testsigning is off
+  Return:
+  True if testsigning is ON
+  False if testsigning is OFF
+*)
+function IsTestMode(): Boolean;
+var
+  RegValDeflt, RegValTestsig, Name, Path, msg : String;
+  tmp: AnsiString;
+  Res: Boolean;
+begin
+  RegValDeflt := BCDRoot + '\Objects\' + GUID_WINDOWS_BOOTMGR + '\Elements\' + DefaultObjec;
+  Name := 'Element'
+  
+  // Get pointer to default loader
+  Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValDeflt, Name, Path);
+  if not Res then
+    begin
+    (* Debug start*)
+      msg := 'Cannot find value for ' + RegValDeflt + '\' + Name;
+      MsgBox(msg, mbInformation, MB_OK);
+    (* Debug end*)
+      Result := False;
+      exit;
+    end; 
+  (* Debug start*)
+   msg := 'Got value for ' + RegValDeflt + '\' + Name +': ' + Path;
+   MsgBox(msg, mbInformation, MB_OK);
+  (* Debug end*)
+   
+  // Get testsigning value
+  RegValTestsig := BCDRoot + '\Objects\' + Path + '\Elements\' + AllowPrereleaseSignatures;
+  Res := RegQueryBinaryValue(HKEY_LOCAL_MACHINE, RegValTestsig, Name, tmp);
+ (* Debug start *)
+ if Res then
+ begin
+  if tmp = #1 then
+   begin
+   msg := 'RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': Test mode ON';
+   MsgBox(msg, mbInformation, MB_OK);
+   end
+  else
+   begin
+   msg := 'RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': Test mode OFF';
+   MsgBox(msg, mbInformation, MB_OK);
+   end;
+  end
+ else
+  begin
+  msg := 'RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': failed';
+  MsgBox(msg, mbInformation, MB_OK);
+  end;
+ 
+ (* Debug end *)
+  if tmp = #1 then
+    Result := True
+  else
+    Result := False;
+end; // End Function IsTestMode
+
+(*
+  Set Testsigning mode On/Off acording to value of variable 'value'
+  Executed only for x64 - else NOP (return FALSE)
+  Return TRUE is succeeded
+  Return FALSE if failed or if already was in the required state
+*)
+function SetTestMode(value: Boolean): Boolean;
+var
+  ResultCode: Integer;
+Begin
+  if not IsX64 then
+  begin
+   Result := false;
+   //exit;
+  end; // Not x64
+  
+  if (IsTestMode = value) then
+  begin
+   Result := false;
+   exit;
+  end; //  already was in the required state
+   
+   // Execute BCDEdit shell command
+   if value then
+    SaveStringToFile(ExpandConstant('{win}\bcd_set.bat'), 'Bcdedit.exe -set TESTSIGNING ON', False)
+   else
+    SaveStringToFile('.\bcd_set.bat', 'Bcdedit.exe -set TESTSIGNING OFF', False);
+   
+   Exec(ExpandConstant('{win}\bcd_set.bat'),'', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+   DeleteFile(ExpandConstant('{win}\bcd_set.bat'));
+   Result := True;
+end; // End Function SetTestMode
+
+function SetTestModeOn(): Boolean;
+begin
+  result := SetTestMode(True);
+end;
+
+function SetTestModeOff(): Boolean;
+begin
+  result := SetTestMode(False);
+end;
