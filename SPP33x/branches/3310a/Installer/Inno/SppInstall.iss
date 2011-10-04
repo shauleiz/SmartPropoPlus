@@ -46,6 +46,8 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 DisableReadyMemo=yes
 ;UninstallFilesDir={code:GetAppFolder}
+PrivilegesRequired=admin
+ArchitecturesInstallIn64BitMode=x64
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -119,9 +121,20 @@ const
     DefaultObjec              = '23000003';
     AllowPrereleaseSignatures = '16000049';
     BCDRoot                   = 'BCD00000000';
+    
+    (* Constants related to two-phase installation *)
+    RunOnceName = 'SPP Setup restart';
+    RunOnceKey  = 'Software\Microsoft\Windows\CurrentVersion\RunOnce';
+    Ph2Param    = ' /PH2=1';
+    QuitMessageReboot = 'The installer will now set your computer to TestSigning mode. You will need to restart your computer to complete that installation.'#13#13'After restarting your computer, Setup will continue next time an administrator logs in.';
+    ErrorRunOnce      = 'Failed to update RunOnce registry entry';
+    ErrorSetTestMode  = 'Failed to set computer to TestSigning Mode';
+  
+
 
 var
 FolderApp: String;
+SkipToPh2: boolean; (* True is installer resumes installation after Set Test mode & restart*)
 
 // Returns FMS folder if exists
 // Else return ""
@@ -326,22 +339,22 @@ begin
   Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValDeflt, Name, Path);
   if not Res then
     begin
-    (* Debug start*)
+    (* Debug start
       msg := 'Cannot find value for ' + RegValDeflt + '\' + Name;
       MsgBox(msg, mbInformation, MB_OK);
-    (* Debug end*)
+     (* Debug end*)
       Result := False;
       exit;
     end; 
-  (* Debug start*)
+  (* Debug start
    msg := 'Got value for ' + RegValDeflt + '\' + Name +': ' + Path;
    MsgBox(msg, mbInformation, MB_OK);
-  (* Debug end*)
+  (*  Debug end*)
    
   // Get testsigning value
   RegValTestsig := BCDRoot + '\Objects\' + Path + '\Elements\' + AllowPrereleaseSignatures;
   Res := RegQueryBinaryValue(HKEY_LOCAL_MACHINE, RegValTestsig, Name, tmp);
- (* Debug start *)
+ (* Debug start  
  if Res then
  begin
   if tmp = #1 then
@@ -361,7 +374,7 @@ begin
   MsgBox(msg, mbInformation, MB_OK);
   end;
  
- (* Debug end *)
+(*  Debug end *)
   if tmp = #1 then
     Result := True
   else
@@ -378,7 +391,7 @@ function SetTestMode(value: Boolean): Boolean;
 var
   ResultCode: Integer;
 Begin
-  if not IsX64 then
+  if not ProcessorArchitecture = paX64 then
   begin
    Result := false;
    //exit;
@@ -396,7 +409,7 @@ Begin
    else
     SaveStringToFile('.\bcd_set.bat', 'Bcdedit.exe -set TESTSIGNING OFF', False);
    
-   Exec(ExpandConstant('{win}\bcd_set.bat'),'', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+   Exec(ExpandConstant('{win}\bcd_set.bat'),'', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
    DeleteFile(ExpandConstant('{win}\bcd_set.bat'));
    Result := True;
 end; // End Function SetTestMode
@@ -410,3 +423,86 @@ function SetTestModeOff(): Boolean;
 begin
   result := SetTestMode(False);
 end;
+
+
+
+(* 
+    Called by the installer in phase 1 just before installation
+    If must set test mode then:
+      Set  NeedsRestart to true
+      Set Test mode
+      Create RunOnce entry
+      Return "Restart?" dialog box
+    Else
+      Set  NeedsRestart to false
+*)
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  RunOnceData: String;
+  
+begin
+// Test if two-phase installation needed
+  if (not (ProcessorArchitecture = paX64)) or (IsTestMode) or (not IsComponentSelected('Generic/vJoy')) then
+  begin
+   NeedsRestart := False;
+   exit;
+  end;
+ 
+ // Yes.
+ /// Change BCD to test mode
+ if not SetTestMode(true) then
+  begin // Failed
+   NeedsRestart := false;
+   Result := ErrorSetTestMode;
+   exit;
+ end;
+
+ /// set RunOnce registry entry
+ RunOnceData := ExpandConstant('{srcexe}') + Ph2Param;
+ if  not RegWriteStringValue(HKLM, RunOnceKey, RunOnceName, RunOnceData) then
+ begin // Failed
+   NeedsRestart := false;
+   Result := ErrorRunOnce;
+   exit;
+ end;
+ 
+// OK
+ Result := QuitMessageReboot;
+ NeedsRestart := true;
+end;
+
+(*
+  Called before every wizard page.
+  Pages skipped if installer called with parameter PH2 
+*)
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  Result := SkipToPh2;
+end;
+
+(*
+  Test command-line parameters
+  Return true unless otherwise said 
+  If parameter PH2 exists then set SkipToPh2
+  If parameter PH2 does not exist then un-set SkipToPh2
+  If parameter PH2 does not exist but RunOnce entry exists - issue error message and return FALSE
+*)
+function InitializeSetup(): Boolean;
+begin
+  SkipToPh2 := ExpandConstant('{param:PH2|0}') = '1';
+
+  if SkipToPh2 then begin
+   Result := True;
+   exit;
+  end;
+  
+  if  RegValueExists(HKLM, RunOnceKey, RunOnceName) then begin
+      MsgBox(QuitMessageReboot, mbError, mb_Ok); // TODO: Enable removing the RunOnce entry
+      Result := False;
+  end
+  else
+    Result := True;
+  end;
+
+end.
+
