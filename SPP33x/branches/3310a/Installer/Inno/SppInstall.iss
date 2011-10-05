@@ -91,7 +91,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeN
 
 [Run]
 ; Install vJoy (if requested) - first, go to testsigning mode
-Filename: {app}\vJoy\vJoyInstall.exe; Components: Generic/vJoy; Flags: waituntilterminated runhidden; StatusMsg: "Installing vJoy device (May take up to 5 minutes)"; 
+Filename: {app}\vJoy\vJoyInstall.exe; Components: Generic/vJoy; Flags: waituntilterminated runhidden ; StatusMsg: "Installing vJoy device (May take up to 5 minutes)"; 
 ; Generic: Run SppConsole after installation
 Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall ; Components: Generic
 ; FMS: Run Simulator
@@ -390,6 +390,7 @@ end; // End Function IsTestMode
 function SetTestMode(value: Boolean): Boolean;
 var
   ResultCode: Integer;
+  OldState: Boolean;
 Begin
   if not ProcessorArchitecture = paX64 then
   begin
@@ -409,7 +410,10 @@ Begin
    else
     SaveStringToFile('.\bcd_set.bat', 'Bcdedit.exe -set TESTSIGNING OFF', False);
    
-   Exec(ExpandConstant('{win}\bcd_set.bat'),'', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+//   Exec(ExpandConstant('{win}\bcd_set.bat'),'', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+   OldState := EnableFsRedirection(False);
+   Exec('Bcdedit.exe','-set TESTSIGNING ON', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+   EnableFsRedirection(OldState);
    DeleteFile(ExpandConstant('{win}\bcd_set.bat'));
    Result := True;
 end; // End Function SetTestMode
@@ -506,3 +510,25 @@ begin
 
 end.
 
+Procedure vJoyInstall;
+var
+  OldState: Boolean;
+  ResultCode: Integer;
+  ExeFile:  String;
+  
+begin
+  ExeFile := ExpandConstant('{app}\vJoy\vJoyInstall.exe');
+  
+  // x86
+  if not IsWin64 then begin
+     Exec(ExeFile, '', '', SH_HIDE, ewWaitUntilTerminated, ResultCode);
+  end;
+  
+  // x64
+  OldState := EnableFsRedirection(False);
+  try
+    Exec(ExeFile, '', '', SH_HIDE, ewWaitUntilTerminated, ResultCode);
+  finally
+   EnableFsRedirection(OldState);
+   
+end.
