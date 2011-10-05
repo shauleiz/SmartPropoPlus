@@ -390,7 +390,8 @@ end; // End Function IsTestMode
 function SetTestMode(value: Boolean): Boolean;
 var
   ResultCode: Integer;
-  OldState: Boolean;
+  params: String;
+  
 Begin
   if not ProcessorArchitecture = paX64 then
   begin
@@ -406,15 +407,11 @@ Begin
    
    // Execute BCDEdit shell command
    if value then
-    SaveStringToFile(ExpandConstant('{win}\bcd_set.bat'), 'Bcdedit.exe -set TESTSIGNING ON', False)
+    Params := ' -set TESTSIGNING ON'
    else
-    SaveStringToFile('.\bcd_set.bat', 'Bcdedit.exe -set TESTSIGNING OFF', False);
+    Params := ' -set TESTSIGNING OFF';
    
-//   Exec(ExpandConstant('{win}\bcd_set.bat'),'', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-   OldState := EnableFsRedirection(False);
-   Exec('Bcdedit.exe','-set TESTSIGNING ON', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-   EnableFsRedirection(OldState);
-   DeleteFile(ExpandConstant('{win}\bcd_set.bat'));
+   Exec('Bcdedit.exe',Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
    Result := True;
 end; // End Function SetTestMode
 
@@ -510,25 +507,3 @@ begin
 
 end.
 
-Procedure vJoyInstall;
-var
-  OldState: Boolean;
-  ResultCode: Integer;
-  ExeFile:  String;
-  
-begin
-  ExeFile := ExpandConstant('{app}\vJoy\vJoyInstall.exe');
-  
-  // x86
-  if not IsWin64 then begin
-     Exec(ExeFile, '', '', SH_HIDE, ewWaitUntilTerminated, ResultCode);
-  end;
-  
-  // x64
-  OldState := EnableFsRedirection(False);
-  try
-    Exec(ExeFile, '', '', SH_HIDE, ewWaitUntilTerminated, ResultCode);
-  finally
-   EnableFsRedirection(OldState);
-   
-end.
