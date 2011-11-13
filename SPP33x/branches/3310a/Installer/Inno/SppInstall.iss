@@ -6,6 +6,7 @@
 #define MyAppURL "http://www.smartpropoplus.com/"
 #define MyAppExeName "SppConsole.exe"
 #define AppUtilsName  "SmartPropoPlus Utilities"
+#define AppGUID "{{2E84A5A4-351E-4B00-9926-F50DBD7481E9}"
 
 #define vJoyBaseDir "C:\WinDDK\vjoy1" ; You will have to change it!!!
 #define vJoyInstx86 "install\objfre_wxp_x86\i386"
@@ -16,7 +17,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppID={{2E84A5A4-351E-4B00-9926-F50DBD7481E9}
+AppID={#AppGUID}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -48,6 +49,7 @@ DisableReadyMemo=yes
 ;UninstallFilesDir={code:GetAppFolder}
 PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64
+SetupLogging=yes
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -127,6 +129,7 @@ const
     RunOnceKey  = 'Software\Microsoft\Windows\CurrentVersion\RunOnce';
     Ph2Param    = ' /PH2=1';
     QuitMessageReboot = 'The installer will now set your computer to TestSigning mode. You will need to restart your computer to complete that installation.'#13#13'After restarting your computer, Setup will continue next time an administrator logs in.';
+    WaitingForRestart = 'You should now restat your computer.'#13#13'Press OK then restart your computer manually'#13'Press Cancel to cancel installation';
     ErrorRunOnce      = 'Failed to update RunOnce registry entry';
     ErrorSetTestMode  = 'Failed to set computer to TestSigning Mode';
   
@@ -135,6 +138,31 @@ const
 var
 FolderApp: String;
 SkipToPh2: boolean; (* True is installer resumes installation after Set Test mode & restart*)
+TestMode: boolean; (* True if computer was in Test mode before installation *)
+
+
+(*
+  Record the original value of TestSigning in the registry for usage by uninstall
+  Do NOT override original value
+  Assuming that is called by the function that actually perform the operation so no testing.
+  Set boolean Value:  HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{XXX}_is1\OrigTestMode
+  {XXX} stands for the AppID
+*)
+Procedure RegWriteOrigTestMode(data: Boolean);
+var
+  Val, UninstKey: String;
+
+Begin  
+  UninstKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + expandconstant('{#AppGUID}') + '_is1';
+  Val := 'OrigTestMode';
+
+  // Test if Value exists
+  if not RegValueExists(HKEY_LOCAL_MACHINE, UninstKey, Val) then
+  if data then
+    RegWriteBinaryValue(HKEY_LOCAL_MACHINE, UninstKey, Val, #1)
+  else
+    RegWriteBinaryValue(HKEY_LOCAL_MACHINE, UninstKey, Val, #0);
+End;
 
 // Returns FMS folder if exists
 // Else return ""
@@ -175,7 +203,6 @@ var
   FmsLen: Longint;
   
 begin  
-
   RegValFms := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\FMS';
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValFms, 'DisplayName', Fms) then
    begin
@@ -315,6 +342,7 @@ begin
   RemoveOldSpp();
 end;
 
+
 (*
   Check if computer in testsigning mode
   How: 
@@ -332,6 +360,8 @@ var
   tmp: AnsiString;
   Res: Boolean;
 begin
+  Log('IsTestMode: Start');
+
   RegValDeflt := BCDRoot + '\Objects\' + GUID_WINDOWS_BOOTMGR + '\Elements\' + DefaultObjec;
   Name := 'Element'
   
@@ -339,39 +369,40 @@ begin
   Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValDeflt, Name, Path);
   if not Res then
     begin
-    (* Debug start
-      msg := 'Cannot find value for ' + RegValDeflt + '\' + Name;
-      MsgBox(msg, mbInformation, MB_OK);
-     (* Debug end*)
+    (* Debug start  *)
+      msg := 'IsTestMode: Cannot find value for ' + RegValDeflt + '\' + Name;
+      Log(msg);
+     (*Debug end*)
       Result := False;
       exit;
     end; 
-  (* Debug start
-   msg := 'Got value for ' + RegValDeflt + '\' + Name +': ' + Path;
-   MsgBox(msg, mbInformation, MB_OK);
+  (* Debug start *)
+   msg := 'IsTestMode: Got value for ' + RegValDeflt + '\' + Name +': ' + Path;
+   Log(msg);
   (*  Debug end*)
    
   // Get testsigning value
   RegValTestsig := BCDRoot + '\Objects\' + Path + '\Elements\' + AllowPrereleaseSignatures;
+  tmp := '#0';
   Res := RegQueryBinaryValue(HKEY_LOCAL_MACHINE, RegValTestsig, Name, tmp);
- (* Debug start  
+ (* Debug start   *)
  if Res then
  begin
-  if tmp = #1 then
+  if tmp <> #0 then
    begin
-   msg := 'RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': Test mode ON';
-   MsgBox(msg, mbInformation, MB_OK);
+   msg := 'IsTestMode: RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': Test mode ON ('+ tmp +')';
+   Log(msg);
    end
   else
    begin
-   msg := 'RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': Test mode OFF';
-   MsgBox(msg, mbInformation, MB_OK);
+   msg := 'IsTestMode: RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': Test mode OFF ('+ tmp +')';
+   Log(msg);
    end;
   end
  else
   begin
-  msg := 'RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': failed';
-  MsgBox(msg, mbInformation, MB_OK);
+  msg := 'IsTestMode: RegQueryBinaryValue for ' + RegValTestsig + '\' + NAME + ': failed';
+  Log(msg);
   end;
  
 (*  Debug end *)
@@ -393,6 +424,7 @@ var
   params: String;
   
 Begin
+   
   if not ProcessorArchitecture = paX64 then
   begin
    Result := false;
@@ -405,12 +437,12 @@ Begin
    exit;
   end; //  already was in the required state
    
-   // Execute BCDEdit shell command
+   // Execute BCDEdit shell command 
    if value then
     Params := ' -set TESTSIGNING ON'
    else
     Params := ' -set TESTSIGNING OFF';
-   
+       
    Exec('Bcdedit.exe',Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
    Result := True;
 end; // End Function SetTestMode
@@ -442,6 +474,7 @@ var
   RunOnceData: String;
   
 begin
+
 // Test if two-phase installation needed
   if (not (ProcessorArchitecture = paX64)) or (IsTestMode) or (not IsComponentSelected('Generic/vJoy')) then
   begin
@@ -481,6 +514,8 @@ begin
   Result := SkipToPh2;
 end;
 
+
+
 (*
   Test command-line parameters
   Return true unless otherwise said 
@@ -489,21 +524,40 @@ end;
   If parameter PH2 does not exist but RunOnce entry exists - issue error message and return FALSE
 *)
 function InitializeSetup(): Boolean;
+
 begin
   SkipToPh2 := ExpandConstant('{param:PH2|0}') = '1';
 
   if SkipToPh2 then begin
-   Result := True;
+   Result := True; 
    exit;
   end;
   
-  if  RegValueExists(HKLM, RunOnceKey, RunOnceName) then begin
-      MsgBox(QuitMessageReboot, mbError, mb_Ok); // TODO: Enable removing the RunOnce entry
+  Result := True;
+  if  RegValueExists(HKLM, RunOnceKey, RunOnceName) then 
+  begin
       Result := False;
-  end
-  else
-    Result := True;
+      if IDOK <> MsgBox(WaitingForRestart , mbError, MB_OKCANCEL) then  
+      begin
+        RegDeleteValue(HKLM, RunOnceKey, RunOnceName);
+        SetTestModeOff;
+  		end;
   end;
+end;
 
-end.
+
+(* 
+    This is called just on the way out of the wizard 
+    The app Uninstall registry entry already exists
+*)
+procedure DeinitializeSetup();
+begin
+  (* 
+    The original Test mode value was ON only if:
+    1. It is now ON and
+    2. This phase is NOT phase 2
+  *)
+  RegWriteOrigTestMode(IsTestMode and (not SkipToPh2));
+end;
+
 
