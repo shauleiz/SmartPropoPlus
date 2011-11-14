@@ -71,8 +71,7 @@ Source: Utilities\*; DestDir: {app}\Utilities; Flags:  promptifolder ;
 Source: .\UnInstaller.ico; DestDir: {app}; Attribs: Hidden; 
 
 ; vJoy Installer
-Source: {#vJoyBaseDir}\{#vJoyInstx86}\*; DestDir: {app}\vJoy; Flags:  promptifolder ; Components:  Generic/vJoy ; Check: IsOtherArch
-Source: {#vJoyBaseDir}\{#vJoyInstx64}\*; DestDir: {app}\vJoy; Flags:  promptifolder ; Components:  Generic/vJoy ; Check: IsX64
+Source:  vJoyInstallerMerged.exe; DestDir: {app}\vJoy; Flags:  promptifolder ; Components:  Generic/vJoy ;
 
 
 [Icons]
@@ -93,7 +92,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{code:GetAppFolder}\{#MyAppExeN
 
 [Run]
 ; Install vJoy (if requested) - first, go to testsigning mode
-Filename: {app}\vJoy\vJoyInstall.exe; Components: Generic/vJoy; Flags: waituntilterminated runhidden ; StatusMsg: "Installing vJoy device (May take up to 5 minutes)"; 
+;Filename: {app}\vJoy\vJoyInstallerMerged.exe; Components: Generic/vJoy; Flags: waituntilterminated runhidden ; StatusMsg: "Installing vJoy device (May take up to 5 minutes)"; Parameters: " /spp=1 /VERYSILENT /NORESTART /RESTARTEXITCODE=3010 /SUPPRESSMSGBOXES" ; 
 ; Generic: Run SppConsole after installation
 Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall ; Components: Generic
 ; FMS: Run Simulator
@@ -133,13 +132,19 @@ const
     ErrorRunOnce      = 'Failed to update RunOnce registry entry';
     ErrorSetTestMode  = 'Failed to set computer to TestSigning Mode';
   
-
+  	(* Result Constants *)
+  	Undef				=	-1;
+  	Fail				=	-2;
+  	Installed		=	3009;
+  	NeedRstart	=	3010;
 
 var
 FolderApp: String;
 SkipToPh2: boolean; (* True is installer resumes installation after Set Test mode & restart*)
 TestMode: boolean; (* True if computer was in Test mode before installation *)
 
+(* Forward Functions *)
+Function	Install_vJoy(isPh2: Boolean): Integer; Forward;
 
 (*
   Record the original value of TestSigning in the registry for usage by uninstall
@@ -460,49 +465,79 @@ end;
 
 
 (* 
-    Called by the installer in phase 1 just before installation
-    If must set test mode then:
-      Set  NeedsRestart to true
-      Set Test mode
-      Create RunOnce entry
-      Return "Restart?" dialog box
-    Else
-      Set  NeedsRestart to false
+		Called by installer just before installation.
+		It either stops installation and requests restart or continues installation
+		Here are the cases:
+		1. 	NO vJoy to be installed: Just continue (NeedsRestart:=False)
+		2. 	PH2=1: This means that this is second phase: 
+				Call vJoy installer to complete instalation then just continue  (NeedsRestart:=False)
+		3.	vJoy should be installed and first phase: Call vJoy Installer and get the result:
+					a. If NeedRstart then set-up RunOnce entry and restart (NeedsRestart:=True)
+					b. If NOT NeedRstart then Just continue (NeedsRestart:=False)
 *)
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   RunOnceData: String;
+  Res: Integer;
+  
   
 begin
 
-// Test if two-phase installation needed
-  if (not (ProcessorArchitecture = paX64)) or (IsTestMode) or (not IsComponentSelected('Generic/vJoy')) then
-  begin
-   NeedsRestart := False;
-   exit;
-  end;
- 
- // Yes.
- /// Change BCD to test mode
- if not SetTestMode(true) then
-  begin // Failed
-   NeedsRestart := false;
-   Result := ErrorSetTestMode;
-   exit;
- end;
+	Res := Undef;
+	NeedsRestart := False;
+	Log('PrepareToInstall(): Start');
 
- /// set RunOnce registry entry
- RunOnceData := ExpandConstant('{srcexe}') + Ph2Param;
- if  not RegWriteStringValue(HKLM, RunOnceKey, RunOnceName, RunOnceData) then
- begin // Failed
-   NeedsRestart := false;
-   Result := ErrorRunOnce;
-   exit;
- end;
+	// Case 1:	
+	if Not IsComponentSelected('Generic/vJoy') then 
+	begin	// Case 1
+		Log('PrepareToInstall(): case 1 - NO vJoy to be installed');
+		exit;
+	end;	// Case 1
+	
+	// Case 2:
+	if SkipToPh2 then
+	begin	// Case 2
+		Log('PrepareToInstall(): case 2 - PH2=1');
+		Res := Install_vJoy(true);
+		if Res = Installed then exit;
+		Log('PrepareToInstall(): case 2 - vJoy second phase failed');
+	end;	// Case 2
+	
+	
+	if IsComponentSelected('Generic/vJoy') and (not SkipToPh2) then 
+	begin	// Case 3
+		Log('PrepareToInstall(): case 3 - vJoy should be installed and first phase');
+		Res := Install_vJoy(false);
+		if Res = Installed then
+		begin	// Installed
+			Log('PrepareToInstall(): case 3b - vJoy installed successfully');
+			exit;
+		end;	// Installed
+		if Res = Fail then
+		begin	// Not Installed
+			Log('PrepareToInstall(): case 3b - vJoy failed to install');
+			Result := 'vJoy failed to install';
+			exit;
+		end;	// Not Installed
+	end;	// Case 3
+
+ if Res = NeedRstart then 
+ begin // Case 3b
+ 	/// set RunOnce registry entry
+ 	Log('PrepareToInstall(): Case 3b - Going to set RunOnce registry edit');
+ 	RunOnceData := ExpandConstant('{srcexe}') + Ph2Param;
+ 	if  not RegWriteStringValue(HKLM, RunOnceKey, RunOnceName, RunOnceData) then
+ 	begin // Failed
+   	NeedsRestart := false;
+   	Result := ErrorRunOnce;
+   	exit;
+ 	end;
  
-// OK
- Result := QuitMessageReboot;
- NeedsRestart := true;
+	// OK
+ 	Log('PrepareToInstall(): case 3a - Need restart');
+ 	Result := QuitMessageReboot;
+ 	NeedsRestart := true;
+ end;  // Case 3b
 end;
 
 (*
@@ -559,5 +594,34 @@ begin
   *)
   RegWriteOrigTestMode(IsTestMode and (not SkipToPh2));
 end;
+
+(* Install vJoy by calling the vJoy installer *)
+Function	Install_vJoy(isPh2: Boolean): Integer;
+var
+	  ResultCode: Integer;
+	  Res:				Boolean;
+	  flags:			String;
+
+Begin
+	Log('Install_vJoy(): Start');
+	Result := Undef;
+	
+	if isPh2 then
+		flags	 := ' /spp=1 /VERYSILENT  /PH2=1 /SUPPRESSMSGBOXES'
+	else
+		flags	 := ' /spp=1 /VERYSILENT /NORESTART /RESTARTEXITCODE=3010 /SUPPRESSMSGBOXES';
+		
+  ExtractTemporaryFile('vJoyInstallerMerged.exe');
+	Res := Exec(ExpandConstant('{tmp}\vJoyInstallerMerged.exe'), flags, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+	if Res = False then
+	Begin	// Exec Failed
+		Result := Fail;
+		Log('Install_vJoy(): Failed');
+		Exit;
+	end;	// Exec Failed
+	Log('Install_vJoy(): EXEC Returned '+IntToStr(ResultCode));
+	if ResultCode = 0 then Result := Installed;
+	Result := ResultCode;
+End;
 
 
