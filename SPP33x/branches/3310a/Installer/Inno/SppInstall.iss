@@ -11,6 +11,7 @@
 #define vJoyBaseDir "C:\WinDDK\vjoy1" ; You will have to change it!!!
 #define vJoyInstx86 "install\objfre_wxp_x86\i386"
 #define vJoyInstx64 "install\objfre_wlh_amd64\amd64"
+#define vJoyID	"Virtual Joystick Device"
 
 
 [Setup]
@@ -52,6 +53,7 @@ ArchitecturesInstallIn64BitMode=x64
 SetupLogging=true
 ShowTasksTreeLines=true
 DisableReadyPage=true
+
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -100,6 +102,8 @@ Filename: "{code:GetAppFolder}\{#MyAppExeName}"; Description: "{cm:LaunchProgram
 ; FMS: Run Simulator
 Filename: "{code:GetFmsFolder}\FMS.exe"; Description: "{cm:LaunchProgram,{#StringChange('FMS', "&", "&&")}}";  Components: FMS; Flags: nowait postinstall 
 
+[UninstallRun]
+Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent" ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated ;   Components: Generic/vJoy
 
 [Types]
 ;Name: "full"; Description: "Full installation"
@@ -124,6 +128,8 @@ const
     DefaultObjec              = '23000003';
     AllowPrereleaseSignatures = '16000049';
     BCDRoot                   = 'BCD00000000';
+    UninstKey 								= 'Software\Microsoft\Windows\CurrentVersion\Uninstall\';
+
     
     (* Constants related to two-phase installation *)
     RunOnceName = 'SPP Setup restart';
@@ -157,18 +163,18 @@ Function	Install_vJoy(isPh2: Boolean): Integer; Forward;
 *)
 Procedure RegWriteOrigTestMode(data: Boolean);
 var
-  Val, UninstKey: String;
+  Val, UninstallKey: String;
 
 Begin  
-  UninstKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + expandconstant('{#AppGUID}') + '_is1';
+  UninstallKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + expandconstant('{#AppGUID}') + '_is1';
   Val := 'OrigTestMode';
 
   // Test if Value exists
-  if not RegValueExists(HKEY_LOCAL_MACHINE, UninstKey, Val) then
+  if not RegValueExists(HKEY_LOCAL_MACHINE, UninstallKey, Val) then
   if data then
-    RegWriteBinaryValue(HKEY_LOCAL_MACHINE, UninstKey, Val, #1)
+    RegWriteBinaryValue(HKEY_LOCAL_MACHINE, UninstallKey, Val, #1)
   else
-    RegWriteBinaryValue(HKEY_LOCAL_MACHINE, UninstKey, Val, #0);
+    RegWriteBinaryValue(HKEY_LOCAL_MACHINE, UninstallKey, Val, #0);
 End;
 
 // Returns FMS folder if exists
@@ -608,9 +614,9 @@ Begin
 	Result := Undef;
 	
 	if isPh2 then
-		flags	 := ' /spp=1 /SILENT  /PH2=1 /SUPPRESSMSGBOXES'
+		flags	 := ' /spp=1 /SILENT  /PH2=1 /SUPPRESSMSGBOXES /ID="' + expandconstant('{#vJoyID}') + '"'
 	else
-		flags	 := ' /spp=1  /SILENT /NORESTART /SUPPRESSMSGBOXES';
+		flags	 := ' /spp=1  /SILENT /NORESTART /SUPPRESSMSGBOXES /ID="' + expandconstant('{#vJoyID}') + '"';
 	
 	Log('Install_vJoy(): Flags: ' + flags);
 		
@@ -627,8 +633,48 @@ Begin
 	if ResultCode = 8 then Result := NeedRstart;
 End;
 
+(*
+	Return the Uninstaller of vJoy 
+*)
+function vJoyUnInstaller(Param: String): String;
 
+var
+	UninstKeyVjoy, executable	: String;
+	Res: Boolean;
+  Len: Longint;
+	
+begin
+	UninstKeyVjoy := UninstKey + expandconstant('{#vJoyID}') + '_is1';
+	Log('vJoyUnInstaller(): Uninstall Key is ' + UninstKeyVjoy);
+	
+	if not RegValueExists(HKEY_LOCAL_MACHINE, UninstKeyVjoy, 'UninstallString') then
+	begin	// RegValueExists = False
+		Log('Could not find registry value HKLM\'+UninstKeyVjoy+'\UninstallString');
+		Result := '';
+		exit;
+	end;	// RegValueExists = False
+	
+	Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, UninstKeyVjoy, 'UninstallString', executable);
+ 	if Res then Len := Length(executable) else Len := 0;
+  if (Len > 0) then Result := RemoveQuotes(executable)  else    Result := '';
+  Log('vJoyUnInstaller(): Result: '+ Result);
+end;
 
+(*
+procedure DeinitializeUninstall();
+var
+	ResultCode: Integer;
+	execname: String;
+  res:      Boolean;
+	
+begin
+	execname := vJoyUnInstaller('');
+	Log('DeinitializeUninstall(): Start');
+	res := Exec(execname ,' /LOG ', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+  if not res then Log('DeinitializeUninstall(): Failed: ' +  SysErrorMessage(ResultCode))
+  else   Log('DeinitializeUninstall(): OK:');
+end;
+*)
 [InnoIDE_Settings]
 LogFileOverwrite=true
 
