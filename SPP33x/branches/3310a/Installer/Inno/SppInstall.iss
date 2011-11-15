@@ -53,7 +53,7 @@ ArchitecturesInstallIn64BitMode=x64
 SetupLogging=true
 ShowTasksTreeLines=true
 DisableReadyPage=true
-
+SignTool=Sig sign /s PrivateCertStore  $f
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
