@@ -27,7 +27,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=true
-OutputDir=C:\Users\Shaul\Desktop
+OutputDir=.\inno
 OutputBaseFilename=setup
 ;SetupIconFile=..\inno\Setup.ico
 Compression=zip/7
@@ -45,11 +45,13 @@ VersionInfoCompany=Shaul Eizikovich
 AppCopyright=Copyright (c) 2005-2011 by Shaul Eizikovich
 DisableDirPage=yes
 DisableProgramGroupPage=yes
-DisableReadyMemo=yes
+DisableReadyMemo=true
 ;UninstallFilesDir={code:GetAppFolder}
 PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64
-SetupLogging=yes
+SetupLogging=true
+ShowTasksTreeLines=true
+DisableReadyPage=true
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -603,13 +605,14 @@ var
 	  flags:			String;
 
 Begin
-	Log('Install_vJoy(): Start');
 	Result := Undef;
 	
 	if isPh2 then
-		flags	 := ' /spp=1 /VERYSILENT  /PH2=1 /SUPPRESSMSGBOXES'
+		flags	 := ' /spp=1 /SILENT  /PH2=1 /SUPPRESSMSGBOXES'
 	else
-		flags	 := ' /spp=1 /VERYSILENT /NORESTART /RESTARTEXITCODE=3010 /SUPPRESSMSGBOXES';
+		flags	 := ' /spp=1  /SILENT /NORESTART /SUPPRESSMSGBOXES';
+	
+	Log('Install_vJoy(): Flags: ' + flags);
 		
   ExtractTemporaryFile('vJoyInstallerMerged.exe');
 	Res := Exec(ExpandConstant('{tmp}\vJoyInstallerMerged.exe'), flags, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
@@ -621,7 +624,11 @@ Begin
 	end;	// Exec Failed
 	Log('Install_vJoy(): EXEC Returned '+IntToStr(ResultCode));
 	if ResultCode = 0 then Result := Installed;
-	Result := ResultCode;
+	if ResultCode = 8 then Result := NeedRstart;
 End;
 
+
+
+[InnoIDE_Settings]
+LogFileOverwrite=true
 
