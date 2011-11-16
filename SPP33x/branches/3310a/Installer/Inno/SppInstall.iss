@@ -29,7 +29,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=true
 OutputDir=.\inno
-OutputBaseFilename=setup
+OutputBaseFilename=SppSetup
 ;SetupIconFile=..\inno\Setup.ico
 Compression=zip/7
 SolidCompression=true
@@ -54,6 +54,8 @@ SetupLogging=true
 ShowTasksTreeLines=true
 DisableReadyPage=true
 SignTool=Sig sign /s PrivateCertStore  $f
+SetupIconFile=C:\Users\Shaul\Documents\SmartPropoPlus\HEAD\SPP33x\branches\3310\SppConsole\res\SppConsole.ico
+UninstallDisplayIcon={app}\UnInstaller.ico
 
 [Tasks]
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
