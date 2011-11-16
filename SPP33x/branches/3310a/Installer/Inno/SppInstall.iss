@@ -11,7 +11,7 @@
 #define vJoyBaseDir "C:\WinDDK\vjoy1" ; You will have to change it!!!
 #define vJoyInstx86 "install\objfre_wxp_x86\i386"
 #define vJoyInstx64 "install\objfre_wlh_amd64\amd64"
-#define vJoyID	"Virtual Joystick Device"
+#define vJoyID	"Virtual Joystick Device - Installed by SPP"
 
 
 [Setup]
@@ -564,28 +564,27 @@ end;
   Return true unless otherwise said 
   If parameter PH2 exists then set SkipToPh2
   If parameter PH2 does not exist then un-set SkipToPh2
-  If parameter PH2 does not exist but RunOnce entry exists - issue error message and return FALSE
+  If parameter PH2 does not exist but RunOnce entry exists - Reset installation and continue
 *)
 function InitializeSetup(): Boolean;
 
 begin
+	Log('InitializeSetup(): Start'); 
+  Result := True;
   SkipToPh2 := ExpandConstant('{param:PH2|0}') = '1';
 
   if SkipToPh2 then begin
-   Result := True; 
+   Log('InitializeSetup(): Flag PH2 detected'); 
    exit;
   end;
   
-  Result := True;
   if  RegValueExists(HKLM, RunOnceKey, RunOnceName) then 
   begin
-      Result := False;
-      if IDOK <> MsgBox(WaitingForRestart , mbError, MB_OKCANCEL) then  
-      begin
-        RegDeleteValue(HKLM, RunOnceKey, RunOnceName);
-        SetTestModeOff;
-  		end;
+  		Log('InitializeSetup(): RunOnce Registry key detected - Reset instalation'); 
+      RegDeleteValue(HKLM, RunOnceKey, RunOnceName);
+      SetTestModeOff;
   end;
+  
 end;
 
 
