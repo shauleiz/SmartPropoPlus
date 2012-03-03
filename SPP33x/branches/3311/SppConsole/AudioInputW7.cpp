@@ -319,6 +319,9 @@ int CAudioInputW7::GetMixerDeviceIndex(LPCWSTR mixer)
 int CAudioInputW7::GetDefaultMixerDeviceIndex(void)
 {
 	LPCWSTR DefaultMixerDeviceName = GetDefaultMixerDeviceName();
+	if (!DefaultMixerDeviceName)
+	 	return -1;
+
 	int index = GetMixerDeviceIndex(DefaultMixerDeviceName);
 	return index;
 }
@@ -539,6 +542,9 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 	if (!pCaptureCollect)
 		goto Exit;
 
+	// Init master mute
+	this->MasterMute.p = NULL;
+
 	// Get the number of endpoints
 	UINT	nCaptureEndPoints=0;
 	hr = pCaptureCollect->GetCount(&nCaptureEndPoints);
@@ -593,7 +599,10 @@ bool CAudioInputW7::CMixerDevice::Init(IMMDeviceCollection * pCaptureCollect, IM
 		{
 			FindMasterMute(pDevice);
 			continue;
-		};
+		}
+		else
+			m_ArrayInputLines[m_nInputLines].lMute.p = NULL;
+
 
 		///// Identical, current endpoint belongs to this device
 		///// FIll-up data in InputLine[m_nInputLines]
