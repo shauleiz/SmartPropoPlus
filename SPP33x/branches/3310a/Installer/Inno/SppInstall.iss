@@ -213,24 +213,31 @@ end;
 
 function isFmsInstalled: Boolean;
 var
-  RegValFms, Fms: String;
+  RegValFms, Fms, RegValFmsWow: String;
   S: String;
   FmsLen: Longint;
   
-begin  
+begin 
+	Result := False;
   RegValFms := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\FMS';
+  RegValFmsWow := 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\FMS';
+
+	// x86 Machines
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValFms, 'DisplayName', Fms) then
-   begin
+   begin // 1
     FmsLen := Length(Fms);
-    if FmsLen = 0 then Result := False
-    else begin
-      Result := True;
-      S := Format('Length of == %s== is %d', [Fms, FmsLen]); 
-      //MsgBox(S, mbInformation, MB_OK);
-    end;
-   end
-   else
-    Result := False;
+    if FmsLen <> 0 then Result := True;
+    exit;
+   end; // of begin 1
+ 
+	// x64 Machines
+  if RegQueryStringValue(HKEY_LOCAL_MACHINE, RegValFmsWow, 'DisplayName', Fms) then
+   begin // 1
+    FmsLen := Length(Fms);
+    if FmsLen <> 0 then Result := True;
+    exit;
+   end; // of begin 1
+   
 end;
 
 
