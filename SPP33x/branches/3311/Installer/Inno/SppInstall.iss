@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SmartPropoPlus"
-#define MyAppVersion "3.3.10"
+#define MyAppVersion "3.3.11"
 #define MyAppURL "http://www.smartpropoplus.com/"
 #define MyAppExeName "SppConsole.exe"
 #define AppUtilsName  "SmartPropoPlus Utilities"
@@ -41,9 +41,9 @@ UserInfoPage=false
 SourceDir=..
 OnlyBelowVersion=0,0
 UninstallLogMode=append
-VersionInfoVersion=3.3.10.1
+VersionInfoVersion=3.3.11.0
 VersionInfoCompany=Shaul Eizikovich
-AppCopyright=Copyright (c) 2005-2011 by Shaul Eizikovich
+AppCopyright=Copyright (c) 2005-2012 by Shaul Eizikovich
 DisableDirPage=yes
 DisableProgramGroupPage=yes
 DisableReadyMemo=true
@@ -54,7 +54,7 @@ SetupLogging=true
 ShowTasksTreeLines=true
 DisableReadyPage=true
 SignTool=Sig sign /s PrivateCertStore  $f
-SetupIconFile=C:\Users\Shaul\Documents\SmartPropoPlus\HEAD\SPP33x\branches\3310\SppConsole\res\SppConsole.ico
+SetupIconFile=C:\Users\Shaul\Documents\SmartPropoPlus\HEAD\SPP33x\branches\3311\SppConsole\res\SppConsole.ico
 UninstallDisplayIcon={app}\UnInstaller.ico
 
 [Tasks]
@@ -246,13 +246,14 @@ end;
 function NextButtonClick(PageID: Integer): Boolean;
 
 begin  
-if ((PageID = wpSelectComponents) and isFmsInstalled()) then 
+if ((PageID = wpSelectComponents)) then 
   begin
     if IsComponentSelected('FMS') then
       FolderApp := GetFmsFolder('Dummy')
      else
       FolderApp := ExpandConstant('{app}');
   end;
+
     Result := TRUE 
 end;
 
@@ -683,6 +684,7 @@ begin
   else   Log('DeinitializeUninstall(): OK:');
 end;
 *)
+
 [InnoIDE_Settings]
 LogFileOverwrite=true
 

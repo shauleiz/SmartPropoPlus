@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,3,3,10
- PRODUCTVERSION 0,3,3,10
+ FILEVERSION 0,3,3,11
+ PRODUCTVERSION 0,3,3,11
  FILEFLAGSMASK 0x1fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -73,12 +73,12 @@ BEGIN
             VALUE "Debug", "No"
             VALUE "Email", "support@SmartPropoPlus.com"
             VALUE "FileDescription", "winmm for SmartPropoPlus"
-            VALUE "FileVersion", "0, 3, 3, 10"
+            VALUE "FileVersion", "0, 3, 3, 11"
             VALUE "InternalName", "winmm"
-            VALUE "LegalCopyright", "Copyright © 2005-2011 Shaul Eizikovich"
+            VALUE "LegalCopyright", "Copyright © 2005-2012 Shaul Eizikovich"
             VALUE "OriginalFilename", "winmm.dll"
             VALUE "ProductName", "winmm"
-            VALUE "ProductVersion", "0, 3, 3, 10"
+            VALUE "ProductVersion", "0, 3, 3, 11"
             VALUE "Transmitter", "All"
         END
     END

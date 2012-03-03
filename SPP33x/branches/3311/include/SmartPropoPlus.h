@@ -65,8 +65,8 @@ extern "C"
 #define MUTEX_LABEL	"SPP Global Shared memory Mutex"
 #define BLOCK_LABEL	"SPP Global Shared memory Block"
 #define EVENT_MIXER	"Mixer Switching Event"
-#define	VER_DLL		0x0003030a /* DLL File Version */
-#define	VER_GUI		0x0003030a /* GUI File Version */
+#define	VER_DLL		0x0003030b /* DLL File Version */
+#define	VER_GUI		0x0003030b /* GUI File Version */
 
 
 #define TX_VOLUME_MIC		5
@@ -113,7 +113,7 @@ extern "C"
 #define SPP_HOME_TITLE		"SmartPropoPlus Home"
 #define	SPP_MAIN_TEXT		"\
 Version %d.%d.%d - Build %s\n\
-Copyright (c) 2005-2011 by Shaul Eizikovich\n\n\
+Copyright (c) 2005-2012 by Shaul Eizikovich\n\n\
 This software is based on SmartPropo by Tsutomu SEKI\n\
 You may use and destribute this program freely.\n\n\
 SmartPropoPlus enables you to connect your R/C transmitter to your computer through \
