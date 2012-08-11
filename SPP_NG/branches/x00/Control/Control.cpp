@@ -1,4 +1,13 @@
-// Control.cpp : Defines the entry point for the application.
+// Control.cpp : Defines the entry point for SmartPropoPlus.
+//
+// State machine that controls the operation of other units
+// Hidden main window that controls system tray icon and messages
+// System tray icon & tool tip reflects state of SPP
+// System tray balloon reflects changes in state of SPP
+// System tray menu by right click on icon
+//
+// Only one instance of SPP can run on a machine (Singleton)
+// SPP can run on Vista SP2 (or higher) and on Windows 7
 //
 
 #include "stdafx.h"
@@ -43,8 +52,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return FALSE;
 	};
 
-	MSG msg;
-	HACCEL hAccelTable;
 
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -65,6 +72,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return FALSE;
 	}
 
+	MSG msg;
+	HACCEL hAccelTable;
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CONTROL));
 
 	// Main message loop:
@@ -141,8 +150,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    AddNotificationIcon(hWnd, IDI_GREEN);	// Add system-tray icon
-   AddNotificationBalloon(L"SmartPropoPlus", L"Started", NIIF_INFO );
-   ShowWindow(hWnd, SW_HIDE/*nCmdShow*/);
+   AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_DFLT_TOOLTIP, NIIF_INFO );// Add system-tray balloon
+   ShowWindow(hWnd, SW_HIDE); // Window is hidden
    UpdateWindow(hWnd);
 
    return TRUE;
@@ -182,6 +191,7 @@ BOOL DeleteNotificationIcon(void)
 
 void ShowContextMenu(HWND hwnd, POINT pt)
 {
+	// Show right-click menu
     HMENU hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDC_CONTEXTMENU));
     if (hMenu)
     {
@@ -238,6 +248,9 @@ BOOL IsVistaSP2OrLater(void)
 }
 BOOL IsSingleton(void)
 {
+	// If this process is first then a new mutex is created, no waiting and returns TRUE
+	// If this is a consequent process then a handle to the mutex is obtained, timeout expires
+	// so function return FALSE
 	HANDLE hMutex =  CreateMutex(NULL, FALSE, STR_SINGLETON_MTX);
 	DWORD waitstate = WaitForSingleObject(hMutex, 10);
 	return (WAIT_OBJECT_0 == waitstate);
@@ -284,14 +297,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
-		DeleteNotificationIcon();
+		DeleteNotificationIcon(); // Remove icon
 		PostQuitMessage(0);
 		break;
     case WMAPP_NOTIFYCALLBACK:
+		// Message from the system tray (a.k.a notification area)
         switch (LOWORD(lParam))
         {
         case WM_CONTEXTMENU:
             {
+				// Dispaly the system tray icon context menu
                 POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
                 ShowContextMenu(hWnd, pt);
             }
