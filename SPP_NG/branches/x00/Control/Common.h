@@ -1,4 +1,5 @@
 #define	STR_EN_TTL_SPP_ERR	L"SmartPropoPlus Error"
+#define	STR_EN_TTL_SPP_NONE	L"SmartPropoPlus"
 #define	STR_EN_OS_TOO_OLD	L"Cannot start SmartPropoPlus\r\nRuns on Vista SP2 or higher\r\nQuitting"
 #define	STR_EN_CANNOT_INIT	L"Cannot initialize SmartPropoPlus\r\nQuitting"
 #define	STR_EN_DFLT_TOOLTIP	L"Running"
