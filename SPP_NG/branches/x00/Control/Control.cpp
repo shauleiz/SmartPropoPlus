@@ -14,10 +14,12 @@
 #include "Shellapi.h"
 #include "Control.h"
 #include "Common.h"
+#include "StateMachine.h"
 
 #define MAX_LOADSTRING 100
 
 // Global Variables:
+CStateMachine * sm;
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
@@ -66,6 +68,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	// Perform application initialization:
+	sm = new CStateMachine;
 	if (!InitInstance (hInstance, nCmdShow))
 	{
 		MessageBox(NULL, STR_EN_CANNOT_INIT, STR_EN_TTL_SPP_ERR, MB_OK|MB_ICONERROR);
@@ -149,8 +152,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   AddNotificationIcon(hWnd, IDI_GREEN);	// Add system-tray icon
-   AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_DFLT_TOOLTIP, NIIF_INFO );// Add system-tray balloon
+   // Initialize state machine
+   if (!sm->InitInstance(hWnd, hInst))
+	   return FALSE;
+
    ShowWindow(hWnd, SW_HIDE); // Window is hidden
    UpdateWindow(hWnd);
 
@@ -264,9 +269,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 //
 //  PURPOSE:  Processes messages for the main window.
 //
-//  WM_COMMAND	- process the application menu
+//  WM_COMMAND	- process the application or context menu
 //  WM_PAINT	- Paint the main window
 //  WM_DESTROY	- post a quit message and return
+//	WMAPP_NOTIFYCALLBACK - Message from the system tray (a.k.a notification area)
+//	WMAPP_SM_INIT - State machine initialized
 //
 //
 	int wmId, wmEvent;
@@ -305,14 +312,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(lParam))
         {
         case WM_CONTEXTMENU:
-            {
-				// Dispaly the system tray icon context menu
-                POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
-                ShowContextMenu(hWnd, pt);
-            }
+			// Dispaly the system tray icon context menu
+            POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
+            ShowContextMenu(hWnd, pt);
             break;
 		};
 		break;
+	case WMAPP_SM_INIT:
+		AddNotificationIcon(hWnd, IDI_GREEN);	// Add system-tray icon
+		AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_DFLT_TOOLTIP, NIIF_INFO );// Add system-tray balloon
+        break;
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
