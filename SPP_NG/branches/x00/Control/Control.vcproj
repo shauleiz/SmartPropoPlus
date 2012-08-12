@@ -175,6 +175,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StateMachine.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
