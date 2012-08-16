@@ -27,9 +27,9 @@ public:
 	virtual	~CAudioInputW7(void);
 	HRESULT	Enumerate(void);
 	int		CountCaptureDevices(void);
-	HRESULT	GetCaptureDeviceId(int nDevice, int size, PVOID Id);
-	HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR DeviceName);
-	HRESULT	IsCaptureDeviceActive(PVOID Id);
+	HRESULT	GetCaptureDeviceId(int nDevice, int *size, PVOID *Id);
+	HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName);
+	bool	IsCaptureDeviceActive(PVOID Id);
 	bool	RegisterChangeNotification(int(CALLBACK *func)(HWND hWnd), HWND hWnd);
 
 protected:
