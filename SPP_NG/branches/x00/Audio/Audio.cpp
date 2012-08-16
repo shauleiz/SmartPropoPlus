@@ -271,6 +271,20 @@ bool CAudioInputW7::Create(void)
 
 	// First Enumeration
 	hr = Enumerate();
+	hr = Enumerate();
+
+	PVOID id;
+	int size;
+	LPWSTR DevName;
+	bool active;
+
+	for (int i=0; i<15; i++)
+	{
+		hr = GetCaptureDeviceId(i, &size, &id);
+		if (FAILED(hr))continue;
+		hr = GetCaptureDeviceName(id, &DevName);
+		active = IsCaptureDeviceActive(id);
+	}
 
 	// Create an array of Mixer Device Names
 	LPWSTR* ListMixerDeviceNames = new LPWSTR[m_nEndPoints+1];
@@ -467,9 +481,9 @@ HRESULT	CAudioInputW7::Enumerate(void)
 		free(m_CaptureDevices.DeviceName[i]); 
 		free(m_CaptureDevices.id[i]); 
 	};
-	free(m_CaptureDevices.DeviceName);
-	free(m_CaptureDevices.id);
-	free(m_CaptureDevices.state);
+	delete [] m_CaptureDevices.DeviceName;
+	delete [] m_CaptureDevices.id;
+	delete [] m_CaptureDevices.state;
 
 	// Prepare for enumeration
 	m_CaptureDevices.nDev = m_nEndPoints;
@@ -519,6 +533,63 @@ HRESULT	CAudioInputW7::Enumerate(void)
 };
 
 
+
+int		CAudioInputW7::CountCaptureDevices(void)
+{		
+	return m_CaptureDevices.nDev;
+}
+
+HRESULT	CAudioInputW7::GetCaptureDeviceId(int nDevice, int *size, PVOID *Id)
+{
+	// Given the serial number (1-based) of a capture device (Which is meaningless),
+	// the function passes a pointer to the id (which uniquely identifies the capture device).
+	// The function also passes the size in bytes of the id
+	
+	// Sanity check
+	if (nDevice<1 || nDevice> CountCaptureDevices())
+		return FWP_E_OUT_OF_BOUNDS;
+
+	if (m_CaptureDevices.id[nDevice-1])
+	{
+		*Id = (PVOID)m_CaptureDevices.id[nDevice-1];
+		*size = wcslen(m_CaptureDevices.id[nDevice-1])*sizeof(WCHAR);
+		return S_OK;
+	}
+	else
+		return S_FALSE;
+}
+
+HRESULT	CAudioInputW7::GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName)
+// Given a pointer to the id (which uniquely identifies the capture device),
+// the function passes the Capture Device friendly name
+{
+	for (int i = 0; i<m_CaptureDevices.nDev; i++)
+	{
+		if (!wcscmp(m_CaptureDevices.id[i], (LPWSTR)Id))
+		{
+			*DeviceName = m_CaptureDevices.DeviceName[i];
+			return S_OK;
+		}
+	};
+
+	*DeviceName = NULL;
+	return S_FALSE;
+}
+
+bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
+{
+	for (int i = 0; i<m_CaptureDevices.nDev; i++)
+	{
+		if (!wcscmp(m_CaptureDevices.id[i], (LPWSTR)Id))
+		{
+			return m_CaptureDevices.state[i] & DEVICE_STATE_ACTIVE;
+		}
+	};
+
+	return false;
+
+}
+
 //--------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------
 // Example implementation of IMMNotificationClient interface.
@@ -531,6 +602,8 @@ HRESULT	CAudioInputW7::Enumerate(void)
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
 
+
+////////////////////// Class CMMNotificationClient //////////////////////
 CMMNotificationClient::CMMNotificationClient()
     {
 		_cRef=1;
