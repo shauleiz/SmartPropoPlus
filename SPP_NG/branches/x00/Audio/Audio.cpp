@@ -115,20 +115,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //        create and display the main program window.
 //
 {
-   HWND hWnd;
+	HWND hWnd;
 
-   hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-   if (!hWnd)
-      return FALSE;
+	if (!hWnd)
+		return FALSE;
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
-   return TRUE;
+	return TRUE;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -217,6 +217,7 @@ CAudioInputW7::CAudioInputW7(void)
 	m_CaptureDevices.DeviceName = NULL;
 	m_CaptureDevices.state = NULL;
 	m_CaptureDevices.id = NULL;
+	m_ChangeEventCB = NULL;
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	bool created = Create();
@@ -271,8 +272,8 @@ bool CAudioInputW7::Create(void)
 
 	// First Enumeration
 	hr = Enumerate();
-	hr = Enumerate();
 
+	// Get data
 	PVOID id;
 	int size;
 	LPWSTR DevName;
@@ -286,24 +287,18 @@ bool CAudioInputW7::Create(void)
 		active = IsCaptureDeviceActive(id);
 	}
 
-	// Create an array of Mixer Device Names
-	LPWSTR* ListMixerDeviceNames = new LPWSTR[m_nEndPoints+1];
-	int nMixerDev = CreateListDeviceNames(ListMixerDeviceNames);
-	if (!nMixerDev)
-	{
-		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not create a list of Mixer Device Names\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		goto Exit;
-	};
+	// Register event callback function
+	RegisterChangeNotification(TestEvent);
 
 	return true;
 
-	Exit:
+Exit:
 	if (m_pEnumerator && m_pNotifyChange)
 		m_pEnumerator->UnregisterEndpointNotificationCallback(m_pNotifyChange);
-    SAFE_RELEASE(m_pNotifyChange);
-    SAFE_RELEASE(m_pEnumerator);
-    SAFE_RELEASE(m_pCaptureDeviceCollect);
-    SAFE_RELEASE(m_pRenderDeviceCollect);
+	SAFE_RELEASE(m_pNotifyChange);
+	SAFE_RELEASE(m_pEnumerator);
+	SAFE_RELEASE(m_pCaptureDeviceCollect);
+	SAFE_RELEASE(m_pRenderDeviceCollect);
 	return false;
 }
 
@@ -326,13 +321,13 @@ CAudioInputW7::~CAudioInputW7(void)
 
 int CAudioInputW7::CreateListDeviceNames(LPWSTR * ListMixerDeviceNames)
 /*
-	Create a list of Mixer-Device names
-	Return: Number of Mixer-Devices
+Create a list of Mixer-Device names
+Return: Number of Mixer-Devices
 
-	Assumption: 
-		1. m_nEndPoints is already initialized
-		2. ListMixerDeviceNames is already allocated
-		3. m_pCaptureDeviceCollect is already initialized
+Assumption: 
+1. m_nEndPoints is already initialized
+2. ListMixerDeviceNames is already allocated
+3. m_pCaptureDeviceCollect is already initialized
 */
 {
 	IPropertyStore * pProps = NULL;
@@ -342,7 +337,7 @@ int CAudioInputW7::CreateListDeviceNames(LPWSTR * ListMixerDeviceNames)
 
 	for (UINT iEndPoint=0; iEndPoint<m_nEndPoints; iEndPoint++)
 	{
-		
+
 		ListMixerDeviceNames[iEndPoint]=NULL;
 
 		// Get pointer to endpoint number i.
@@ -393,9 +388,9 @@ int CAudioInputW7::CreateListDeviceNames(LPWSTR * ListMixerDeviceNames)
 
 	};
 
-	Exit:
-    SAFE_RELEASE(pProps);
-    SAFE_RELEASE(pDevice);
+Exit:
+	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pDevice);
 
 	return m_nMixers;
 }
@@ -404,13 +399,13 @@ int CAudioInputW7::CreateListDeviceNames(LPWSTR * ListMixerDeviceNames)
 #if 0
 int CAudioInputW7::ListInputs(LPWSTR * ListMixerDeviceNames)
 /*
-	Create a list of Mixer-Device names
-	Return: Number of Mixer-Devices
+Create a list of Mixer-Device names
+Return: Number of Mixer-Devices
 
-	Assumption: 
-		1. m_nEndPoints is already initialized
-		2. ListMixerDeviceNames is already allocated
-		3. m_pCaptureDeviceCollect is already initialized
+Assumption: 
+1. m_nEndPoints is already initialized
+2. ListMixerDeviceNames is already allocated
+3. m_pCaptureDeviceCollect is already initialized
 */
 {
 	IPropertyStore * pProps = NULL;
@@ -420,7 +415,7 @@ int CAudioInputW7::ListInputs(LPWSTR * ListMixerDeviceNames)
 
 	for (UINT iEndPoint=0; iEndPoint<m_nEndPoints; iEndPoint++)
 	{
-		
+
 		ListMixerDeviceNames[iEndPoint]=NULL;
 
 		// Get pointer to endpoint number i.
@@ -453,9 +448,9 @@ int CAudioInputW7::ListInputs(LPWSTR * ListMixerDeviceNames)
 		};
 
 	};
-	Exit:
-    SAFE_RELEASE(pProps);
-    SAFE_RELEASE(pDevice);
+Exit:
+	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pDevice);
 
 	return m_nMixers;
 }
@@ -524,9 +519,9 @@ HRESULT	CAudioInputW7::Enumerate(void)
 		m_CaptureDevices.id[iEndPoint] = _wcsdup(id);
 		CoTaskMemFree(id);
 	};
-	Exit:
-    SAFE_RELEASE(pProps);
-    SAFE_RELEASE(pDevice);
+Exit:
+	SAFE_RELEASE(pProps);
+	SAFE_RELEASE(pDevice);
 
 	return hr;
 
@@ -544,7 +539,7 @@ HRESULT	CAudioInputW7::GetCaptureDeviceId(int nDevice, int *size, PVOID *Id)
 	// Given the serial number (1-based) of a capture device (Which is meaningless),
 	// the function passes a pointer to the id (which uniquely identifies the capture device).
 	// The function also passes the size in bytes of the id
-	
+
 	// Sanity check
 	if (nDevice<1 || nDevice> CountCaptureDevices())
 		return FWP_E_OUT_OF_BOUNDS;
@@ -578,6 +573,8 @@ HRESULT	CAudioInputW7::GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName)
 
 bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 {
+	// Given a pointer to the id (which uniquely identifies the capture device),
+	// the function returns 'true' if the capture device is active
 	for (int i = 0; i<m_CaptureDevices.nDev; i++)
 	{
 		if (!wcscmp(m_CaptureDevices.id[i], (LPWSTR)Id))
@@ -590,6 +587,19 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 
 }
 
+bool	CAudioInputW7::RegisterChangeNotification(CBF func)
+// Register callback function to be called everytime there's a change in one or more input devices
+// This function must be simple and used for notification.
+// It is recommended to run Enumerate after every call to this function
+{
+	if (!func || !m_pNotifyChange)
+		return false;
+
+	m_ChangeEventCB = func;
+	m_pNotifyChange->GetParent(this);
+	return true;
+}
+
 //--------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------
 // Example implementation of IMMNotificationClient interface.
@@ -599,201 +609,199 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 //-----------------------------------------------------------
 
 #define SAFE_RELEASE(punk)  \
-              if ((punk) != NULL)  \
-                { (punk)->Release(); (punk) = NULL; }
+	if ((punk) != NULL)  \
+{ (punk)->Release(); (punk) = NULL; }
 
 
 ////////////////////// Class CMMNotificationClient //////////////////////
 CMMNotificationClient::CMMNotificationClient()
-    {
-		_cRef=1;
-		_pEnumerator=NULL;
-    }
+{
+	_cRef=1;
+	_pEnumerator=NULL;
+}
 
-    CMMNotificationClient::~CMMNotificationClient()
-    {
-        SAFE_RELEASE(_pEnumerator)
-    }
+CMMNotificationClient::~CMMNotificationClient()
+{
+	SAFE_RELEASE(_pEnumerator)
+}
 
-    // IUnknown methods -- AddRef, Release, and QueryInterface
+void STDMETHODCALLTYPE CMMNotificationClient::GetParent(CAudioInputW7 * Parent)
+{
+	_Parent = Parent;
+}
 
-    ULONG STDMETHODCALLTYPE CMMNotificationClient::AddRef()
-    {
-        return InterlockedIncrement(&_cRef);
-    }
+// IUnknown methods -- AddRef, Release, and QueryInterface
 
-    ULONG STDMETHODCALLTYPE CMMNotificationClient::Release()
-    {
-        ULONG ulRef = InterlockedDecrement(&_cRef);
-        if (0 == ulRef)
-        {
-            delete this;
-        }
-        return ulRef;
-    }
+ULONG STDMETHODCALLTYPE CMMNotificationClient::AddRef()
+{
+	return InterlockedIncrement(&_cRef);
+}
 
-    HRESULT STDMETHODCALLTYPE CMMNotificationClient::QueryInterface(
-                                REFIID riid, VOID **ppvInterface)
-    {
-        if (IID_IUnknown == riid)
-        {
-            AddRef();
-            *ppvInterface = (IUnknown*)this;
-        }
-        else if (__uuidof(IMMNotificationClient) == riid)
-        {
-            AddRef();
-            *ppvInterface = (IMMNotificationClient*)this;
-        }
-        else
-        {
-            *ppvInterface = NULL;
-            return E_NOINTERFACE;
-        }
-        return S_OK;
-    }
+ULONG STDMETHODCALLTYPE CMMNotificationClient::Release()
+{
+	ULONG ulRef = InterlockedDecrement(&_cRef);
+	if (0 == ulRef)
+	{
+		delete this;
+	}
+	return ulRef;
+}
 
-    // Callback methods for device-event notifications.
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::QueryInterface(REFIID riid, VOID **ppvInterface)
+{
+	if (IID_IUnknown == riid)
+	{
+		AddRef();
+		*ppvInterface = (IUnknown*)this;
+	}
+	else if (__uuidof(IMMNotificationClient) == riid)
+	{
+		AddRef();
+		*ppvInterface = (IMMNotificationClient*)this;
+	}
+	else
+	{
+		*ppvInterface = NULL;
+		return E_NOINTERFACE;
+	}
+	return S_OK;
+}
 
-    HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDefaultDeviceChanged(
-                                EDataFlow flow, ERole role,
-                                LPCWSTR pwstrDeviceId)
-    {
-        char  *pszFlow = "?????";
-        char  *pszRole = "?????";
+// Callback methods for device-event notifications.
 
-        _PrintDeviceName(pwstrDeviceId);
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDefaultDeviceChanged(EDataFlow flow, ERole role,	LPCWSTR pwstrDeviceId)
+{
+	char  *pszFlow = "?????";
+	char  *pszRole = "?????";
 
-        switch (flow)
-        {
-        case eRender:
-            pszFlow = "eRender";
-            break;
-        case eCapture:
-            pszFlow = "eCapture";
-            break;
-        }
+	_PrintDeviceName(pwstrDeviceId);
 
-        switch (role)
-        {
-        case eConsole:
-            pszRole = "eConsole";
-            break;
-        case eMultimedia:
-            pszRole = "eMultimedia";
-            break;
-        case eCommunications:
-            pszRole = "eCommunications";
-            break;
-        }
+	switch (flow)
+	{
+	case eRender:
+		pszFlow = "eRender";
+		break;
+	case eCapture:
+		pszFlow = "eCapture";
+		break;
+	}
 
-        // printf("  -->New default device: flow = %s, role = %s\n",  pszFlow, pszRole);
-        return S_OK;
-    }
+	switch (role)
+	{
+	case eConsole:
+		pszRole = "eConsole";
+		break;
+	case eMultimedia:
+		pszRole = "eMultimedia";
+		break;
+	case eCommunications:
+		pszRole = "eCommunications";
+		break;
+	}
 
-    HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
-    {
-        _PrintDeviceName(pwstrDeviceId);
+	// Notify caller of the change
+	_Parent->m_ChangeEventCB();
 
-        // printf("  -->Added device\n");
-        return S_OK;
-    };
+	return S_OK;
+}
 
-    HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
-    {
-        _PrintDeviceName(pwstrDeviceId);
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId)
+{
+	_PrintDeviceName(pwstrDeviceId);
 
-        // printf("  -->Removed device\n");
-        return S_OK;
-    }
+	// Notify caller of the change
+	_Parent->m_ChangeEventCB();
 
-    HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceStateChanged(
-                                LPCWSTR pwstrDeviceId,
-                                DWORD dwNewState)
-    {
-        char  *pszState = "?????";
+	return S_OK;
+};
 
-        _PrintDeviceName(pwstrDeviceId);
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceRemoved(LPCWSTR pwstrDeviceId)
+{
+	_PrintDeviceName(pwstrDeviceId);
 
-        switch (dwNewState)
-        {
-        case DEVICE_STATE_ACTIVE:
-            pszState = "ACTIVE";
-            break;
-        case DEVICE_STATE_DISABLED:
-            pszState = "DISABLED";
-            break;
-        case DEVICE_STATE_NOTPRESENT:
-            pszState = "NOTPRESENT";
-            break;
-        case DEVICE_STATE_UNPLUGGED:
-            pszState = "UNPLUGGED";
-            break;
-        }
+	// Notify caller of the change
+	_Parent->m_ChangeEventCB();
 
-        // printf("  -->New device state is DEVICE_STATE_%s (0x%8.8x)\n",   pszState, dwNewState);
+	return S_OK;
+}
 
-        return S_OK;
-    }
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState)
+{
+	char  *pszState = "?????";
 
-    HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnPropertyValueChanged(
-                                LPCWSTR pwstrDeviceId,
-                                const PROPERTYKEY key)
-    {
-        _PrintDeviceName(pwstrDeviceId);
+	_PrintDeviceName(pwstrDeviceId);
 
-        // printf("  -->Changed device property "
-               //"{%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x}#%d\n",
-               //key.fmtid.Data1, key.fmtid.Data2, key.fmtid.Data3,
-               //key.fmtid.Data4[0], key.fmtid.Data4[1],
-               //key.fmtid.Data4[2], key.fmtid.Data4[3],
-               //key.fmtid.Data4[4], key.fmtid.Data4[5],
-               //key.fmtid.Data4[6], key.fmtid.Data4[7],
-               //key.pid);
-        return S_OK;
-    }
+	switch (dwNewState)
+	{
+	case DEVICE_STATE_ACTIVE:
+		pszState = "ACTIVE";
+		break;
+	case DEVICE_STATE_DISABLED:
+		pszState = "DISABLED";
+		break;
+	case DEVICE_STATE_NOTPRESENT:
+		pszState = "NOTPRESENT";
+		break;
+	case DEVICE_STATE_UNPLUGGED:
+		pszState = "UNPLUGGED";
+		break;
+	}
+
+	// Notify caller of the change
+	_Parent->m_ChangeEventCB();
+
+	return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnPropertyValueChanged(LPCWSTR pwstrDeviceId, const PROPERTYKEY key)
+{
+	// Notify caller of the change
+	_Parent->m_ChangeEventCB();
+
+	return S_OK;
+}
 
 // Given an endpoint ID string, print the friendly device name.
 HRESULT CMMNotificationClient::_PrintDeviceName(LPCWSTR pwstrId)
 {
-    HRESULT hr = S_OK;
-    IMMDevice *pDevice = NULL;
-    IPropertyStore *pProps = NULL;
-    PROPVARIANT varString;
+	HRESULT hr = S_OK;
+	IMMDevice *pDevice = NULL;
+	IPropertyStore *pProps = NULL;
+	PROPVARIANT varString;
 
-    CoInitialize(NULL);
-    PropVariantInit(&varString);
+	CoInitialize(NULL);
+	PropVariantInit(&varString);
 
-    if (_pEnumerator == NULL)
-    {
-        // Get enumerator for audio endpoint devices.
-        hr = CoCreateInstance(__uuidof(MMDeviceEnumerator),
-                              NULL, CLSCTX_INPROC_SERVER,
-                              __uuidof(IMMDeviceEnumerator),
-                              (void**)&_pEnumerator);
-    }
-    if (hr == S_OK)
-    {
-        hr = _pEnumerator->GetDevice(pwstrId, &pDevice);
-    }
-    if (hr == S_OK)
-    {
-        hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
-    }
-    if (hr == S_OK)
-    {
-        // Get the endpoint device's friendly-name property.
-        hr = pProps->GetValue(PKEY_Device_FriendlyName, &varString);
-    }
-    // printf("----------------------\nDevice name: \"%S\"\n" "  Endpoint ID string: \"%S\"\n",
-           //(hr == S_OK) ? varString.pwszVal : L"null device",
-           //(pwstrId != NULL) ? pwstrId : L"null ID");
+	if (_pEnumerator == NULL)
+	{
+		// Get enumerator for audio endpoint devices.
+		hr = CoCreateInstance(__uuidof(MMDeviceEnumerator),
+			NULL, CLSCTX_INPROC_SERVER,
+			__uuidof(IMMDeviceEnumerator),
+			(void**)&_pEnumerator);
+	}
+	if (hr == S_OK)
+	{
+		hr = _pEnumerator->GetDevice(pwstrId, &pDevice);
+	}
+	if (hr == S_OK)
+	{
+		hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+	}
+	if (hr == S_OK)
+	{
+		// Get the endpoint device's friendly-name property.
+		hr = pProps->GetValue(PKEY_Device_FriendlyName, &varString);
+	}
+	// printf("----------------------\nDevice name: \"%S\"\n" "  Endpoint ID string: \"%S\"\n",
+	//(hr == S_OK) ? varString.pwszVal : L"null device",
+	//(pwstrId != NULL) ? pwstrId : L"null ID");
 
-    PropVariantClear(&varString);
+	PropVariantClear(&varString);
 
-    SAFE_RELEASE(pProps)
-    SAFE_RELEASE(pDevice)
-    CoUninitialize();
-    return hr;
+	SAFE_RELEASE(pProps)
+		SAFE_RELEASE(pDevice)
+		CoUninitialize();
+	return hr;
 }
 //--------------------------------------------------------------------------------------------------

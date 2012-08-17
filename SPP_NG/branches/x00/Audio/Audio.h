@@ -14,9 +14,16 @@ static GUID const CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, {0x8E,
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
 
+typedef  int(CALLBACK *CBF)(void);
+
+int CALLBACK TestEvent(void)
+{
+	return 0;
+}
 
 class CAudioInputW7 
 {
+
 protected: 
 	bool Create(void);
 	int CreateListDeviceNames(LPWSTR * ListMixerDeviceNames);
@@ -30,7 +37,7 @@ public:
 	HRESULT	GetCaptureDeviceId(int nDevice, int *size, PVOID *Id);
 	HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName);
 	bool	IsCaptureDeviceActive(PVOID Id);
-	bool	RegisterChangeNotification(int(CALLBACK *func)(HWND hWnd), HWND hWnd);
+	bool	RegisterChangeNotification(CBF f);
 
 protected:
 	IMMDeviceEnumerator * m_pEnumerator;
@@ -46,12 +53,16 @@ protected:
 
 	UINT m_nEndPoints;
 	UINT m_nMixers;
+
+public:
+	CBF m_ChangeEventCB;
 };
 
 class CMMNotificationClient : public IMMNotificationClient
 {
     LONG _cRef;
     IMMDeviceEnumerator *_pEnumerator;
+	CAudioInputW7 * _Parent;
 
     // Private function to print device-friendly name
     HRESULT _PrintDeviceName(LPCWSTR  pwstrId);
@@ -59,6 +70,7 @@ class CMMNotificationClient : public IMMNotificationClient
 public:
 	CMMNotificationClient() ;
 	virtual ~CMMNotificationClient(void);
+	void	STDMETHODCALLTYPE GetParent(CAudioInputW7 * Parent);
 	HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR pwstrDeviceId);
 	HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId);
 	HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId);
