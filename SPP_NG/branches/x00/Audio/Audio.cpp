@@ -213,10 +213,7 @@ CAudioInputW7::CAudioInputW7(void)
 	m_nEndPoints = 0;
 	HRESULT hr = S_OK;
 	m_nMixers = 0;
-	m_CaptureDevices.nDev = 0;
-	m_CaptureDevices.DeviceName.clear();
-	m_CaptureDevices.state.clear();
-	m_CaptureDevices.id.clear();
+	m_CaptureDevices.clear();
 	m_ChangeEventCB = NULL;
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
@@ -275,7 +272,7 @@ bool CAudioInputW7::Create(void)
 	// First Enumeration
 	hr = Enumerate();
 
-	// Get data
+	// TEST
 	PVOID id;
 	int size;
 	LPWSTR DevName;
@@ -472,20 +469,13 @@ HRESULT	CAudioInputW7::Enumerate(void)
 	HRESULT hr = S_OK;
 
 	// Initialize data staructure
-	for (int i=0; i<m_CaptureDevices.nDev;i++)
+	while (!m_CaptureDevices.empty())
 	{
-		free(m_CaptureDevices.DeviceName[i]); 
-		free(m_CaptureDevices.id[i]); 
+		delete m_CaptureDevices.back()->DeviceName;
+		delete m_CaptureDevices.back()->id;
+		m_CaptureDevices.pop_back();
 	};
-	m_CaptureDevices.DeviceName.clear();
-	m_CaptureDevices.id.clear();
-	m_CaptureDevices.state.clear();
 
-	// Prepare for enumeration
-	//m_CaptureDevices.nDev = m_nEndPoints;
-	//m_CaptureDevices.DeviceName. = new LPWSTR[m_nEndPoints];
-	//m_CaptureDevices.id = new LPWSTR[m_nEndPoints];
-	//m_CaptureDevices.state = new DWORD[m_nEndPoints];
 
 	// Loop on all endpoints
 	for (UINT iEndPoint=0; iEndPoint<m_nEndPoints; iEndPoint++)
@@ -504,24 +494,27 @@ HRESULT	CAudioInputW7::Enumerate(void)
 		// Get the Device's friendly-name property.
 		hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
 		EXIT_ON_ERROR(hr);
-		m_CaptureDevices.DeviceName.push_back(_wcsdup(varName.pwszVal));
 
 		// Get the state of the device:
 		// DEVICE_STATE_ACTIVE / DEVICE_STATE_DISABLED / DEVICE_STATE_NOTPRESENT / DEVICE_STATE_UNPLUGGED
 		DWORD state;
 		hr = pDevice->GetState(&state);
 		EXIT_ON_ERROR(hr);
-		m_CaptureDevices.state.push_back(state);
 
 		// Get device unique id
 		LPWSTR id;
 		hr = pDevice->GetId(&id);
 		EXIT_ON_ERROR(hr);
-		m_CaptureDevices.id.push_back(_wcsdup(id));
+
+
+		m_CaptureDevices.push_back(new CapDev);
+		m_CaptureDevices.back()->DeviceName = _wcsdup(varName.pwszVal);
+		m_CaptureDevices.back()->state = state;
+		m_CaptureDevices.back()->id = _wcsdup(id);
+
 		CoTaskMemFree(id);
 	};
 
-	m_CaptureDevices.nDev = m_CaptureDevices.id.size();
 
 Exit:
 	SAFE_RELEASE(pProps);
@@ -535,7 +528,7 @@ Exit:
 
 int		CAudioInputW7::CountCaptureDevices(void)
 {		
-	return m_CaptureDevices.nDev;
+	return m_CaptureDevices.size();
 }
 
 HRESULT	CAudioInputW7::GetCaptureDeviceId(int nDevice, int *size, PVOID *Id)
@@ -548,10 +541,10 @@ HRESULT	CAudioInputW7::GetCaptureDeviceId(int nDevice, int *size, PVOID *Id)
 	if (nDevice<1 || nDevice> CountCaptureDevices())
 		return FWP_E_OUT_OF_BOUNDS;
 
-	if (m_CaptureDevices.id[nDevice-1])
+	if (m_CaptureDevices[nDevice-1]->id)
 	{
-		*Id = (PVOID)m_CaptureDevices.id[nDevice-1];
-		*size = wcslen(m_CaptureDevices.id[nDevice-1])*sizeof(WCHAR);
+		*Id = (PVOID)m_CaptureDevices[nDevice-1]->id;
+		*size = wcslen(m_CaptureDevices[nDevice-1]->id)*sizeof(WCHAR);
 		return S_OK;
 	}
 	else
@@ -562,11 +555,11 @@ HRESULT	CAudioInputW7::GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName)
 // Given a pointer to the id (which uniquely identifies the capture device),
 // the function passes the Capture Device friendly name
 {
-	for (int i = 0; i<m_CaptureDevices.nDev; i++)
+	for (UINT  i = 0; i<m_CaptureDevices.size(); i++)
 	{
-		if (!wcscmp(m_CaptureDevices.id[i], (LPWSTR)Id))
+		if (!wcscmp(m_CaptureDevices[i]->id, (LPWSTR)Id))
 		{
-			*DeviceName = m_CaptureDevices.DeviceName[i];
+			*DeviceName = m_CaptureDevices[i]->DeviceName;
 			return S_OK;
 		}
 	};
@@ -579,11 +572,11 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 {
 	// Given a pointer to the id (which uniquely identifies the capture device),
 	// the function returns 'true' if the capture device is active
-	for (int i = 0; i<m_CaptureDevices.nDev; i++)
+	for (UINT i = 0; i<m_CaptureDevices.size(); i++)
 	{
-		if (!wcscmp(m_CaptureDevices.id[i], (LPWSTR)Id))
+		if (!wcscmp(m_CaptureDevices[i]->id, (LPWSTR)Id))
 		{
-			return m_CaptureDevices.state[i] & DEVICE_STATE_ACTIVE;
+			return m_CaptureDevices[i]->state & DEVICE_STATE_ACTIVE;
 		}
 	};
 
@@ -591,7 +584,7 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 
 }
 
-bool	CAudioInputW7::RegisterChangeNotification(CBF func)
+bool CAudioInputW7::RegisterChangeNotification(CBF func)
 // Register callback function to be called everytime there's a change in one or more input devices
 // This function must be simple and used for notification.
 // It is recommended to run Enumerate after every call to this function
@@ -602,6 +595,105 @@ bool	CAudioInputW7::RegisterChangeNotification(CBF func)
 	m_ChangeEventCB = func;
 	m_pNotifyChange->GetParent(this);
 	return true;
+}
+
+int 	CAudioInputW7::FindCaptureDevice(PVOID Id)
+// Given Capture Device ID this function returns device serial number (1-based)
+// Return 0 if not found
+{
+	if (m_CaptureDevices.empty() || !m_CaptureDevices.size())
+		return 0;
+
+	for (UINT i=0; i<m_CaptureDevices.size(); i++)
+	{
+		if (!wcscmp(m_CaptureDevices[i]->id, (LPWSTR)Id))
+			return i+1;
+	}; // for loop
+
+	return 0;
+}
+
+bool	CAudioInputW7::RemoveCaptureDevice(PVOID Id)
+// Given Capture Device ID this function removes its entry
+// Return true/false for success/failure
+{
+	int i = FindCaptureDevice(Id);
+	if(--i<0)
+		return false;
+
+	delete m_CaptureDevices[i]->id;
+	delete m_CaptureDevices[i]->DeviceName;
+	m_CaptureDevices.erase(m_CaptureDevices.begin()+i);
+	return true;
+}
+
+bool 	CAudioInputW7::ChangeStateCaptureDevice(PVOID Id, DWORD state)
+// Given Capture Device ID this function change the state
+// Return true/false for success/failure
+{
+	int i = FindCaptureDevice(Id);
+	if(--i<0)
+		return false;
+
+	m_CaptureDevices[i]->state = state;
+	return true;
+}
+
+
+bool 	CAudioInputW7::AddCaptureDevice(PVOID Id)
+{
+	// Already exists?
+	int i = FindCaptureDevice(Id);
+	if(i>0)
+		return false;
+
+	IPropertyStore *pProps = NULL;
+	IMMDevice *pDevice = NULL;
+	PROPVARIANT varName;
+
+	// Get device from ID
+	HRESULT hr = S_OK;
+	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
+	if (FAILED(hr))
+		goto bad_exit;
+
+	// Get state of device
+	DWORD state;
+	hr = pDevice->GetState(&state);
+	if (FAILED(hr))
+		goto bad_exit;
+
+	// Get friendly name of device
+	hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+	if (FAILED(hr))
+		goto bad_exit;
+
+	// Initialize container for property value.
+	PropVariantInit(&varName);
+
+	// Get the Device's friendly-name property.
+	hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+	if (FAILED(hr))
+		goto bad_exit;
+
+	// Create device entry and insert as last entry
+	CapDev *dev = new(CapDev);
+	dev->DeviceName = _wcsdup(varName.pwszVal);
+	dev->id =  _wcsdup((LPCWSTR)Id);
+	dev->state = state;
+	m_CaptureDevices.push_back(dev);
+	SAFE_RELEASE(pDevice);
+	SAFE_RELEASE(pProps)
+
+	return true;
+
+
+
+bad_exit:
+	SAFE_RELEASE(pDevice);
+	SAFE_RELEASE(pProps)
+
+	return false;
 }
 
 //--------------------------------------------------------------------------------------------------
