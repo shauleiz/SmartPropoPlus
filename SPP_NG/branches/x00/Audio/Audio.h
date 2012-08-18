@@ -15,6 +15,8 @@ static GUID const CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, {0x8E,
                 { (punk)->Release(); (punk) = NULL; }
 
 typedef  int(CALLBACK *CBF)(void);
+struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
+
 
 int CALLBACK TestEvent(void)
 {
@@ -27,7 +29,10 @@ class CAudioInputW7
 protected: 
 	bool Create(void);
 	int CreateListDeviceNames(LPWSTR * ListMixerDeviceNames);
-
+	int FindCaptureDevice(PVOID Id);
+	bool RemoveCaptureDevice(PVOID Id);
+	bool AddCaptureDevice(PVOID Id);
+	bool ChangeStateCaptureDevice(PVOID Id, DWORD state);
 
 public:
 	CAudioInputW7(void);
@@ -44,12 +49,7 @@ protected:
 	IMMDeviceCollection * m_pCaptureDeviceCollect;
 	IMMDeviceCollection * m_pRenderDeviceCollect;
 	class CMMNotificationClient *m_pNotifyChange;
-	struct CapDev {
-		int		nDev;
-		std::vector<LPWSTR> id;
-		std::vector<LPWSTR> DeviceName;
-		std::vector<DWORD>	state;
-	} m_CaptureDevices;
+	std::vector<CapDev *>  m_CaptureDevices;
 
 	UINT m_nEndPoints;
 	UINT m_nMixers;
