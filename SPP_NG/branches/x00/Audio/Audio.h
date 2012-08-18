@@ -46,9 +46,9 @@ protected:
 	class CMMNotificationClient *m_pNotifyChange;
 	struct CapDev {
 		int		nDev;
-		LPWSTR	*id;
-		LPWSTR	*DeviceName;
-		DWORD	*state;
+		std::vector<LPWSTR> id;
+		std::vector<LPWSTR> DeviceName;
+		std::vector<DWORD>	state;
 	} m_CaptureDevices;
 
 	UINT m_nEndPoints;

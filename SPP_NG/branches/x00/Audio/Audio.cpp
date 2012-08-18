@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
+#include <vector>
 #include <devicetopology.h>
 #include <Mmdeviceapi.h>
 #include "Audio.h"
-#include <tchar.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
 #define MAX_LOADSTRING 100
@@ -214,9 +214,9 @@ CAudioInputW7::CAudioInputW7(void)
 	HRESULT hr = S_OK;
 	m_nMixers = 0;
 	m_CaptureDevices.nDev = 0;
-	m_CaptureDevices.DeviceName = NULL;
-	m_CaptureDevices.state = NULL;
-	m_CaptureDevices.id = NULL;
+	m_CaptureDevices.DeviceName.clear();
+	m_CaptureDevices.state.clear();
+	m_CaptureDevices.id.clear();
 	m_ChangeEventCB = NULL;
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
@@ -252,6 +252,14 @@ bool CAudioInputW7::Create(void)
 		EXIT_ON_ERROR(hr);
 	};
 
+	hr = m_pCaptureDeviceCollect->GetCount(&m_nEndPoints);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not count audio Endpoints\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+
+
 
 	// Register endpoint notofication callback
 	m_pNotifyChange = new(CMMNotificationClient);
@@ -263,12 +271,6 @@ bool CAudioInputW7::Create(void)
 	};
 
 
-	hr = m_pCaptureDeviceCollect->GetCount(&m_nEndPoints);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not count audio Endpoints\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
-		EXIT_ON_ERROR(hr);
-	};
 
 	// First Enumeration
 	hr = Enumerate();
@@ -462,8 +464,7 @@ HRESULT	CAudioInputW7::Enumerate(void)
 // Assumption: 
 //	1. m_nEndPoints is valid
 //	2. m_pCaptureDeviceCollect is already initialized
-// Call this function after every notification of change because the content of m_CaptureDevices becomes invelid
-// with every change in the system
+// Call this function only once during initialization - updates will be done by callback routines
 {
 	IPropertyStore * pProps = NULL;
 	IMMDevice * pDevice = NULL;
@@ -476,15 +477,15 @@ HRESULT	CAudioInputW7::Enumerate(void)
 		free(m_CaptureDevices.DeviceName[i]); 
 		free(m_CaptureDevices.id[i]); 
 	};
-	delete [] m_CaptureDevices.DeviceName;
-	delete [] m_CaptureDevices.id;
-	delete [] m_CaptureDevices.state;
+	m_CaptureDevices.DeviceName.clear();
+	m_CaptureDevices.id.clear();
+	m_CaptureDevices.state.clear();
 
 	// Prepare for enumeration
-	m_CaptureDevices.nDev = m_nEndPoints;
-	m_CaptureDevices.DeviceName = new LPWSTR[m_nEndPoints];
-	m_CaptureDevices.id = new LPWSTR[m_nEndPoints];
-	m_CaptureDevices.state = new DWORD[m_nEndPoints];
+	//m_CaptureDevices.nDev = m_nEndPoints;
+	//m_CaptureDevices.DeviceName. = new LPWSTR[m_nEndPoints];
+	//m_CaptureDevices.id = new LPWSTR[m_nEndPoints];
+	//m_CaptureDevices.state = new DWORD[m_nEndPoints];
 
 	// Loop on all endpoints
 	for (UINT iEndPoint=0; iEndPoint<m_nEndPoints; iEndPoint++)
@@ -503,22 +504,25 @@ HRESULT	CAudioInputW7::Enumerate(void)
 		// Get the Device's friendly-name property.
 		hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
 		EXIT_ON_ERROR(hr);
-		m_CaptureDevices.DeviceName[iEndPoint] = _wcsdup(varName.pwszVal);
+		m_CaptureDevices.DeviceName.push_back(_wcsdup(varName.pwszVal));
 
 		// Get the state of the device:
 		// DEVICE_STATE_ACTIVE / DEVICE_STATE_DISABLED / DEVICE_STATE_NOTPRESENT / DEVICE_STATE_UNPLUGGED
 		DWORD state;
 		hr = pDevice->GetState(&state);
 		EXIT_ON_ERROR(hr);
-		m_CaptureDevices.state[iEndPoint] = state;
+		m_CaptureDevices.state.push_back(state);
 
 		// Get device unique id
 		LPWSTR id;
 		hr = pDevice->GetId(&id);
 		EXIT_ON_ERROR(hr);
-		m_CaptureDevices.id[iEndPoint] = _wcsdup(id);
+		m_CaptureDevices.id.push_back(_wcsdup(id));
 		CoTaskMemFree(id);
 	};
+
+	m_CaptureDevices.nDev = m_CaptureDevices.id.size();
+
 Exit:
 	SAFE_RELEASE(pProps);
 	SAFE_RELEASE(pDevice);
