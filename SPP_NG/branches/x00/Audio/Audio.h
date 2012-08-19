@@ -2,6 +2,14 @@
 
 #include "resource.h"
 
+// User-defined messages
+UINT const WMAPP_DEFDEV_CHANGED =	WM_APP + 100;			// Default Device changed
+UINT const WMAPP_DEV_ADDED =		WM_APP + 101;			// Device added
+UINT const WMAPP_DEV_REM =			WM_APP + 102;			// Device removed
+UINT const WMAPP_DEV_CHANGED =		WM_APP + 103;			// Device changed
+UINT const WMAPP_DEV_PROPTY =		WM_APP + 104;			// Device property changed
+
+
 //{A95664D2-9614-4F35-A746-DE8DB63617E6}
 static GUID const CLSID_IMMDeviceEnumerator = {0xA95664D2, 0x9614, 0x4F35, {0xA7,0x46,0xDE,0x8D,0xB6,0x36,0x17,0xE6} };
 
@@ -14,7 +22,7 @@ static GUID const CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, {0x8E,
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
 
-typedef  int(CALLBACK *CBF)(void);
+//typedef  int(CALLBACK *CBF)(void);
 struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
 
 
@@ -36,13 +44,21 @@ protected:
 
 public:
 	CAudioInputW7(void);
+	CAudioInputW7(HWND hWnd);
 	virtual	~CAudioInputW7(void);
 	HRESULT	Enumerate(void);
 	int		CountCaptureDevices(void);
 	HRESULT	GetCaptureDeviceId(int nDevice, int *size, PVOID *Id);
 	HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName);
 	bool	IsCaptureDeviceActive(PVOID Id);
-	bool	RegisterChangeNotification(CBF f);
+	//bool	RegisterChangeNotification(CBF f);
+
+public: // Called asynchronuously when change occurs
+	HRESULT DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR pwstrDeviceId);
+	HRESULT DeviceAdded(LPCWSTR pwstrDeviceId);
+	HRESULT DeviceRemoved(LPCWSTR pwstrDeviceId);
+	HRESULT DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState);
+	HRESULT PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
 
 protected:
 	IMMDeviceEnumerator * m_pEnumerator;
@@ -53,9 +69,11 @@ protected:
 
 	UINT m_nEndPoints;
 	UINT m_nMixers;
+	HWND m_hPrntWnd;
 
 public:
-	CBF m_ChangeEventCB;
+	// CBF m_ChangeEventCB;
+
 };
 
 class CMMNotificationClient : public IMMNotificationClient
@@ -63,9 +81,6 @@ class CMMNotificationClient : public IMMNotificationClient
     LONG _cRef;
     IMMDeviceEnumerator *_pEnumerator;
 	CAudioInputW7 * _Parent;
-
-    // Private function to print device-friendly name
-    HRESULT _PrintDeviceName(LPCWSTR  pwstrId);
 
 public:
 	CMMNotificationClient() ;
