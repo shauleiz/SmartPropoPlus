@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Audio"
-	ProjectGUID="{381416F4-8117-4B6B-BAA2-74BF348F9C50}"
-	RootNamespace="Audio"
+	Name="AudioLib"
+	ProjectGUID="{6D5CE52C-A706-4CAE-85FC-ABB945512A86}"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -18,9 +17,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -40,14 +39,16 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/DUNICODE /DSPPINTERFACE_EXPORTS"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;AUDIOLIB_EXPORTS;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -61,9 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AudioLib.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -92,11 +91,10 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="2"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -115,14 +113,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
+				AdditionalOptions="/DUNICODE /DSPPINTERFACE_EXPORTS"
 				AdditionalIncludeDirectories="..\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;AUDIOLIB_EXPORTS;"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -136,9 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="AudioLib.lib"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
+				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -172,36 +167,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
-			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
@@ -233,24 +198,34 @@
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\Audio.ico"
-				>
-			</File>
 			<File
 				RelativePath=".\Audio.rc"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
-				RelativePath=".\small.ico"
+				RelativePath=".\AudioInputW7.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NotificationClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.cpp"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\ReadMe.txt"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 	</Files>
