@@ -22,7 +22,6 @@ static GUID const CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, {0x8E,
 ////////////////////// Class CAudioInputW7 //////////////////////
 SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 {
-	m_hPrntWnd = hWnd;
 	/* Initializations */
 	m_pEnumerator = NULL;
 	m_pNotifyChange = NULL;
@@ -32,11 +31,15 @@ SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 	HRESULT hr = S_OK;
 	m_nMixers = 0;
 	m_CaptureDevices.clear();
-	// m_ChangeEventCB = NULL;
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
+	// Save handle to parent window - will be used fpr notifications
 	m_hPrntWnd = hWnd;
 
+	// Create a vector of capture endpoint
 	bool created = Create();
+	// First Enumeration
+	Enumerate();
 	return;
 
 }
@@ -57,10 +60,22 @@ CAudioInputW7::CAudioInputW7(void)
 	m_hPrntWnd = NULL;
 
 	bool created = Create();
+	
+	// First Enumeration
+	Enumerate();
+
 	return;
 }
 
 bool CAudioInputW7::Create(void)
+/*
+	Call this function once to initialize audio-related structures
+	Create a device enumarator (m_pEnumerator)
+	Create collection of capture endpoints including disabled and unplugged (m_pCaptureDeviceCollect)
+	Get the number of endpoints in the collection m_nEndPoints
+	Register endpoint notofication callback
+	Pass pointer to this CAudioInputW7object as parent of the notification object
+*/
 {
 	/* Initializations */
 	m_pEnumerator = NULL;
@@ -68,7 +83,6 @@ bool CAudioInputW7::Create(void)
 	m_pCaptureDeviceCollect = NULL;
 	m_pRenderDeviceCollect = NULL;
 	m_nEndPoints = 0;
-	// m_ArrayOfEndPointNames = NULL;
 	HRESULT hr = S_OK;
 
 	/* Create a device enumarator then a collection of endpoints and finally get the number of endpoints */
@@ -88,13 +102,13 @@ bool CAudioInputW7::Create(void)
 		EXIT_ON_ERROR(hr);
 	};
 
+	// Get the number of Capture Endpoints
 	hr = m_pCaptureDeviceCollect->GetCount(&m_nEndPoints);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not count audio Endpoints\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
 	};
-
 
 
 	// Register endpoint notofication callback & pass pointer to this object as its parent
@@ -106,25 +120,6 @@ bool CAudioInputW7::Create(void)
 		EXIT_ON_ERROR(hr);
 	};
 	m_pNotifyChange->GetParent(this);
-
-
-
-	// First Enumeration
-	hr = Enumerate();
-
-	// TEST
-	PVOID id;
-	int size;
-	LPWSTR DevName;
-	bool active;
-
-	for (int i=0; i<15; i++)
-	{
-		hr = GetCaptureDeviceId(i, &size, &id);
-		if (FAILED(hr))continue;
-		hr = GetCaptureDeviceName(id, &DevName);
-		active = IsCaptureDeviceActive(id);
-	}
 
 	return true;
 
@@ -145,92 +140,7 @@ CAudioInputW7::~CAudioInputW7(void)
 	SAFE_RELEASE(m_pEnumerator);
 	SAFE_RELEASE(m_pNotifyChange);
 	SAFE_RELEASE(m_pCaptureDeviceCollect);
-	//Restore();
-	//delete[] m_ArrayOfEndPointNames;
-
-	//for (UINT iMixer=0; iMixer<m_nMixers; iMixer++)
-	//	delete m_MixerDevices[iMixer];
-	//delete[] m_MixerDevices;
 }
-
-
-
-int CAudioInputW7::CreateListDeviceNames(LPWSTR * ListMixerDeviceNames)
-/*
-Create a list of Mixer-Device names
-Return: Number of Mixer-Devices
-
-Assumption: 
-1. m_nEndPoints is already initialized
-2. ListMixerDeviceNames is already allocated
-3. m_pCaptureDeviceCollect is already initialized
-*/
-{
-	IPropertyStore * pProps = NULL;
-	IMMDevice * pDevice = NULL;
-	PROPVARIANT varName;
-	HRESULT hr = S_OK;
-
-	for (UINT iEndPoint=0; iEndPoint<m_nEndPoints; iEndPoint++)
-	{
-
-		ListMixerDeviceNames[iEndPoint]=NULL;
-
-		// Get pointer to endpoint number i.
-		hr = m_pCaptureDeviceCollect->Item(iEndPoint, &pDevice);
-		EXIT_ON_ERROR(hr);
-
-		hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
-		EXIT_ON_ERROR(hr);
-
-		// Initialize container for property value.
-		PropVariantInit(&varName);
-
-		// Get the Device's friendly-name property.
-		//hr = pProps->GetValue(PKEY_DeviceInterface_FriendlyName, &varName);
-		hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
-		EXIT_ON_ERROR(hr);
-
-		ListMixerDeviceNames[iEndPoint] = _wcsdup(varName.pwszVal);
-		m_nMixers++;
-
-		// Get the state of the device:
-		// DEVICE_STATE_ACTIVE / DEVICE_STATE_DISABLED / DEVICE_STATE_NOTPRESENT / DEVICE_STATE_UNPLUGGED
-		DWORD state;
-		hr = pDevice->GetState(&state);
-		EXIT_ON_ERROR(hr);
-
-		LPWSTR id;
-		hr = pDevice->GetId(&id);
-		EXIT_ON_ERROR(hr);
-		CoTaskMemFree(id);
-
-
-
-
-		// Search for identical entry
-		//for (UINT i=0; i<=iEndPoint; i++)
-		//{
-		//	if (!ListMixerDeviceNames[i])
-		//	{
-		//		ListMixerDeviceNames[i] = _wcsdup(varName.pwszVal);
-		//		m_nMixers++;
-		//		break;
-		//	};
-
-		//	if (!wcscmp(varName.pwszVal, ListMixerDeviceNames[i]))
-		//		break;
-		//};
-
-	};
-
-Exit:
-	SAFE_RELEASE(pProps);
-	SAFE_RELEASE(pDevice);
-
-	return m_nMixers;
-}
-
 
 
 SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
@@ -238,7 +148,6 @@ SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
 // Assumption: 
 //	1. m_nEndPoints is valid
 //	2. m_pCaptureDeviceCollect is already initialized
-// Call this function only once during initialization - updates will be done by callback routines
 {
 	IPropertyStore * pProps = NULL;
 	IMMDevice * pDevice = NULL;
@@ -253,11 +162,9 @@ SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
 		m_CaptureDevices.pop_back();
 	};
 
-
 	// Loop on all endpoints
 	for (UINT iEndPoint=0; iEndPoint<m_nEndPoints; iEndPoint++)
 	{
-
 		// Get pointer to endpoint number iEndPoint.
 		hr = m_pCaptureDeviceCollect->Item(iEndPoint, &pDevice);
 		EXIT_ON_ERROR(hr);
@@ -283,7 +190,7 @@ SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
 		hr = pDevice->GetId(&id);
 		EXIT_ON_ERROR(hr);
 
-
+		// Copy data to vector member
 		m_CaptureDevices.push_back(new CapDev);
 		m_CaptureDevices.back()->DeviceName = _wcsdup(varName.pwszVal);
 		m_CaptureDevices.back()->state = state;
@@ -349,6 +256,7 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 {
 	// Given a pointer to the id (which uniquely identifies the capture device),
 	// the function returns 'true' if the capture device is active
+	// This function must be executed only after Enumerate()
 	for (UINT i = 0; i<m_CaptureDevices.size(); i++)
 	{
 		if (!wcscmp(m_CaptureDevices[i]->id, (LPWSTR)Id))
@@ -361,18 +269,28 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 
 }
 
-//bool CAudioInputW7::RegisterChangeNotification(CBF func)
-//// Register callback function to be called everytime there's a change in one or more input devices
-//// This function must be simple and used for notification.
-//// It is recommended to run Enumerate after every call to this function
-//{
-//	if (!func || !m_pNotifyChange)
-//		return false;
-//
-//	m_ChangeEventCB = func;
-//	m_pNotifyChange->GetParent(this);
-//	return true;
-//}
+
+bool	CAudioInputW7::IsCaptureDeviceDefault(PVOID Id)
+{
+// Given a pointer to the id (which uniquely identifies the capture device),
+// the function returns 'true' if the capture device is default(colsole) capture endpoint
+
+	// Get the default capture console endpoint
+	IMMDevice *pDevice = NULL;
+	HRESULT hr = m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice);
+	if (hr != S_OK)
+		return false;
+
+	// Get the endpoint's id
+	LPWSTR DefaultId;
+	hr = pDevice->GetId(&DefaultId);
+	if (hr != S_OK)
+		return false;
+
+	// Compare to given Id
+	return(!wcscmp(DefaultId, (LPWSTR)Id));
+}
+
 
 int 	CAudioInputW7::FindCaptureDevice(PVOID Id)
 // Given Capture Device ID this function returns device serial number (1-based)
@@ -391,7 +309,7 @@ int 	CAudioInputW7::FindCaptureDevice(PVOID Id)
 }
 
 bool	CAudioInputW7::RemoveCaptureDevice(PVOID Id)
-// Given Capture Device ID this function removes its entry
+// Given Capture Device ID this function removes its entry from the vector of capture devices
 // Return true/false for success/failure
 {
 	int i = FindCaptureDevice(Id);
@@ -418,6 +336,9 @@ bool 	CAudioInputW7::ChangeStateCaptureDevice(PVOID Id, DWORD state)
 
 
 bool 	CAudioInputW7::AddCaptureDevice(PVOID Id)
+// Given Capture Device ID this creates an entry in the capture endpoint vector
+// Return true/false for success/failure
+
 {
 	// Already exists?
 	int i = FindCaptureDevice(Id);
@@ -473,21 +394,26 @@ bad_exit:
 	return false;
 }
 
-
+/* 
+	Set of functions called from the equivalent callback functions in the notofication object
+	In general, they just send an appropreate message to the parent window
+*/
 HRESULT	CAudioInputW7::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR pwstrDeviceId)
 // Called (asynch) when Default device was changed
 {
 	if (flow != eCapture)
 		return S_OK;
 	// Send message to calling window indicating what happend
-	SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
+	if (m_hPrntWnd)
+		SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 HRESULT	CAudioInputW7::DeviceAdded(LPCWSTR pwstrDeviceId)
 // Called (asynch) when device added
 {
 	// Send message to calling window indicating what happend
-	SendMessage(m_hPrntWnd, WMAPP_DEV_ADDED, (WPARAM)pwstrDeviceId, NULL);
+	if (m_hPrntWnd)
+		SendMessage(m_hPrntWnd, WMAPP_DEV_ADDED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -495,7 +421,8 @@ HRESULT	CAudioInputW7::DeviceRemoved(LPCWSTR pwstrDeviceId)
 // Called (asynch) when device removed
 {
 	// Send message to calling window indicating what happend
-	SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
+	if (m_hPrntWnd)
+		SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -503,7 +430,8 @@ HRESULT	CAudioInputW7::DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewStat
 // Called (asynch) when device state changed
 {
 	// Send message to calling window indicating what happend
-	SendMessage(m_hPrntWnd, WMAPP_DEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
+	if (m_hPrntWnd)
+		SendMessage(m_hPrntWnd, WMAPP_DEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -511,7 +439,8 @@ HRESULT	CAudioInputW7::PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPER
 // Called (asynch) when device property changed
 {
 	// Send message to calling window indicating what happend
-	SendMessage(m_hPrntWnd, WMAPP_DEV_PROPTY, (WPARAM)pwstrDeviceId, NULL);
+	if (m_hPrntWnd)
+		SendMessage(m_hPrntWnd, WMAPP_DEV_PROPTY, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 

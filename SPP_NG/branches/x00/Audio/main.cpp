@@ -150,6 +150,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
+	LPWSTR id;
+	bool dflt;
 
 	switch (message)
 	{
@@ -180,6 +182,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WMAPP_DEFDEV_CHANGED:
 		g_audio->Enumerate();
+		id = (LPWSTR)wParam;
+		dflt = g_audio->IsCaptureDeviceDefault(id);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
