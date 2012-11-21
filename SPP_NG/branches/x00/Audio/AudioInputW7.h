@@ -32,6 +32,7 @@ protected:
 	bool RemoveCaptureDevice(PVOID Id);
 	bool AddCaptureDevice(PVOID Id);
 	bool ChangeStateCaptureDevice(PVOID Id, DWORD state);
+	float GetChannelPeak(PVOID Id, int iChannel);
 
 public:
 	CAudioInputW7(void);
@@ -43,6 +44,10 @@ public:
 	SPPINTERFACE_API HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName);
 	SPPINTERFACE_API bool		IsCaptureDeviceActive(PVOID Id);
 	SPPINTERFACE_API bool		IsCaptureDeviceDefault(PVOID Id);
+	SPPINTERFACE_API bool		IsCaptureDevice(PVOID Id);
+	SPPINTERFACE_API double		GetDevicePeak(PVOID Id);
+	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
+
 
 	//bool	RegisterChangeNotification(CBF f);
 
