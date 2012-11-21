@@ -9,6 +9,9 @@
 #include "AudioInputW7.h"
 #include "NotificationClient.h"
 #include <Functiondiscoverykeys_devpkey.h>
+#include <endpointvolume.h>
+#include <Mmdeviceapi.h>
+#include <Audioclient.h>
 
 #define MAX_LOADSTRING 100
 
@@ -269,6 +272,31 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 
 }
 
+bool	CAudioInputW7::IsCaptureDevice(PVOID Id)
+{
+	IMMEndpoint * pEndpoint = NULL;
+	IMMDevice *pDevice = NULL;
+	EDataFlow dataflow;
+	bool result = false;
+
+	HRESULT hr = m_pEnumerator->GetDevice((LPWSTR)Id, &pDevice);
+	if (FAILED(hr))
+		EXIT_ON_ERROR(hr);
+	hr = pDevice->QueryInterface(__uuidof(IMMEndpoint), (VOID **)&pEndpoint);
+	if (FAILED(hr))
+		EXIT_ON_ERROR(hr);
+	pEndpoint->GetDataFlow(&dataflow);
+	if (dataflow != eCapture)
+		EXIT_ON_ERROR(hr);
+
+	result = true;
+
+Exit:
+	SAFE_RELEASE(pEndpoint);
+	SAFE_RELEASE(pDevice);
+	return result;
+}
+
 
 bool	CAudioInputW7::IsCaptureDeviceDefault(PVOID Id)
 {
@@ -374,6 +402,11 @@ bool 	CAudioInputW7::AddCaptureDevice(PVOID Id)
 	if (FAILED(hr))
 		goto bad_exit;
 
+	//Verify it is a capture device
+	if (!IsCaptureDevice(Id))
+		goto bad_exit;
+
+
 	// Create device entry and insert as last entry
 	CapDev *dev = new(CapDev);
 	dev->DeviceName = _wcsdup(varName.pwszVal);
@@ -401,8 +434,6 @@ bad_exit:
 HRESULT	CAudioInputW7::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR pwstrDeviceId)
 // Called (asynch) when Default device was changed
 {
-	if (flow != eCapture)
-		return S_OK;
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
 		SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
@@ -444,3 +475,167 @@ HRESULT	CAudioInputW7::PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPER
 	return S_OK;
 }
 
+/*
+	Peak Meters:
+	Find the peak value of a given capture endpoint channel
+	Find the louder channel of a given capture endpoint
+	Find the louder channel of all capture endpoints
+*/
+float CAudioInputW7::GetChannelPeak(PVOID Id, int iChannel)
+// Return peak value for a given channel of an endpoint device
+// Endpoint device selected by Id
+// Channel index is zero-based
+// Return value in the range 0.0-1.0
+// Non existing channel returns 0.0
+{
+	IMMDevice *pDevice = NULL;
+	float Value = 0;
+	HRESULT hr = S_OK;
+	IAudioMeterInformation *pMeterInfo = NULL;
+	UINT nChannels = 0;
+	float *PeakValue = NULL;
+	IAudioClient *pAudioClient = NULL;
+	WAVEFORMATEX *pwfx = NULL;
+	REFERENCE_TIME hnsRequestedDuration = 10000000;
+
+	// Get device from ID
+	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
+	EXIT_ON_ERROR(hr);
+
+	///// Activate  and initialize a client
+	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
+    EXIT_ON_ERROR(hr);
+
+    hr = pAudioClient->GetMixFormat(&pwfx);
+    EXIT_ON_ERROR(hr)
+
+    hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, hnsRequestedDuration,0, pwfx, NULL);
+    EXIT_ON_ERROR(hr)
+	///////////////////////////////////////
+
+
+	// Activate Audio Meter Information interface
+	hr = pDevice->Activate(__uuidof(IAudioMeterInformation), CLSCTX_ALL, NULL, (void**)&pMeterInfo);
+	EXIT_ON_ERROR(hr);
+
+	// Get number of channels, if iChannel invalid then exit
+	hr = pMeterInfo->GetMeteringChannelCount(&nChannels);
+	EXIT_ON_ERROR(hr);
+	if (iChannel >= (int)nChannels)
+		goto Exit;
+
+	// Get peak volume
+	PeakValue = new float[nChannels];
+	hr = pMeterInfo->GetChannelsPeakValues(nChannels, PeakValue);
+	EXIT_ON_ERROR(hr);
+
+	Value = PeakValue[iChannel];
+
+Exit:
+	CoTaskMemFree(pwfx);
+	SAFE_RELEASE(pAudioClient);
+	SAFE_RELEASE(pMeterInfo);
+	SAFE_RELEASE(pDevice);
+	delete [] PeakValue;
+	return Value;
+}
+
+SPPINTERFACE_API double CAudioInputW7::GetDevicePeak(PVOID Id)
+// Return peak value for the loader channel of an endpoint device
+// Endpoint device selected by Id
+// Return value in the range 0.0-1.0
+// Non existing endpoint returns 0.0
+{
+	IMMDevice *pDevice = NULL;
+	double Value = -0.01, max = 0;
+	HRESULT hr = S_OK;
+	IAudioMeterInformation *pMeterInfo = NULL;
+	UINT nChannels = 0;
+	float *PeakValue = NULL;
+	IAudioClient *pAudioClient = NULL;
+	WAVEFORMATEX *pwfx = NULL;
+	REFERENCE_TIME hnsRequestedDuration = 1000;
+
+
+	// Get device from ID
+	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
+	Value -= 0.01;
+	EXIT_ON_ERROR(hr);
+
+	///// Activate  and initialize a client ///////////////////////
+	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
+	Value -= 0.01;
+    EXIT_ON_ERROR(hr);
+
+	hr = pAudioClient->GetMixFormat(&pwfx);
+	Value -= 0.01;
+	EXIT_ON_ERROR(hr);
+
+	hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, hnsRequestedDuration,0, pwfx, NULL);
+	if (FAILED(hr)){
+		if (hr == AUDCLNT_E_DEVICE_IN_USE)
+			Value = -0.55;
+		else
+			Value = -0.75;
+	};
+
+	EXIT_ON_ERROR(hr);
+
+	//////////////////////////////////////////////////////////////
+
+	// Activate Audio Meter Information interface
+	hr = pDevice->Activate(__uuidof(IAudioMeterInformation), CLSCTX_ALL, NULL, (void**)&pMeterInfo);
+ 	Value -= 0.01;
+	EXIT_ON_ERROR(hr);
+
+	// Get number of channels, if iChannel invalid then exit
+	hr = pMeterInfo->GetMeteringChannelCount(&nChannels);
+ 	Value -= 0.01;
+	EXIT_ON_ERROR(hr);
+
+	// For each channel get peak volume
+	PeakValue = new float[nChannels];
+	hr = pMeterInfo->GetChannelsPeakValues(nChannels, PeakValue);
+ 	Value -= 0.01;
+	EXIT_ON_ERROR(hr);
+	for (UINT i=0; i<nChannels; i++)
+	{
+		if (PeakValue[i]>max)
+			max = PeakValue[i];
+	};
+
+	Value = max;
+
+Exit:
+	CoTaskMemFree(pwfx);
+	SAFE_RELEASE(pMeterInfo);
+	//if (Value>=0) 
+	//	SAFE_RELEASE(pAudioClient);
+	SAFE_RELEASE(pDevice);
+	delete [] PeakValue;
+	return Value;
+}
+SPPINTERFACE_API double CAudioInputW7::GetLoudestDevice(PVOID * Id)
+// Return peak value for the loadest channel of the loudest endpoint device
+// Return value in the range 0.0-1.0
+// If successful then function sets Id to correct Device ID else to NULL
+{
+	double Value = 0, max = 0;
+	*Id = NULL;
+
+	if (m_CaptureDevices.empty() || !m_CaptureDevices.size())
+		return 0;
+
+	for (UINT i=0; i<m_CaptureDevices.size(); i++)
+	{
+		Value = GetDevicePeak((PVOID)m_CaptureDevices[i]->id);
+		if (max <= Value)
+		{
+			*Id =(PVOID)m_CaptureDevices[i]->id;
+			max =Value;
+		};
+	};
+
+	Value = max;
+	return Value;
+}

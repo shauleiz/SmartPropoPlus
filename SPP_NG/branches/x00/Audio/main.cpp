@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "Commctrl.h"
 #include <vector>
 #include <devicetopology.h>
 #include <Mmdeviceapi.h>
@@ -23,8 +24,11 @@ ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
-
-
+void				DlgPeakVolume(PVOID id, double peak);
+INT_PTR CALLBACK	DlgListCaptureDevices(HWND, UINT, WPARAM, LPARAM);
+void	CaptureDevicesPopulate(HWND hDlg);
+BOOL InitListViewColumns(HWND hWndListView) ;
+void AddLine2List(HWND hWndListView, int size, LPWSTR id);
 
 
 
@@ -152,6 +156,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	HDC hdc;
 	LPWSTR id;
 	bool dflt;
+	double peak;
 
 	switch (message)
 	{
@@ -166,6 +171,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
+			break;
+		case IDM_GETPEAK:
+			peak = g_audio->GetLoudestDevice((PVOID *)(&id));
+			DlgPeakVolume(id, peak);
+			break;
+		case IDM_LISTCAPTDEVS:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_LISTCAPTDEVS), hWnd, DlgListCaptureDevices);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -184,6 +196,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		g_audio->Enumerate();
 		id = (LPWSTR)wParam;
 		dflt = g_audio->IsCaptureDeviceDefault(id);
+		//peak[0] = g_audio->GetChannelPeak(id,0);
+		//peak[1] = g_audio->GetChannelPeak(id,1);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -213,3 +227,153 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
+
+void DlgPeakVolume(PVOID id, double peak)
+{
+	WCHAR * OutStr = new WCHAR[1000];
+	WCHAR * DevName = new WCHAR[1000];
+
+	g_audio->GetCaptureDeviceName(id, &DevName);
+	swprintf(OutStr,1000,L"Endpoint: %s\nPeak Value %f\nId: %s", DevName, peak, (LPWSTR)id);
+	MessageBox(NULL, OutStr, L"Loudest Capture Device",NULL);
+}
+
+INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	HWND hList=NULL;
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		hList = GetDlgItem(hDlg, IDC_LIST1);
+		InitListViewColumns(hList);
+		CaptureDevicesPopulate(hDlg);
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDREFRESH)
+		{
+			g_audio->Enumerate();
+			ListView_DeleteAllItems(GetDlgItem(hDlg, IDC_LIST1));
+			CaptureDevicesPopulate(hDlg);
+			return (INT_PTR)TRUE;
+		};
+
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+void CaptureDevicesPopulate(HWND hDlg)
+{
+	float Value = 0, max = 0;
+
+	HWND hList = GetDlgItem(hDlg, IDC_LIST1);
+
+	// Loop on all devices
+	int size;
+	LPWSTR id;
+	for (int i=0; i<g_audio->CountCaptureDevices(); i++)
+	{
+		HRESULT hr =g_audio->GetCaptureDeviceId(i, &size, (PVOID *)&id);
+		if (FAILED(hr))
+			continue;
+		AddLine2List(hList, size, id);
+	};
+
+}
+
+BOOL InitListViewColumns(HWND hWndListView) 
+// InitListViewColumns: Adds columns to a list-view control.
+// hWndListView:        Handle to the list-view control. 
+// Returns TRUE if successful, and FALSE otherwise. 
+{ 
+    LVCOLUMN lvc;
+    int iCol;
+
+    // Initialize the LVCOLUMN structure.
+    // The mask specifies that the format, width, text,
+    // and subitem members of the structure are valid.
+    lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+    // Add the columns.
+    for (iCol = 0; iCol < 4; iCol++)
+    {
+        lvc.iSubItem = iCol;
+        lvc.pszText = L"---";
+        lvc.cx = 100;               // Width of column in pixels.
+		lvc.fmt = LVCFMT_LEFT;  // Left-aligned column.
+
+		 if ( iCol == 0 )
+		 {
+			 lvc.pszText = L"Endpoint";
+			 lvc.cx = 300; 
+		 };
+
+		 if ( iCol == 1 )
+		 {
+			 lvc.pszText = L"Default";
+			 lvc.cx = 50; 
+		 };
+
+		 if ( iCol == 2 )
+		 {
+			 lvc.pszText = L"Active";
+			 lvc.cx = 50; 
+		 };
+
+		 if ( iCol == 3 )
+		 {
+			 lvc.pszText = L"Volume(%)";
+			 lvc.cx = 80; 
+		 };
+
+
+        // Insert the columns into the list view.
+        if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1)
+            return FALSE;
+    }
+    
+    return TRUE;
+} 
+
+
+void AddLine2List(HWND hWndListView, int size, LPWSTR id)
+{
+	LV_ITEM item;
+
+	item.mask = LVIF_TEXT;
+	item.iItem = 1000;
+	item.iSubItem = 0;
+	//item.pszText = id;
+	item.cchTextMax = 260;
+
+	// Get device name from id
+	HRESULT hr = g_audio->GetCaptureDeviceName((PVOID) id, &item.pszText);
+	int index = ListView_InsertItem(hWndListView, &item);
+
+	// Get device attributes:
+	/// Default device?
+	if (g_audio->IsCaptureDeviceDefault((PVOID) id))
+		ListView_SetItemText(hWndListView, index, 1, L"+")
+
+	/// Active device?
+	if (g_audio->IsCaptureDeviceActive((PVOID) id))
+	{
+		ListView_SetItemText(hWndListView, index, 2, L"+")
+
+		/// Channel peak levels
+		TCHAR StrLevels[40];
+		double Peak = g_audio->GetDevicePeak(id);
+		_stprintf_s(StrLevels,40,L"%.0f", 100*Peak);
+		ListView_SetItemText(hWndListView, index, 3, StrLevels);
+	}
+	else
+		ListView_SetItemText(hWndListView, index, 3, L"-");
+
+}
