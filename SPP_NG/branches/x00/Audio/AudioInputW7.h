@@ -15,7 +15,7 @@
 #include "resource.h"
 
 #define EXIT_ON_ERROR(hres)  \
-              if (FAILED(hres)) { goto Exit; }
+              if (FAILED(hres)) { DbgPopUp(__LINE__, hres); goto Exit; }
 #define SAFE_RELEASE(punk)  \
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
@@ -23,16 +23,22 @@
 struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
 
 
+
 class CAudioInputW7 
 {
 protected: 
 	bool Create(void);
-	int CreateListDeviceNames(LPWSTR * ListMixerDeviceNames);
 	int FindCaptureDevice(PVOID Id);
 	bool RemoveCaptureDevice(PVOID Id);
 	bool AddCaptureDevice(PVOID Id);
 	bool ChangeStateCaptureDevice(PVOID Id, DWORD state);
 	float GetChannelPeak(PVOID Id, int iChannel);
+	HRESULT	RegisterNotification(void);
+	HRESULT StopCurrentStream(void);
+	HRESULT StartCurrentStream(void);
+	HRESULT InitEndPoint(PVOID Id);
+	HRESULT CreateCuptureThread(PVOID Id);
+
 
 public:
 	CAudioInputW7(void);
@@ -45,8 +51,10 @@ public:
 	SPPINTERFACE_API bool		IsCaptureDeviceActive(PVOID Id);
 	SPPINTERFACE_API bool		IsCaptureDeviceDefault(PVOID Id);
 	SPPINTERFACE_API bool		IsCaptureDevice(PVOID Id);
+	SPPINTERFACE_API bool		IsExternal(PVOID Id);
 	SPPINTERFACE_API double		GetDevicePeak(PVOID Id);
 	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
+	SPPINTERFACE_API bool		StartStreaming(PVOID Id);
 
 
 	//bool	RegisterChangeNotification(CBF f);
@@ -59,18 +67,21 @@ public: // Called asynchronuously when change occurs
 	HRESULT PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
 
 protected:
+	IAudioCaptureClient * m_pCaptureClient;
 	IMMDeviceEnumerator * m_pEnumerator;
 	IMMDeviceCollection * m_pCaptureDeviceCollect;
 	IMMDeviceCollection * m_pRenderDeviceCollect;
+	IAudioClient		* m_pAudioClient;
 	class CMMNotificationClient *m_pNotifyChange;
 	std::vector<CapDev *>  m_CaptureDevices;
 
 	UINT m_nEndPoints;
 	UINT m_nMixers;
 	HWND m_hPrntWnd;
+	HANDLE m_hAudioBufferReady;
+	HANDLE m_hCaptureAudioThread;
 
 public:
-	// CBF m_ChangeEventCB;
 
 };
 

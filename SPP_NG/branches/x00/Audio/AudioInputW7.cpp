@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <vector>
+#include <Audioclient.h>
 #include <devicetopology.h>
 #include <Mmdeviceapi.h>
 #include "WinMessages.h"
@@ -11,7 +12,6 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <endpointvolume.h>
 #include <Mmdeviceapi.h>
-#include <Audioclient.h>
 
 #define MAX_LOADSTRING 100
 
@@ -21,6 +21,35 @@ static GUID const CLSID_IMMDeviceEnumerator = {0xA95664D2, 0x9614, 0x4F35, {0xA7
 //BCDE0395-E52F-467C-8E3D-C4579291692E
 static GUID const CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, {0x8E,0x3D,0xC4,0x57,0x92,0x91,0x69,0x2E} };
 
+// Globals
+void   DbgPopUp(int Line, DWORD Error)
+{
+#ifdef _DEBUG
+	char Combined[1023];
+
+	sprintf_s(Combined,1000,"Audio Error: 0x%x in line %d",Error, Line);
+
+	MessageBoxA(NULL, Combined, "Error",  MB_SYSTEMMODAL|MB_ICONERROR);
+#endif
+}
+bool   g_CaptureAudioThreadRunnig;		// If false - signal to capture audio thread to stop
+HANDLE g_hEventStopCaptureAudioThread;	// Handle to event that is set when the audio thread is stopping
+DWORD WINAPI CaptureAudio(LPVOID param)
+/*
+	Capture loop - running on a dedicated thread
+*/
+{
+	// Initialize capture thread
+
+	// Capture loop
+	do
+	{
+	}while (g_CaptureAudioThreadRunnig);
+
+	// Exit capture thread
+	SetEvent(g_hEventStopCaptureAudioThread);
+	return 0;
+}
 
 ////////////////////// Class CAudioInputW7 //////////////////////
 SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
@@ -87,6 +116,12 @@ bool CAudioInputW7::Create(void)
 	m_pRenderDeviceCollect = NULL;
 	m_nEndPoints = 0;
 	HRESULT hr = S_OK;
+	m_hAudioBufferReady = NULL;
+	m_pCaptureClient = NULL;
+	m_pAudioClient = NULL;
+	m_hCaptureAudioThread = NULL;
+	g_hEventStopCaptureAudioThread = NULL;
+	g_CaptureAudioThreadRunnig = false;
 
 	/* Create a device enumarator then a collection of endpoints and finally get the number of endpoints */
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
@@ -113,17 +148,19 @@ bool CAudioInputW7::Create(void)
 		EXIT_ON_ERROR(hr);
 	};
 
+	// Create an event handle for buffer-event notifications.
+	m_hAudioBufferReady = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (!m_hAudioBufferReady)
+    {
+        hr = E_FAIL;
+        goto Exit;
+    };
+
 
 	// Register endpoint notofication callback & pass pointer to this object as its parent
-	m_pNotifyChange = new(CMMNotificationClient);
-	hr = m_pEnumerator->RegisterEndpointNotificationCallback(m_pNotifyChange);
+	hr = RegisterNotification();
 	if (FAILED(hr))
-	{
-		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not register notification callback\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
 		EXIT_ON_ERROR(hr);
-	};
-	m_pNotifyChange->GetParent(this);
-
 	return true;
 
 Exit:
@@ -200,6 +237,10 @@ SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
 		m_CaptureDevices.back()->id = _wcsdup(id);
 
 		CoTaskMemFree(id);
+		id = NULL;
+		PropVariantClear(&varName);
+		SAFE_RELEASE(pProps)
+		SAFE_RELEASE(pDevice)
 	};
 
 
@@ -263,13 +304,10 @@ bool	CAudioInputW7::IsCaptureDeviceActive(PVOID Id)
 	for (UINT i = 0; i<m_CaptureDevices.size(); i++)
 	{
 		if (!wcscmp(m_CaptureDevices[i]->id, (LPWSTR)Id))
-		{
 			return m_CaptureDevices[i]->state & DEVICE_STATE_ACTIVE;
-		}
 	};
 
 	return false;
-
 }
 
 bool	CAudioInputW7::IsCaptureDevice(PVOID Id)
@@ -294,6 +332,58 @@ bool	CAudioInputW7::IsCaptureDevice(PVOID Id)
 Exit:
 	SAFE_RELEASE(pEndpoint);
 	SAFE_RELEASE(pDevice);
+	return result;
+}
+
+
+bool	CAudioInputW7::IsExternal(PVOID Id)
+/*
+	Based on: http://msdn.microsoft.com/en-us/library/windows/desktop/dd371387(v=vs.85).aspx
+*/
+{
+	IDeviceTopology *pDeviceTopology = NULL;
+	IMMEndpoint * pEndpoint = NULL;
+	IMMDevice *pDevice = NULL;
+    IConnector *pConnFrom = NULL;
+    IConnector *pConnTo = NULL;
+    IPart *pPart = NULL;
+	ConnectorType Type = Unknown_Connector;
+	bool result = false;
+
+	HRESULT hr = m_pEnumerator->GetDevice((LPWSTR)Id, &pDevice);
+	EXIT_ON_ERROR(hr);
+
+    // Get the endpoint device's IDeviceTopology interface.
+    hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL, (void**)&pDeviceTopology);
+    EXIT_ON_ERROR(hr);	
+		
+    // The device topology for an endpoint device always
+    // contains just one connector (connector number 0).
+    hr = pDeviceTopology->GetConnector(0, &pConnFrom);
+    EXIT_ON_ERROR(hr);
+
+    // Step across the connection to the jack on the adapter.
+    hr = pConnFrom->GetConnectedTo(&pConnTo);
+    if (HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND) == hr)
+    {
+        // The adapter device is not currently active.
+        hr = E_NOINTERFACE;
+    }
+    EXIT_ON_ERROR(hr);
+
+	hr = pConnTo->GetType(&Type);
+    EXIT_ON_ERROR(hr);
+
+	if (Type == Physical_External)
+		result = true;
+
+Exit:
+	SAFE_RELEASE(pEndpoint);
+	SAFE_RELEASE(pDevice);
+    SAFE_RELEASE(pDeviceTopology)
+    SAFE_RELEASE(pConnFrom)
+    SAFE_RELEASE(pConnTo)
+    SAFE_RELEASE(pPart)
 	return result;
 }
 
@@ -427,6 +517,30 @@ bad_exit:
 	return false;
 }
 
+HRESULT	CAudioInputW7::RegisterNotification(void)
+{
+	HRESULT hr = S_OK;
+	
+	if (m_pNotifyChange || !m_pEnumerator)
+	{
+		hr = S_FALSE;
+		goto Exit;
+	}
+
+	// Register endpoint notofication callback & pass pointer to this object as its parent
+	m_pNotifyChange = new(CMMNotificationClient);
+	hr = m_pEnumerator->RegisterEndpointNotificationCallback(m_pNotifyChange);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not register notification callback\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		EXIT_ON_ERROR(hr);
+	};
+	m_pNotifyChange->GetParent(this);
+
+Exit:
+	return hr;
+}
+
 /* 
 	Set of functions called from the equivalent callback functions in the notofication object
 	In general, they just send an appropreate message to the parent window
@@ -436,7 +550,7 @@ HRESULT	CAudioInputW7::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR p
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 HRESULT	CAudioInputW7::DeviceAdded(LPCWSTR pwstrDeviceId)
@@ -444,7 +558,7 @@ HRESULT	CAudioInputW7::DeviceAdded(LPCWSTR pwstrDeviceId)
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		SendMessage(m_hPrntWnd, WMAPP_DEV_ADDED, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEV_ADDED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -453,7 +567,7 @@ HRESULT	CAudioInputW7::DeviceRemoved(LPCWSTR pwstrDeviceId)
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -462,7 +576,7 @@ HRESULT	CAudioInputW7::DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewStat
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		SendMessage(m_hPrntWnd, WMAPP_DEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -471,7 +585,7 @@ HRESULT	CAudioInputW7::PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPER
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		SendMessage(m_hPrntWnd, WMAPP_DEV_PROPTY, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEV_PROPTY, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -556,6 +670,9 @@ SPPINTERFACE_API double CAudioInputW7::GetDevicePeak(PVOID Id)
 	WAVEFORMATEX *pwfx = NULL;
 	REFERENCE_TIME hnsRequestedDuration = 1000;
 
+	//// Stop notifications for this function
+	//if (m_pEnumerator && m_pNotifyChange)
+	//	m_pEnumerator->UnregisterEndpointNotificationCallback(m_pNotifyChange);
 
 	// Get device from ID
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
@@ -570,7 +687,6 @@ SPPINTERFACE_API double CAudioInputW7::GetDevicePeak(PVOID Id)
 	hr = pAudioClient->GetMixFormat(&pwfx);
 	Value -= 0.01;
 	EXIT_ON_ERROR(hr);
-
 	hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, hnsRequestedDuration,0, pwfx, NULL);
 	if (FAILED(hr)){
 		if (hr == AUDCLNT_E_DEVICE_IN_USE)
@@ -609,10 +725,12 @@ SPPINTERFACE_API double CAudioInputW7::GetDevicePeak(PVOID Id)
 Exit:
 	CoTaskMemFree(pwfx);
 	SAFE_RELEASE(pMeterInfo);
-	//if (Value>=0) 
-	//	SAFE_RELEASE(pAudioClient);
+	SAFE_RELEASE(pAudioClient);
 	SAFE_RELEASE(pDevice);
 	delete [] PeakValue;
+		
+	//// Resume notifications
+	//m_pEnumerator->RegisterEndpointNotificationCallback(m_pNotifyChange);
 	return Value;
 }
 SPPINTERFACE_API double CAudioInputW7::GetLoudestDevice(PVOID * Id)
@@ -639,3 +757,198 @@ SPPINTERFACE_API double CAudioInputW7::GetLoudestDevice(PVOID * Id)
 	Value = max;
 	return Value;
 }
+
+/*
+	Streaming the audio device:
+	Starting by ID and stopping
+
+	The actual capture of the audio is done in the audio capture thread - started by
+	global function CaptureAudio().
+	Function CaptureAudio()loops on the audio data as long as global 
+	variable g_CaptureAudioThreadRunnig is 'true'
+
+	Starting capture:
+	Before starting the audio capture thread the main thread sets g_CaptureAudioThreadRunnig=true
+	Another thing: Creates a global event g_hEventStopCaptureAudioThread
+	Capture starts by creating the audio capture thread.
+
+	Stopping capture:
+	To stop the audio capture thread the main thread sets g_CaptureAudioThreadRunnig=false
+	When the audio capture thread is going out it signals this fact using event g_hEventStopCaptureAudioThread
+	Then the main thread waits for audio capture thread to signal that it is exiting.
+	The main thread can now release the handle to the audio capture thread and the event then continue execution.
+
+	Capturing:
+	Capturing done in capture loop inside audio capture thread (global function CaptureAudio()). The details are in the function itself.
+	Capture loop goes while g_CaptureAudioThreadRunnig=true
+	When signaled from main thread to exit (g_CaptureAudioThreadRunnig=false)
+	it signals the main thread that is exiting by signaling event g_hEventStopCaptureAudioThread;
+*/
+SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id)
+/*
+	Given capture endpoint id this function starts streaming the data
+	1. Stop streaming current endpoint
+	2. Initialize endpoint
+	3. Test usability of endpoint
+	4. Start capture stream
+	5. Create capturing thread
+*/
+{
+	HRESULT hr = S_OK;
+
+	// Stop streaming current endpoint
+	hr = StopCurrentStream();
+
+	// Initialize endpoint
+	hr = InitEndPoint(Id);
+
+	// Start capture stream
+	hr = StartCurrentStream();
+
+	// Create capturing thread
+	hr = CreateCuptureThread(Id);
+
+	return false;
+}
+
+HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
+{
+	HRESULT hr=S_OK;
+	IMMDevice * pDevice = NULL;
+	WAVEFORMATEX  *outFormat;
+	WAVEFORMATEX *pwfx = NULL;
+
+	// Sanity check
+	if (!Id)
+	{
+		hr = E_FAIL;
+		EXIT_ON_ERROR(hr);
+	};
+
+	// Get device from ID
+	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
+	EXIT_ON_ERROR(hr);
+
+	///// Activate a client and get it's audio format
+	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&m_pAudioClient);
+	EXIT_ON_ERROR(hr);
+
+	hr = m_pAudioClient->GetMixFormat(&pwfx);
+	EXIT_ON_ERROR(hr);
+
+	// Try to improve the current format
+	pwfx->nSamplesPerSec = 192000;
+	pwfx->nBlockAlign = pwfx->wBitsPerSample / 8 * pwfx->nChannels;
+	pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
+	outFormat = new(WAVEFORMATEX);
+	hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, pwfx, &outFormat);
+	if (hr == S_OK)
+		outFormat = pwfx;
+    EXIT_ON_ERROR(hr);
+
+	// Initialize the endpoint 
+	hr = m_pAudioClient->Initialize(
+		AUDCLNT_SHAREMODE_SHARED,			// shared mode
+		AUDCLNT_STREAMFLAGS_EVENTCALLBACK,	// stream flags - Event callback
+		0,									// buffer duration
+		0,									// periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
+		outFormat,							// wave format
+		NULL);								// session GUID
+	EXIT_ON_ERROR(hr);
+	//AUDCLNT_E_DEVICE_IN_USE == 0x8889000a;
+
+
+	//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
+	hr = m_pAudioClient->SetEventHandle(m_hAudioBufferReady);
+	EXIT_ON_ERROR(hr);
+
+		//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
+	hr = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient),(void**)&m_pCaptureClient);
+	EXIT_ON_ERROR(hr);
+
+
+Exit:
+	CoTaskMemFree(pwfx);
+	SAFE_RELEASE(pDevice);
+	return hr;
+}
+
+
+HRESULT CAudioInputW7::StopCurrentStream(void)
+{
+	HRESULT hr=S_OK;
+
+	// If no valid capture stream
+	if (!m_pAudioClient)
+		return S_FALSE;
+
+	hr = m_pAudioClient->Stop();  // Stop recording.
+	SAFE_RELEASE(m_pAudioClient);
+
+	// Stop capture thread
+	if (g_hEventStopCaptureAudioThread)
+	{
+		g_CaptureAudioThreadRunnig = false;
+		DWORD dwWaitResult = WaitForSingleObject(g_hEventStopCaptureAudioThread, 2000);
+		if (dwWaitResult != WAIT_OBJECT_0)
+			TerminateThread(m_hCaptureAudioThread,-1);
+		CloseHandle(g_hEventStopCaptureAudioThread);
+		g_hEventStopCaptureAudioThread = NULL;
+		CloseHandle(m_hCaptureAudioThread);
+	}
+
+	return hr;
+
+}
+HRESULT CAudioInputW7::StartCurrentStream(void)
+{
+	HRESULT hr=S_OK;
+
+	// If no valid capture stream
+	if (!m_pAudioClient)
+		return S_FALSE;
+
+	hr = m_pAudioClient->Start();  // Start recording.
+	return hr;
+
+}
+
+
+HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
+{
+	HRESULT hr=S_OK;
+	DWORD dwThreadId;
+
+	if (m_hCaptureAudioThread)
+		return S_FALSE;
+	if (!m_pAudioClient)
+		return S_FALSE;
+
+	/* signal the audio capture thread that it is OK to capture */
+	g_CaptureAudioThreadRunnig = true;
+
+	/* Create event by which the audio capture thread signals that it exits */
+	g_hEventStopCaptureAudioThread = CreateEvent( 
+        NULL,               // default security attributes
+        TRUE,               // manual-reset event
+        FALSE,              // initial state is nonsignaled
+        TEXT("Event Stop Capture Audio-Thread")  // object name TODO: Make it through resorces
+        ); 
+    if (g_hEventStopCaptureAudioThread == NULL)
+		return GetLastError();
+
+	/* Create capturing thread  */
+	m_hCaptureAudioThread = CreateThread(
+		NULL,				// no security attribute
+		0,					// default stack size
+		&CaptureAudio,
+		Id,				// thread parameter
+		0,					// not suspended
+		&dwThreadId);		// returns thread ID
+
+	if (!m_hCaptureAudioThread)
+		return ERROR_ACCESS_DENIED;
+
+	return hr;
+}
+
