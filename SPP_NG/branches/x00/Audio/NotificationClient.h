@@ -4,7 +4,7 @@
 
 
 #define EXIT_ON_ERROR(hres)  \
-              if (FAILED(hres)) { goto Exit; }
+              if (FAILED(hres)) { DbgPopUp(__LINE__, hres); goto Exit; }
 #define SAFE_RELEASE(punk)  \
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }

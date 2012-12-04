@@ -12,5 +12,6 @@
 #define IDM_LISTCAPTDEVS                        111
 #define IDD_LISTCAPTDEVS                        113
 #define IDREFRESH								114
+#define IDSELECT								115
 #define IDC_LIST1                               1001
 #define IDS_APP_TITLE                           40000

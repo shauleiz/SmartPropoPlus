@@ -7,9 +7,10 @@
 #include <devicetopology.h>
 #include <Mmdeviceapi.h>
 #include "WinMessages.h"
+#include <Audioclient.h>
+#include <Functiondiscoverykeys_devpkey.h>
 #include "AudioInputW7.h"
 #include "NotificationClient.h"
-#include <Functiondiscoverykeys_devpkey.h>
 
 #define MAX_LOADSTRING 100
 
@@ -251,12 +252,28 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
+		// Refresh button
 		if (LOWORD(wParam) == IDREFRESH)
 		{
 			g_audio->Enumerate();
 			ListView_DeleteAllItems(GetDlgItem(hDlg, IDC_LIST1));
 			CaptureDevicesPopulate(hDlg);
 			return (INT_PTR)TRUE;
+		};
+
+		// Select button
+		if (LOWORD(wParam) == IDSELECT)
+		{
+			TCHAR  id[200];
+			hList = GetDlgItem(hDlg, IDC_LIST1);
+			int sel = ListView_GetSelectionMark(hList);
+			if (sel <0)
+				return (INT_PTR)FALSE;
+			// Get the endpoint Id and open this endpoint for capture
+			ListView_GetItemText(hList, sel, 4, id, 200);
+			// Start capture endpoint stream by id
+			bool stream_started = g_audio->StartStreaming((PVOID)id);
+			return (INT_PTR)stream_started;
 		};
 
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
@@ -302,7 +319,7 @@ BOOL InitListViewColumns(HWND hWndListView)
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     // Add the columns.
-    for (iCol = 0; iCol < 4; iCol++)
+    for (iCol = 0; iCol < 6; iCol++)
     {
         lvc.iSubItem = iCol;
         lvc.pszText = L"---";
@@ -331,6 +348,18 @@ BOOL InitListViewColumns(HWND hWndListView)
 		 {
 			 lvc.pszText = L"Volume(%)";
 			 lvc.cx = 80; 
+		 };
+
+		 if ( iCol == 4 )
+		 {
+			 lvc.pszText = L"External";
+			 lvc.cx = 50; 
+		 };
+
+		 if ( iCol == 5 )
+		 {
+			 lvc.pszText = L"Id";
+			 lvc.cx = 180; 
 		 };
 
 
@@ -375,5 +404,13 @@ void AddLine2List(HWND hWndListView, int size, LPWSTR id)
 	}
 	else
 		ListView_SetItemText(hWndListView, index, 3, L"-");
+
+	// Is physical-external device?
+	if (g_audio->IsExternal((PVOID) id))
+		ListView_SetItemText(hWndListView, index, 4, L"+")
+
+
+	// Id for later use
+	ListView_SetItemText(hWndListView, index, 5, id)
 
 }

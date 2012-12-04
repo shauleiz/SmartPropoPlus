@@ -6,6 +6,7 @@
 #include <devicetopology.h>
 #include <Mmdeviceapi.h>
 #include "WinMessages.h"
+#include <Audioclient.h>
 #include "AudioInputW7.h"
 #include "NotificationClient.h"
 #include <Functiondiscoverykeys_devpkey.h>
