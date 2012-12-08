@@ -180,6 +180,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PolicyConfig.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>

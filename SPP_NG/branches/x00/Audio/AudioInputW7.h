@@ -38,7 +38,7 @@ protected:
 	HRESULT StartCurrentStream(void);
 	HRESULT InitEndPoint(PVOID Id);
 	HRESULT CreateCuptureThread(PVOID Id);
-
+	HRESULT SetDefaultAudioDevice(PVOID Id);
 
 public:
 	CAudioInputW7(void);
