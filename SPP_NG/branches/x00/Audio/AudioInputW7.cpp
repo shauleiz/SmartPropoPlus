@@ -12,6 +12,7 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <endpointvolume.h>
 #include <Mmdeviceapi.h>
+#include "PolicyConfig.h"
 
 #define MAX_LOADSTRING 100
 
@@ -668,7 +669,7 @@ SPPINTERFACE_API double CAudioInputW7::GetDevicePeak(PVOID Id)
 	float *PeakValue = NULL;
 	IAudioClient *pAudioClient = NULL;
 	WAVEFORMATEX *pwfx = NULL;
-	REFERENCE_TIME hnsRequestedDuration = 1000;
+	REFERENCE_TIME hnsRequestedDuration = 0;
 
 	//// Stop notifications for this function
 	//if (m_pEnumerator && m_pNotifyChange)
@@ -798,6 +799,9 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id)
 
 	// Stop streaming current endpoint
 	hr = StopCurrentStream();
+
+	// Set current default endpoint
+	hr = SetDefaultAudioDevice(Id);
 
 	// Initialize endpoint
 	hr = InitEndPoint(Id);
@@ -952,3 +956,18 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
 	return hr;
 }
 
+
+HRESULT CAudioInputW7::SetDefaultAudioDevice(PVOID devID)
+{	
+	IPolicyConfigVista *pPolicyConfig;
+	ERole reserved = eConsole;
+
+    HRESULT hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
+		NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfig);
+	if (SUCCEEDED(hr))
+	{
+		hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
+		pPolicyConfig->Release();
+	}
+	return hr;
+}

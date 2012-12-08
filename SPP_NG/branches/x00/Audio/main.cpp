@@ -270,7 +270,7 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			if (sel <0)
 				return (INT_PTR)FALSE;
 			// Get the endpoint Id and open this endpoint for capture
-			ListView_GetItemText(hList, sel, 4, id, 200);
+			ListView_GetItemText(hList, sel, 5, id, 200);
 			// Start capture endpoint stream by id
 			bool stream_started = g_audio->StartStreaming((PVOID)id);
 			return (INT_PTR)stream_started;
