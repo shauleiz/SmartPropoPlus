@@ -273,6 +273,11 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			ListView_GetItemText(hList, sel, 5, id, 200);
 			// Start capture endpoint stream by id
 			bool stream_started = g_audio->StartStreaming((PVOID)id);
+			// Refresh
+			g_audio->Enumerate();
+			ListView_DeleteAllItems(GetDlgItem(hDlg, IDC_LIST1));
+			CaptureDevicesPopulate(hDlg);
+
 			return (INT_PTR)stream_started;
 		};
 
