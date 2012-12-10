@@ -13,6 +13,7 @@
 #include <endpointvolume.h>
 #include <Mmdeviceapi.h>
 #include "PolicyConfig.h"
+#include "PulseData.h"
 
 #define MAX_LOADSTRING 100
 
@@ -35,19 +36,28 @@ void   DbgPopUp(int Line, DWORD Error)
 }
 bool   g_CaptureAudioThreadRunnig;		// If false - signal to capture audio thread to stop
 HANDLE g_hEventStopCaptureAudioThread;	// Handle to event that is set when the audio thread is stopping
+HANDLE g_hAudioBufferReady = NULL;
+
 DWORD WINAPI CaptureAudio(LPVOID param)
 /*
 	Capture loop - running on a dedicated thread
+	param: Pointer to the calling CAudioInputW7 object
 */
 {
+	HRESULT hr = S_OK;
 	// Initialize capture thread
+	CAudioInputW7 * parent = (CAudioInputW7 *)param;
+	CPulseData * pPulseDataObj = new CPulseData;
+	parent->InitPulseDataObj(pPulseDataObj);
 
 	// Capture loop
 	do
 	{
+		hr = parent->ProcessAudioPacket(pPulseDataObj);
 	}while (g_CaptureAudioThreadRunnig);
 
 	// Exit capture thread
+	delete pPulseDataObj;
 	SetEvent(g_hEventStopCaptureAudioThread);
 	return 0;
 }
@@ -117,7 +127,6 @@ bool CAudioInputW7::Create(void)
 	m_pRenderDeviceCollect = NULL;
 	m_nEndPoints = 0;
 	HRESULT hr = S_OK;
-	m_hAudioBufferReady = NULL;
 	m_pCaptureClient = NULL;
 	m_pAudioClient = NULL;
 	m_hCaptureAudioThread = NULL;
@@ -150,8 +159,8 @@ bool CAudioInputW7::Create(void)
 	};
 
 	// Create an event handle for buffer-event notifications.
-	m_hAudioBufferReady = CreateEvent(NULL, FALSE, FALSE, NULL);
-	if (!m_hAudioBufferReady)
+	g_hAudioBufferReady = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (!g_hAudioBufferReady)
     {
         hr = E_FAIL;
         goto Exit;
@@ -253,6 +262,20 @@ Exit:
 
 };
 
+HRESULT CAudioInputW7::SetDefaultAudioDevice(PVOID devID)
+{	
+	IPolicyConfigVista *pPolicyConfig;
+	ERole reserved = eConsole;
+
+    HRESULT hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
+		NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfig);
+	if (SUCCEEDED(hr))
+	{
+		hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
+		pPolicyConfig->Release();
+	}
+	return hr;
+}
 
 
 int		CAudioInputW7::CountCaptureDevices(void)
@@ -863,7 +886,7 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 
 
 	//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
-	hr = m_pAudioClient->SetEventHandle(m_hAudioBufferReady);
+	hr = m_pAudioClient->SetEventHandle(g_hAudioBufferReady);
 	EXIT_ON_ERROR(hr);
 
 		//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
@@ -928,6 +951,7 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
 	if (!m_pAudioClient)
 		return S_FALSE;
 
+
 	/* signal the audio capture thread that it is OK to capture */
 	g_CaptureAudioThreadRunnig = true;
 
@@ -941,12 +965,13 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
     if (g_hEventStopCaptureAudioThread == NULL)
 		return GetLastError();
 
-	/* Create capturing thread  */
+
+	/* Create capturing thread  and pass a pointer to THIS object */
 	m_hCaptureAudioThread = CreateThread(
 		NULL,				// no security attribute
 		0,					// default stack size
 		&CaptureAudio,
-		Id,				// thread parameter
+		this,				// thread parameter
 		0,					// not suspended
 		&dwThreadId);		// returns thread ID
 
@@ -956,18 +981,76 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
 	return hr;
 }
 
+HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
+{
+	UINT32 packetLength=0;
+	HRESULT hr = S_OK;
+	DWORD retval, flags;
+	BYTE *pDataIn;
 
-HRESULT CAudioInputW7::SetDefaultAudioDevice(PVOID devID)
-{	
-	IPolicyConfigVista *pPolicyConfig;
-	ERole reserved = eConsole;
+	//hr = m_pCaptureClient->GetNextPacketSize(&packetLength);
+	//if (FAILED(hr))
+	//{
+	//	// Usually caused by change of sampling frequency
+	//	// TODO - Solve this problem
+	//	break;
+	//};
 
-    HRESULT hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
-		NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfig);
-	if (SUCCEEDED(hr))
+	// Wait for next buffer event to be signaled.
+	retval = WaitForSingleObject(g_hAudioBufferReady, 2000);
+
+	//In case of timeout - continue
+	if (retval == WAIT_TIMEOUT)
 	{
-		hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
-		pPolicyConfig->Release();
-	}
+		return S_FALSE;
+	};
+
+	// Get pointer to next data packet in capture buffer.
+	pDataIn = 0;
+	flags = 0;
+	hr = m_pCaptureClient->GetBuffer(&pDataIn, &packetLength, &flags, NULL, NULL);
+	if (FAILED(hr))
+	{
+		// In case of failure - continue
+		return hr;
+	};
+
+	// Process the audio data - Convert to pulse
+	hr = pPulseDataObj->ProcessWave(pDataIn,packetLength); 
+	if (hr == S_OK)
+	{	// Pulse ready 
+		pPulseDataObj->GetPulseValues(&PulseDuration, &PulsePolarity);
+	};
+	if (FAILED(hr))
+	{
+		// In case of failure - continue
+		return hr;
+	};
+
+	/* Release the buffer*/
+	hr = m_pCaptureClient->ReleaseBuffer(packetLength);
+	if (FAILED(hr))
+	{
+		// In case of failure - continue
+		return hr;
+	};
+
+	return hr;
+}
+
+HRESULT CAudioInputW7::InitPulseDataObj(CPulseData * pPulseDataObj)
+{
+	HRESULT hr = S_OK;
+	WAVEFORMATEX *pwfx = NULL;
+
+	// Get the wave format of the current audio client
+	hr = m_pAudioClient->GetMixFormat(&pwfx);
+	EXIT_ON_ERROR(hr);
+
+	// Init the Pulse data object
+	hr = pPulseDataObj->Initialize(pwfx->nSamplesPerSec, pwfx->nChannels, pwfx->wBitsPerSample);
+
+Exit:
+	CoTaskMemFree(pwfx);
 	return hr;
 }

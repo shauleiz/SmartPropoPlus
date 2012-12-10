@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PulseData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -221,6 +225,10 @@
 			</File>
 			<File
 				RelativePath=".\NotificationClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PulseData.cpp"
 				>
 			</File>
 			<File

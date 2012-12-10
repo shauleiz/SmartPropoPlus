@@ -20,7 +20,9 @@
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
 
+
 struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
+class CPulseData;
 
 
 
@@ -40,10 +42,12 @@ protected:
 	HRESULT CreateCuptureThread(PVOID Id);
 	HRESULT SetDefaultAudioDevice(PVOID Id);
 
+
 public:
 	CAudioInputW7(void);
 	SPPINTERFACE_API CAudioInputW7(HWND hWnd);
 	virtual	~CAudioInputW7(void);
+	HRESULT InitPulseDataObj(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	Enumerate(void);
 	SPPINTERFACE_API int		CountCaptureDevices(void);
 	SPPINTERFACE_API HRESULT	GetCaptureDeviceId(int nDevice, int *size, PVOID *Id);
@@ -65,6 +69,8 @@ public: // Called asynchronuously when change occurs
 	HRESULT DeviceRemoved(LPCWSTR pwstrDeviceId);
 	HRESULT DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState);
 	HRESULT PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
+	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
+
 
 protected:
 	IAudioCaptureClient * m_pCaptureClient;
