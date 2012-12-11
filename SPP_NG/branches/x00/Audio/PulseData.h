@@ -32,6 +32,8 @@ public:
 	CPulseData(void);
 	virtual	~CPulseData(void);
 	HRESULT	Initialize(UINT rate, UINT nChannels, UINT BitsPerSample);
+	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);
+	void GetPulseValues(UINT * PulseDuration, INT * PulsePolarity);
 
 
 protected:
