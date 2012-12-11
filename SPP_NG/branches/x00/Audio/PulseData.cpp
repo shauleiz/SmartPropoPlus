@@ -49,3 +49,28 @@ HRESULT	CPulseData::Initialize(UINT rate, UINT nChannels, UINT BitsPerSample)
 Exit:
 	return hr;
 }
+
+HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
+/*
+	ProcessWave processes a wave packet
+	Return value:
+		S_OK:		Pulse value(s) is ready - You can call function GetPulseValues()
+		S_FALSE:	Pulse value is not ready, need additional packet
+		E_xxx:		Error
+
+	Input parameters:
+		[IN] pWavePacket:	Pointer to the beginning of the wave packet
+		[IN] packetLength:	Length of packet
+*/
+{
+	HRESULT hr = S_OK;
+
+	EXIT_ON_ERROR(hr);
+Exit:
+	return hr;
+}
+
+void CPulseData::GetPulseValues(UINT * PulseDuration, INT * PulsePolarity)
+{
+}
+

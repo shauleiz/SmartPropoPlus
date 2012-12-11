@@ -987,6 +987,8 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 	HRESULT hr = S_OK;
 	DWORD retval, flags;
 	BYTE *pDataIn;
+	UINT PulseDuration;
+	int PulsePolarity;
 
 	//hr = m_pCaptureClient->GetNextPacketSize(&packetLength);
 	//if (FAILED(hr))
