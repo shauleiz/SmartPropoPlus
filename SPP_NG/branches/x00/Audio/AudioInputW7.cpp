@@ -921,7 +921,7 @@ HRESULT CAudioInputW7::StopCurrentStream(void)
 			TerminateThread(m_hCaptureAudioThread,-1);
 		CloseHandle(g_hEventStopCaptureAudioThread);
 		g_hEventStopCaptureAudioThread = NULL;
-		CloseHandle(m_hCaptureAudioThread);
+		CloseHandle(m_hCaptureAudioThread); 
 	}
 
 	return hr;
