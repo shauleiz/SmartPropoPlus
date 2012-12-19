@@ -103,6 +103,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassEx(&wcex);
 }
 
+void LogAudioUnit(int Code, int Severity, LPVOID Data)
+{
+}
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //   FUNCTION: InitInstance(HINSTANCE, int)
@@ -135,6 +139,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	g_audio = new CAudioInputW7(hWnd);
 	if (!g_audio)
 		return FALSE;
+	g_audio->RegisterLog(LogAudioUnit);
 
 
 	return TRUE;

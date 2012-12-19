@@ -23,6 +23,23 @@
 
 struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
 class CPulseData;
+typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
+
+/////// Log related definitions ///////
+// Severity
+#define	INFO	0
+#define	WARN	1
+#define	ERR		2
+#define	FATAL	3
+
+// Message Code
+#define	GEN_STATUS	100
+#define	ENUM_FRND	101
+#define	ENUM_UID	102
+
+
+// Message Text
+#define	ENUM1	(LPVOID)"Enumerating davices"
 
 
 
@@ -41,14 +58,16 @@ protected:
 	HRESULT InitEndPoint(PVOID Id);
 	HRESULT CreateCuptureThread(PVOID Id);
 	HRESULT SetDefaultAudioDevice(PVOID Id);
+	LOGFUNC	LogStatus;
 
 
 public:
 	CAudioInputW7(void);
 	SPPINTERFACE_API CAudioInputW7(HWND hWnd);
 	virtual	~CAudioInputW7(void);
-	HRESULT InitPulseDataObj(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	Enumerate(void);
+	SPPINTERFACE_API double	GetDevicePeak(PVOID Id);
+	HRESULT InitPulseDataObj(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API int		CountCaptureDevices(void);
 	SPPINTERFACE_API HRESULT	GetCaptureDeviceId(int nDevice, int *size, PVOID *Id);
 	SPPINTERFACE_API HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName);
@@ -56,9 +75,11 @@ public:
 	SPPINTERFACE_API bool		IsCaptureDeviceDefault(PVOID Id);
 	SPPINTERFACE_API bool		IsCaptureDevice(PVOID Id);
 	SPPINTERFACE_API bool		IsExternal(PVOID Id);
-	SPPINTERFACE_API double		GetDevicePeak(PVOID Id);
 	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
 	SPPINTERFACE_API bool		StartStreaming(PVOID Id);
+	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
+
+	SPPINTERFACE_API bool		RegisterLog(LPVOID);
 
 
 	//bool	RegisterChangeNotification(CBF f);
@@ -69,7 +90,6 @@ public: // Called asynchronuously when change occurs
 	HRESULT DeviceRemoved(LPCWSTR pwstrDeviceId);
 	HRESULT DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState);
 	HRESULT PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
-	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
 
 
 protected:
@@ -86,6 +106,7 @@ protected:
 	HWND m_hPrntWnd;
 	HANDLE m_hAudioBufferReady;
 	HANDLE m_hCaptureAudioThread;
+	WAVEFORMATEX m_CurrentWaveFormat;
 
 public:
 
