@@ -62,6 +62,12 @@ DWORD WINAPI CaptureAudio(LPVOID param)
 	return 0;
 }
 
+void Log(int Code, int Severity, LPVOID Data)
+{
+	// Default (NO-OP) logger
+}
+
+
 ////////////////////// Class CAudioInputW7 //////////////////////
 SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 {
@@ -78,6 +84,9 @@ SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 
 	// Save handle to parent window - will be used fpr notifications
 	m_hPrntWnd = hWnd;
+
+	// Set default callback functions
+	RegisterLog(Log);
 
 	// Create a vector of capture endpoint
 	bool created = Create();
@@ -101,6 +110,9 @@ CAudioInputW7::CAudioInputW7(void)
 	// m_ChangeEventCB = NULL;
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	m_hPrntWnd = NULL;
+
+	// Set default callback functions
+	RegisterLog(Log);
 
 	bool created = Create();
 	
@@ -132,6 +144,14 @@ bool CAudioInputW7::Create(void)
 	m_hCaptureAudioThread = NULL;
 	g_hEventStopCaptureAudioThread = NULL;
 	g_CaptureAudioThreadRunnig = false;
+	m_CurrentWaveFormat.cbSize = 0;
+	m_CurrentWaveFormat.nAvgBytesPerSec = 0;
+	m_CurrentWaveFormat.nBlockAlign = 0;
+	m_CurrentWaveFormat.nChannels = 0;
+	m_CurrentWaveFormat.nSamplesPerSec = 0;
+	m_CurrentWaveFormat.wBitsPerSample = 0;
+	m_CurrentWaveFormat.wFormatTag = 0;
+
 
 	/* Create a device enumarator then a collection of endpoints and finally get the number of endpoints */
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
@@ -193,7 +213,7 @@ CAudioInputW7::~CAudioInputW7(void)
 }
 
 
-SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
+HRESULT	CAudioInputW7::Enumerate(void)
 // Fill in structure m_CaptureDevices that specifies the current state of all capture endpoint devices
 // Assumption: 
 //	1. m_nEndPoints is valid
@@ -203,6 +223,8 @@ SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
 	IMMDevice * pDevice = NULL;
 	PROPVARIANT varName;
 	HRESULT hr = S_OK;
+
+	LogStatus(GEN_STATUS,INFO,ENUM1);
 
 	// Initialize data staructure
 	while (!m_CaptureDevices.empty())
@@ -245,12 +267,15 @@ SPPINTERFACE_API HRESULT	CAudioInputW7::Enumerate(void)
 		m_CaptureDevices.back()->DeviceName = _wcsdup(varName.pwszVal);
 		m_CaptureDevices.back()->state = state;
 		m_CaptureDevices.back()->id = _wcsdup(id);
+		LogStatus(ENUM_UID,INFO,(LPVOID)varName.pwszVal);
+		LogStatus(ENUM_FRND,INFO,(LPVOID)id);
 
 		CoTaskMemFree(id);
 		id = NULL;
 		PropVariantClear(&varName);
 		SAFE_RELEASE(pProps)
 		SAFE_RELEASE(pDevice)
+
 	};
 
 
@@ -678,7 +703,7 @@ Exit:
 	return Value;
 }
 
-SPPINTERFACE_API double CAudioInputW7::GetDevicePeak(PVOID Id)
+double CAudioInputW7::GetDevicePeak(PVOID Id)
 // Return peak value for the loader channel of an endpoint device
 // Endpoint device selected by Id
 // Return value in the range 0.0-1.0
@@ -825,16 +850,20 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id)
 
 	// Set current default endpoint
 	hr = SetDefaultAudioDevice(Id);
+	EXIT_ON_ERROR(hr);
 
 	// Initialize endpoint
 	hr = InitEndPoint(Id);
+	EXIT_ON_ERROR(hr);
 
 	// Start capture stream
 	hr = StartCurrentStream();
+	EXIT_ON_ERROR(hr);
 
 	// Create capturing thread
 	hr = CreateCuptureThread(Id);
 
+Exit:
 	return false;
 }
 
@@ -864,10 +893,13 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	EXIT_ON_ERROR(hr);
 
 	// Try to improve the current format
-	pwfx->nSamplesPerSec = 192000;
+	pwfx->wFormatTag = WAVE_FORMAT_PCM;
+	pwfx->wBitsPerSample = 8;
+	// pwfx->nSamplesPerSec = 192000;
 	pwfx->nBlockAlign = pwfx->wBitsPerSample / 8 * pwfx->nChannels;
 	pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
-	outFormat = new(WAVEFORMATEX);
+	pwfx->cbSize = 0;
+	//outFormat = new WAVEFORMATEX;
 	hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, pwfx, &outFormat);
 	if (hr == S_OK)
 		outFormat = pwfx;
@@ -893,9 +925,18 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	hr = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient),(void**)&m_pCaptureClient);
 	EXIT_ON_ERROR(hr);
 
+	// Set default Wave format
+	m_CurrentWaveFormat.cbSize = outFormat->cbSize;
+	m_CurrentWaveFormat.nAvgBytesPerSec = outFormat->nAvgBytesPerSec;
+	m_CurrentWaveFormat.nBlockAlign = outFormat->nBlockAlign;
+	m_CurrentWaveFormat.nChannels = outFormat->nChannels;
+	m_CurrentWaveFormat.nSamplesPerSec = outFormat->nSamplesPerSec;
+	m_CurrentWaveFormat.wBitsPerSample = outFormat->wBitsPerSample;
+	m_CurrentWaveFormat.wFormatTag = outFormat->wFormatTag;
 
 Exit:
 	CoTaskMemFree(pwfx);
+	//delete outFormat;
 	SAFE_RELEASE(pDevice);
 	return hr;
 }
@@ -921,7 +962,15 @@ HRESULT CAudioInputW7::StopCurrentStream(void)
 			TerminateThread(m_hCaptureAudioThread,-1);
 		CloseHandle(g_hEventStopCaptureAudioThread);
 		g_hEventStopCaptureAudioThread = NULL;
-		CloseHandle(m_hCaptureAudioThread); 
+		CloseHandle(m_hCaptureAudioThread);
+		m_hCaptureAudioThread = NULL;
+		m_CurrentWaveFormat.cbSize = 0;
+		m_CurrentWaveFormat.nAvgBytesPerSec = 0;
+		m_CurrentWaveFormat.nBlockAlign = 0;
+		m_CurrentWaveFormat.nChannels = 0;
+		m_CurrentWaveFormat.nSamplesPerSec = 0;
+		m_CurrentWaveFormat.wBitsPerSample = 0;
+		m_CurrentWaveFormat.wFormatTag = 0;
 	}
 
 	return hr;
@@ -1045,14 +1094,17 @@ HRESULT CAudioInputW7::InitPulseDataObj(CPulseData * pPulseDataObj)
 	HRESULT hr = S_OK;
 	WAVEFORMATEX *pwfx = NULL;
 
-	// Get the wave format of the current audio client
-	hr = m_pAudioClient->GetMixFormat(&pwfx);
-	EXIT_ON_ERROR(hr);
 
 	// Init the Pulse data object
-	hr = pPulseDataObj->Initialize(pwfx->nSamplesPerSec, pwfx->nChannels, pwfx->wBitsPerSample);
-
-Exit:
+	hr = pPulseDataObj->Initialize(m_CurrentWaveFormat.nSamplesPerSec, m_CurrentWaveFormat.nChannels, m_CurrentWaveFormat.wBitsPerSample);
 	CoTaskMemFree(pwfx);
 	return hr;
+}
+
+
+/* Registration of callback functions */
+SPPINTERFACE_API bool		CAudioInputW7::RegisterLog(LPVOID f)
+{
+	LogStatus = (LOGFUNC)f;
+	return false;
 }

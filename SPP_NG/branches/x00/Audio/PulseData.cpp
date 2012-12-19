@@ -65,6 +65,9 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 {
 	HRESULT hr = S_OK;
 
+	// for every sample in the packet, read channels one by one (Left then Right)
+
+
 	EXIT_ON_ERROR(hr);
 Exit:
 	return hr;
