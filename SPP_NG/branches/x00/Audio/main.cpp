@@ -114,22 +114,62 @@ void LogAudioUnit(int Code, int Severity, LPVOID Data)
 		return;
 
 	// Initialize
+	LRESULT lr;
 	HWND hEdit=NULL;
+	WCHAR prefix[6], prtcode[8];
+	GETTEXTLENGTHEX tl;
+	CHARFORMAT cf;
+	tl.codepage =  CP_ACP;
+	tl.flags = GTL_DEFAULT;
 	hEdit = GetDlgItem(hLogDlg, IDC_EDIT1);
 	SendMessage(hEdit,EM_SHOWSCROLLBAR    , (WPARAM)SB_VERT, TRUE);
 
+	// Severity to colour and Prefix
+	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+	cf.cbSize = sizeof(CHARFORMAT);
+	cf.dwMask = CFM_COLOR;
+	cf.dwEffects = 0;
+	switch (Severity)
+	{
+	case ERR:
+		cf.crTextColor = RGB(180,0,0);
+		wmemcpy(prefix,L"[E] ",5);
+		break;
+	case FATAL:
+		cf.crTextColor = RGB(250,0,0);
+		wmemcpy(prefix,L"[F] ",5);
+		break;
+	case WARN:
+		cf.crTextColor = RGB(255,140,0);
+		wmemcpy(prefix,L"[W] ",5);
+		break;
+	default:
+		cf.dwEffects = CFE_AUTOCOLOR;
+		wmemcpy(prefix,L"[I] ",5);
+	}
+	SendMessage(hEdit,EM_SETCHARFORMAT, (WPARAM)SCF_SELECTION, (LPARAM)&cf);
+
 	// Print one Line
-	GETTEXTLENGTHEX tl;
-	tl.codepage =  CP_ACP;
-	tl.flags = GTL_DEFAULT;
-	LRESULT lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+
+	// Prefix
+	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+	SendMessage(hEdit,EM_SETSEL    , lr, lr);
+	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)prefix);
+	// Code
+	swprintf(prtcode, 6,L"%d: ", Code);
+	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+	SendMessage(hEdit,EM_SETSEL    , lr, lr);
+	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)prtcode);
+	// Data
+	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
 	SendMessage(hEdit,EM_SETSEL    , lr, lr);
 	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)(LPCWSTR)Data);
+	// New line
 	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
 	SendMessage(hEdit,EM_SETSEL    , lr, lr);
 	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)L"\r\n");
 
-	// Make bottom visible
+	// Scroll to bottom
 	SendMessage(hEdit,EM_SCROLLCARET       , 0, 0);
 }
 
@@ -168,6 +208,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	// Open a log window and register a callback function that will called for logging
 	hLogDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOGDLG), hWnd, DlgAudioLog);
+	SetWindowPos(hLogDlg, NULL, 100,100,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
 	g_audio->RegisterLog(LogAudioUnit);
 
 

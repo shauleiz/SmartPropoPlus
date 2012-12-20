@@ -39,7 +39,7 @@ typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 
 
 // Message Text
-#define	ENUM1	(LPVOID)L"Enumerating davices"
+#define	ENUM1	(LPVOID)L"Enumerating devices"
 
 
 
