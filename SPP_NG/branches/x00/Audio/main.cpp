@@ -11,6 +11,7 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include "AudioInputW7.h"
 #include "NotificationClient.h"
+#include <Richedit.h>
 
 #define MAX_LOADSTRING 100
 
@@ -19,6 +20,7 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 CAudioInputW7 * g_audio;						// Audio interface object (Only one for the moment)
+HWND hLogDlg;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -27,6 +29,7 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void				DlgPeakVolume(PVOID id, double peak);
 INT_PTR CALLBACK	DlgListCaptureDevices(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	DlgAudioLog(HWND, UINT, WPARAM, LPARAM);
 void	CaptureDevicesPopulate(HWND hDlg);
 BOOL InitListViewColumns(HWND hWndListView) ;
 void AddLine2List(HWND hWndListView, int size, LPWSTR id);
@@ -42,11 +45,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    l
 
 	MSG msg;
 	HACCEL hAccelTable;
+	hLogDlg = NULL;
 
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_AUDIO, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
+	LoadLibrary(TEXT("Msftedit.dll"));
 
 	// Perform application initialization:
 	if (!InitInstance (hInstance, nCmdShow))
@@ -105,6 +110,27 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 void LogAudioUnit(int Code, int Severity, LPVOID Data)
 {
+	if (!hLogDlg)
+		return;
+
+	// Initialize
+	HWND hEdit=NULL;
+	hEdit = GetDlgItem(hLogDlg, IDC_EDIT1);
+	SendMessage(hEdit,EM_SHOWSCROLLBAR    , (WPARAM)SB_VERT, TRUE);
+
+	// Print one Line
+	GETTEXTLENGTHEX tl;
+	tl.codepage =  CP_ACP;
+	tl.flags = GTL_DEFAULT;
+	LRESULT lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+	SendMessage(hEdit,EM_SETSEL    , lr, lr);
+	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)(LPCWSTR)Data);
+	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+	SendMessage(hEdit,EM_SETSEL    , lr, lr);
+	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)L"\r\n");
+
+	// Make bottom visible
+	SendMessage(hEdit,EM_SCROLLCARET       , 0, 0);
 }
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
@@ -139,6 +165,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	g_audio = new CAudioInputW7(hWnd);
 	if (!g_audio)
 		return FALSE;
+
+	// Open a log window and register a callback function that will called for logging
+	hLogDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOGDLG), hWnd, DlgAudioLog);
 	g_audio->RegisterLog(LogAudioUnit);
 
 
@@ -242,6 +271,25 @@ void DlgPeakVolume(PVOID id, double peak)
 	g_audio->GetCaptureDeviceName(id, &DevName);
 	swprintf(OutStr,1000,L"Endpoint: %s\nPeak Value %f\nId: %s", DevName, peak, (LPWSTR)id);
 	MessageBox(NULL, OutStr, L"Loudest Capture Device",NULL);
+}
+
+INT_PTR CALLBACK  DlgAudioLog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }
 
 INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
