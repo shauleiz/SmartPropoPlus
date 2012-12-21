@@ -552,6 +552,53 @@ Exit:
 }
 
 
+SPPINTERFACE_API int CAudioInputW7::GetNumberChannels(PVOID Id)
+// Return number of channels of an endpoint device
+{
+	IMMDevice *pDevice = NULL;
+	HRESULT hr = S_OK;
+	UINT nChannels = 0;
+	float *PeakValue = NULL;
+	IAudioClient *pAudioClient = NULL;
+	WAVEFORMATEX *pwfx = NULL;
+
+	// Get device from ID
+	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id);
+		LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
+
+	///// Activate  a client ///////////////////////
+	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_ACTCLNT,WARN,Id);
+		LogStatus(DEVPEAK_ACTCLNT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
+
+	///// Get client mix format
+	hr = pAudioClient->GetMixFormat(&pwfx);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_MXFRMT,WARN,Id);
+		LogStatus(DEVPEAK_MXFRMT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
+
+	nChannels = pwfx->nChannels;
+
+
+Exit:
+	CoTaskMemFree(pwfx);
+	SAFE_RELEASE(pAudioClient);
+	SAFE_RELEASE(pDevice);
+		
+	return nChannels;
+}
 bool	CAudioInputW7::IsCaptureDeviceDefault(PVOID Id)
 {
 // Given a pointer to the id (which uniquely identifies the capture device),
@@ -1370,3 +1417,4 @@ SPPINTERFACE_API bool		CAudioInputW7::RegisterLog(LPVOID f)
 	LogStatus = (LOGFUNC)f;
 	return false;
 }
+
