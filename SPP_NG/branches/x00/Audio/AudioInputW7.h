@@ -14,8 +14,8 @@
 
 #include "resource.h"
 
-#define EXIT_ON_ERROR(hres)  \
-              if (FAILED(hres)) { DbgPopUp(__LINE__, hres); goto Exit; }
+#define EXIT_ON_ERROR(hres) \
+              if (FAILED(hres)) { /*DbgPopUp(__LINE__, hres);*/ goto Exit; }
 #define SAFE_RELEASE(punk)  \
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }
@@ -33,13 +33,56 @@ typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 #define	FATAL	3
 
 // Message Code
-#define	GEN_STATUS	100
-#define	ENUM_FRND	101
-#define	ENUM_UID	102
+#define	GEN_STATUS			100
+#define	ENUM_FRND			101
+#define	ENUM_UID			102
+#define	CHANGE_DEFDEV		103
+#define	ISCAP_IDNOTFOUND	104
+#define	ISCAP_EPNOTFOUND	105
+#define	ISEXT_IDNOTFOUND	106
+#define	ISEXT_TOPO			107
+#define	ISEXT_NOCONN		108
+#define	ISEXT_NOTYPE		109
+#define	ADDDEV_IDNOTFOUND	110
+#define	ADDDEV_STATE		111
+#define	ADDDEV_PROP			112
+#define	ADDDEV_FRND			113
+#define	REGNOT_FAIL			114
+#define	CHPEAK_IDNOTFOUND	115
+#define	CHPEAK_ACTCLNT		116
+#define	CHPEAK_MXFRMT		117
+#define	CHPEAK_NOINIT		118
+#define	CHPEAK_ACTMTR		119
+#define	CHPEAK_MTRCNT		120
+#define	CHPEAK_GETVAL		121
+#define	DEVPEAK_IDNOTFOUND	122
+#define	DEVPEAK_ACTCLNT		123
+#define	DEVPEAK_MXFRMT		124
+#define	DEVPEAK_NOINIT		125
+#define	DEVPEAK_ACTMTR		126
+#define	DEVPEAK_MTRCNT		127
+#define	DEVPEAK_GETVAL		128
+#define	INITEP_IDNOTFOUND	129
+#define	INITEP_ACTCLNT		130
+#define	INITEP_MXFRMT		131
+#define	INITEP_FRMT			132
+#define	INITEP_NOINIT		133
+#define	INITEP_EVTHND		134
+#define	INITEP_NOCAPT		135
+#define	STPSTR_NOSTOP		136
+#define	STRTSTR_NOSTART		137
+
+
 
 
 // Message Text
-#define	ENUM1	(LPVOID)L"Enumerating devices"
+#define	ENUM1		(LPVOID)L"Enumerating devices"
+#define	STRSTRM1	(LPVOID)L"StartStreaming(): Could not stop current stream"
+#define	STRSTRM2	(LPVOID)L"StartStreaming(): Could not set default audio device"
+#define	STRSTRM3	(LPVOID)L"StartStreaming(): Could not initialize endpoint"
+#define	STRSTRM4	(LPVOID)L"StartStreaming(): Could not start current stream"
+#define	STRSTRM5	(LPVOID)L"StartStreaming(): Could not create capture thread"
+#define	INITEP1		(LPVOID)L"InitEndPoint(): Function called with ID=NULL "
 
 
 
