@@ -2,9 +2,10 @@
 
 #include "resource.h"
 
-
+#ifndef EXIT_ON_ERROR
 #define EXIT_ON_ERROR(hres)  \
-              if (FAILED(hres)) { DbgPopUp(__LINE__, hres); goto Exit; }
+              if (FAILED(hres)) { /*DbgPopUp(__LINE__, hres);*/ goto Exit; }
+#endif
 #define SAFE_RELEASE(punk)  \
               if ((punk) != NULL)  \
                 { (punk)->Release(); (punk) = NULL; }

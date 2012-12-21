@@ -67,6 +67,87 @@ void Log(int Code, int Severity, LPVOID Data)
 	// Default (NO-OP) logger
 }
 
+LPWSTR GetWasapiText(DWORD code)
+/* Translate WASAPI error codes to English */
+{
+	switch (code)
+	{
+	case	AUDCLNT_E_NOT_INITIALIZED:
+		return L"The audio stream has not been successfully initialized";
+	case	AUDCLNT_E_ALREADY_INITIALIZED:
+		return L"The IAudioClient object is already initialized";
+
+	case	AUDCLNT_E_WRONG_ENDPOINT_TYPE:
+		return L"Wrong Endpoint Type";
+
+	case	AUDCLNT_E_DEVICE_INVALIDATED:
+		return L"Device Invalidated";
+
+	case	AUDCLNT_E_NOT_STOPPED:
+		return L"The audio stream was not stopped";
+
+	case	AUDCLNT_E_BUFFER_TOO_LARGE:
+		return L"The number of requested frames exceeds the available buffer space ";
+
+	case	AUDCLNT_E_OUT_OF_ORDER:
+		return L"Out of Order";
+
+	case	AUDCLNT_E_UNSUPPORTED_FORMAT:
+		return L"Unsupported Format";
+
+	case	AUDCLNT_E_INVALID_SIZE:
+		return L"Invalid Size";
+
+	case	AUDCLNT_E_DEVICE_IN_USE:
+		return L"The endpoint device is already in use";
+
+	case	AUDCLNT_E_BUFFER_OPERATION_PENDING:
+		return L"Buffer cannot be accessed because a stream reset is in progress";
+
+	case	AUDCLNT_E_THREAD_NOT_REGISTERED:
+		return L"Thread not registered";
+
+	case	AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:
+		return L"Exclusive mode not allowed";
+
+	case	AUDCLNT_E_ENDPOINT_CREATE_FAILED:
+		return L"Creation of Endpoint failed";
+
+	case	AUDCLNT_E_SERVICE_NOT_RUNNING:
+		return L"Service not Running";
+
+	case	AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:
+		return L"The audio stream was not initialized for event-driven buffering";
+
+	case	AUDCLNT_E_EXCLUSIVE_MODE_ONLY:
+		return L"Exclusive Mode Only";
+
+	case	AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL:
+		return L"parameters Buffer Duration and Periodicity are not equal";
+
+	case	AUDCLNT_E_EVENTHANDLE_NOT_SET:
+		return L"Eventhandle Not Set";
+
+	case	AUDCLNT_E_INCORRECT_BUFFER_SIZE:
+		return L"Incorrect Buffer Size";
+
+	case	AUDCLNT_E_BUFFER_SIZE_ERROR:
+		return L"Buffer Size Error";
+
+	case	AUDCLNT_E_CPUUSAGE_EXCEEDED:
+		return L"CPU Usage Exceeded";
+
+	case	E_INVALIDARG:
+		return L"Invalid Argument";
+
+	default:
+		return L"Unknown error code";
+	};
+		return NULL;
+
+}
+
+
 
 ////////////////////// Class CAudioInputW7 //////////////////////
 SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
@@ -267,8 +348,8 @@ HRESULT	CAudioInputW7::Enumerate(void)
 		m_CaptureDevices.back()->DeviceName = _wcsdup(varName.pwszVal);
 		m_CaptureDevices.back()->state = state;
 		m_CaptureDevices.back()->id = _wcsdup(id);
-		LogStatus(ENUM_UID,INFO,(LPVOID)varName.pwszVal);
-		LogStatus(ENUM_FRND,INFO,(LPVOID)id);
+		//LogStatus(ENUM_UID,INFO,(LPVOID)varName.pwszVal);
+		//LogStatus(ENUM_FRND,INFO,(LPVOID)id);
 
 		CoTaskMemFree(id);
 		id = NULL;
@@ -298,7 +379,14 @@ HRESULT CAudioInputW7::SetDefaultAudioDevice(PVOID devID)
 	{
 		hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
 		pPolicyConfig->Release();
-	}
+	};
+
+	// Logging
+	if (SUCCEEDED(hr))
+		LogStatus(CHANGE_DEFDEV,INFO,devID);
+	else
+		LogStatus(CHANGE_DEFDEV,WARN,GetWasapiText(hr));
+
 	return hr;
 }
 
@@ -366,12 +454,23 @@ bool	CAudioInputW7::IsCaptureDevice(PVOID Id)
 	EDataFlow dataflow;
 	bool result = false;
 
+	// Get device by ID
 	HRESULT hr = m_pEnumerator->GetDevice((LPWSTR)Id, &pDevice);
 	if (FAILED(hr))
+	{
+		LogStatus(ISCAP_IDNOTFOUND,WARN,Id);
 		EXIT_ON_ERROR(hr);
+	};
+
+	// Get endpoint interface
 	hr = pDevice->QueryInterface(__uuidof(IMMEndpoint), (VOID **)&pEndpoint);
 	if (FAILED(hr))
+	{
+		LogStatus(ISCAP_EPNOTFOUND,ERR,Id);
 		EXIT_ON_ERROR(hr);
+	};
+
+	// Sanity chack
 	pEndpoint->GetDataFlow(&dataflow);
 	if (dataflow != eCapture)
 		EXIT_ON_ERROR(hr);
@@ -400,16 +499,28 @@ bool	CAudioInputW7::IsExternal(PVOID Id)
 	bool result = false;
 
 	HRESULT hr = m_pEnumerator->GetDevice((LPWSTR)Id, &pDevice);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(ISEXT_IDNOTFOUND,WARN,Id);
+		EXIT_ON_ERROR(hr);
+	};
 
     // Get the endpoint device's IDeviceTopology interface.
     hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL, (void**)&pDeviceTopology);
-    EXIT_ON_ERROR(hr);	
+	if (FAILED(hr))
+	{
+		LogStatus(ISEXT_TOPO,WARN,Id);
+		EXIT_ON_ERROR(hr);
+	};
 		
     // The device topology for an endpoint device always
     // contains just one connector (connector number 0).
     hr = pDeviceTopology->GetConnector(0, &pConnFrom);
-    EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(ISEXT_NOCONN,WARN,Id);
+		EXIT_ON_ERROR(hr);
+	};
 
     // Step across the connection to the jack on the adapter.
     hr = pConnFrom->GetConnectedTo(&pConnTo);
@@ -421,7 +532,11 @@ bool	CAudioInputW7::IsExternal(PVOID Id)
     EXIT_ON_ERROR(hr);
 
 	hr = pConnTo->GetType(&Type);
-    EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(ISEXT_NOTYPE,WARN,Id);
+		EXIT_ON_ERROR(hr);
+	};
 
 	if (Type == Physical_External)
 		result = true;
@@ -520,18 +635,30 @@ bool 	CAudioInputW7::AddCaptureDevice(PVOID Id)
 	HRESULT hr = S_OK;
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
 	if (FAILED(hr))
+	{
+		LogStatus(ADDDEV_IDNOTFOUND,WARN,Id);
+		LogStatus(ADDDEV_IDNOTFOUND,WARN,GetWasapiText(hr));
 		goto bad_exit;
+	};
 
 	// Get state of device
 	DWORD state;
 	hr = pDevice->GetState(&state);
 	if (FAILED(hr))
+	{
+		LogStatus(ADDDEV_STATE,WARN,Id);
+		LogStatus(ADDDEV_STATE,WARN,GetWasapiText(hr));
 		goto bad_exit;
+	};
 
 	// Get friendly name of device
 	hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
 	if (FAILED(hr))
+	{
+		LogStatus(ADDDEV_PROP,WARN,Id);
+		LogStatus(ADDDEV_PROP,WARN,GetWasapiText(hr));
 		goto bad_exit;
+	};
 
 	// Initialize container for property value.
 	PropVariantInit(&varName);
@@ -539,7 +666,11 @@ bool 	CAudioInputW7::AddCaptureDevice(PVOID Id)
 	// Get the Device's friendly-name property.
 	hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
 	if (FAILED(hr))
+	{
+		LogStatus(ADDDEV_FRND,WARN,Id);
+		LogStatus(ADDDEV_FRND,WARN,GetWasapiText(hr));
 		goto bad_exit;
+	};
 
 	//Verify it is a capture device
 	if (!IsCaptureDevice(Id))
@@ -581,7 +712,7 @@ HRESULT	CAudioInputW7::RegisterNotification(void)
 	hr = m_pEnumerator->RegisterEndpointNotificationCallback(m_pNotifyChange);
 	if (FAILED(hr))
 	{
-		MessageBox(NULL,L"WASAPI (CAudioInputW7): Could not register notification callback\r\nStopping audio capture", L"SmartPropoPlus Message" , MB_SYSTEMMODAL|MB_ICONERROR);
+		LogStatus(REGNOT_FAIL,ERR,GetWasapiText(hr));
 		EXIT_ON_ERROR(hr);
 	};
 	m_pNotifyChange->GetParent(this);
@@ -663,34 +794,70 @@ float CAudioInputW7::GetChannelPeak(PVOID Id, int iChannel)
 
 	// Get device from ID
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_IDNOTFOUND,WARN,Id);
+		LogStatus(CHPEAK_IDNOTFOUND,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
+
 
 	///// Activate  and initialize a client
 	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
-    EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_ACTCLNT,WARN,Id);
+		LogStatus(CHPEAK_ACTCLNT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
     hr = pAudioClient->GetMixFormat(&pwfx);
-    EXIT_ON_ERROR(hr)
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_MXFRMT,WARN,Id);
+		LogStatus(CHPEAK_MXFRMT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
     hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, hnsRequestedDuration,0, pwfx, NULL);
-    EXIT_ON_ERROR(hr)
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_NOINIT,WARN,Id);
+		LogStatus(CHPEAK_NOINIT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 	///////////////////////////////////////
 
 
 	// Activate Audio Meter Information interface
 	hr = pDevice->Activate(__uuidof(IAudioMeterInformation), CLSCTX_ALL, NULL, (void**)&pMeterInfo);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_ACTMTR,WARN,Id);
+		LogStatus(CHPEAK_ACTMTR,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Get number of channels, if iChannel invalid then exit
 	hr = pMeterInfo->GetMeteringChannelCount(&nChannels);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_MTRCNT,WARN,Id);
+		LogStatus(CHPEAK_MTRCNT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 	if (iChannel >= (int)nChannels)
 		goto Exit;
 
 	// Get peak volume
 	PeakValue = new float[nChannels];
 	hr = pMeterInfo->GetChannelsPeakValues(nChannels, PeakValue);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(CHPEAK_GETVAL,WARN,Id);
+		LogStatus(CHPEAK_GETVAL,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	Value = PeakValue[iChannel];
 
@@ -725,23 +892,36 @@ double CAudioInputW7::GetDevicePeak(PVOID Id)
 
 	// Get device from ID
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
-	Value -= 0.01;
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id);
+		LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	///// Activate  and initialize a client ///////////////////////
 	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
-	Value -= 0.01;
-    EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_ACTCLNT,WARN,Id);
+		LogStatus(DEVPEAK_ACTCLNT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	hr = pAudioClient->GetMixFormat(&pwfx);
-	Value -= 0.01;
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_MXFRMT,WARN,Id);
+		LogStatus(DEVPEAK_MXFRMT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
+
 	hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, hnsRequestedDuration,0, pwfx, NULL);
-	if (FAILED(hr)){
-		if (hr == AUDCLNT_E_DEVICE_IN_USE)
-			Value = -0.55;
-		else
-			Value = -0.75;
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_NOINIT,WARN,Id);
+		LogStatus(DEVPEAK_NOINIT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
 	};
 
 	EXIT_ON_ERROR(hr);
@@ -750,19 +930,32 @@ double CAudioInputW7::GetDevicePeak(PVOID Id)
 
 	// Activate Audio Meter Information interface
 	hr = pDevice->Activate(__uuidof(IAudioMeterInformation), CLSCTX_ALL, NULL, (void**)&pMeterInfo);
- 	Value -= 0.01;
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_ACTMTR,WARN,Id);
+		LogStatus(DEVPEAK_ACTMTR,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Get number of channels, if iChannel invalid then exit
 	hr = pMeterInfo->GetMeteringChannelCount(&nChannels);
- 	Value -= 0.01;
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_MTRCNT,WARN,Id);
+		LogStatus(DEVPEAK_MTRCNT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	// For each channel get peak volume
 	PeakValue = new float[nChannels];
 	hr = pMeterInfo->GetChannelsPeakValues(nChannels, PeakValue);
- 	Value -= 0.01;
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_GETVAL,WARN,Id);
+		LogStatus(DEVPEAK_GETVAL,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
+
 	for (UINT i=0; i<nChannels; i++)
 	{
 		if (PeakValue[i]>max)
@@ -847,21 +1040,48 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id)
 
 	// Stop streaming current endpoint
 	hr = StopCurrentStream();
+	if (FAILED(hr))
+	{
+		LogStatus(GEN_STATUS,WARN,Id);
+		LogStatus(GEN_STATUS,WARN,STRSTRM1);
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Set current default endpoint
 	hr = SetDefaultAudioDevice(Id);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(GEN_STATUS,WARN,Id);
+		LogStatus(GEN_STATUS,WARN,STRSTRM2);
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Initialize endpoint
 	hr = InitEndPoint(Id);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(GEN_STATUS,WARN,Id);
+		LogStatus(GEN_STATUS,WARN,STRSTRM3);
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Start capture stream
 	hr = StartCurrentStream();
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(GEN_STATUS,WARN,Id);
+		LogStatus(GEN_STATUS,WARN,STRSTRM4);
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Create capturing thread
 	hr = CreateCuptureThread(Id);
+	if (FAILED(hr))
+	{
+		LogStatus(GEN_STATUS,WARN,Id);
+		LogStatus(GEN_STATUS,WARN,STRSTRM5);
+		EXIT_ON_ERROR(hr);
+	};
 
 Exit:
 	return false;
@@ -878,19 +1098,35 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	if (!Id)
 	{
 		hr = E_FAIL;
+		LogStatus(GEN_STATUS,ERR,INITEP1);
 		EXIT_ON_ERROR(hr);
 	};
 
 	// Get device from ID
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_IDNOTFOUND,WARN,Id);
+		LogStatus(INITEP_IDNOTFOUND,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	///// Activate a client and get it's audio format
 	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&m_pAudioClient);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_ACTCLNT,WARN,Id);
+		LogStatus(INITEP_ACTCLNT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	hr = m_pAudioClient->GetMixFormat(&pwfx);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_MXFRMT,WARN,Id);
+		LogStatus(INITEP_MXFRMT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Try to improve the current format
 	pwfx->wFormatTag = WAVE_FORMAT_PCM;
@@ -903,7 +1139,12 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, pwfx, &outFormat);
 	if (hr == S_OK)
 		outFormat = pwfx;
-    EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_FRMT,WARN,Id);
+		LogStatus(INITEP_FRMT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Initialize the endpoint 
 	hr = m_pAudioClient->Initialize(
@@ -913,17 +1154,32 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 		0,									// periodicity (set to buffer duration if AUDCLNT_STREAMFLAGS_EVENTCALLBACK is set)
 		outFormat,							// wave format
 		NULL);								// session GUID
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_NOINIT,WARN,Id);
+		LogStatus(INITEP_NOINIT,WARN,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 	//AUDCLNT_E_DEVICE_IN_USE == 0x8889000a;
 
 
 	//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
 	hr = m_pAudioClient->SetEventHandle(g_hAudioBufferReady);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_EVTHND,ERR,Id);
+		LogStatus(INITEP_EVTHND,ERR,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 		//  Accesses additional services from the audio client object. We'll need the GetNextPacketSize(), GetBuffer() & ReleaseBuffer
 	hr = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient),(void**)&m_pCaptureClient);
-	EXIT_ON_ERROR(hr);
+	if (FAILED(hr))
+	{
+		LogStatus(INITEP_NOCAPT,ERR,Id);
+		LogStatus(INITEP_NOCAPT,ERR,GetWasapiText(hr));
+		EXIT_ON_ERROR(hr);
+	};
 
 	// Set default Wave format
 	m_CurrentWaveFormat.cbSize = outFormat->cbSize;
@@ -952,6 +1208,9 @@ HRESULT CAudioInputW7::StopCurrentStream(void)
 
 	hr = m_pAudioClient->Stop();  // Stop recording.
 	SAFE_RELEASE(m_pAudioClient);
+	if (FAILED(hr))
+		LogStatus(STPSTR_NOSTOP,WARN,GetWasapiText(hr));
+
 
 	// Stop capture thread
 	if (g_hEventStopCaptureAudioThread)
@@ -985,6 +1244,9 @@ HRESULT CAudioInputW7::StartCurrentStream(void)
 		return S_FALSE;
 
 	hr = m_pAudioClient->Start();  // Start recording.
+	if (FAILED(hr))
+		LogStatus(STRTSTR_NOSTART,WARN,GetWasapiText(hr));
+
 	return hr;
 
 }
