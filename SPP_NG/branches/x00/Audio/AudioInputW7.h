@@ -112,6 +112,7 @@ public:
 	SPPINTERFACE_API double	GetDevicePeak(PVOID Id);
 	HRESULT InitPulseDataObj(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API int		CountCaptureDevices(void);
+	SPPINTERFACE_API int		GetNumberChannels(PVOID Id);
 	SPPINTERFACE_API HRESULT	GetCaptureDeviceId(int nDevice, int *size, PVOID *Id);
 	SPPINTERFACE_API HRESULT	GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName);
 	SPPINTERFACE_API bool		IsCaptureDeviceActive(PVOID Id);

@@ -418,7 +418,7 @@ BOOL InitListViewColumns(HWND hWndListView)
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
     // Add the columns.
-    for (iCol = 0; iCol < 6; iCol++)
+    for (iCol = 0; iCol < 7; iCol++)
     {
         lvc.iSubItem = iCol;
         lvc.pszText = L"---";
@@ -456,6 +456,11 @@ BOOL InitListViewColumns(HWND hWndListView)
 		 };
 
 		 if ( iCol == 5 )
+		 {
+			 lvc.pszText = L"Ch";
+			 lvc.cx = 50; 
+		 };
+		 if ( iCol == 6 )
 		 {
 			 lvc.pszText = L"Id";
 			 lvc.cx = 180; 
@@ -508,8 +513,13 @@ void AddLine2List(HWND hWndListView, int size, LPWSTR id)
 	if (g_audio->IsExternal((PVOID) id))
 		ListView_SetItemText(hWndListView, index, 4, L"+")
 
+	// Number of channels
+	TCHAR nChStr[3];
+	int n = g_audio->GetNumberChannels((PVOID)id);
+	_stprintf_s(nChStr,3,L"%0d", n);
+	ListView_SetItemText(hWndListView, index, 5,nChStr)
 
 	// Id for later use
-	ListView_SetItemText(hWndListView, index, 5, id)
+	ListView_SetItemText(hWndListView, index, 6, id)
 
 }
