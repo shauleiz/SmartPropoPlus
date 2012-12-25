@@ -232,6 +232,8 @@ bool CAudioInputW7::Create(void)
 	m_CurrentWaveFormat.nSamplesPerSec = 0;
 	m_CurrentWaveFormat.wBitsPerSample = 0;
 	m_CurrentWaveFormat.wFormatTag = 0;
+	m_CurrentChannelIsRight = false;
+	m_pPulseDataObj = NULL;
 
 
 	/* Create a device enumarator then a collection of endpoints and finally get the number of endpoints */
@@ -1073,7 +1075,7 @@ SPPINTERFACE_API double CAudioInputW7::GetLoudestDevice(PVOID * Id)
 	When signaled from main thread to exit (g_CaptureAudioThreadRunnig=false)
 	it signals the main thread that is exiting by signaling event g_hEventStopCaptureAudioThread;
 */
-SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id)
+SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id, bool RightChannel)
 /*
 	Given capture endpoint id this function starts streaming the data
 	1. Stop streaming current endpoint
@@ -1084,6 +1086,7 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id)
 */
 {
 	HRESULT hr = S_OK;
+	m_CurrentChannelIsRight = RightChannel;
 
 	// Stop streaming current endpoint
 	hr = StopCurrentStream();
@@ -1178,10 +1181,10 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	// Try to improve the current format
 	pwfx->wFormatTag = WAVE_FORMAT_PCM;
 	pwfx->wBitsPerSample = 8;
-	// pwfx->nSamplesPerSec = 192000;
 	pwfx->nBlockAlign = pwfx->wBitsPerSample / 8 * pwfx->nChannels;
 	pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
 	pwfx->cbSize = 0;
+
 	//outFormat = new WAVEFORMATEX;
 	hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, pwfx, &outFormat);
 	if (hr == S_OK)
@@ -1190,7 +1193,19 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	{
 		LogStatus(INITEP_FRMT,WARN,Id);
 		LogStatus(INITEP_FRMT,WARN,GetWasapiText(hr));
-		EXIT_ON_ERROR(hr);
+		// 8-bit failed, Now try 16-bit samples
+		pwfx->wBitsPerSample = 16;
+		pwfx->nBlockAlign = pwfx->wBitsPerSample / 8 * pwfx->nChannels;
+		pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
+		hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, pwfx, &outFormat);
+		if (hr == S_OK)
+			outFormat = pwfx;
+		if (FAILED(hr))
+		{
+			LogStatus(INITEP_FRMT1,ERR,Id);
+			LogStatus(INITEP_FRMT1,ERR,GetWasapiText(hr));
+			EXIT_ON_ERROR(hr);
+		};
 	};
 
 	// Initialize the endpoint 
@@ -1269,6 +1284,12 @@ HRESULT CAudioInputW7::StopCurrentStream(void)
 		CloseHandle(g_hEventStopCaptureAudioThread);
 		g_hEventStopCaptureAudioThread = NULL;
 		CloseHandle(m_hCaptureAudioThread);
+		if (m_pPulseDataObj)
+		{
+			delete m_pPulseDataObj;
+			m_pPulseDataObj=NULL;
+		};
+
 		m_hCaptureAudioThread = NULL;
 		m_CurrentWaveFormat.cbSize = 0;
 		m_CurrentWaveFormat.nAvgBytesPerSec = 0;
@@ -1308,6 +1329,11 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
 		return S_FALSE;
 	if (!m_pAudioClient)
 		return S_FALSE;
+
+	/* Create a PulseData object & init */
+	m_pPulseDataObj = new CPulseData;
+	InitPulseDataObj(m_pPulseDataObj);
+	m_pPulseDataObj->SelectInputChannel(m_CurrentChannelIsRight);
 
 
 	/* signal the audio capture thread that it is OK to capture */
@@ -1376,7 +1402,7 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 	};
 
 	// Process the audio data - Convert to pulse
-	hr = pPulseDataObj->ProcessWave(pDataIn,packetLength); 
+	hr = pPulseDataObj->ProcessWave(pDataIn,packetLength, m_CurrentChannelIsRight); 
 	if (hr == S_OK)
 	{	// Pulse ready 
 		pPulseDataObj->GetPulseValues(&PulseDuration, &PulsePolarity);
@@ -1401,20 +1427,21 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 HRESULT CAudioInputW7::InitPulseDataObj(CPulseData * pPulseDataObj)
 {
 	HRESULT hr = S_OK;
-	WAVEFORMATEX *pwfx = NULL;
 
 
 	// Init the Pulse data object
 	hr = pPulseDataObj->Initialize(m_CurrentWaveFormat.nSamplesPerSec, m_CurrentWaveFormat.nChannels, m_CurrentWaveFormat.wBitsPerSample);
-	CoTaskMemFree(pwfx);
 	return hr;
 }
 
 
-/* Registration of callback functions */
-SPPINTERFACE_API bool		CAudioInputW7::RegisterLog(LPVOID f)
+SPPINTERFACE_API bool	CAudioInputW7::RegisterLog(LPVOID f)
 {
-	LogStatus = (LOGFUNC)f;
+/* Registration of callback functions */
+	if (f)
+		LogStatus = (LOGFUNC)f;
+	else
+		LogStatus = (LOGFUNC)Log;
 	return false;
 }
 

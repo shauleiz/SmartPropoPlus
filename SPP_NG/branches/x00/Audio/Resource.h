@@ -16,4 +16,7 @@
 #define IDD_LOGDLG								116
 #define IDC_LIST1                               1001
 #define IDC_EDIT1	                            1002
+#define IDC_RADIOBUTTON0	                    1003
+#define IDC_RADIOBUTTON3	                    1004
+
 #define IDS_APP_TITLE                           40000

@@ -21,6 +21,7 @@ CPulseData::CPulseData()
 	m_WaveRate = 0;				// Sample rate (44100, 48000, 96000, 192000 ....)
 	m_WaveNChannels = 0;        // number of channels (i.e. mono, stereo...)
 	m_WaveBitsPerSample = 0;    // Number of bits per sample of mono data
+	m_WaveInputChannel = 0;		// Input channel is LEFT by default
 
 }
 
@@ -50,7 +51,7 @@ Exit:
 	return hr;
 }
 
-HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
+HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength, bool right_channel)
 /*
 	ProcessWave processes a wave packet
 	Return value:
@@ -61,6 +62,7 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 	Input parameters:
 		[IN] pWavePacket:	Pointer to the beginning of the wave packet
 		[IN] packetLength:	Length of packet
+		[IN] right_channel:	Process right channel(Second channel) - Default is left channel (Ignored for mono waves)
 */
 {
 	HRESULT hr = S_OK;
@@ -77,3 +79,11 @@ void CPulseData::GetPulseValues(UINT * PulseDuration, INT * PulsePolarity)
 {
 }
 
+
+void CPulseData::SelectInputChannel(bool RightChannel)
+{
+	if (RightChannel) 
+		m_WaveInputChannel = 1;
+	else
+		m_WaveInputChannel = 0;
+}
