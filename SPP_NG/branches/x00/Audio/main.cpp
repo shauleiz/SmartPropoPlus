@@ -12,6 +12,8 @@
 #include "AudioInputW7.h"
 #include "NotificationClient.h"
 #include <Richedit.h>
+#include <Windowsx.h>
+
 
 #define MAX_LOADSTRING 100
 
@@ -336,13 +338,18 @@ INT_PTR CALLBACK  DlgAudioLog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
-	HWND hList=NULL;
+	HWND hList=NULL, hRbL=NULL, hRbR=NULL;
 	switch (message)
 	{
 	case WM_INITDIALOG:
 		hList = GetDlgItem(hDlg, IDC_LIST1);
 		InitListViewColumns(hList);
 		CaptureDevicesPopulate(hDlg);
+		hRbL = GetDlgItem(hDlg, IDC_RADIOBUTTON0);
+		hRbR = GetDlgItem(hDlg, IDC_RADIOBUTTON3);
+		Button_SetCheck(hRbL, BST_CHECKED);
+		Button_SetCheck(hRbR, BST_UNCHECKED);
+
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -364,9 +371,14 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			if (sel <0)
 				return (INT_PTR)FALSE;
 			// Get the endpoint Id and open this endpoint for capture
-			ListView_GetItemText(hList, sel, 5, id, 200);
+			ListView_GetItemText(hList, sel, 6, id, 200);
+
+			// Get Left/Right channel
+			hRbR = GetDlgItem(hDlg, IDC_RADIOBUTTON3);
+			bool RightChecked = (Button_GetCheck(hRbR) == BST_CHECKED);
+
 			// Start capture endpoint stream by id
-			bool stream_started = g_audio->StartStreaming((PVOID)id);
+			bool stream_started = g_audio->StartStreaming((PVOID)id, RightChecked);
 			// Refresh
 			g_audio->Enumerate();
 			ListView_DeleteAllItems(GetDlgItem(hDlg, IDC_LIST1));
@@ -374,6 +386,12 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 
 			return (INT_PTR)stream_started;
 		};
+
+		// Left/Right channel
+		if ((LOWORD(wParam) == IDC_RADIOBUTTON0) || (LOWORD(wParam) == IDC_RADIOBUTTON3))
+		{
+		};
+
 
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{

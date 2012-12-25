@@ -71,6 +71,7 @@ typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 #define	INITEP_NOCAPT		135
 #define	STPSTR_NOSTOP		136
 #define	STRTSTR_NOSTART		137
+#define	INITEP_FRMT1		138
 
 
 
@@ -120,7 +121,7 @@ public:
 	SPPINTERFACE_API bool		IsCaptureDevice(PVOID Id);
 	SPPINTERFACE_API bool		IsExternal(PVOID Id);
 	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
-	SPPINTERFACE_API bool		StartStreaming(PVOID Id);
+	SPPINTERFACE_API bool		StartStreaming(PVOID Id, bool RightChannel=false);
 	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
 
 	SPPINTERFACE_API bool		RegisterLog(LPVOID);
@@ -144,13 +145,15 @@ protected:
 	IAudioClient		* m_pAudioClient;
 	class CMMNotificationClient *m_pNotifyChange;
 	std::vector<CapDev *>  m_CaptureDevices;
+	CPulseData			* m_pPulseDataObj;
 
-	UINT m_nEndPoints;
-	UINT m_nMixers;
-	HWND m_hPrntWnd;
-	HANDLE m_hAudioBufferReady;
-	HANDLE m_hCaptureAudioThread;
-	WAVEFORMATEX m_CurrentWaveFormat;
+	UINT			m_nEndPoints;
+	UINT			m_nMixers;
+	HWND			m_hPrntWnd;
+	HANDLE			m_hAudioBufferReady;
+	HANDLE			m_hCaptureAudioThread;
+	WAVEFORMATEX	m_CurrentWaveFormat;
+	bool			m_CurrentChannelIsRight;	
 
 public:
 
