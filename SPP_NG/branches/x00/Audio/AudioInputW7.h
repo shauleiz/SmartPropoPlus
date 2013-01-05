@@ -25,6 +25,8 @@ struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
 class CPulseData;
 typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 
+
+
 /////// Log related definitions ///////
 // Severity
 #define	INFO	0
@@ -158,4 +160,5 @@ protected:
 public:
 
 };
+
 
