@@ -35,10 +35,14 @@ public:
 	CPulseData(void);
 	virtual	~CPulseData(void);
 	HRESULT	Initialize(UINT rate, UINT nChannels, UINT BitsPerSample);
-	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength,  bool right_channel=false);
+	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);
 	void GetPulseValues(UINT * PulseDuration, INT * PulsePolarity);
 	void SelectInputChannel(bool RightChannel);
 
+protected:
+	inline UINT Sample2Pulse(short sample, bool * negative);
+	inline void ProcessPulse(UINT PulseLength, bool negative);
+	inline double CalcThreshold(int value);
 
 protected:
 	// Output Pulse
@@ -51,3 +55,4 @@ protected:
 	unsigned int	m_WaveBitsPerSample;	// Number of bits per sample of mono data
 	int				m_WaveInputChannel;		// Input channel: Left(0), Right(1)
 };
+

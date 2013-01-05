@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <stdio.h>
 #include <vector>
 #include <Audioclient.h>
 #include <devicetopology.h>
@@ -1189,11 +1190,14 @@ HRESULT CAudioInputW7::InitEndPoint(PVOID Id)
 	hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, pwfx, &outFormat);
 	if (hr == S_OK)
 		outFormat = pwfx;
+
+
+	// If 8-bit failed, try 16-bit samples
 	if (FAILED(hr))
 	{
 		LogStatus(INITEP_FRMT,WARN,Id);
 		LogStatus(INITEP_FRMT,WARN,GetWasapiText(hr));
-		// 8-bit failed, Now try 16-bit samples
+		
 		pwfx->wBitsPerSample = 16;
 		pwfx->nBlockAlign = pwfx->wBitsPerSample / 8 * pwfx->nChannels;
 		pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
@@ -1367,20 +1371,12 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
 
 HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 {
-	UINT32 packetLength=0;
+	UINT32 packetLength=0, packetLengthNext=0;
 	HRESULT hr = S_OK;
 	DWORD retval, flags;
 	BYTE *pDataIn;
-	UINT PulseDuration;
-	int PulsePolarity;
-
-	//hr = m_pCaptureClient->GetNextPacketSize(&packetLength);
-	//if (FAILED(hr))
-	//{
-	//	// Usually caused by change of sampling frequency
-	//	// TODO - Solve this problem
-	//	break;
-	//};
+	//UINT PulseDuration;
+	//int PulsePolarity;
 
 	// Wait for next buffer event to be signaled.
 	retval = WaitForSingleObject(g_hAudioBufferReady, 2000);
@@ -1391,35 +1387,67 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		return S_FALSE;
 	};
 
-	// Get pointer to next data packet in capture buffer.
-	pDataIn = 0;
-	flags = 0;
-	hr = m_pCaptureClient->GetBuffer(&pDataIn, &packetLength, &flags, NULL, NULL);
-	if (FAILED(hr))
-	{
-		// In case of failure - continue
-		return hr;
-	};
+	//hr = m_pCaptureClient->GetNextPacketSize(&packetLengthNext);
+	//if (FAILED(hr))
+	//{
+	//	// Usually caused by change of sampling frequency
+	//	// TODO - Solve this problem
+	//	return hr;
+	//};
 
-	// Process the audio data - Convert to pulse
-	hr = pPulseDataObj->ProcessWave(pDataIn,packetLength, m_CurrentChannelIsRight); 
-	if (hr == S_OK)
-	{	// Pulse ready 
-		pPulseDataObj->GetPulseValues(&PulseDuration, &PulsePolarity);
-	};
-	if (FAILED(hr))
-	{
-		// In case of failure - continue
-		return hr;
-	};
 
-	/* Release the buffer*/
-	hr = m_pCaptureClient->ReleaseBuffer(packetLength);
-	if (FAILED(hr))
-	{
-		// In case of failure - continue
-		return hr;
-	};
+	int iter=0;
+	UINT32 pad=0;
+	do {
+
+		// Get pointer to next data packet in capture buffer.
+		pDataIn = 0;
+		flags = 0;
+		hr = m_pCaptureClient->GetBuffer(&pDataIn, &packetLength, &flags, NULL, NULL);
+		if (FAILED(hr) /*|| flags*/)
+		{
+			m_pCaptureClient->ReleaseBuffer(packetLength);
+			if (hr == AUDCLNT_E_OUT_OF_ORDER)
+				return hr;
+			// In case of failure
+			return hr;
+		}; 
+
+		// Detect glitch in data (Unused in Vista)
+		if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
+		{
+			m_pCaptureClient->ReleaseBuffer(packetLength);
+			return 	AUDCLNT_E_BUFFER_ERROR;
+		};
+
+
+		// Process the audio data - Here the actual work is done
+		// ProcessWave converts the audio into pulses
+		// The pulses are fed (as they are detected) into the decoder
+		// ProcessWave exits when the buffer was read.
+		hr = pPulseDataObj->ProcessWave(pDataIn,packetLength); 
+		if (FAILED(hr))
+		{
+			// In case of failure - continue
+			return hr;
+		};
+
+		/* Release the buffer*/
+		hr = m_pCaptureClient->ReleaseBuffer(packetLength);
+		if (FAILED(hr))
+		{
+			// In case of failure - continue
+			return hr;
+		};
+
+		hr = m_pAudioClient->GetCurrentPadding(&pad);
+		if (FAILED(hr))
+		{
+			return hr;
+		};
+
+		iter++;
+	} while (pad);
 
 	return hr;
 }
