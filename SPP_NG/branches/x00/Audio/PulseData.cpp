@@ -12,8 +12,6 @@
 #include "PulseData.h"
 
 //////////// Globals /////////////////////////////////////////////////////
-// DEBUG
-FILE * g_DbgFile = NULL;
 
 //////////// Class CPulseData ////////////////////////////////////////////
 CPulseData::CPulseData()
@@ -25,17 +23,10 @@ CPulseData::CPulseData()
 	m_WaveBitsPerSample = 0;    // Number of bits per sample of mono data
 	m_WaveInputChannel = 0;		// Input channel is LEFT by default
 
-	// DEBUG ////////////////////////
-	g_DbgFile = fopen("audio.txt","a+");
-	// DEBUG ////////////////////////
-
 }
 
 CPulseData::~CPulseData(void)
 {
-	// DEBUG ////////////////////////
-	fclose(g_DbgFile);
-	// DEBUG ////////////////////////
 }
 
 HRESULT	CPulseData::Initialize(UINT rate, UINT nChannels, UINT BitsPerSample)
@@ -74,20 +65,6 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 */
 {
 
-	// DEBUG ////////////////////////////////
-	fprintf(g_DbgFile, "\n***************************************");
-	// DEBUG ////////////////////////////////
-
-	// DEBUG ////////////////////////////////
-	//for (UINT index=0; index<packetLength*2*m_WaveBitsPerSample/8; )
-	//{
-	//	if (m_WaveBitsPerSample == 8)
-	//		fprintf(g_DbgFile,"\n[%04d] %03d:%03d ", index/2,pWavePacket[index++],pWavePacket[index++]);
-	//	else
-	//		fprintf(g_DbgFile,"\n[%04d] %03x:%03x %03x:%03x ", index/2,pWavePacket[index++],pWavePacket[index++],pWavePacket[index++],pWavePacket[index++]);
-
-	//};
-	// DEBUG ////////////////////////////////
 
 	HRESULT hr = S_OK;
 	UINT PulseLength = 0;
@@ -112,16 +89,14 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		else break;
 
 
-		//fprintf(g_DbgFile,"\n[%04d] (%03d) ", (i-1/2), sample);
-
 		// Here the samples are assemblied into pulses
 		// If pulse not ready then return 0
 		// negative is true when pulse is LOW
 		PulseLength = Sample2Pulse(sample, &negative);
 
 		// If valid pulse the process the pulse
-		// Very short pulses are ignored (Glitch)
-		if (PulseLength>3)
+		// TODO (?): Very short pulses are ignored (Glitch)
+		if (PulseLength/*>3*/)
 			ProcessPulse(PulseLength, negative);
 	};
 
@@ -193,10 +168,6 @@ inline UINT CPulseData::Sample2Pulse(short sample, bool * negative)
 		}
 	};
 
-	// DEBUG ////////////////
-	if (pulse>3)
-		fprintf(g_DbgFile,"\nPULSE: %d  (Sample=%d, Threshold=%f)", pulse, sample, threshold);
-	// DEBUG ////////////////
 
 	return pulse;
 }

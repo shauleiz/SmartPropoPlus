@@ -24,6 +24,7 @@
 struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
 class CPulseData;
 typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
+typedef void (* AUDIOLOGFUNC)(int Code,  int size, LPVOID Data);
 
 
 
@@ -34,7 +35,7 @@ typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 #define	ERR		2
 #define	FATAL	3
 
-// Message Code
+// General Log Message Codes
 #define	GEN_STATUS			100
 #define	ENUM_FRND			101
 #define	ENUM_UID			102
@@ -74,8 +75,16 @@ typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 #define	STPSTR_NOSTOP		136
 #define	STRTSTR_NOSTART		137
 #define	INITEP_FRMT1		138
+#define	PROCPACK_GETBUF		139
+#define	PROCPACK_DISC		140
+#define	PROCPACK_PRW		141
+#define	PROCPACK_RLS		142
+#define	PROCPACK_PADD		143
+#define	INITPULSE			144
 
-
+// Audio Log message Codes
+#define	ALOG_GETPCK			200
+#define	ALOG_PACK			201
 
 
 // Message Text
@@ -86,6 +95,7 @@ typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data);
 #define	STRSTRM4	(LPVOID)L"StartStreaming(): Could not start current stream"
 #define	STRSTRM5	(LPVOID)L"StartStreaming(): Could not create capture thread"
 #define	INITEP1		(LPVOID)L"InitEndPoint(): Function called with ID=NULL "
+#define	INITPLSOBJ	(LPVOID)L"Initializing CPulseData Object"
 
 
 
@@ -105,6 +115,7 @@ protected:
 	HRESULT CreateCuptureThread(PVOID Id);
 	HRESULT SetDefaultAudioDevice(PVOID Id);
 	LOGFUNC	LogStatus;
+	AUDIOLOGFUNC	LogAudio;
 
 
 public:
@@ -127,6 +138,7 @@ public:
 	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
 
 	SPPINTERFACE_API bool		RegisterLog(LPVOID);
+	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID);
 
 
 	//bool	RegisterChangeNotification(CBF f);

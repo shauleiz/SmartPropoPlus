@@ -22,6 +22,7 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 CAudioInputW7 * g_audio;						// Audio interface object (Only one for the moment)
+FILE * g_DbgFile = NULL;						// Log file for raw audio
 HWND hLogDlg;
 
 // Forward declarations of functions included in this code module:
@@ -35,8 +36,8 @@ INT_PTR CALLBACK	DlgAudioLog(HWND, UINT, WPARAM, LPARAM);
 void	CaptureDevicesPopulate(HWND hDlg);
 BOOL InitListViewColumns(HWND hWndListView) ;
 void AddLine2List(HWND hWndListView, int size, LPWSTR id);
-
-
+bool StartLogRawAudio();
+void StopLogRawAudio();
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int  nCmdShow)
@@ -108,6 +109,42 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassEx(&wcex);
+}
+
+void LogRawAudio(int Code, int size, LPVOID Data)
+{
+	static bool eightbit = true;
+	// Audio Unit gets a new packet
+	if (ALOG_GETPCK == Code)
+	{
+		if (size == 8)
+			eightbit = true;
+		else
+			eightbit = false;
+
+		if (!g_DbgFile)
+			return;
+		fprintf(g_DbgFile,"\n*********** Packet (%d-bit) **************", size);
+		return;
+	}
+
+	// Print packet
+	if (ALOG_PACK == Code)
+	{
+		if (!g_DbgFile)
+			return;
+		for (int i=0; i<size; i+=2)
+		{
+			if (g_DbgFile) // Should be implemented with propper synch
+			{
+				if (eightbit)
+					fprintf(g_DbgFile,"\n[%04d] %03d:%03d", i/2, ((BYTE *)Data)[i], ((BYTE *)Data)[i+1]);
+				else
+					fprintf(g_DbgFile,"\n[%04d] %06d:%06d", i/2, ((SHORT *)Data)[i], ((SHORT *)Data)[i+1]);
+			};
+		};
+		return;
+	};
 }
 
 void LogAudioUnit(int Code, int Severity, LPVOID Data)
@@ -212,7 +249,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hLogDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOGDLG), hWnd, DlgAudioLog);
 	SetWindowPos(hLogDlg, NULL, 100,100,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
 	g_audio->RegisterLog(LogAudioUnit);
-
 
 	return TRUE;
 }
@@ -345,8 +381,8 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 		hList = GetDlgItem(hDlg, IDC_LIST1);
 		InitListViewColumns(hList);
 		CaptureDevicesPopulate(hDlg);
-		hRbL = GetDlgItem(hDlg, IDC_RADIOBUTTON0);
-		hRbR = GetDlgItem(hDlg, IDC_RADIOBUTTON3);
+		hRbL = GetDlgItem(hDlg, IDC_RADIOBUTTON_L);
+		hRbR = GetDlgItem(hDlg, IDC_RADIOBUTTON_R);
 		Button_SetCheck(hRbL, BST_CHECKED);
 		Button_SetCheck(hRbR, BST_UNCHECKED);
 
@@ -374,7 +410,7 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			ListView_GetItemText(hList, sel, 6, id, 200);
 
 			// Get Left/Right channel
-			hRbR = GetDlgItem(hDlg, IDC_RADIOBUTTON3);
+			hRbR = GetDlgItem(hDlg, IDC_RADIOBUTTON_R);
 			bool RightChecked = (Button_GetCheck(hRbR) == BST_CHECKED);
 
 			// Start capture endpoint stream by id
@@ -387,11 +423,15 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			return (INT_PTR)stream_started;
 		};
 
-		// Left/Right channel
-		if ((LOWORD(wParam) == IDC_RADIOBUTTON0) || (LOWORD(wParam) == IDC_RADIOBUTTON3))
+		// Start stop logging raw audio
+		if (LOWORD(wParam) == IDC_LOGAUDIO)
 		{
+			LRESULT check = Button_GetCheck(GetDlgItem(hDlg, IDC_LOGAUDIO));
+			if (BST_CHECKED == check)
+				StartLogRawAudio();
+			else
+				StopLogRawAudio();
 		};
-
 
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
@@ -540,4 +580,30 @@ void AddLine2List(HWND hWndListView, int size, LPWSTR id)
 	// Id for later use
 	ListView_SetItemText(hWndListView, index, 6, id)
 
+}
+bool StartLogRawAudio()
+{
+	bool res = true;
+	//fopen_s(&g_DbgFile,"audio.txt","a+");
+	g_DbgFile = fopen("audio.txt","w+");
+	if (g_DbgFile)
+	{
+		fprintf(g_DbgFile,"\n\n+++++++++++ Starting Log +++++++++++");
+		g_audio->RegisterAudioLog(LogRawAudio);
+	}
+	else
+		res = false;
+
+	return res;
+}
+void StopLogRawAudio()
+{
+	g_audio->RegisterAudioLog(NULL);
+	Sleep(1000);
+	if (g_DbgFile)
+	{
+		fprintf(g_DbgFile,"\n\n+++++++++++ Stopping Log +++++++++++");
+		fclose(g_DbgFile);
+	};
+	g_DbgFile = NULL;
 }
