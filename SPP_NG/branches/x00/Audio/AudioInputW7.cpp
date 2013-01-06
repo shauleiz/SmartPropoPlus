@@ -68,6 +68,11 @@ void Log(int Code, int Severity, LPVOID Data)
 	// Default (NO-OP) logger
 }
 
+void AudioLog(int Code,  int size, LPVOID Data)
+{
+	// Default (NO-OP) logger
+}
+
 LPWSTR GetWasapiText(DWORD code)
 /* Translate WASAPI error codes to English */
 {
@@ -141,8 +146,13 @@ LPWSTR GetWasapiText(DWORD code)
 	case	E_INVALIDARG:
 		return L"Invalid Argument";
 
+	case	AUDCLNT_E_BUFFER_ERROR:
+		return L" GetBuffer failed to retrieve a data buffer and *ppData points to NULL.";
+
 	default:
-		return L"Unknown error code";
+		LPWSTR errcode = new WCHAR[100];
+		swprintf(errcode, 100, L"Unknown error code 0x%x", code);
+		return errcode;
 	};
 		return NULL;
 
@@ -169,6 +179,7 @@ SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 
 	// Set default callback functions
 	RegisterLog(Log);
+	RegisterAudioLog(AudioLog);
 
 	// Create a vector of capture endpoint
 	bool created = Create();
@@ -195,6 +206,7 @@ CAudioInputW7::CAudioInputW7(void)
 
 	// Set default callback functions
 	RegisterLog(Log);
+	RegisterAudioLog(AudioLog);
 
 	bool created = Create();
 	
@@ -1273,10 +1285,6 @@ HRESULT CAudioInputW7::StopCurrentStream(void)
 		return S_FALSE;
 
 	hr = m_pAudioClient->Stop();  // Stop recording.
-	SAFE_RELEASE(m_pAudioClient);
-	if (FAILED(hr))
-		LogStatus(STPSTR_NOSTOP,WARN,GetWasapiText(hr));
-
 
 	// Stop capture thread
 	if (g_hEventStopCaptureAudioThread)
@@ -1303,6 +1311,10 @@ HRESULT CAudioInputW7::StopCurrentStream(void)
 		m_CurrentWaveFormat.wBitsPerSample = 0;
 		m_CurrentWaveFormat.wFormatTag = 0;
 	}
+
+	SAFE_RELEASE(m_pAudioClient);
+	if (FAILED(hr))
+		LogStatus(STPSTR_NOSTOP,WARN,GetWasapiText(hr));
 
 	return hr;
 
@@ -1387,18 +1399,10 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		return S_FALSE;
 	};
 
-	//hr = m_pCaptureClient->GetNextPacketSize(&packetLengthNext);
-	//if (FAILED(hr))
-	//{
-	//	// Usually caused by change of sampling frequency
-	//	// TODO - Solve this problem
-	//	return hr;
-	//};
 
-
-	int iter=0;
+	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL);
 	UINT32 pad=0;
-	do {
+	do { // Loop on buffer until empty - Usually only once
 
 		// Get pointer to next data packet in capture buffer.
 		pDataIn = 0;
@@ -1407,9 +1411,7 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		if (FAILED(hr) /*|| flags*/)
 		{
 			m_pCaptureClient->ReleaseBuffer(packetLength);
-			if (hr == AUDCLNT_E_OUT_OF_ORDER)
-				return hr;
-			// In case of failure
+			LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr));
 			return hr;
 		}; 
 
@@ -1417,9 +1419,14 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
 		{
 			m_pCaptureClient->ReleaseBuffer(packetLength);
-			return 	AUDCLNT_E_BUFFER_ERROR;
+			hr = AUDCLNT_E_BUFFER_ERROR;
+			LogStatus(PROCPACK_DISC,WARN,GetWasapiText(hr));
+			return 	hr;
 		};
 
+
+		// Log packets - usually just NO-OP
+		LogAudio(ALOG_PACK, packetLength*m_CurrentWaveFormat.nChannels, pDataIn);
 
 		// Process the audio data - Here the actual work is done
 		// ProcessWave converts the audio into pulses
@@ -1429,6 +1436,7 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		if (FAILED(hr))
 		{
 			// In case of failure - continue
+			LogStatus(PROCPACK_PRW,ERR,GetWasapiText(hr));
 			return hr;
 		};
 
@@ -1437,16 +1445,19 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		if (FAILED(hr))
 		{
 			// In case of failure - continue
+			LogStatus(PROCPACK_RLS,ERR,GetWasapiText(hr));
 			return hr;
 		};
 
+		// Test how many frames where left - usually none.
+		// See: http://social.msdn.microsoft.com/Forums/en-US/windowspro-audiodevelopment/thread/0d4a839d-2c10-49f6-965d-094b692af4f0
 		hr = m_pAudioClient->GetCurrentPadding(&pad);
 		if (FAILED(hr))
 		{
+			LogStatus(PROCPACK_PADD,ERR,GetWasapiText(hr));
 			return hr;
 		};
 
-		iter++;
 	} while (pad);
 
 	return hr;
@@ -1459,17 +1470,31 @@ HRESULT CAudioInputW7::InitPulseDataObj(CPulseData * pPulseDataObj)
 
 	// Init the Pulse data object
 	hr = pPulseDataObj->Initialize(m_CurrentWaveFormat.nSamplesPerSec, m_CurrentWaveFormat.nChannels, m_CurrentWaveFormat.wBitsPerSample);
+	if (!FAILED(hr))
+		LogStatus(INITPULSE,INFO,INITPLSOBJ);
+	else
+		LogStatus(INITPULSE,ERR,GetWasapiText(hr));
 	return hr;
 }
 
 
 SPPINTERFACE_API bool	CAudioInputW7::RegisterLog(LPVOID f)
 {
-/* Registration of callback functions */
+/* Registration of general Log callback function */
 	if (f)
 		LogStatus = (LOGFUNC)f;
 	else
 		LogStatus = (LOGFUNC)Log;
+	return false;
+}
+
+SPPINTERFACE_API bool	CAudioInputW7::RegisterAudioLog(LPVOID f)
+{
+/* Registration of Audio Log callback function */
+	if (f)
+		LogAudio = (AUDIOLOGFUNC)f;
+	else
+		LogAudio = (AUDIOLOGFUNC)AudioLog;
 	return false;
 }
 

@@ -2,6 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio", "Audio.vcproj", "{381416F4-8117-4B6B-BAA2-74BF348F9C50}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D5CE52C-A706-4CAE-85FC-ABB945512A86} = {6D5CE52C-A706-4CAE-85FC-ABB945512A86}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioLib", "AudioLib.vcproj", "{6D5CE52C-A706-4CAE-85FC-ABB945512A86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +18,10 @@ Global
 		{381416F4-8117-4B6B-BAA2-74BF348F9C50}.Debug|Win32.Build.0 = Debug|Win32
 		{381416F4-8117-4B6B-BAA2-74BF348F9C50}.Release|Win32.ActiveCfg = Release|Win32
 		{381416F4-8117-4B6B-BAA2-74BF348F9C50}.Release|Win32.Build.0 = Release|Win32
+		{6D5CE52C-A706-4CAE-85FC-ABB945512A86}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6D5CE52C-A706-4CAE-85FC-ABB945512A86}.Debug|Win32.Build.0 = Debug|Win32
+		{6D5CE52C-A706-4CAE-85FC-ABB945512A86}.Release|Win32.ActiveCfg = Release|Win32
+		{6D5CE52C-A706-4CAE-85FC-ABB945512A86}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
