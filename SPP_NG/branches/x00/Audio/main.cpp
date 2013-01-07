@@ -24,6 +24,7 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 CAudioInputW7 * g_audio;						// Audio interface object (Only one for the moment)
 FILE * g_DbgFile = NULL;						// Log file for raw audio
 HWND hLogDlg;
+HWND hVolDlg = NULL;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -38,6 +39,9 @@ BOOL InitListViewColumns(HWND hWndListView) ;
 void AddLine2List(HWND hWndListView, int size, LPWSTR id);
 bool StartLogRawAudio();
 void StopLogRawAudio();
+bool StartAudioVolMon(HWND hWnd);
+void StopAudioVolMon(HWND hWnd);
+void LogAudioVolume(int Code, int size, LPVOID Data, LPVOID Param);
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int  nCmdShow)
@@ -111,7 +115,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassEx(&wcex);
 }
 
-void LogRawAudio(int Code, int size, LPVOID Data)
+void LogRawAudio(int Code, int size, LPVOID Data, LPVOID Param)
 {
 	static bool eightbit = true;
 	// Audio Unit gets a new packet
@@ -122,25 +126,25 @@ void LogRawAudio(int Code, int size, LPVOID Data)
 		else
 			eightbit = false;
 
-		if (!g_DbgFile)
+		if (!Param)
 			return;
-		fprintf(g_DbgFile,"\n*********** Packet (%d-bit) **************", size);
+		fprintf((FILE *)Param,"\n*********** Packet (%d-bit) **************", size);
 		return;
 	}
 
 	// Print packet
 	if (ALOG_PACK == Code)
 	{
-		if (!g_DbgFile)
+		if (!Param)
 			return;
 		for (int i=0; i<size; i+=2)
 		{
-			if (g_DbgFile) // Should be implemented with propper synch
+			if (Param) // Should be implemented with propper synch
 			{
 				if (eightbit)
-					fprintf(g_DbgFile,"\n[%04d] %03d:%03d", i/2, ((BYTE *)Data)[i], ((BYTE *)Data)[i+1]);
+					fprintf((FILE *)Param,"\n[%04d] %03d:%03d", i/2, ((BYTE *)Data)[i], ((BYTE *)Data)[i+1]);
 				else
-					fprintf(g_DbgFile,"\n[%04d] %06d:%06d", i/2, ((SHORT *)Data)[i], ((SHORT *)Data)[i+1]);
+					fprintf((FILE *)Param,"\n[%04d] %06d:%06d", i/2, ((SHORT *)Data)[i], ((SHORT *)Data)[i+1]);
 			};
 		};
 		return;
@@ -248,7 +252,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// Open a log window and register a callback function that will called for logging
 	hLogDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOGDLG), hWnd, DlgAudioLog);
 	SetWindowPos(hLogDlg, NULL, 100,100,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
-	g_audio->RegisterLog(LogAudioUnit);
+	g_audio->RegisterLog(LogAudioUnit, NULL);
 
 	return TRUE;
 }
@@ -371,6 +375,29 @@ INT_PTR CALLBACK  DlgAudioLog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 	return (INT_PTR)FALSE;
 }
 
+INT_PTR CALLBACK  DlgAudioVol(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		SendMessage(GetDlgItem(hDlg, IDC_PROGRESS_L), PBM_SETRANGE ,0,0x80000000);
+		SendMessage(GetDlgItem(hDlg, IDC_PROGRESS_R), PBM_SETRANGE ,0,0x80000000);
+		SendMessage(GetDlgItem(hDlg, IDC_PROGRESS_L), PBM_SETSTEP, (WPARAM) 1, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_PROGRESS_R), PBM_SETSTEP, (WPARAM) 1, 0);
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
 INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -423,14 +450,38 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			return (INT_PTR)stream_started;
 		};
 
-		// Start stop logging raw audio
+		// Start/stop logging raw audio
 		if (LOWORD(wParam) == IDC_LOGAUDIO)
 		{
 			LRESULT check = Button_GetCheck(GetDlgItem(hDlg, IDC_LOGAUDIO));
 			if (BST_CHECKED == check)
+			{
+				Button_Enable(GetDlgItem(hDlg, IDC_AUDIOVOL), false);
 				StartLogRawAudio();
+			}
 			else
+			{
+				Button_Enable(GetDlgItem(hDlg, IDC_AUDIOVOL), true);
 				StopLogRawAudio();
+			};
+			return (INT_PTR)TRUE;;
+		};
+
+		// Start/stop display audio volume
+		if (LOWORD(wParam) == IDC_AUDIOVOL)
+		{
+			LRESULT check = Button_GetCheck(GetDlgItem(hDlg, IDC_AUDIOVOL));
+			if (BST_CHECKED == check)
+			{
+				Button_Enable(GetDlgItem(hDlg, IDC_LOGAUDIO), false);				
+				StartAudioVolMon(hDlg);
+			}
+			else
+			{
+				Button_Enable(GetDlgItem(hDlg, IDC_LOGAUDIO), true);				
+				StopAudioVolMon(hDlg);
+			};
+			return (INT_PTR)TRUE;;
 		};
 
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
@@ -589,7 +640,7 @@ bool StartLogRawAudio()
 	if (g_DbgFile)
 	{
 		fprintf(g_DbgFile,"\n\n+++++++++++ Starting Log +++++++++++");
-		g_audio->RegisterAudioLog(LogRawAudio);
+		g_audio->RegisterAudioLog(LogRawAudio, (PVOID)g_DbgFile);
 	}
 	else
 		res = false;
@@ -607,3 +658,72 @@ void StopLogRawAudio()
 	};
 	g_DbgFile = NULL;
 }
+
+bool StartAudioVolMon(HWND hWnd)
+{
+	// Open a audio monitoring window
+	hVolDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIAG_VOL), hWnd, DlgAudioVol);
+	SetWindowPos(hVolDlg, NULL, 120,120,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
+	g_audio->RegisterAudioLog(LogAudioVolume, (PVOID)hVolDlg);
+	return true;
+}
+void StopAudioVolMon(HWND hWnd)
+{
+	SendMessage(hVolDlg,WM_COMMAND    , (WPARAM)IDCANCEL, NULL);
+	hVolDlg = NULL;
+}
+
+
+void LogAudioVolume(int Code, int size, LPVOID Data, LPVOID Param)
+{
+	static bool eightbit = true;
+	HWND hVolDlg = (HWND)Param;
+	UINT Value_L=0, Value_R=0;
+
+
+
+	// Audio Unit gets a new packet
+	if (ALOG_GETPCK == Code)
+	{
+		if (size == 8)
+			eightbit = true;
+		else
+			eightbit = false;
+		return;
+	}
+
+	// Print packet
+	if (ALOG_PACK == Code)
+	{
+		if (!Param)
+			return;
+
+		HWND hL = GetDlgItem(hVolDlg, IDC_PROGRESS_L);
+		HWND hR = GetDlgItem(hVolDlg, IDC_PROGRESS_R);
+
+		for (int i=0; i<size; i+=2)
+		{
+			if (Param) // Should be implemented with propper synch
+			{	// Calculate Values
+				if (eightbit)
+				{
+					Value_L = 128*((BYTE *)Data)[i];
+					Value_R = 128*((BYTE *)Data)[i+1];
+				}
+				else
+				{
+					Value_L = 1024+(((SHORT *)Data)[i])/64;
+					Value_R = 1024+(((SHORT *)Data)[i+1])/64;
+				}
+
+			};
+
+		};
+		// Put data on progress bar
+		SendMessage(hL, PBM_SETPOS  ,Value_L,0);
+		SendMessage(hR, PBM_SETPOS  ,Value_R,0);
+
+		return;
+	};
+}
+

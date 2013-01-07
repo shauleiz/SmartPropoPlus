@@ -14,10 +14,17 @@
 #define IDREFRESH								114
 #define IDSELECT								115
 #define IDD_LOGDLG								116
+#define IDD_DIAG_VOL							117
 #define IDC_LIST1                               1001
 #define IDC_EDIT1	                            1002
 #define IDC_RADIOBUTTON_L	                    1003
 #define IDC_RADIOBUTTON_R	                    1004
 #define IDC_LOGAUDIO							1005
+#define IDC_AUDIOVOL							1006
+#define IDC_PROGRESS_L							1007
+#define IDC_PROGRESS_R							1008
+#define IDC_STATIC_L							1009
+#define IDC_STATIC_R							1010
+#define IDC_MONO								1011
 
 #define IDS_APP_TITLE                           40000
