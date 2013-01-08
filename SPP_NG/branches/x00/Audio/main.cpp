@@ -5,6 +5,7 @@
 #include "Commctrl.h"
 #include <vector>
 #include <devicetopology.h>
+#include <math.h>
 #include <Mmdeviceapi.h>
 #include "WinMessages.h"
 #include <Audioclient.h>
@@ -42,6 +43,8 @@ void StopLogRawAudio();
 bool StartAudioVolMon(HWND hWnd);
 void StopAudioVolMon(HWND hWnd);
 void LogAudioVolume(int Code, int size, LPVOID Data, LPVOID Param);
+inline int CalcVolumeLeft(int value);
+inline int CalcVolumeRight(int value);
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int  nCmdShow)
@@ -707,8 +710,8 @@ void LogAudioVolume(int Code, int size, LPVOID Data, LPVOID Param)
 			{	// Calculate Values
 				if (eightbit)
 				{
-					Value_L = 128*((BYTE *)Data)[i];
-					Value_R = 128*((BYTE *)Data)[i+1];
+					Value_L = (128*((BYTE *)Data)[i]);
+					Value_R = (128*((BYTE *)Data)[i+1]);
 				}
 				else
 				{
@@ -720,10 +723,51 @@ void LogAudioVolume(int Code, int size, LPVOID Data, LPVOID Param)
 
 		};
 		// Put data on progress bar
-		SendMessage(hL, PBM_SETPOS  ,Value_L,0);
-		SendMessage(hR, PBM_SETPOS  ,Value_R,0);
+		SendMessage(hL, PBM_SETPOS  ,CalcVolumeLeft (Value_L),0);
+		SendMessage(hR, PBM_SETPOS  ,CalcVolumeRight(Value_R),0);
 
 		return;
 	};
 }
 
+inline int CalcVolumeLeft(int value)
+{
+	// Based on RCAudio V 3.0 : (C) Philippe G.De Coninck 2007
+	static int volume;
+	static double aud_max_val, aud_min_val;
+	double delta_max = fabs(value - aud_max_val);
+	double delta_min = fabs(value - aud_min_val);
+
+	if (delta_max > delta_min) aud_min_val = (4*aud_min_val + value)/5;
+	else aud_max_val = (4*aud_max_val + value)/5;
+
+	if (aud_max_val < aud_min_val + 2) {
+		aud_max_val = aud_min_val + 1;
+		aud_min_val = aud_min_val - 1;
+	}
+
+	double threshold = (aud_max_val + aud_min_val)/2;
+	volume = (9*volume + abs((int)(value - threshold)))/10;
+	return volume;
+}
+
+inline int CalcVolumeRight(int value)
+{
+	// Based on RCAudio V 3.0 : (C) Philippe G.De Coninck 2007
+	static int volume;
+	static double aud_max_val, aud_min_val;
+	double delta_max = fabs(value - aud_max_val);
+	double delta_min = fabs(value - aud_min_val);
+
+	if (delta_max > delta_min) aud_min_val = (4*aud_min_val + value)/5;
+	else aud_max_val = (4*aud_max_val + value)/5;
+
+	if (aud_max_val < aud_min_val + 2) {
+		aud_max_val = aud_min_val + 1;
+		aud_min_val = aud_min_val - 1;
+	}
+
+	double threshold = (aud_max_val + aud_min_val)/2;
+	volume = (9*volume + abs((int)(value - threshold)))/10;
+	return volume;
+}
