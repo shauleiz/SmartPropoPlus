@@ -12,6 +12,10 @@
 #include "PulseData.h"
 
 //////////// Globals /////////////////////////////////////////////////////
+void DefaultProcPulse(int length,  bool low, LPVOID Param)
+{
+	// Default (NO-OP) logger
+}
 
 //////////// Class CPulseData ////////////////////////////////////////////
 CPulseData::CPulseData()
@@ -97,7 +101,7 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// If valid pulse the process the pulse
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
-			ProcessPulse(PulseLength, negative);
+			ProcessPulse(PulseLength, negative,m_ProcPulseParam);
 	};
 
 
@@ -171,11 +175,11 @@ inline UINT CPulseData::Sample2Pulse(short sample, bool * negative)
 
 	return pulse;
 }
-inline void CPulseData::ProcessPulse(UINT PulseLength, bool negative)
-{
-	static UINT pulse[1000] = {0};
-	static int i=0;
-}
+//inline void CPulseData::ProcessPulse(UINT PulseLength, bool negative)
+//{
+//	static UINT pulse[1000] = {0};
+//	static int i=0;
+//}
 
 inline double CPulseData::CalcThreshold(int value)
 /*
@@ -203,4 +207,21 @@ inline double CPulseData::CalcThreshold(int value)
 	}
 
 	return((aud_max_val + aud_min_val)/2); 
+}
+
+bool	CPulseData::RegisterProcessPulse(LPVOID f, LPVOID param)
+{
+/* Registration of callback function that processes the pulse data */
+	if (f)
+	{
+		ProcessPulse = (PROCPULSEFUNC)f;
+		m_ProcPulseParam = param;
+	}
+	else
+	{
+		ProcessPulse = (PROCPULSEFUNC)DefaultProcPulse;
+		m_ProcPulseParam = NULL;
+	};
+
+	return true;
 }

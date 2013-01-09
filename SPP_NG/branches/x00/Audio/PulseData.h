@@ -26,6 +26,7 @@
                 { (punk)->Release(); (punk) = NULL; }
 
 
+typedef  void (* PROCPULSEFUNC)(int length, bool low, LPVOID Param);
 
 void   DbgPopUp(int Line, DWORD Error);
 
@@ -38,11 +39,14 @@ public:
 	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);
 	void GetPulseValues(UINT * PulseDuration, INT * PulsePolarity);
 	void SelectInputChannel(bool RightChannel);
+	bool RegisterProcessPulse(LPVOID,LPVOID=NULL);
 
 protected:
 	inline UINT Sample2Pulse(short sample, bool * negative);
-	inline void ProcessPulse(UINT PulseLength, bool negative);
+	//inline void ProcessPulse(int PulseLength, bool negative);
 	inline double CalcThreshold(int value);
+	PROCPULSEFUNC	ProcessPulse;
+
 
 protected:
 	// Output Pulse
@@ -54,5 +58,6 @@ protected:
 	unsigned int	m_WaveNChannels;		// number of channels (i.e. mono, stereo...)
 	unsigned int	m_WaveBitsPerSample;	// Number of bits per sample of mono data
 	int				m_WaveInputChannel;		// Input channel: Left(0), Right(1)
+	LPVOID			m_ProcPulseParam;		// General parameter for ProcessPulse function
 };
 
