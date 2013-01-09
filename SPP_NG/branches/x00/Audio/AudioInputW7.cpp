@@ -73,6 +73,11 @@ void AudioLog(int Code,  int size, LPVOID Data, LPVOID Param)
 	// Default (NO-OP) logger
 }
 
+void DefProcPulse(int length,  bool low, LPVOID Param)
+{
+	// Default (NO-OP) logger
+}
+
 LPWSTR GetWasapiText(DWORD code)
 /* Translate WASAPI error codes to English */
 {
@@ -247,6 +252,8 @@ bool CAudioInputW7::Create(void)
 	m_CurrentWaveFormat.wFormatTag = 0;
 	m_CurrentChannelIsRight = false;
 	m_pPulseDataObj = NULL;
+	ProcessPulse = NULL;
+	m_ProcPulseParam = NULL;
 
 
 	/* Create a device enumarator then a collection of endpoints and finally get the number of endpoints */
@@ -1350,6 +1357,9 @@ HRESULT CAudioInputW7::CreateCuptureThread(PVOID Id)
 	InitPulseDataObj(m_pPulseDataObj);
 	m_pPulseDataObj->SelectInputChannel(m_CurrentChannelIsRight);
 
+	/* Pass Process Pulse callback function */
+	m_pPulseDataObj->RegisterProcessPulse(ProcessPulse,m_ProcPulseParam);
+
 
 	/* signal the audio capture thread that it is OK to capture */
 	g_CaptureAudioThreadRunnig = true;
@@ -1509,3 +1519,22 @@ SPPINTERFACE_API bool	CAudioInputW7::RegisterAudioLog(LPVOID f, LPVOID param)
 	return true;
 }
 
+SPPINTERFACE_API bool	CAudioInputW7::RegisterProcessPulse(LPVOID f, LPVOID param)
+{
+/* Registration of callback function that processes the pulse data */
+	if (f)
+	{
+		ProcessPulse = (PROCPULSEFUNC)f;
+		m_ProcPulseParam = param;
+	}
+	else
+	{
+		ProcessPulse = (PROCPULSEFUNC)DefProcPulse;
+		m_ProcPulseParam = NULL;
+	};
+
+	if (m_pPulseDataObj)
+		m_pPulseDataObj->RegisterProcessPulse(f,param);
+
+	return true;
+}

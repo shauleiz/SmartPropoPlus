@@ -26,5 +26,6 @@
 #define IDC_STATIC_L							1009
 #define IDC_STATIC_R							1010
 #define IDC_MONO								1011
+#define IDC_LOGPULSE							1012
 
 #define IDS_APP_TITLE                           40000

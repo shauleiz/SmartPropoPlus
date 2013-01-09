@@ -25,6 +25,7 @@ struct CapDev {LPWSTR id; LPWSTR DeviceName; DWORD	state;};
 class CPulseData;
 typedef void (* LOGFUNC)(int Code, int Severity, LPVOID Data, LPVOID Param);
 typedef void (* AUDIOLOGFUNC)(int Code,  int size, LPVOID Data, LPVOID Param);
+typedef void (* PROCPULSEFUNC)(int length, bool low, LPVOID Param);
 
 
 
@@ -116,6 +117,7 @@ protected:
 	HRESULT SetDefaultAudioDevice(PVOID Id);
 	LOGFUNC	LogStatus;
 	AUDIOLOGFUNC	LogAudio;
+	PROCPULSEFUNC	ProcessPulse;
 
 
 public:
@@ -139,6 +141,7 @@ public:
 
 	SPPINTERFACE_API bool		RegisterLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID,LPVOID=NULL);
+	SPPINTERFACE_API bool		RegisterProcessPulse(LPVOID,LPVOID=NULL);
 
 
 	//bool	RegisterChangeNotification(CBF f);
@@ -170,6 +173,7 @@ protected:
 	bool			m_CurrentChannelIsRight;
 	PVOID			m_LogAudioParam;
 	PVOID			m_LogParam;
+	PVOID			m_ProcPulseParam;
 
 public:
 
