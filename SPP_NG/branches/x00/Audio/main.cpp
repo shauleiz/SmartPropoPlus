@@ -773,3 +773,27 @@ inline int CalcVolumeRight(int value)
 	volume = (99*volume + abs((int)(value - threshold)))/100;
 	return volume;
 }
+// Process Pulse callback function - stub for oscilloscope
+void ProcessPulse2Scope(int length, bool low, LPVOID Param)
+{
+	/*
+	This function is registerred as a ProcessPulse function periodically called by ACU
+	It collects the pulse data and syncs on the longest pulse as trigger
+	It then creates a buffer of sampled pulse data.
+	The buffer is refreshed periodically
+	This buffer is fed into the Oscilloscope (http://www.codeproject.com/Articles/43426/A-Beautiful-Oscilloscope-Based-on-DirectX)
+	*/
+
+	// For a specified time-window - Find the longest pulse
+	// This period will serve as scope-trigger
+#define TIMEWINDOW 500
+	static DWORD window_begin=0, window_end=0; 
+	window_end = timeGetTime();
+	if ((window_end - window_begin)>TIMEWINDOW)
+		window_begin+=10;
+
+	static int longist=0;
+	static DWORD longist_time=0;
+
+
+}

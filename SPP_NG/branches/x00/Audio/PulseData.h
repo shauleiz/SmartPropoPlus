@@ -45,6 +45,7 @@ protected:
 	inline UINT Sample2Pulse(short sample, bool * negative);
 	//inline void ProcessPulse(int PulseLength, bool negative);
 	inline double CalcThreshold(int value);
+	inline UINT NormalizePulse(UINT Length);
 	PROCPULSEFUNC	ProcessPulse;
 
 

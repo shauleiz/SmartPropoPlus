@@ -252,7 +252,7 @@ bool CAudioInputW7::Create(void)
 	m_CurrentWaveFormat.wFormatTag = 0;
 	m_CurrentChannelIsRight = false;
 	m_pPulseDataObj = NULL;
-	ProcessPulse = NULL;
+	ProcessPulse = DefProcPulse;
 	m_ProcPulseParam = NULL;
 
 
