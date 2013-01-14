@@ -98,6 +98,9 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// negative is true when pulse is LOW
 		PulseLength = Sample2Pulse(sample, &negative);
 
+		// Normalize pulse length to 192K sampling rate
+		PulseLength = NormalizePulse(PulseLength);
+
 		// If valid pulse the process the pulse
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
@@ -224,4 +227,25 @@ bool	CPulseData::RegisterProcessPulse(LPVOID f, LPVOID param)
 	};
 
 	return true;
+}
+
+inline UINT CPulseData::NormalizePulse(UINT Length)
+// Normalize pulse length to 192K sampling rate
+{
+	switch(m_WaveRate)
+	{
+	case 192000:
+	case 0:
+		return Length;
+	case 96000:
+		return Length*2;
+	case 48000:
+		return Length*4;
+	case 44100:
+		return (UINT)(Length*4.35);
+	default:
+		return Length*192000/m_WaveRate;
+	};
+
+	return 0;
 }
