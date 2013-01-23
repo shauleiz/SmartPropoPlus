@@ -20,7 +20,8 @@ m_pLightSlateGrayBrush(NULL),
 m_pCornflowerBlueBrush(NULL),
 m_pTextFormat(NULL),
 m_pDWriteFactory(NULL),
-m_hWinThread(NULL)
+m_hWinThread(NULL),
+m_points(NULL)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -205,7 +206,7 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 				wasHandled = true;
 				break;
 
-			case WM_TIMER:
+			case WM_BUFF_READY:
 			case WM_PAINT:
 				{
 					pPulseScope->OnRender();
@@ -338,18 +339,19 @@ HRESULT CPulseScope::OnRender()
 		hr = m_pWaveGeometry->Open(&pSink);
 		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 		pSink->BeginFigure(D2D1::Point2F(0,low),D2D1_FIGURE_BEGIN_HOLLOW );
-		D2D1_POINT_2F points[] = {
-			D2D1::Point2F(i+tic*4, low),
-			D2D1::Point2F(i+tic*4, hi),
-			D2D1::Point2F(i+tic*15, hi),
-			D2D1::Point2F(i+tic*15, low),
-			D2D1::Point2F(i+tic*30, low), 
-			D2D1::Point2F(i+tic*30, hi),
-			D2D1::Point2F(i+tic*45, hi),
-			D2D1::Point2F(i+tic*45, low),
-			D2D1::Point2F(i+tic*1000, low), 
-		};
-		pSink->AddLines(points, ARRAYSIZE(points));
+		//D2D1_POINT_2F points[] = {
+		//	D2D1::Point2F(i+tic*4, low),
+		//	D2D1::Point2F(i+tic*4, hi),
+		//	D2D1::Point2F(i+tic*15, hi),
+		//	D2D1::Point2F(i+tic*15, low),
+		//	D2D1::Point2F(i+tic*30, low), 
+		//	D2D1::Point2F(i+tic*30, hi),
+		//	D2D1::Point2F(i+tic*45, hi),
+		//	D2D1::Point2F(i+tic*45, low),
+		//	D2D1::Point2F(i+tic*1000, low), 
+		//};
+		if (m_points)
+			pSink->AddLines(m_points, sizeof(m_points)/sizeof(D2D1_POINT_2F));
 		pSink->EndFigure(D2D1_FIGURE_END_OPEN);
 		hr = pSink->Close();
 		SafeRelease(&pSink);
@@ -477,6 +479,42 @@ void CPulseScope::DiscardDeviceResources()
 	SafeRelease(&m_pCornflowerBlueBrush);
 }
 
+void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
+{
+	float offset = 0;			// Offset to the beginning of the longest pulse
+	float maxlength = 0;		// Size of the longest pulse (in the first half of the buffer)
+	UINT arrsize = nPulses*2+1;	// Size of array of points
+
+	// Release old array of points and assign a new one
+	if (m_points)
+	{
+		delete m_points;
+		m_points = NULL;
+	};
+	m_points = new D2D1_POINT_2F[arrsize];
+
+	// Populate each point and calculate overall offset
+	m_points[0].x = 0;
+	m_points[0].y = Value[0];
+	for (UINT i=1; i<nPulses; i++)
+	{
+		// Convert from pulse data to points
+		m_points[2*i].x	  = m_points[2*i-1].x	= Length[i-1] + m_points[2*i-2].x;
+		m_points[2*i].y = m_points[2*i-1].y = Value[i-1];
+
+		// find the longest pulse in the first half buffer
+		if (m_points[2*i].x < MID_BUF)
+		{
+			if (Length[i-1] > maxlength)
+			{	// Longist pulse (so far) found
+				maxlength = Length[i-1];
+				offset = m_points[2*i].x;
+			}
+		} // if still in first half of buffer
+	} // for loop
+
+	PostMessage(m_hwnd, WM_BUFF_READY,0, 0);
+}
 
 
 // Initialize Pulse Scope object and return pointer to object
