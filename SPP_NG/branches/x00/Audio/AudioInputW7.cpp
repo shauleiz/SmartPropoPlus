@@ -48,17 +48,17 @@ DWORD WINAPI CaptureAudio(LPVOID param)
 	HRESULT hr = S_OK;
 	// Initialize capture thread
 	CAudioInputW7 * parent = (CAudioInputW7 *)param;
-	CPulseData * pPulseDataObj = new CPulseData;
-	parent->InitPulseDataObj(pPulseDataObj);
+	//CPulseData * pPulseDataObj = new CPulseData;
+	parent->InitPulseDataObj(parent->m_pPulseDataObj);
 
 	// Capture loop
 	do
 	{
-		hr = parent->ProcessAudioPacket(pPulseDataObj);
+		hr = parent->ProcessAudioPacket(parent->m_pPulseDataObj);
 	}while (g_CaptureAudioThreadRunnig);
 
 	// Exit capture thread
-	delete pPulseDataObj;
+	delete parent->m_pPulseDataObj;
 	SetEvent(g_hEventStopCaptureAudioThread);
 	return 0;
 }

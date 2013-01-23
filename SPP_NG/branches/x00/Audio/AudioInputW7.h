@@ -162,7 +162,6 @@ protected:
 	IAudioClient		* m_pAudioClient;
 	class CMMNotificationClient *m_pNotifyChange;
 	std::vector<CapDev *>  m_CaptureDevices;
-	CPulseData			* m_pPulseDataObj;
 
 	UINT			m_nEndPoints;
 	UINT			m_nMixers;
@@ -176,6 +175,7 @@ protected:
 	PVOID			m_ProcPulseParam;
 
 public:
+	CPulseData			* m_pPulseDataObj;
 
 };
 

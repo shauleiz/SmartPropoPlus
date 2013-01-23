@@ -26,6 +26,7 @@ CPulseData::CPulseData()
 	m_WaveNChannels = 0;        // number of channels (i.e. mono, stereo...)
 	m_WaveBitsPerSample = 0;    // Number of bits per sample of mono data
 	m_WaveInputChannel = 0;		// Input channel is LEFT by default
+	ProcessPulse = NULL;
 
 }
 

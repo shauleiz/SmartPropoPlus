@@ -14,7 +14,13 @@
 #include "NotificationClient.h"
 #include <Richedit.h>
 #include <Windowsx.h>
+#include "..\\Include\\PulseScope.h"
 
+#ifdef _DEBUG
+#pragma  comment(lib, "..\\lib\\Debug\\PulseScope.lib")
+#else
+#pragma  comment(lib, "..\\Decoder\\Scope\\Release\\STUB.lib")
+#endif
 
 #define MAX_LOADSTRING 100
 
@@ -45,6 +51,8 @@ void StopAudioVolMon(HWND hWnd);
 void LogAudioVolume(int Code, int size, LPVOID Data, LPVOID Param);
 inline int CalcVolumeLeft(int value);
 inline int CalcVolumeRight(int value);
+bool StartPulseLog(HWND hWnd);
+void StopPulseLog(HWND hWnd);
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int  nCmdShow)
@@ -487,6 +495,21 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			return (INT_PTR)TRUE;;
 		};
 
+		// Start/Stop Logging pulses (to Scope)
+		if (LOWORD(wParam) == IDC_LOGPULSE)
+		{
+			LRESULT check = Button_GetCheck(GetDlgItem(hDlg, IDC_LOGPULSE));
+			if (BST_CHECKED == check)
+			{
+				StartPulseLog(hDlg);
+			}
+			else
+			{
+				StopPulseLog(hDlg);
+			};
+			return (INT_PTR)TRUE;;
+		};
+
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
 			EndDialog(hDlg, LOWORD(wParam));
@@ -774,26 +797,44 @@ inline int CalcVolumeRight(int value)
 	return volume;
 }
 // Process Pulse callback function - stub for oscilloscope
-void ProcessPulse2Scope(int length, bool low, LPVOID Param)
+//void ProcessPulse2Scope(int length, bool low, LPVOID Param)
+//{
+//	/*
+//	This function is registerred as a ProcessPulse function periodically called by ACU
+//	It collects the pulse data and syncs on the longest pulse as trigger
+//	It then creates a buffer of sampled pulse data.
+//	The buffer is refreshed periodically
+//	This buffer is fed into the Oscilloscope (http://www.codeproject.com/Articles/43426/A-Beautiful-Oscilloscope-Based-on-DirectX)
+//	*/
+//
+//	// For a specified time-window - Find the longest pulse
+//	// This period will serve as scope-trigger
+//#define TIMEWINDOW 500
+//	static DWORD window_begin=0, window_end=0; 
+//	window_end = timeGetTime();
+//	if ((window_end - window_begin)>TIMEWINDOW)
+//		window_begin+=10;
+//
+//	static int longist=0;
+//	static DWORD longist_time=0;
+//
+//
+//}
+
+
+bool StartPulseLog(HWND hWnd)
 {
-	/*
-	This function is registerred as a ProcessPulse function periodically called by ACU
-	It collects the pulse data and syncs on the longest pulse as trigger
-	It then creates a buffer of sampled pulse data.
-	The buffer is refreshed periodically
-	This buffer is fed into the Oscilloscope (http://www.codeproject.com/Articles/43426/A-Beautiful-Oscilloscope-Based-on-DirectX)
-	*/
-
-	// For a specified time-window - Find the longest pulse
-	// This period will serve as scope-trigger
-#define TIMEWINDOW 500
-	static DWORD window_begin=0, window_end=0; 
-	window_end = timeGetTime();
-	if ((window_end - window_begin)>TIMEWINDOW)
-		window_begin+=10;
-
-	static int longist=0;
-	static DWORD longist_time=0;
-
-
+	// Open a audio monitoring window
+	//hVolDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIAG_VOL), hWnd, DlgAudioVol);
+	//SetWindowPos(hVolDlg, NULL, 120,120,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
+	//CStub * scope = new CStub;
+	CPulseScope * PulseScope = InitPulseScope();
+	g_audio->RegisterProcessPulse((LPVOID)(Pulse2Scope), (PVOID)PulseScope);
+	return true;
 }
+void StopPulseLog(HWND hWnd)
+{
+	g_audio->RegisterProcessPulse(NULL);
+}
+
+
