@@ -58,12 +58,8 @@ PULSESCOPE_API void Pulse2Scope(int length, bool low, LPVOID Param)
 	// Check if buffer ready to be posted 
 	if (acc>=PULSE_MAX_SIZE || iPulse>=PULSE_BUF_SIZE)
 	{
-		// Post Buffer
-		PULSE_DATA pulses;
-		pulses.nPulses = iPulse-1;
-		pulses.pXBuff = pXBuff;
-		pulses.pYBuff = pYBuff;
-		PostMessage(NULL/*((CPulseScope *)Param)*/, WM_BUFF_READY, (WPARAM)(&pulses), NULL);
+		// Send Buffer to scope
+		((CPulseScope *)Param)->DisplayPulseData(iPulse-1, pXBuff, pYBuff);
 
 		// Reset counters
 		iPulse=acc=0;

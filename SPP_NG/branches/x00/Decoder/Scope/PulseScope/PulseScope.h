@@ -11,11 +11,14 @@
 #endif
 
 #define	NDOTS 10000
-#define	HI	 0.8f
-#define	LO	 0.2f
+#define	HI	 300.0f
+#define	LO	 100.0f
 #define DEFAULT_RATE 192000
-#define PULSE_BUF_SIZE DEFAULT_RATE/10
-#define PULSE_MAX_SIZE DEFAULT_RATE/10
+#define PULSE_BUF_SIZE	DEFAULT_RATE/10
+#define PULSE_MAX_SIZE	DEFAULT_RATE/10
+#define MID_BUF			DEFAULT_RATE/20
+
+
 #define WM_BUFF_READY WM_USER+112
 
 struct PULSE_DATA {
@@ -30,6 +33,9 @@ public:
 	CPulseScope(void);
 	HRESULT Initialize(void);
 	~CPulseScope();
+
+	// Get pulse data - Prepare it for scope to render
+	void DisplayPulseData(UINT nPulses, float *Length, float *Value);
 
 private:
     // Initialize device-independent resources.
@@ -50,6 +56,7 @@ private:
 	// The windows procedure.
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,LPARAM lParam);
 
+
 private:
     HWND m_hwnd;
     ID2D1Factory* m_pDirect2dFactory;
@@ -61,6 +68,7 @@ private:
     IDWriteTextFormat *m_pTextFormat;
 	IDWriteFactory *m_pDWriteFactory;
 	HANDLE m_hWinThread;
+	D2D1_POINT_2F *m_points;
 
 };
 
