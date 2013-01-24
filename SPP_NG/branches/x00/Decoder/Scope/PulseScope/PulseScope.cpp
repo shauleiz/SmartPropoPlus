@@ -21,7 +21,9 @@ m_pCornflowerBlueBrush(NULL),
 m_pTextFormat(NULL),
 m_pDWriteFactory(NULL),
 m_hWinThread(NULL),
-m_points(NULL)
+m_points(NULL), 
+m_npoints(0),
+m_offset(0)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -259,7 +261,6 @@ HRESULT CPulseScope::OnRender()
 // recreates the resources the next time it's invoked.
 	HRESULT hr = S_OK;
 	int millisecs=350;
-	static float i=0;
 
 	hr = CreateDeviceResources();
 
@@ -332,34 +333,20 @@ HRESULT CPulseScope::OnRender()
 			);
 
 
-		// Draw a demo wave form
+		// Draw wave form
 		// Implement as Path Geometry
 		hr = m_pDirect2dFactory->CreatePathGeometry(&m_pWaveGeometry);
 		ID2D1GeometrySink *pSink = NULL;
 		hr = m_pWaveGeometry->Open(&pSink);
 		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 		pSink->BeginFigure(D2D1::Point2F(0,low),D2D1_FIGURE_BEGIN_HOLLOW );
-		//D2D1_POINT_2F points[] = {
-		//	D2D1::Point2F(i+tic*4, low),
-		//	D2D1::Point2F(i+tic*4, hi),
-		//	D2D1::Point2F(i+tic*15, hi),
-		//	D2D1::Point2F(i+tic*15, low),
-		//	D2D1::Point2F(i+tic*30, low), 
-		//	D2D1::Point2F(i+tic*30, hi),
-		//	D2D1::Point2F(i+tic*45, hi),
-		//	D2D1::Point2F(i+tic*45, low),
-		//	D2D1::Point2F(i+tic*1000, low), 
-		//};
 		if (m_points)
-			pSink->AddLines(m_points, sizeof(m_points)/sizeof(D2D1_POINT_2F));
+			pSink->AddLines(m_points, m_npoints-3);
 		pSink->EndFigure(D2D1_FIGURE_END_OPEN);
 		hr = pSink->Close();
 		SafeRelease(&pSink);
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
 
-		// Simulate moving wave
-		i+=2;
-		if (i>700) i=0;
 
 
 
@@ -499,8 +486,8 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 	for (UINT i=1; i<nPulses; i++)
 	{
 		// Convert from pulse data to points
-		m_points[2*i].x	  = m_points[2*i-1].x	= Length[i-1] + m_points[2*i-2].x;
-		m_points[2*i].y = m_points[2*i-1].y = Value[i-1];
+		m_points[2*i].x	  = m_points[2*i-1].x	= Length[i-1]/10 + m_points[2*i-2].x;
+		m_points[2*i-1].y = m_points[2*i-2].y = Value[i-1];
 
 		// find the longest pulse in the first half buffer
 		if (m_points[2*i].x < MID_BUF)
@@ -513,7 +500,10 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 		} // if still in first half of buffer
 	} // for loop
 
-	PostMessage(m_hwnd, WM_BUFF_READY,0, 0);
+	m_npoints = arrsize;
+	m_offset = offset;
+
+	PostMessage(m_hwnd, WM_BUFF_READY, (WPARAM)arrsize, (LPARAM)offset);
 }
 
 

@@ -69,6 +69,8 @@ private:
 	IDWriteFactory *m_pDWriteFactory;
 	HANDLE m_hWinThread;
 	D2D1_POINT_2F *m_points;
+	UINT m_npoints;
+	float m_offset;
 
 };
 
