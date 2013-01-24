@@ -14,7 +14,7 @@
 #include "NotificationClient.h"
 #include <Richedit.h>
 #include <Windowsx.h>
-#include "..\\Include\\PulseScope.h"
+//#include "..\\Include\\PulseScope.h"
 
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\lib\\Debug\\PulseScope.lib")
@@ -23,6 +23,10 @@
 #endif
 
 #define MAX_LOADSTRING 100
+class CPulseScope;
+extern __declspec(dllimport) void Pulse2Scope(int length, bool low, LPVOID Param);
+extern __declspec(dllimport) CPulseScope * InitPulseScope(void);
+
 
 // Global Variables:
 HINSTANCE hInst;								// current instance

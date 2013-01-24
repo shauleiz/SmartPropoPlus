@@ -115,7 +115,7 @@ HRESULT CPulseScope::CreateDeviceIndependentResources()
 {
 	HRESULT hr = S_OK;
     static const WCHAR msc_fontName[] = L"TimesNewRoman";
-    static const FLOAT msc_fontSize = 11;
+    static const FLOAT msc_fontSize = 8;
 
 	// Create a Direct2D factory.
 	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
@@ -144,8 +144,9 @@ HRESULT CPulseScope::CreateDeviceIndependentResources()
 	}
 
 	if (SUCCEEDED(hr))
-	{
 		m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+
+	{
 		// Start window main thread
 		DWORD dwThreadId;
 		m_hWinThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&WinThread,0,0,&dwThreadId);
@@ -260,7 +261,8 @@ HRESULT CPulseScope::OnRender()
 // resources if the Direct3D device dissapears during execution and
 // recreates the resources the next time it's invoked.
 	HRESULT hr = S_OK;
-	int millisecs=350;
+	float sqSize = 30;			// Absolute square size
+	float scale = sqSize/192;	// Scale wave to 1milliSec per square (X-axis)
 
 	hr = CreateDeviceResources();
 
@@ -275,39 +277,32 @@ HRESULT CPulseScope::OnRender()
 		D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
 
 		// Draw a grid background.
-		int width = static_cast<int>(rtSize.width);
-		int height = static_cast<int>(rtSize.height);
-		int sqSize = 50;
+		float width = rtSize.width;
+		float height = rtSize.height;
 		float low = (rtSize.height/2 + sqSize*2.5f);
 		float hi  = (rtSize.height/2 - sqSize*2.5f);
-		float tic = static_cast<float>(sqSize)/25;
 		UINT tMaxLen;
 		WCHAR textBuffer[20];
 		tMaxLen = sizeof(textBuffer)/sizeof(WCHAR);
 
-		for (int x = 0; x < width; x += sqSize)
+		for (float x = 0; x < width; x += sqSize)
 		{
-			m_pRenderTarget->DrawLine(
-				D2D1::Point2F(static_cast<FLOAT>(x), 0.0f),
-				D2D1::Point2F(static_cast<FLOAT>(x), rtSize.height),
-				m_pLightSlateGrayBrush,
-				0.5f
-				);
+			m_pRenderTarget->DrawLine(D2D1::Point2F(x, 0.0f), D2D1::Point2F(x, rtSize.height), m_pLightSlateGrayBrush, 0.5f);
 
 		// Add text - Time and Voltage
-		hr = StringCchPrintf(textBuffer, tMaxLen, L"%d", x/25);
+		hr = StringCchPrintf(textBuffer, tMaxLen, L"%dmS", static_cast<UINT>(x/sqSize));
 		m_pRenderTarget->DrawText(
 			textBuffer,
 			static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
 			m_pTextFormat,
             D2D1::RectF(static_cast<FLOAT>(x)-20.0f, rtSize.height/2+10, static_cast<FLOAT>(x)+20.0f, rtSize.height/2+20.0f),
-            m_pDarkViolet,
+            m_pCornflowerBlueBrush,
             D2D1_DRAW_TEXT_OPTIONS_NONE
             );
 
 		}
 
-		for (int y = height/2; y < height; y += sqSize)
+		for (float y = height/2; y < height; y += sqSize)
 		{
 			m_pRenderTarget->DrawLine(
 				D2D1::Point2F(0.0f, static_cast<FLOAT>(y+sqSize)),
@@ -340,12 +335,20 @@ HRESULT CPulseScope::OnRender()
 		hr = m_pWaveGeometry->Open(&pSink);
 		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 		pSink->BeginFigure(D2D1::Point2F(0,low),D2D1_FIGURE_BEGIN_HOLLOW );
-		if (m_points)
+		if (m_points && m_npoints>3)
 			pSink->AddLines(m_points, m_npoints-3);
 		pSink->EndFigure(D2D1_FIGURE_END_OPEN);
 		hr = pSink->Close();
 		SafeRelease(&pSink);
+
+		// Scale & Shift
+		D2D1_MATRIX_3X2_F xFormScale= D2D1::Matrix3x2F::Scale(D2D1::Size(scale, 1.0f),D2D1::Point2F(0.0f, 0.0f));
+		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(10, 0);
+		m_pRenderTarget->SetTransform(xFormScale * xFormShift);
+
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
+
+
 
 
 
@@ -486,7 +489,7 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 	for (UINT i=1; i<nPulses; i++)
 	{
 		// Convert from pulse data to points
-		m_points[2*i].x	  = m_points[2*i-1].x	= Length[i-1]/10 + m_points[2*i-2].x;
+		m_points[2*i].x	  = m_points[2*i-1].x	= Length[i-1] + m_points[2*i-2].x;
 		m_points[2*i-1].y = m_points[2*i-2].y = Value[i-1];
 
 		// find the longest pulse in the first half buffer
