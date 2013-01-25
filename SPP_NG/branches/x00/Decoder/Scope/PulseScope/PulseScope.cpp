@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <StrSafe.h>
+#include <Windowsx.h>
 #include "PulseScope.h"
 
 
@@ -23,7 +24,8 @@ m_pDWriteFactory(NULL),
 m_hWinThread(NULL),
 m_points(NULL), 
 m_npoints(0),
-m_offset(0)
+m_offset(0),
+m_isMeasuring(false)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -226,6 +228,15 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 				result = 1;
 				wasHandled = true;
 				break;
+
+			case WM_LBUTTONDOWN:
+				pPulseScope->StartMeasure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				break;
+
+			case WM_MOUSEMOVE:
+				if (wParam & MK_LBUTTON)
+					pPulseScope->Measure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				break;
 			}
 		}
 
@@ -237,10 +248,28 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 
 	return result;
 }
+void CPulseScope::Measure(int x, int y)
+{
+	m_measureEndPoint = D2D1::Point2F(static_cast<FLOAT>(x),static_cast<FLOAT>(y));
 
+}
+
+void CPulseScope::StartMeasure(int x, int y)
+{
+	// Start measuring distance between two points
+	// Initialize start point and m_isMeasuring flag 
+	if (!m_pRenderTarget)
+		return;
+
+	m_isMeasuring = true;
+	m_measureStartPoint = D2D1::Point2F(static_cast<FLOAT>(x),static_cast<FLOAT>(y));
+	m_measureEndPoint = m_measureStartPoint;
+
+}
+
+void CPulseScope::OnResize(UINT width, UINT height)
 //  If the application receives a WM_SIZE message, this method
 //  resizes the render target appropriately.
-void CPulseScope::OnResize(UINT width, UINT height)
 {
 	if (m_pRenderTarget)
 	{
@@ -261,7 +290,7 @@ HRESULT CPulseScope::OnRender()
 // resources if the Direct3D device dissapears during execution and
 // recreates the resources the next time it's invoked.
 	HRESULT hr = S_OK;
-	float sqSize = 30;			// Absolute square size
+	float sqSize = 50;			// Absolute square size
 	float scale = sqSize/192;	// Scale wave to 1milliSec per square (X-axis)
 	ID2D1GeometrySink *pSink = NULL;
 
@@ -383,8 +412,27 @@ HRESULT CPulseScope::OnRender()
 		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(10, 0);
 		m_pRenderTarget->SetTransform(xFormScale * xFormShift);
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
+		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
 
+		// Draw measure line and write measurment (in millisecs)
+		if (m_isMeasuring)
+		{
+			m_pRenderTarget->DrawLine(m_measureStartPoint, m_measureEndPoint, m_pLightSlateGrayBrush, 2.5f);
+			float delta = (m_measureEndPoint.x - m_measureStartPoint.x)/sqSize;
+			if (abs(delta) >= 0.05)
+			{
+				hr = StringCchPrintf(textBuffer, tMaxLen, L"%fmS", delta);
+				m_pRenderTarget->DrawText(
+					textBuffer,
+					static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
+					m_pTextFormat,
+					D2D1::RectF(20.0f, 20.0f, 80.0f, 80.0f),
+					m_pCornflowerBlueBrush,
+					D2D1_DRAW_TEXT_OPTIONS_NONE
+					);
+			}
+		}
 
 
 		hr = m_pRenderTarget->EndDraw();

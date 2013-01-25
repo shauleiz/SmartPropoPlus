@@ -56,6 +56,12 @@ private:
 	// The windows procedure.
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,LPARAM lParam);
 
+	// Start/Stop measuring distances
+	void StopMeasure(int x, int y);
+	void Measure(int x, int y);
+	void StartMeasure(int x, int y);
+
+
 
 private:
     HWND m_hwnd;
@@ -72,6 +78,8 @@ private:
 	D2D1_POINT_2F *m_points;
 	UINT m_npoints;
 	float m_offset;
+	bool m_isMeasuring;
+	D2D1_POINT_2F m_measureStartPoint,  m_measureEndPoint;
 
 };
 
