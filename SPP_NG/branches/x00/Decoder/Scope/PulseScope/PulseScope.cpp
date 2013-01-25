@@ -263,6 +263,7 @@ HRESULT CPulseScope::OnRender()
 	HRESULT hr = S_OK;
 	float sqSize = 30;			// Absolute square size
 	float scale = sqSize/192;	// Scale wave to 1milliSec per square (X-axis)
+	ID2D1GeometrySink *pSink = NULL;
 
 	hr = CreateDeviceResources();
 
@@ -327,11 +328,47 @@ HRESULT CPulseScope::OnRender()
 			1.5f
 			);
 
+		///////// Controls ////////////////////////////////////////////////////
+		// Shift Right
+		ID2D1PathGeometry * TriangleRightGeometry;
+		m_pDirect2dFactory->CreatePathGeometry(&TriangleRightGeometry);
+		rtSize = m_pRenderTarget->GetSize();
+		D2D1_POINT_2F TriangleRightPoints[3] = {
+			D2D1::Point2F(rtSize.width-10, rtSize.height/2),
+			D2D1::Point2F(rtSize.width-20, rtSize.height/2-10),
+			D2D1::Point2F(rtSize.width-20, rtSize.height/2+10)
+		};
+		TriangleRightGeometry->Open(&pSink);
+		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
+		pSink->BeginFigure(D2D1::Point2F(rtSize.width-10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
+		pSink->AddLines(TriangleRightPoints,3);
+		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		hr = pSink->Close();
+		SafeRelease(&pSink);
+		m_pRenderTarget->FillGeometry(TriangleRightGeometry, m_pArrowColor);
 
-		// Draw wave form
+		// Shift Left
+		ID2D1PathGeometry * TriangleLeftGeometry;
+		m_pDirect2dFactory->CreatePathGeometry(&TriangleLeftGeometry);
+		rtSize = m_pRenderTarget->GetSize();
+		D2D1_POINT_2F TriangleLeftPoints[3] = {
+			D2D1::Point2F(10, rtSize.height/2),
+			D2D1::Point2F(20, rtSize.height/2-10),
+			D2D1::Point2F(20, rtSize.height/2+10)
+		};
+		TriangleLeftGeometry->Open(&pSink);
+		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
+		pSink->BeginFigure(D2D1::Point2F(10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
+		pSink->AddLines(TriangleLeftPoints,3);
+		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		hr = pSink->Close();
+		SafeRelease(&pSink);
+		m_pRenderTarget->FillGeometry(TriangleLeftGeometry, m_pArrowColor);
+
+
+		/////////  Draw wave form //////////////////////////////////////////////////////
 		// Implement as Path Geometry
 		hr = m_pDirect2dFactory->CreatePathGeometry(&m_pWaveGeometry);
-		ID2D1GeometrySink *pSink = NULL;
 		hr = m_pWaveGeometry->Open(&pSink);
 		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 		pSink->BeginFigure(D2D1::Point2F(0,low),D2D1_FIGURE_BEGIN_HOLLOW );
@@ -345,51 +382,11 @@ HRESULT CPulseScope::OnRender()
 		D2D1_MATRIX_3X2_F xFormScale= D2D1::Matrix3x2F::Scale(D2D1::Size(scale, 1.0f),D2D1::Point2F(0.0f, 0.0f));
 		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(10, 0);
 		m_pRenderTarget->SetTransform(xFormScale * xFormShift);
-
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
 
 
 
 
-
-
-
-
-//		goto L1;
-//
-//		// Draw two rectangles.
-//		D2D1_RECT_F rectangle1 = D2D1::RectF(
-//			rtSize.width/2 - 50.0f,
-//			rtSize.height/2 - 50.0f,
-//			rtSize.width/2 + 50.0f,
-//			rtSize.height/2 + 50.0f
-//			);
-//
-//		D2D1_RECT_F rectangle2 = D2D1::RectF(
-//			rtSize.width/2 - 100.0f,
-//			rtSize.height/2 - 100.0f,
-//			rtSize.width/2 + 100.0f,
-//			rtSize.height/2 + 100.0f
-//			);
-//
-//		D2D1_POINT_2F  center = {rtSize.height/4, rtSize.width/4};
-//		D2D1_ELLIPSE elllipse1 = D2D1::Ellipse(
-//			center,
-//			(rtSize.width+i)/10,
-//			(rtSize.width+i)/10
-//			);
-//
-//		i++;
-//		if (i>500) i=0;
-//
-//		// Draw a filled rectangle.
-//		m_pRenderTarget->FillRectangle(&rectangle1, m_pLightSlateGrayBrush);
-//
-//		// Draw the outline of a rectangle.
-//		m_pRenderTarget->DrawRectangle(&rectangle2, m_pCornflowerBlueBrush);
-//
-//		m_pRenderTarget->DrawEllipse(elllipse1, m_pDarkViolet, 2.0f);
-//L1:
 		hr = m_pRenderTarget->EndDraw();
 	}
 
@@ -437,6 +434,15 @@ HRESULT CPulseScope::CreateDeviceResources()
 				);
 		}
 
+		if (SUCCEEDED(hr))
+		{
+			// Create a gray brush.
+			hr = m_pRenderTarget->CreateSolidColorBrush(
+				D2D1::ColorF(D2D1::ColorF::DarkOrange),
+				&m_pArrowColor
+				);
+			m_pArrowColor->SetOpacity(0.5f);
+		}
 
 		if (SUCCEEDED(hr))
 		{
@@ -445,6 +451,7 @@ HRESULT CPulseScope::CreateDeviceResources()
 				D2D1::ColorF(D2D1::ColorF::LightSlateGray),
 				&m_pLightSlateGrayBrush
 				);
+
 		}
 		if (SUCCEEDED(hr))
 		{

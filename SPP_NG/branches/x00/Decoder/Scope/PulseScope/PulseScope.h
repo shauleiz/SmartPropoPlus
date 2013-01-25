@@ -64,6 +64,7 @@ private:
     ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
     ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
     ID2D1SolidColorBrush* m_pDarkViolet;
+    ID2D1SolidColorBrush* m_pArrowColor;
 	ID2D1PathGeometry* m_pWaveGeometry;
     IDWriteTextFormat *m_pTextFormat;
 	IDWriteFactory *m_pDWriteFactory;
