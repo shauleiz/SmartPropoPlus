@@ -95,7 +95,6 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 
 
 		// Here the samples are assemblied into pulses
-		// If pulse not ready then return 0
 		// negative is true when pulse is LOW
 		PulseLength = Sample2Pulse(sample, &negative);
 

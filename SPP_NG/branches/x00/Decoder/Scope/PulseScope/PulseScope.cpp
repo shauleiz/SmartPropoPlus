@@ -20,12 +20,16 @@ m_pRenderTarget(NULL),
 m_pLightSlateGrayBrush(NULL),
 m_pCornflowerBlueBrush(NULL),
 m_pTextFormat(NULL),
+m_pBtnTextFormat(NULL),
+m_pMsrTextFormat(NULL),
 m_pDWriteFactory(NULL),
 m_hWinThread(NULL),
 m_points(NULL), 
 m_npoints(0),
 m_offset(0),
-m_isMeasuring(false)
+m_isMeasuring(false),
+m_isPlaying(true),
+m_PlayPauseRect(D2D1::RectF(10,30,100,60))
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -38,6 +42,8 @@ CPulseScope::~CPulseScope()
 	SafeRelease(&m_pLightSlateGrayBrush);
 	SafeRelease(&m_pCornflowerBlueBrush);
     SafeRelease(&m_pTextFormat);
+    SafeRelease(&m_pBtnTextFormat);
+    SafeRelease(&m_pMsrTextFormat);
 	SafeRelease(&m_pDWriteFactory);
 }
 
@@ -118,6 +124,8 @@ HRESULT CPulseScope::CreateDeviceIndependentResources()
 	HRESULT hr = S_OK;
     static const WCHAR msc_fontName[] = L"TimesNewRoman";
     static const FLOAT msc_fontSize = 8;
+    static const FLOAT msc_btnfontSize = 12;
+    static const FLOAT msc_msrfontSize = 12;
 
 	// Create a Direct2D factory.
 	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
@@ -148,6 +156,47 @@ HRESULT CPulseScope::CreateDeviceIndependentResources()
 	if (SUCCEEDED(hr))
 		m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 
+    if (SUCCEEDED(hr))
+    {
+         hr = m_pDWriteFactory->CreateTextFormat(
+            msc_fontName,
+            NULL,
+            DWRITE_FONT_WEIGHT_NORMAL,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            static_cast<FLOAT>(msc_btnfontSize),
+			L"", // locale
+			&m_pBtnTextFormat
+			);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		hr = m_pBtnTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		hr = m_pBtnTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	};
+
+    if (SUCCEEDED(hr))
+    {
+         hr = m_pDWriteFactory->CreateTextFormat(
+            msc_fontName,
+            NULL,
+            DWRITE_FONT_WEIGHT_NORMAL,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            static_cast<FLOAT>(msc_msrfontSize),
+			L"", // locale
+			&m_pMsrTextFormat
+			);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		hr = m_pMsrTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		hr = m_pMsrTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	};
+
+	if (SUCCEEDED(hr))
 	{
 		// Start window main thread
 		DWORD dwThreadId;
@@ -230,7 +279,15 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 				break;
 
 			case WM_LBUTTONDOWN:
-				pPulseScope->StartMeasure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				if (!inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_PlayPauseRect))
+					pPulseScope->StartMeasure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				else
+				{
+					if (pPulseScope->m_isPlaying)
+						pPulseScope->m_isPlaying = false;
+					else
+						pPulseScope->m_isPlaying = true;
+				};
 				break;
 
 			case WM_MOUSEMOVE:
@@ -394,6 +451,9 @@ HRESULT CPulseScope::OnRender()
 		SafeRelease(&pSink);
 		m_pRenderTarget->FillGeometry(TriangleLeftGeometry, m_pArrowColor);
 
+		// Play/Pause button
+		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
+
 
 		/////////  Draw wave form //////////////////////////////////////////////////////
 		// Implement as Path Geometry
@@ -407,27 +467,29 @@ HRESULT CPulseScope::OnRender()
 		hr = pSink->Close();
 		SafeRelease(&pSink);
 
-		// Scale & Shift
+		// Scale & Shift wave form
 		D2D1_MATRIX_3X2_F xFormScale= D2D1::Matrix3x2F::Scale(D2D1::Size(scale, 1.0f),D2D1::Point2F(0.0f, 0.0f));
 		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(10, 0);
 		m_pRenderTarget->SetTransform(xFormScale * xFormShift);
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		////////////////////////////////////////////////////////////////////////////////
 
-
-		// Draw measure line and write measurment (in millisecs)
+		// Draw measurement line and write measurment (in millisecs)
+		// Test if measurment is on and draw measurement line
+		// If delta is more than 0.05 milli then write value on the upper left corner
 		if (m_isMeasuring)
 		{
-			m_pRenderTarget->DrawLine(m_measureStartPoint, m_measureEndPoint, m_pLightSlateGrayBrush, 2.5f);
+			m_pRenderTarget->DrawLine(m_measureStartPoint, m_measureEndPoint, m_pMeasureBrush, 0.3f);
 			float delta = (m_measureEndPoint.x - m_measureStartPoint.x)/sqSize;
 			if (abs(delta) >= 0.05)
 			{
-				hr = StringCchPrintf(textBuffer, tMaxLen, L"%fmS", delta);
+				hr = StringCchPrintf(textBuffer, tMaxLen, L"%.2fmS", delta);
 				m_pRenderTarget->DrawText(
 					textBuffer,
 					static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
-					m_pTextFormat,
-					D2D1::RectF(20.0f, 20.0f, 80.0f, 80.0f),
+					m_pMsrTextFormat,
+					D2D1::RectF(20.0f, 10.0f, 80.0f, 35.0f),
 					m_pCornflowerBlueBrush,
 					D2D1_DRAW_TEXT_OPTIONS_NONE
 					);
@@ -486,10 +548,29 @@ HRESULT CPulseScope::CreateDeviceResources()
 		{
 			// Create a gray brush.
 			hr = m_pRenderTarget->CreateSolidColorBrush(
+				D2D1::ColorF(D2D1::ColorF::Red),
+				&m_pMeasureBrush
+				);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			// Create a gray brush.
+			hr = m_pRenderTarget->CreateSolidColorBrush(
 				D2D1::ColorF(D2D1::ColorF::DarkOrange),
 				&m_pArrowColor
 				);
 			m_pArrowColor->SetOpacity(0.5f);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			// Create a brush for buttons
+			hr = m_pRenderTarget->CreateSolidColorBrush(
+				D2D1::ColorF(D2D1::ColorF::DarkGray),
+				&m_pButtonColor
+				);
+			m_pButtonColor->SetOpacity(0.5f);
 		}
 
 		if (SUCCEEDED(hr))
@@ -524,11 +605,20 @@ void CPulseScope::DiscardDeviceResources()
 	SafeRelease(&m_pCornflowerBlueBrush);
 }
 
+// Based on
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd756686(v=vs.85).aspx
 void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 {
 	float offset = 0;			// Offset to the beginning of the longest pulse
 	float maxlength = 0;		// Size of the longest pulse (in the first half of the buffer)
 	UINT arrsize = nPulses*2+1;	// Size of array of points
+
+	// Pause state
+	if (!m_isPlaying)
+	{
+		PostMessage(m_hwnd, WM_BUFF_READY, (WPARAM)arrsize, (LPARAM)offset);
+		return;
+	}
 
 	// Release old array of points and assign a new one
 	if (m_points)
@@ -565,6 +655,155 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 }
 
 
+
+HRESULT CPulseScope::LoadResourceBitmap(
+    ID2D1RenderTarget *pRenderTarget,
+    IWICImagingFactory *pIWICFactory,
+    PCWSTR resourceName,
+    PCWSTR resourceType,
+    UINT destinationWidth,
+    UINT destinationHeight,
+    ID2D1Bitmap **ppBitmap
+    )
+{
+    IWICBitmapDecoder *pDecoder = NULL;
+    IWICBitmapFrameDecode *pSource = NULL;
+    IWICStream *pStream = NULL;
+    IWICFormatConverter *pConverter = NULL;
+    IWICBitmapScaler *pScaler = NULL;
+
+	HRSRC imageResHandle = NULL;
+	HGLOBAL imageResDataHandle = NULL;
+	void *pImageFile = NULL;
+	DWORD imageFileSize = 0;
+
+	// Locate the resource.
+	imageResHandle = FindResourceW(HINST_THISCOMPONENT, resourceName, resourceType);
+	HRESULT hr = imageResHandle ? S_OK : E_FAIL;
+	if (SUCCEEDED(hr))
+	{
+		// Load the resource.
+		imageResDataHandle = LoadResource(HINST_THISCOMPONENT, imageResHandle);
+
+		hr = imageResDataHandle ? S_OK : E_FAIL;
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Lock it to get a system memory pointer.
+		pImageFile = LockResource(imageResDataHandle);
+
+		hr = pImageFile ? S_OK : E_FAIL;
+	}
+    if (SUCCEEDED(hr))
+    {
+        // Calculate the size.
+        imageFileSize = SizeofResource(HINST_THISCOMPONENT, imageResHandle);
+
+        hr = imageFileSize ? S_OK : E_FAIL;        
+    }
+
+    if (SUCCEEDED(hr))
+    {
+          // Create a WIC stream to map onto the memory.
+        hr = pIWICFactory->CreateStream(&pStream);
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // Initialize the stream with the memory pointer and size.
+        hr = pStream->InitializeFromMemory(
+            reinterpret_cast<BYTE*>(pImageFile),
+            imageFileSize
+            );
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // Create a decoder for the stream.
+        hr = pIWICFactory->CreateDecoderFromStream(
+            pStream,
+            NULL,
+            WICDecodeMetadataCacheOnLoad,
+            &pDecoder
+            );
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // Create the initial frame.
+        hr = pDecoder->GetFrame(0, &pSource);
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // Convert the image format to 32bppPBGRA
+        // (DXGI_FORMAT_B8G8R8A8_UNORM + D2D1_ALPHA_MODE_PREMULTIPLIED).
+        hr = pIWICFactory->CreateFormatConverter(&pConverter);
+    }
+
+	if (SUCCEEDED(hr))
+	{          
+		hr = pConverter->Initialize(
+        pSource,
+        GUID_WICPixelFormat32bppPBGRA,
+        WICBitmapDitherTypeNone,
+        NULL,
+        0.f,
+        WICBitmapPaletteTypeMedianCut
+        );
+	}
+    if (SUCCEEDED(hr))
+    {
+        //create a Direct2D bitmap from the WIC bitmap.
+        hr = pRenderTarget->CreateBitmapFromWicBitmap(
+            pConverter,
+            NULL,
+            ppBitmap
+            );
+    }
+
+    SafeRelease(&pDecoder);
+    SafeRelease(&pSource);
+    SafeRelease(&pStream);
+    SafeRelease(&pConverter);
+    SafeRelease(&pScaler);
+
+    return hr;
+}
+
+
+
+
+void CPulseScope::DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1)
+{
+	// Get render target size
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+
+	// Create button rectangle
+	D2D1_ROUNDED_RECT buttonRect = D2D1::RoundedRect(rect1,3,3);
+
+	// Draw a filled rectangle.
+	m_pRenderTarget->FillRoundedRectangle(&buttonRect, m_pButtonColor);
+
+	// Write text (Pause/Play)
+	WCHAR textBuffer[20];
+	UINT tMaxLen = sizeof(textBuffer)/sizeof(WCHAR);
+	if (Play)
+		StringCchPrintf(textBuffer, tMaxLen, L"Play");
+	else
+		StringCchPrintf(textBuffer, tMaxLen, L"Pause");
+
+	m_pRenderTarget->DrawText(
+		textBuffer,
+		static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
+		m_pBtnTextFormat,
+		rect1,
+		m_pCornflowerBlueBrush,
+		D2D1_DRAW_TEXT_OPTIONS_NONE
+		);	
+}
+
 // Initialize Pulse Scope object and return pointer to object
 PULSESCOPE_API CPulseScope * InitPulseScope(void)
 {
@@ -584,4 +823,12 @@ void	WINAPI WinThread(void)
 	}
 
 	CoUninitialize();
+}
+
+bool inRect(int x, int y, D2D1_RECT_F rect)
+{
+	if (rect.bottom >=y && rect.top<=y && rect.left<=x && rect.right>=x)
+		return true;
+	else
+		return false;
 }
