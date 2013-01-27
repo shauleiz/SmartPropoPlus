@@ -175,6 +175,19 @@ inline UINT CPulseData::Sample2Pulse(short sample, bool * negative)
 		}
 	};
 
+	// Case of very long (20000) pulses
+	if (high >= 20000)
+	{
+		pulse = high;
+		*negative = false;
+		high = 0;
+	}
+	else if (low  >= 20000)
+	{
+		pulse = low;
+		*negative = true;
+		low = 0;
+	};
 
 	return pulse;
 }

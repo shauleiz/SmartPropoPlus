@@ -416,40 +416,10 @@ HRESULT CPulseScope::OnRender()
 
 		///////// Controls ////////////////////////////////////////////////////
 		// Shift Right
-		ID2D1PathGeometry * TriangleRightGeometry;
-		m_pDirect2dFactory->CreatePathGeometry(&TriangleRightGeometry);
-		rtSize = m_pRenderTarget->GetSize();
-		D2D1_POINT_2F TriangleRightPoints[3] = {
-			D2D1::Point2F(rtSize.width-10, rtSize.height/2),
-			D2D1::Point2F(rtSize.width-20, rtSize.height/2-10),
-			D2D1::Point2F(rtSize.width-20, rtSize.height/2+10)
-		};
-		TriangleRightGeometry->Open(&pSink);
-		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
-		pSink->BeginFigure(D2D1::Point2F(rtSize.width-10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
-		pSink->AddLines(TriangleRightPoints,3);
-		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-		hr = pSink->Close();
-		SafeRelease(&pSink);
-		m_pRenderTarget->FillGeometry(TriangleRightGeometry, m_pArrowColor);
+		DisplayRightScrollButton();
 
 		// Shift Left
-		ID2D1PathGeometry * TriangleLeftGeometry;
-		m_pDirect2dFactory->CreatePathGeometry(&TriangleLeftGeometry);
-		rtSize = m_pRenderTarget->GetSize();
-		D2D1_POINT_2F TriangleLeftPoints[3] = {
-			D2D1::Point2F(10, rtSize.height/2),
-			D2D1::Point2F(20, rtSize.height/2-10),
-			D2D1::Point2F(20, rtSize.height/2+10)
-		};
-		TriangleLeftGeometry->Open(&pSink);
-		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
-		pSink->BeginFigure(D2D1::Point2F(10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
-		pSink->AddLines(TriangleLeftPoints,3);
-		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-		hr = pSink->Close();
-		SafeRelease(&pSink);
-		m_pRenderTarget->FillGeometry(TriangleLeftGeometry, m_pArrowColor);
+		DisplayLeftScrollButton();
 
 		// Play/Pause button
 		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
@@ -460,18 +430,24 @@ HRESULT CPulseScope::OnRender()
 		hr = m_pDirect2dFactory->CreatePathGeometry(&m_pWaveGeometry);
 		hr = m_pWaveGeometry->Open(&pSink);
 		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
-		pSink->BeginFigure(D2D1::Point2F(0,low),D2D1_FIGURE_BEGIN_HOLLOW );
 		if (m_points && m_npoints>3)
+		{
+			pSink->BeginFigure(m_points[0],D2D1_FIGURE_BEGIN_HOLLOW );
 			pSink->AddLines(m_points, m_npoints-3);
-		pSink->EndFigure(D2D1_FIGURE_END_OPEN);
+			pSink->EndFigure(D2D1_FIGURE_END_OPEN);
+		}
 		hr = pSink->Close();
 		SafeRelease(&pSink);
 
-		// Scale & Shift wave form
+
+		// Scale & Shift wave form (Mark the triger point)
 		D2D1_MATRIX_3X2_F xFormScale= D2D1::Matrix3x2F::Scale(D2D1::Size(scale, 1.0f),D2D1::Point2F(0.0f, 0.0f));
-		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(10, 0);
-		m_pRenderTarget->SetTransform(xFormScale * xFormShift);
+		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(2*sqSize/scale-m_offset, 0);
+		m_pRenderTarget->SetTransform(xFormShift*xFormScale);
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
+		// Trigger point
+		m_pRenderTarget->DrawLine(D2D1::Point2F(m_offset-10,rtSize.height/2+10),D2D1::Point2F(m_offset-10,rtSize.height/2-10),m_pArrowColor,7.0);
+		m_pRenderTarget->DrawLine(D2D1::Point2F(m_offset+10,rtSize.height/2+10),D2D1::Point2F(m_offset+10,rtSize.height/2-10),m_pArrowColor,7.0);
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 		////////////////////////////////////////////////////////////////////////////////
 
@@ -803,6 +779,55 @@ void CPulseScope::DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1)
 		D2D1_DRAW_TEXT_OPTIONS_NONE
 		);	
 }
+
+
+void CPulseScope::DisplayRightScrollButton(void)
+// Draw right arrow button
+{
+	ID2D1GeometrySink *pSink = NULL;
+	ID2D1PathGeometry * TriangleRightGeometry;
+	m_pDirect2dFactory->CreatePathGeometry(&TriangleRightGeometry);
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+	D2D1_POINT_2F TriangleRightPoints[3] = {
+		D2D1::Point2F(rtSize.width-10, rtSize.height/2),
+		D2D1::Point2F(rtSize.width-20, rtSize.height/2-10),
+		D2D1::Point2F(rtSize.width-20, rtSize.height/2+10)
+	};
+	TriangleRightGeometry->Open(&pSink);
+	pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
+	pSink->BeginFigure(D2D1::Point2F(rtSize.width-10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
+	pSink->AddLines(TriangleRightPoints,3);
+	pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+	pSink->Close();
+	SafeRelease(&pSink);
+	m_pRenderTarget->FillGeometry(TriangleRightGeometry, m_pArrowColor);
+	m_pRenderTarget->DrawRectangle(D2D1::RectF(rtSize.width-30,rtSize.height/2-15,rtSize.width-5,rtSize.height/2+15),m_pArrowColor);
+}
+
+void CPulseScope::DisplayLeftScrollButton(void)
+// Draw left arrow button
+{
+	ID2D1GeometrySink *pSink = NULL;
+	ID2D1PathGeometry * TriangleLeftGeometry;
+	m_pDirect2dFactory->CreatePathGeometry(&TriangleLeftGeometry);
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+	D2D1_POINT_2F TriangleLeftPoints[3] = {
+		D2D1::Point2F(10, rtSize.height/2),
+		D2D1::Point2F(20, rtSize.height/2-10),
+		D2D1::Point2F(20, rtSize.height/2+10)
+	};
+	TriangleLeftGeometry->Open(&pSink);
+	pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
+	pSink->BeginFigure(D2D1::Point2F(10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
+	pSink->AddLines(TriangleLeftPoints,3);
+	pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+	pSink->Close();
+	SafeRelease(&pSink);
+	m_pRenderTarget->FillGeometry(TriangleLeftGeometry, m_pArrowColor);
+	m_pRenderTarget->DrawRectangle(D2D1::RectF(5,rtSize.height/2-15,30,rtSize.height/2+15),m_pArrowColor);
+
+}
+
 
 // Initialize Pulse Scope object and return pointer to object
 PULSESCOPE_API CPulseScope * InitPulseScope(void)

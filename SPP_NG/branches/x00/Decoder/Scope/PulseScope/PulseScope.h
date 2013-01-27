@@ -17,7 +17,7 @@
 #define DEFAULT_RATE 192000
 #define PULSE_BUF_SIZE	DEFAULT_RATE/10
 #define PULSE_MAX_SIZE	DEFAULT_RATE/10
-#define MID_BUF			DEFAULT_RATE/20
+#define MID_BUF			PULSE_MAX_SIZE/4
 
 
 #define WM_BUFF_READY WM_USER+112
@@ -63,7 +63,12 @@ private:
 	void StartMeasure(int x, int y);
 
 	// Display Play/Pause button
-	void DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1);
+	void DisplayPausePlayButton(bool Play,D2D1_RECT_F rect);
+
+	// Display right and left scroll buttons
+	void DisplayRightScrollButton(void);
+	void DisplayLeftScrollButton(void);
+
 
 
 	HRESULT CPulseScope::LoadResourceBitmap(
