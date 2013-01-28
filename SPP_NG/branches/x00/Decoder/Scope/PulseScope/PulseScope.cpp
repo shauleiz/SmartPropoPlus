@@ -95,7 +95,7 @@ HRESULT CPulseScope::Initialize(HWND hWndParent )
 		m_hwnd = CreateWindow(
 			L"D2DPulseScope",
 			L"Pulse Scope for SmartPropoPlus",
-			WS_OVERLAPPED /*| WS_HSCROLL*/,
+			WS_OVERLAPPED | WS_THICKFRAME /*| WS_HSCROLL*/,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
 			static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
