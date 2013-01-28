@@ -29,7 +29,12 @@ m_npoints(0),
 m_offset(0),
 m_isMeasuring(false),
 m_isPlaying(true),
-m_PlayPauseRect(D2D1::RectF(10,30,100,60))
+m_PlayPauseRect(D2D1::RectF(10,30,100,60)),
+m_left_button_rect(D2D1::RectF()),
+m_right_button_rect(D2D1::RectF()),
+m_manual_shift(0),
+m_manual_shift_pressed_r(false),
+m_manual_shift_pressed_l(false)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -37,6 +42,8 @@ m_PlayPauseRect(D2D1::RectF(10,30,100,60))
 
 CPulseScope::~CPulseScope()
 {
+	m_isPlaying = false;
+	//SendMessage(m_hwnd, WM_DESTROY, 0, 0);
 	SafeRelease(&m_pDirect2dFactory);
 	SafeRelease(&m_pRenderTarget);
 	SafeRelease(&m_pLightSlateGrayBrush);
@@ -48,7 +55,7 @@ CPulseScope::~CPulseScope()
 }
 
 
-HRESULT CPulseScope::Initialize()
+HRESULT CPulseScope::Initialize(HWND hWndParent )
 // Creates the application window and device-independent
 // resources.
 {
@@ -88,12 +95,12 @@ HRESULT CPulseScope::Initialize()
 		m_hwnd = CreateWindow(
 			L"D2DPulseScope",
 			L"Pulse Scope for SmartPropoPlus",
-			WS_OVERLAPPEDWINDOW,
+			WS_OVERLAPPED /*| WS_HSCROLL*/,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
 			static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
 			static_cast<UINT>(ceil(480.f * dpiY / 96.f)),
-			NULL,
+			hWndParent ,
 			NULL,
 			HINST_THISCOMPONENT,
 			this
@@ -104,9 +111,6 @@ HRESULT CPulseScope::Initialize()
 			ShowWindow(m_hwnd, SW_SHOWNORMAL);
 			UpdateWindow(m_hwnd);
 		}
-
-		// Add a refresh timer
-		SetTimer(m_hwnd, 1, 10, NULL);
 
 	}
 
@@ -270,27 +274,45 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 				wasHandled = true;
 				break;
 
-			case WM_DESTROY:
-				{
-					PostQuitMessage(0);
-				}
-				result = 1;
-				wasHandled = true;
+			//case WM_DESTROY:
+			//	{
+			//		PostQuitMessage(0);
+			//	}
+			//	result = 1;
+			//	wasHandled = true;
+			//	break;
+
+			case WM_LBUTTONUP:
+				pPulseScope->m_manual_shift_pressed_r=false;
+				pPulseScope->m_manual_shift_pressed_l=false;
 				break;
 
 			case WM_LBUTTONDOWN:
-				if (!inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_PlayPauseRect))
-					pPulseScope->StartMeasure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-				else
+				if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_left_button_rect))
+				{/*Left scroll key*/
+					pPulseScope->m_manual_shift_pressed_l=true;
+				}
+				else if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_right_button_rect))
+				{/* Right scroll key */
+					pPulseScope->m_manual_shift_pressed_r=true;
+				}
+				else if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_PlayPauseRect))
 				{
 					if (pPulseScope->m_isPlaying)
 						pPulseScope->m_isPlaying = false;
 					else
 						pPulseScope->m_isPlaying = true;
-				};
+				}
+				else
+					pPulseScope->StartMeasure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 				break;
 
 			case WM_MOUSEMOVE:
+				if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_left_button_rect))
+					pPulseScope->m_manual_shift_pressed_l = false;
+				if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_right_button_rect))
+					pPulseScope->m_manual_shift_pressed_r = false;
+
 				if (wParam & MK_LBUTTON)
 					pPulseScope->Measure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 				break;
@@ -417,9 +439,13 @@ HRESULT CPulseScope::OnRender()
 		///////// Controls ////////////////////////////////////////////////////
 		// Shift Right
 		DisplayRightScrollButton();
+		if (m_manual_shift_pressed_r)
+			m_manual_shift-=50;
 
 		// Shift Left
 		DisplayLeftScrollButton();
+		if (m_manual_shift_pressed_l)
+			m_manual_shift+=50;
 
 		// Play/Pause button
 		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
@@ -439,13 +465,12 @@ HRESULT CPulseScope::OnRender()
 		hr = pSink->Close();
 		SafeRelease(&pSink);
 
-
 		// Scale & Shift wave form (Mark the triger point)
 		D2D1_MATRIX_3X2_F xFormScale= D2D1::Matrix3x2F::Scale(D2D1::Size(scale, 1.0f),D2D1::Point2F(0.0f, 0.0f));
-		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(2*sqSize/scale-m_offset, 0);
-		m_pRenderTarget->SetTransform(xFormShift*xFormScale);
+		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(2*sqSize/scale-m_offset-m_manual_shift, 0);
+		m_pRenderTarget->SetTransform(xFormShift*xFormScale); // Order of multiplection is crucial
 		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
-		// Trigger point
+		// Trigger point marked as two close lines
 		m_pRenderTarget->DrawLine(D2D1::Point2F(m_offset-10,rtSize.height/2+10),D2D1::Point2F(m_offset-10,rtSize.height/2-10),m_pArrowColor,7.0);
 		m_pRenderTarget->DrawLine(D2D1::Point2F(m_offset+10,rtSize.height/2+10),D2D1::Point2F(m_offset+10,rtSize.height/2-10),m_pArrowColor,7.0);
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -579,11 +604,16 @@ void CPulseScope::DiscardDeviceResources()
 	SafeRelease(&m_pRenderTarget);
 	SafeRelease(&m_pLightSlateGrayBrush);
 	SafeRelease(&m_pCornflowerBlueBrush);
-}
+	SafeRelease(&m_pDarkViolet);
+	SafeRelease(&m_pMeasureBrush);
+	SafeRelease(&m_pArrowColor);
+	SafeRelease(&m_pButtonColor);
+}	
 
+
+void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 // Based on
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd756686(v=vs.85).aspx
-void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 {
 	float offset = 0;			// Offset to the beginning of the longest pulse
 	float maxlength = 0;		// Size of the longest pulse (in the first half of the buffer)
@@ -784,57 +814,72 @@ void CPulseScope::DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1)
 void CPulseScope::DisplayRightScrollButton(void)
 // Draw right arrow button
 {
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+	m_right_button_rect = D2D1::RectF(rtSize.width-30,rtSize.height-45,rtSize.width-5,rtSize.height-15);
+
 	ID2D1GeometrySink *pSink = NULL;
 	ID2D1PathGeometry * TriangleRightGeometry;
 	m_pDirect2dFactory->CreatePathGeometry(&TriangleRightGeometry);
-	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
 	D2D1_POINT_2F TriangleRightPoints[3] = {
-		D2D1::Point2F(rtSize.width-10, rtSize.height/2),
-		D2D1::Point2F(rtSize.width-20, rtSize.height/2-10),
-		D2D1::Point2F(rtSize.width-20, rtSize.height/2+10)
+		D2D1::Point2F(m_right_button_rect.right-5,  (m_right_button_rect.top+m_right_button_rect.bottom)/2),
+		D2D1::Point2F(m_right_button_rect.right-15, (m_right_button_rect.top+m_right_button_rect.bottom)/2-10),
+		D2D1::Point2F(m_right_button_rect.right-15, (m_right_button_rect.top+m_right_button_rect.bottom)/2+10)
 	};
 	TriangleRightGeometry->Open(&pSink);
 	pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
-	pSink->BeginFigure(D2D1::Point2F(rtSize.width-10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
+	pSink->BeginFigure(
+		D2D1::Point2F(m_right_button_rect.right-5, (m_right_button_rect.bottom+m_right_button_rect.top)/2),
+		D2D1_FIGURE_BEGIN_FILLED);
 	pSink->AddLines(TriangleRightPoints,3);
 	pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
 	pSink->Close();
 	SafeRelease(&pSink);
 	m_pRenderTarget->FillGeometry(TriangleRightGeometry, m_pArrowColor);
-	m_pRenderTarget->DrawRectangle(D2D1::RectF(rtSize.width-30,rtSize.height/2-15,rtSize.width-5,rtSize.height/2+15),m_pArrowColor);
+	m_pRenderTarget->DrawRectangle(m_right_button_rect, m_pArrowColor);
 }
 
 void CPulseScope::DisplayLeftScrollButton(void)
 // Draw left arrow button
 {
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+	m_left_button_rect = D2D1::RectF(5,rtSize.height-45,30,rtSize.height-15);
+
 	ID2D1GeometrySink *pSink = NULL;
 	ID2D1PathGeometry * TriangleLeftGeometry;
 	m_pDirect2dFactory->CreatePathGeometry(&TriangleLeftGeometry);
-	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
 	D2D1_POINT_2F TriangleLeftPoints[3] = {
-		D2D1::Point2F(10, rtSize.height/2),
-		D2D1::Point2F(20, rtSize.height/2-10),
-		D2D1::Point2F(20, rtSize.height/2+10)
+		D2D1::Point2F(m_left_button_rect.left+5, (m_left_button_rect.top+m_left_button_rect.bottom)/2),
+		D2D1::Point2F(m_left_button_rect.left+15, (m_left_button_rect.top+m_left_button_rect.bottom)/2-10),
+		D2D1::Point2F(m_left_button_rect.left+15, (m_left_button_rect.top+m_left_button_rect.bottom)/2+10)
 	};
 	TriangleLeftGeometry->Open(&pSink);
 	pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
-	pSink->BeginFigure(D2D1::Point2F(10,rtSize.height/2),D2D1_FIGURE_BEGIN_FILLED);
+	pSink->BeginFigure(
+		D2D1::Point2F(m_left_button_rect.left+5, (m_left_button_rect.top+m_left_button_rect.bottom)/2),
+		D2D1_FIGURE_BEGIN_FILLED);
 	pSink->AddLines(TriangleLeftPoints,3);
 	pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
 	pSink->Close();
 	SafeRelease(&pSink);
 	m_pRenderTarget->FillGeometry(TriangleLeftGeometry, m_pArrowColor);
-	m_pRenderTarget->DrawRectangle(D2D1::RectF(5,rtSize.height/2-15,30,rtSize.height/2+15),m_pArrowColor);
+	m_pRenderTarget->DrawRectangle(m_left_button_rect ,m_pArrowColor);
 
 }
 
+////////////////// General functions ////////////////////////////
 
+PULSESCOPE_API CPulseScope * InitPulseScope(HWND hWndParent)
 // Initialize Pulse Scope object and return pointer to object
-PULSESCOPE_API CPulseScope * InitPulseScope(void)
 {
 	CPulseScope * PulseScopeObj = new  CPulseScope;
-	PulseScopeObj->Initialize();
+	PulseScopeObj->Initialize(hWndParent);
 	return PulseScopeObj;
+}
+
+PULSESCOPE_API void DeletePulseScope(CPulseScope * obj)
+{
+	DestroyWindow(obj->m_hwnd);
+	delete obj;
 }
 
 void	WINAPI WinThread(void)

@@ -32,11 +32,14 @@ struct PULSE_DATA {
 class PULSESCOPE_API CPulseScope {
 public:
 	CPulseScope(void);
-	HRESULT Initialize(void);
+	HRESULT Initialize(HWND hWndParent);
 	~CPulseScope();
 
 	// Get pulse data - Prepare it for scope to render
 	void DisplayPulseData(UINT nPulses, float *Length, float *Value);
+
+public:
+	HWND m_hwnd;
 
 private:
     // Initialize device-independent resources.
@@ -83,7 +86,6 @@ private:
 
 
 private:
-    HWND m_hwnd;
     ID2D1Factory* m_pDirect2dFactory;
     ID2D1HwndRenderTarget* m_pRenderTarget;
 
@@ -109,11 +111,17 @@ private:
 	bool m_isPlaying;
 	D2D1_POINT_2F m_measureStartPoint,  m_measureEndPoint;
 	D2D1_RECT_F m_PlayPauseRect;
+	D2D1_RECT_F m_right_button_rect;
+	D2D1_RECT_F m_left_button_rect;
+	float m_manual_shift;
+	bool m_manual_shift_pressed_r;
+	bool m_manual_shift_pressed_l;
 
 };
 
 PULSESCOPE_API void Pulse2Scope(int length, bool low, LPVOID Param);
-PULSESCOPE_API CPulseScope * InitPulseScope(void);
+PULSESCOPE_API CPulseScope * InitPulseScope(HWND hWndParent);
+PULSESCOPE_API void DeletePulseScope(CPulseScope *);
 void		WINAPI WinThread(void);
 bool inRect(int x, int y, D2D1_RECT_F rect1);
 

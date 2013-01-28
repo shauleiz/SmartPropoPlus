@@ -25,7 +25,9 @@
 #define MAX_LOADSTRING 100
 class CPulseScope;
 extern __declspec(dllimport) void Pulse2Scope(int length, bool low, LPVOID Param);
-extern __declspec(dllimport) CPulseScope * InitPulseScope(void);
+extern __declspec(dllimport) CPulseScope * InitPulseScope(HWND);
+extern __declspec(dllimport)  void DeletePulseScope(CPulseScope * obj);
+
 
 
 // Global Variables:
@@ -36,6 +38,7 @@ CAudioInputW7 * g_audio;						// Audio interface object (Only one for the moment
 FILE * g_DbgFile = NULL;						// Log file for raw audio
 HWND hLogDlg;
 HWND hVolDlg = NULL;
+CPulseScope * g_PulseScope = NULL;				// Pulse Scope object
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -265,8 +268,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 
 	// Open a log window and register a callback function that will called for logging
+	RECT parent_rect;
+	GetWindowRect (hWnd, &parent_rect);
 	hLogDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOGDLG), hWnd, DlgAudioLog);
-	SetWindowPos(hLogDlg, NULL, 100,100,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
+	SetWindowPos(hLogDlg, NULL, parent_rect.left+20,parent_rect.top+80,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
+	ShowWindow(hLogDlg, SW_SHOW); 
 	g_audio->RegisterLog(LogAudioUnit, NULL);
 
 	return TRUE;
@@ -832,13 +838,14 @@ bool StartPulseLog(HWND hWnd)
 	//hVolDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIAG_VOL), hWnd, DlgAudioVol);
 	//SetWindowPos(hVolDlg, NULL, 120,120,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
 	//CStub * scope = new CStub;
-	CPulseScope * PulseScope = InitPulseScope();
-	g_audio->RegisterProcessPulse((LPVOID)(Pulse2Scope), (PVOID)PulseScope);
+	g_PulseScope = InitPulseScope(hWnd);
+	g_audio->RegisterProcessPulse((LPVOID)(Pulse2Scope), (PVOID)g_PulseScope);
 	return true;
 }
 void StopPulseLog(HWND hWnd)
 {
 	g_audio->RegisterProcessPulse(NULL);
+	DeletePulseScope(g_PulseScope);
 }
 
 
