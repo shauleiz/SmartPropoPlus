@@ -59,6 +59,7 @@ DWORD WINAPI CaptureAudio(LPVOID param)
 
 	// Exit capture thread
 	delete parent->m_pPulseDataObj;
+	parent->m_pPulseDataObj = NULL;
 	SetEvent(g_hEventStopCaptureAudioThread);
 	return 0;
 }

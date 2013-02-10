@@ -271,7 +271,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	RECT parent_rect;
 	GetWindowRect (hWnd, &parent_rect);
 	hLogDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOGDLG), hWnd, DlgAudioLog);
-	SetWindowPos(hLogDlg, NULL, parent_rect.left+20,parent_rect.top+80,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
+	SetWindowLong(hLogDlg, GWL_STYLE, WS_CHILD);
+	SetWindowPos(hLogDlg, NULL, parent_rect.left+6,parent_rect.top+50,0,0, SWP_NOSIZE | SWP_SHOWWINDOW);
 	ShowWindow(hLogDlg, SW_SHOW); 
 	g_audio->RegisterLog(LogAudioUnit, NULL);
 
