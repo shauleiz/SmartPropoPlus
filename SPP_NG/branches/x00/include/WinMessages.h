@@ -4,3 +4,4 @@ UINT const WMAPP_DEV_ADDED =		WM_APP + 101;			// Device added
 UINT const WMAPP_DEV_REM =			WM_APP + 102;			// Device removed
 UINT const WMAPP_DEV_CHANGED =		WM_APP + 103;			// Device changed
 UINT const WMAPP_DEV_PROPTY =		WM_APP + 104;			// Device property changed
+UINT const WMAPP_POS_READY =		WM_APP + 105;			// Joystick Position data is ready
