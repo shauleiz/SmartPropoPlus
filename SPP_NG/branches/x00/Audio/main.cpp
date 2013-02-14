@@ -19,7 +19,7 @@
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\lib\\Debug\\PulseScope.lib")
 #else
-#pragma  comment(lib, "..\\Decoder\\Scope\\Release\\STUB.lib")
+#pragma  comment(lib, "..\\lib\\Release\\PulseScope.lib")
 #endif
 
 #define MAX_LOADSTRING 100
