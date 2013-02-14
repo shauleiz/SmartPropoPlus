@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="PulseScope"
-	ProjectGUID="{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}"
-	RootNamespace="PulseScope"
+	Name="Stub"
+	ProjectGUID="{F848E1DD-0135-4918-9AB7-A3B075E07C89}"
+	RootNamespace="Stub"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -25,8 +25,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Copy header files"
-				CommandLine="copy $(InputName).h ..\..\..\include\."
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -43,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PULSESCOPE_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;STUB_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,7 +60,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Dwrite.lib D2d1.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -88,8 +85,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy to output files (dll/lib) LIB folder"
-				CommandLine="mkdir ..\..\..\Lib\$(ConfigurationName)&#x0D;&#x0A;copy $(TargetDir)\$(InputName).dll  ..\..\..\Lib\$(ConfigurationName)\.&#x0D;&#x0A;copy $(TargetDir)\$(InputName).lib  ..\..\..\Lib\$(ConfigurationName)\.&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -102,8 +97,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Copy header files"
-				CommandLine="copy $(InputName).h ..\..\..\include\."
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -121,7 +114,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PULSESCOPE_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;STUB_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -139,7 +132,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Dwrite.lib D2d1.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -167,8 +159,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy to output files (dll/lib) LIB folder"
-				CommandLine="mkdir ..\..\..\Lib\$(ConfigurationName)&#x0D;&#x0A;copy $(TargetDir)\$(InputName).dll  ..\..\..\Lib\$(ConfigurationName)\.&#x0D;&#x0A;copy $(TargetDir)\$(InputName).lib  ..\..\..\Lib\$(ConfigurationName)\.&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -203,14 +193,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\ProcessPulse.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PulseScope.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -230,6 +212,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Stub.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -237,11 +223,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\PulseScope.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\Stub.h"
 				>
 			</File>
 			<File
@@ -254,10 +240,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\PulseScope.rc"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
