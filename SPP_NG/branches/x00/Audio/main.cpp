@@ -60,7 +60,8 @@ inline int CalcVolumeLeft(int value);
 inline int CalcVolumeRight(int value);
 bool StartPulseLog(HWND hWnd);
 void StopPulseLog(HWND hWnd);
-
+bool StartDecoderPPM(HWND hWnd);
+void StopDecoderPPM(HWND hWnd);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int  nCmdShow)
 // Standard WinMain that creates single audio object
@@ -521,6 +522,21 @@ INT_PTR CALLBACK  DlgListCaptureDevices(HWND hDlg, UINT message, WPARAM wParam, 
 			return (INT_PTR)TRUE;;
 		};
 
+		// Start/Stop PPM Decoder
+		if (LOWORD(wParam) == IDC_DECPPM)
+		{
+			LRESULT check = Button_GetCheck(GetDlgItem(hDlg, IDC_DECPPM));
+			if (BST_CHECKED == check)
+			{
+				StartDecoderPPM(hDlg);
+			}
+			else
+			{
+				StopDecoderPPM(hDlg);
+			};
+			return (INT_PTR)TRUE;;
+		};
+
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
 			EndDialog(hDlg, LOWORD(wParam));
@@ -849,4 +865,13 @@ void StopPulseLog(HWND hWnd)
 	DeletePulseScope(g_PulseScope);
 }
 
+bool StartDecoderPPM(HWND hWnd)
+{
+	return false;
+}
+
+void StopDecoderPPM(HWND hWnd)
+{
+	return;
+}
 

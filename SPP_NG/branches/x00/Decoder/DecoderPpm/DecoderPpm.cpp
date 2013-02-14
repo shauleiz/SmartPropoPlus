@@ -52,6 +52,9 @@ SPPINTERFACE_API	void CDecoderPpm::ProcessPulse(int width, bool low)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (width > m_param_trigger) {
         sync = 1;
+		m_ChannelPos.m_nAnalogChannels = datacount;
+		m_ValidPosition = true;
+		PostPositionData();
         datacount = 0;
 		former_sync = 1;
 		return;
