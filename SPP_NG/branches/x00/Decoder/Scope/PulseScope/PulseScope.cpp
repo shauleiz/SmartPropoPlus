@@ -34,7 +34,9 @@ m_left_button_rect(D2D1::RectF()),
 m_right_button_rect(D2D1::RectF()),
 m_manual_shift(0),
 m_manual_shift_pressed_r(false),
-m_manual_shift_pressed_l(false)
+m_manual_shift_pressed_l(false),
+m_pButtonPauseBitmap(NULL),
+m_pButtonPlayBitmap(NULL)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -52,6 +54,10 @@ CPulseScope::~CPulseScope()
     SafeRelease(&m_pBtnTextFormat);
     SafeRelease(&m_pMsrTextFormat);
 	SafeRelease(&m_pDWriteFactory);
+	SafeRelease(&m_pWICFactory);
+	SafeRelease(&m_pButtonPauseBitmap);
+	SafeRelease(&m_pButtonPlayBitmap);
+
 }
 
 
@@ -208,6 +214,18 @@ HRESULT CPulseScope::CreateDeviceIndependentResources()
 		if (!m_hWinThread)
 			hr = ERROR_ACCESS_DENIED;
 	};
+
+	if (SUCCEEDED(hr))
+    {
+        // Create WIC factory.
+        hr = CoCreateInstance(
+            CLSID_WICImagingFactory,
+            NULL,
+            CLSCTX_INPROC_SERVER,
+            IID_IWICImagingFactory,
+            reinterpret_cast<void **>(&m_pWICFactory)
+            );
+    }
 
 	return hr;
 }
@@ -448,7 +466,7 @@ HRESULT CPulseScope::OnRender()
 			m_manual_shift+=50;
 
 		// Play/Pause button
-		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
+		DisplayPausePlayButtonBM(!m_isPlaying, m_PlayPauseRect);
 
 
 		/////////  Draw wave form //////////////////////////////////////////////////////
@@ -592,6 +610,36 @@ HRESULT CPulseScope::CreateDeviceResources()
 				);
 		}
 
+		// Create bitmaps for buttons from files
+		// Files must be located in current folder
+
+		// Pause
+		if (SUCCEEDED(hr))
+		{
+			hr = LoadBitmapFromFile(
+				m_pRenderTarget,
+				m_pWICFactory,
+				L"Pause_Button.bmp",
+				100,
+				0,
+				&m_pButtonPauseBitmap
+				);
+		}
+
+		// Play
+		if (SUCCEEDED(hr))
+		{
+			hr = LoadBitmapFromFile(
+				m_pRenderTarget,
+				m_pWICFactory,
+				L"Play_Button.bmp",
+				100,
+				0,
+				&m_pButtonPlayBitmap
+				);
+		}
+
+
 	}
 
 	return hr;
@@ -608,6 +656,9 @@ void CPulseScope::DiscardDeviceResources()
 	SafeRelease(&m_pMeasureBrush);
 	SafeRelease(&m_pArrowColor);
 	SafeRelease(&m_pButtonColor);
+	SafeRelease(&m_pButtonPauseBitmap);
+	SafeRelease(&m_pButtonPlayBitmap);
+
 }	
 
 
@@ -866,6 +917,35 @@ void CPulseScope::DisplayLeftScrollButton(void)
 
 }
 
+void CPulseScope::DisplayPausePlayButtonBM(bool Play,D2D1_RECT_F rect1)
+{
+	if (!m_pButtonPlayBitmap || !m_pButtonPauseBitmap)
+	{
+		DisplayPausePlayButton(Play, rect1);
+		return;
+	};
+
+	// Get Button size
+	D2D1_SIZE_F rtSize = m_pButtonPlayBitmap->GetSize();
+
+	// Get rectangle encasulating Button
+
+	D2D1_RECT_F rect2 = rect1;
+	rect2.bottom = rect1.top + rtSize.height;
+	rect2.right = rect1.left + rtSize.width;
+	m_PlayPauseRect = rect2;
+
+	if (Play)
+		m_pRenderTarget->DrawBitmap(m_pButtonPlayBitmap, rect2);
+	else
+		m_pRenderTarget->DrawBitmap(m_pButtonPauseBitmap, rect2);
+
+	return;
+
+}
+
+
+
 ////////////////// General functions ////////////////////////////
 
 PULSESCOPE_API CPulseScope * InitPulseScope(HWND hWndParent)
@@ -901,4 +981,120 @@ bool inRect(int x, int y, D2D1_RECT_F rect)
 		return true;
 	else
 		return false;
+}
+
+HRESULT LoadBitmapFromFile(
+    ID2D1RenderTarget *pRenderTarget,
+    IWICImagingFactory *pIWICFactory,
+    PCWSTR uri,
+    UINT destinationWidth,
+    UINT destinationHeight,
+    ID2D1Bitmap **ppBitmap
+    )
+//
+// Creates a Direct2D bitmap from the specified
+// file name.
+//
+{
+    HRESULT hr = S_OK;
+
+    IWICBitmapDecoder *pDecoder = NULL;
+    IWICBitmapFrameDecode *pSource = NULL;
+    IWICStream *pStream = NULL;
+    IWICFormatConverter *pConverter = NULL;
+    IWICBitmapScaler *pScaler = NULL;
+
+    hr = pIWICFactory->CreateDecoderFromFilename(
+        uri,
+        NULL,
+        GENERIC_READ,
+        WICDecodeMetadataCacheOnLoad,
+        &pDecoder
+        );
+    if (SUCCEEDED(hr))
+    {
+
+        // Create the initial frame.
+        hr = pDecoder->GetFrame(0, &pSource);
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // Convert the image format to 32bppPBGRA
+        // (DXGI_FORMAT_B8G8R8A8_UNORM + D2D1_ALPHA_MODE_PREMULTIPLIED).
+        hr = pIWICFactory->CreateFormatConverter(&pConverter);
+    }
+    if (SUCCEEDED(hr))
+    {
+        // If a new width or height was specified, create an
+        // IWICBitmapScaler and use it to resize the image.
+        if (destinationWidth != 0 || destinationHeight != 0)
+        {
+            UINT originalWidth, originalHeight;
+            hr = pSource->GetSize(&originalWidth, &originalHeight);
+            if (SUCCEEDED(hr))
+            {
+                if (destinationWidth == 0)
+                {
+                    FLOAT scalar = static_cast<FLOAT>(destinationHeight) / static_cast<FLOAT>(originalHeight);
+                    destinationWidth = static_cast<UINT>(scalar * static_cast<FLOAT>(originalWidth));
+                }
+                else if (destinationHeight == 0)
+                {
+                    FLOAT scalar = static_cast<FLOAT>(destinationWidth) / static_cast<FLOAT>(originalWidth);
+                    destinationHeight = static_cast<UINT>(scalar * static_cast<FLOAT>(originalHeight));
+                }
+
+                hr = pIWICFactory->CreateBitmapScaler(&pScaler);
+                if (SUCCEEDED(hr))
+                {
+                    hr = pScaler->Initialize(
+                            pSource,
+                            destinationWidth,
+                            destinationHeight,
+                            WICBitmapInterpolationModeCubic
+                            );
+                }
+                if (SUCCEEDED(hr))
+                {
+                    hr = pConverter->Initialize(
+                        pScaler,
+                        GUID_WICPixelFormat32bppPBGRA,
+                        WICBitmapDitherTypeNone,
+                        NULL,
+                        0.f,
+                        WICBitmapPaletteTypeMedianCut
+                        );
+                }
+            }
+        }
+        else // Don't scale the image.
+        {
+            hr = pConverter->Initialize(
+                pSource,
+                GUID_WICPixelFormat32bppPBGRA,
+                WICBitmapDitherTypeNone,
+                NULL,
+                0.f,
+                WICBitmapPaletteTypeMedianCut
+                );
+        }
+    }
+    if (SUCCEEDED(hr))
+    {
+        // Create a Direct2D bitmap from the WIC bitmap.
+        hr = pRenderTarget->CreateBitmapFromWicBitmap(
+            pConverter,
+            NULL,
+            ppBitmap
+            );
+    }
+
+    SafeRelease(&pDecoder);
+    SafeRelease(&pSource);
+    SafeRelease(&pStream);
+    SafeRelease(&pConverter);
+    SafeRelease(&pScaler);
+
+    return hr;
 }

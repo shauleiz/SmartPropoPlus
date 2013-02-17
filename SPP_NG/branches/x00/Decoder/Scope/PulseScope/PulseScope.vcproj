@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Dwrite.lib D2d1.lib"
+				AdditionalDependencies="Dwrite.lib D2d1.lib windowscodecs.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Dwrite.lib D2d1.lib"
+				AdditionalDependencies="Dwrite.lib D2d1.lib windowscodecs.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

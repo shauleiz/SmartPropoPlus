@@ -164,6 +164,26 @@ LPWSTR GetWasapiText(DWORD code)
 
 }
 
+BOOL IsWindows7OrLater(void)
+{
+    // Initialize the OSVERSIONINFOEX structure to Windows7.
+    OSVERSIONINFOEX osvi;
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+    osvi.dwMajorVersion = 6;
+    osvi.dwMinorVersion = 1;
+
+    // Initialize the condition mask for Windows7.
+    DWORDLONG dwlConditionMask = 0;
+    VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+    VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
+
+    // Perform the test.
+    if (VerifyVersionInfo(	&osvi,  VER_MAJORVERSION | VER_MINORVERSION ,	dwlConditionMask))
+		return TRUE; // Windows 7
+
+	return VerifyVersionInfo(	&osvi, VER_MAJORVERSION | VER_MINORVERSION, dwlConditionMask);
+}
 
 
 ////////////////////// Class CAudioInputW7 //////////////////////
@@ -393,15 +413,33 @@ Exit:
 
 HRESULT CAudioInputW7::SetDefaultAudioDevice(PVOID devID)
 {	
-	IPolicyConfigVista *pPolicyConfig;
+	IPolicyConfigVista *pPolicyConfigVista;
+	IPolicyConfig *pPolicyConfig;
 	ERole reserved = eConsole;
+	HRESULT hr;
 
-    HRESULT hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
-		NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfig);
-	if (SUCCEEDED(hr))
+
+	// WIndows 7 and up
+	if (IsWindows7OrLater())
 	{
-		hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
-		pPolicyConfig->Release();
+		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_ALL, __uuidof(IPolicyConfig), (LPVOID *)&pPolicyConfig);
+		if (SUCCEEDED(hr))
+		{
+			hr = pPolicyConfig->SetEndpointVisibility((LPCWSTR)devID, true);
+			hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
+			pPolicyConfig->Release();
+		};
+	}
+	else
+	{ // Vista SP2
+		hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
+			NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfigVista);
+		if (SUCCEEDED(hr))
+		{
+			hr = pPolicyConfigVista->SetEndpointVisibility((LPCWSTR)devID, true);
+			hr = pPolicyConfigVista->SetDefaultEndpoint((LPCWSTR)devID, reserved);
+			pPolicyConfigVista->Release();
+		};
 	};
 
 	// Logging

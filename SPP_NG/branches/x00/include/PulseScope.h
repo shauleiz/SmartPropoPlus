@@ -67,6 +67,7 @@ private:
 
 	// Display Play/Pause button
 	void DisplayPausePlayButton(bool Play,D2D1_RECT_F rect);
+	void DisplayPausePlayButtonBM(bool Play,D2D1_RECT_F rect);
 
 	// Display right and left scroll buttons
 	void DisplayRightScrollButton(void);
@@ -102,6 +103,11 @@ private:
     IDWriteTextFormat *m_pBtnTextFormat;
 	IDWriteTextFormat *m_pMsrTextFormat;
 
+    IWICImagingFactory	*m_pWICFactory;
+	ID2D1Bitmap			*m_pButtonPauseBitmap;
+	ID2D1Bitmap			*m_pButtonPlayBitmap;
+
+
 	IDWriteFactory *m_pDWriteFactory;
 	HANDLE m_hWinThread;
 	D2D1_POINT_2F *m_points;
@@ -124,4 +130,12 @@ PULSESCOPE_API CPulseScope * InitPulseScope(HWND hWndParent);
 PULSESCOPE_API void DeletePulseScope(CPulseScope *);
 void		WINAPI WinThread(void);
 bool inRect(int x, int y, D2D1_RECT_F rect1);
+HRESULT LoadBitmapFromFile(
+						   ID2D1RenderTarget *pRenderTarget,
+						   IWICImagingFactory *pIWICFactory,
+						   PCWSTR uri,
+						   UINT destinationWidth,
+						   UINT destinationHeight,
+						   ID2D1Bitmap **ppBitmap
+						   );
 
