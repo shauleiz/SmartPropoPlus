@@ -62,6 +62,7 @@ bool StartPulseLog(HWND hWnd);
 void StopPulseLog(HWND hWnd);
 bool StartDecoderPPM(HWND hWnd);
 void StopDecoderPPM(HWND hWnd);
+BOOL IsWindows7OrLater(void);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int  nCmdShow)
 // Standard WinMain that creates single audio object
