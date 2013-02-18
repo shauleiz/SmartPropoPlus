@@ -83,7 +83,8 @@ HRESULT STDMETHODCALLTYPE CMMNotificationClient::QueryInterface(REFIID riid, VOI
 HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDefaultDeviceChanged(EDataFlow flow, ERole role,	LPCWSTR pwstrDeviceId)
 {
 	// Notify caller of the change
-	_Parent->DefaultDeviceChanged( flow,  role,	 pwstrDeviceId);
+	if (pwstrDeviceId)
+		_Parent->DefaultDeviceChanged( flow,  role,	 pwstrDeviceId);
 	return S_OK;
 }
 

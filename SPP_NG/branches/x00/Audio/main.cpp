@@ -674,7 +674,12 @@ void AddLine2List(HWND hWndListView, int size, LPWSTR id)
 
 	// Is physical-external device?
 	if (g_audio->IsExternal((PVOID) id))
-		ListView_SetItemText(hWndListView, index, 4, L"+")
+		ListView_SetItemText(hWndListView, index, 4, L"+");
+
+	// Get Jack info (Debug only)
+	KSJACK_DESCRIPTION  JackDesc;
+	hr = g_audio->GetJackInfo((PVOID) id, &JackDesc);
+	COLORREF color = g_audio->GetJackColor((PVOID) id);
 
 	// Number of channels
 	TCHAR nChStr[3];
