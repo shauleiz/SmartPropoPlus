@@ -82,6 +82,7 @@ typedef void (* PROCPULSEFUNC)(int length, bool low, LPVOID Param);
 #define	PROCPACK_RLS		142
 #define	PROCPACK_PADD		143
 #define	INITPULSE			144
+#define	CHANGE_ENDEV		145
 
 // Audio Log message Codes
 #define	ALOG_GETPCK			200
@@ -115,6 +116,7 @@ protected:
 	HRESULT InitEndPoint(PVOID Id);
 	HRESULT CreateCuptureThread(PVOID Id);
 	HRESULT SetDefaultAudioDevice(PVOID Id);
+	HRESULT EnableAudioDevice(PVOID devID, bool Enable=true);
 	LOGFUNC	LogStatus;
 	AUDIOLOGFUNC	LogAudio;
 	PROCPULSEFUNC	ProcessPulse;
@@ -138,6 +140,8 @@ public:
 	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
 	SPPINTERFACE_API bool		StartStreaming(PVOID Id, bool RightChannel=false);
 	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
+	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
+	SPPINTERFACE_API COLORREF	GetJackColor(PVOID Id);
 
 	SPPINTERFACE_API bool		RegisterLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID,LPVOID=NULL);

@@ -451,6 +451,44 @@ HRESULT CAudioInputW7::SetDefaultAudioDevice(PVOID devID)
 	return hr;
 }
 
+HRESULT CAudioInputW7::EnableAudioDevice(PVOID devID, bool Enable)
+{
+	IPolicyConfigVista *pPolicyConfigVista;
+	IPolicyConfig *pPolicyConfig;
+	ERole reserved = eConsole;
+	HRESULT hr;
+
+
+	// WIndows 7 and up
+	if (IsWindows7OrLater())
+	{
+		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_ALL, __uuidof(IPolicyConfig), (LPVOID *)&pPolicyConfig);
+		if (SUCCEEDED(hr))
+		{
+			hr = pPolicyConfig->SetEndpointVisibility((LPCWSTR)devID, Enable);
+			pPolicyConfig->Release();
+		};
+	}
+	else
+	{ // Vista SP2
+		hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
+			NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfigVista);
+		if (SUCCEEDED(hr))
+		{
+			hr = pPolicyConfigVista->SetEndpointVisibility((LPCWSTR)devID, Enable);
+			pPolicyConfigVista->Release();
+		};
+	};
+
+	// Logging
+	if (SUCCEEDED(hr))
+		LogStatus(CHANGE_ENDEV,INFO,devID,m_LogParam);
+	else
+		LogStatus(CHANGE_ENDEV,WARN,GetWasapiText(hr),m_LogParam);
+
+	return hr;
+}
+
 
 int		CAudioInputW7::CountCaptureDevices(void)
 {		
@@ -483,6 +521,8 @@ HRESULT	CAudioInputW7::GetCaptureDeviceName(PVOID Id, LPWSTR * DeviceName)
 {
 	for (UINT  i = 0; i<m_CaptureDevices.size(); i++)
 	{
+		if (!Id)
+			continue;
 		if (!wcscmp(m_CaptureDevices[i]->id, (LPWSTR)Id))
 		{
 			*DeviceName = m_CaptureDevices[i]->DeviceName;
@@ -611,6 +651,106 @@ Exit:
     SAFE_RELEASE(pPart)
 	return result;
 }
+
+SPPINTERFACE_API COLORREF CAudioInputW7::GetJackColor(PVOID Id)
+/* Get the colour of the input jack
+   Provided that the jack:
+   * The sound cart supports Jack Interface Information
+   * Is connected
+   * The port connection is typed 'ePortConnJack'
+   * The colour is valid
+
+   Return Value:
+   If valid: RGB Value of the Jack
+   If invalid: 0xFFFFFFFF
+*/
+{
+	HRESULT hr = S_OK;
+	COLORREF out = 0xFFFFFFFF;
+
+	// Get Jack info
+	KSJACK_DESCRIPTION  JackDesc;
+	hr = GetJackInfo((PVOID) Id, &JackDesc);
+	if (FAILED(hr))
+		return out;
+
+	if (JackDesc.IsConnected && JackDesc.PortConnection == ePortConnJack)
+		return JackDesc.Color;
+	else 
+		return out;
+}
+
+SPPINTERFACE_API HRESULT CAudioInputW7::GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData)
+//-----------------------------------------------------------
+// Get the IKsJackDescription interface that describes the
+// audio jack or jacks that the endpoint device plugs into.
+//
+// Based on http://msdn.microsoft.com/en-us/library/windows/desktop/dd371387(v=vs.85).aspx 
+//-----------------------------------------------------------
+{
+    HRESULT hr = S_OK;
+    IDeviceTopology *pDeviceTopology = NULL;
+    IConnector *pConnFrom = NULL;
+    IConnector *pConnTo = NULL;
+    IPart *pPart = NULL;
+    IKsJackDescription *pJackDesc = NULL;
+	IMMDevice *pDevice = NULL;
+
+	// Get device from ID
+	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
+	if (FAILED(hr))
+	{
+		LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
+		LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		EXIT_ON_ERROR(hr);
+	};
+
+
+    if (NULL == pDevice || NULL == pJackDescData)
+    {
+        return E_POINTER;
+    }
+
+    // Get the endpoint device's IDeviceTopology interface.
+    hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL,
+                           NULL, (void**)&pDeviceTopology);
+    EXIT_ON_ERROR(hr)
+
+    // The device topology for an endpoint device always
+    // contains just one connector (connector number 0).
+    hr = pDeviceTopology->GetConnector(0, &pConnFrom);
+    EXIT_ON_ERROR(hr)
+
+    // Step across the connection to the jack on the adapter.
+    hr = pConnFrom->GetConnectedTo(&pConnTo);
+    if (HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND) == hr)
+    {
+        // The adapter device is not currently active.
+        hr = E_NOINTERFACE;
+    }
+    EXIT_ON_ERROR(hr)
+
+    // Get the connector's IPart interface.
+    hr = pConnTo->QueryInterface(__uuidof(IPart), (void**)&pPart);
+    EXIT_ON_ERROR(hr)
+
+    // Activate the connector's IKsJackDescription interface.
+    hr = pPart->Activate(CLSCTX_INPROC_SERVER,
+                         __uuidof(IKsJackDescription), (void**)&pJackDesc);
+    EXIT_ON_ERROR(hr);
+	
+	hr = pJackDesc->GetJackDescription(0, pJackDescData);
+    EXIT_ON_ERROR(hr);
+
+
+Exit:
+    SAFE_RELEASE(pDeviceTopology)
+    SAFE_RELEASE(pConnFrom)
+    SAFE_RELEASE(pConnTo)
+    SAFE_RELEASE(pPart)
+    return hr;
+}
+
 
 
 SPPINTERFACE_API int CAudioInputW7::GetNumberChannels(PVOID Id)
@@ -1055,6 +1195,7 @@ double CAudioInputW7::GetDevicePeak(PVOID Id)
 	};
 
 	// For each channel get peak volume
+	Sleep(1000);
 	PeakValue = new float[nChannels];
 	hr = pMeterInfo->GetChannelsPeakValues(nChannels, PeakValue);
 	if (FAILED(hr))
@@ -1094,9 +1235,18 @@ SPPINTERFACE_API double CAudioInputW7::GetLoudestDevice(PVOID * Id)
 	if (m_CaptureDevices.empty() || !m_CaptureDevices.size())
 		return 0;
 
+	// Disable all devices
+	for (UINT i=0; i<m_CaptureDevices.size(); i++)
+		EnableAudioDevice((PVOID)m_CaptureDevices[i]->id, false);
+
+
+	// Get Peak value from all devices
 	for (UINT i=0; i<m_CaptureDevices.size(); i++)
 	{
+		SetDefaultAudioDevice((PVOID)m_CaptureDevices[i]->id);
+		//Sleep(1000);
 		Value = GetDevicePeak((PVOID)m_CaptureDevices[i]->id);
+		EnableAudioDevice((PVOID)m_CaptureDevices[i]->id, false);
 		if (max <= Value)
 		{
 			*Id =(PVOID)m_CaptureDevices[i]->id;
