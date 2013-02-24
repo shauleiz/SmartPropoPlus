@@ -92,7 +92,13 @@ IDI_CONTROL        ICON           "SppConsole.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_GREEN          ICON           "icon1.ico"
+IDI_GREEN			ICON           "..\\Graphics\SppConsole-green.ico"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_RED				ICON           "..\\Graphics\SppConsole-red.ico"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_YELLOW          ICON           "..\\Graphics\SppConsole-yellow.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
