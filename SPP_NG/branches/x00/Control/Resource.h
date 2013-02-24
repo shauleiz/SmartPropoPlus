@@ -10,6 +10,8 @@
 #define IDI_SMALL                               111
 #define IDI_GREEN                               113
 #define IDC_CONTEXTMENU                         115
+#define IDI_RED									116
+#define IDI_YELLOW                              117
 #define IDM_STOP                                40000
 #define IDS_APP_TITLE                           40000
 #define IDM_START                               40001
