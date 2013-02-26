@@ -135,20 +135,12 @@ HRESULT CStateMachine::LoadConfigFromFile(LPCWSTR FileName)
 		goto end;
 	};
 
-	WCHAR w_root_name[MAX_PATH];
-	int mb = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)root_name, -1, w_root_name,0); 
-	mb = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)root_name, -1, w_root_name,mb); 
-	DWORD lasterr = GetLastError();
-	if (lasterr)
+	if (!IsIdentical(XML_ROOT_ELEM, root_name))
 	{
-		hr = lasterr;
+		hr = GetLastError();
 		goto end;
 	};
-	if (wcscmp(w_root_name, XML_ROOT_ELEM))
-	{
-		hr = ERROR_SXS_XML_E_UNEXPECTEDENDTAG;
-		goto end;
-	};
+
 
 	// OK - Rootname is indeed "SmartPropoPlus" 
 	// save this for later
@@ -159,9 +151,12 @@ HRESULT CStateMachine::LoadConfigFromFile(LPCWSTR FileName)
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
 	{
 		const char *pKey=pElem->Value(); // <CaptureEndpoint></CaptureEndpoint>
-		if (pElem->FirstChildElement("id")) const char *id_text = pElem->FirstChildElement("id")->GetText(); // id
-		if (pElem->FirstChildElement("color")) const char *color_text = pElem->FirstChildElement("color")->GetText(); // jack colour
-		if (pElem->FirstChildElement("friendlyName")) const char *color_frnm = pElem->FirstChildElement("friendlyName")->GetText(); // Friendly Name
+		if (IsIdentical(L"CaptureEndPoint", pKey))
+		{
+			if (pElem->FirstChildElement("id")) const char *id_text = pElem->FirstChildElement("id")->GetText(); // id
+			if (pElem->FirstChildElement("color")) const char *color_text = pElem->FirstChildElement("color")->GetText(); // jack colour
+			if (pElem->FirstChildElement("friendlyName")) const char *color_frnm = pElem->FirstChildElement("friendlyName")->GetText(); // Friendly Name
+		};
 		int dummy = 5;
 		//if (pKey && pText) 
 		//{
@@ -178,3 +173,24 @@ end:
 	return hr;
 }
 
+bool CStateMachine::IsIdentical(LPCWSTR wStr, const char * utf8)
+{
+	if (!wStr || !utf8)
+		return false;
+
+	WCHAR w_utf8[MAX_PATH];
+	int mb = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, w_utf8,0); 
+	mb = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, w_utf8,mb); 
+	DWORD lasterr = GetLastError();
+	if (lasterr)
+		return false;
+
+	if (wcscmp(wStr, w_utf8))
+		return false;
+	else
+		return true;
+}
+bool CStateMachine::IsIdentical(const char * utf8, LPCWSTR wStr)
+{
+	return IsIdentical(wStr, utf8);
+}

@@ -43,4 +43,6 @@ protected: // Class internal functions
 	HRESULT CStateMachine::LoadConfigFromLocalFile(void);
 	HRESULT LoadConfigFromDefaultFile(void);
 	HRESULT LoadConfigFromFile(LPCWSTR FileName);
+	bool IsIdentical(LPCWSTR wStr, const char * utf8);
+	bool IsIdentical(const char * utf8, LPCWSTR wStr);
 };
