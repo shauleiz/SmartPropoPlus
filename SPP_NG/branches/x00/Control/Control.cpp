@@ -1,6 +1,6 @@
 // Control.cpp : Defines the entry point for SmartPropoPlus.
 //
-// State machine that controls the operation of other units
+// One state machine that controls the operation of other units (Class CStateMachine * sm)
 // Hidden main window that controls system tray icon and messages
 // System tray icon & tool tip reflects state of SPP
 // System tray balloon reflects changes in state of SPP
