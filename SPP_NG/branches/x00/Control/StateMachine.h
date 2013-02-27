@@ -15,12 +15,6 @@ enum CU_STATE
 };
 ///////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////
-#define	STR_CTRL_XML		L"\\SmartPropoPlus\\Control.xml"
-#define	STR_DEFLT_CTRL_XML	L".\\Control.xml"
-#define	XML_ROOT_ELEM		L"SmartPropoPlus"
-
-typedef std::map<std::string,std::string> MessageMap;
 
 // Main class: CStateMachine
 class CStateMachine
@@ -37,6 +31,7 @@ protected: // Class variables
 	HWND hWnd;
 	HINSTANCE hInst;
 	CU_STATE state;
+	class CConfig m_config;
 
 protected: // Class internal functions
 	LRESULT NotifyParent(UINT message, WPARAM wParam=NULL, LPARAM lParam=NULL);

@@ -14,6 +14,7 @@
 #include "Shellapi.h"
 #include "Control.h"
 #include "Common.h"
+#include "config.h"
 #include "StateMachine.h"
 
 #define MAX_LOADSTRING 100

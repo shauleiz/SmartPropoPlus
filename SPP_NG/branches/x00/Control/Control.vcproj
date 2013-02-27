@@ -179,6 +179,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Config.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Control.cpp"
 				>
 			</File>
@@ -214,6 +218,10 @@
 			>
 			<File
 				RelativePath=".\Common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Config.h"
 				>
 			</File>
 			<File
