@@ -27,7 +27,7 @@ BOOL CStateMachine::InitInstance(HWND const hWindow, HINSTANCE const hInstance)
 	// Initialize
 	hWnd = hWindow;
 	hInst = hInstance;
-	state = UNDEF;
+	m_state = UNDEF;
 
 	// Read cofiguration file
 	// Get file C:\Users\[User]\AppData\Roaming\SmartPropoPlus\Control.xml (if exists)
@@ -36,9 +36,20 @@ BOOL CStateMachine::InitInstance(HWND const hWindow, HINSTANCE const hInstance)
 	HRESULT hr  = LoadConfigFromLocalFile();
 	if (hr != S_OK)
 		hr = LoadConfigFromDefaultFile();
+	if (hr == S_OK)
+		SaveConfigToLocalFile();
+	else
+	{
+		m_state = ERR;
+		NotifyParent(WMAPP_SM_INIT, m_state);
+		return FALSE;
+	}
+
+	// According to the current configuration deside on innitial state
+	// 
 
 	// Notify at the end of the inialization
-	NotifyParent(WMAPP_SM_INIT);
+	NotifyParent(WMAPP_SM_INIT, m_state);
 	return TRUE;
 }
 
@@ -68,29 +79,31 @@ HRESULT CStateMachine::LoadConfigFromLocalFile(void)
 		return ERROR_BUFFER_OVERFLOW;
 	};
 
-	// Open configuration file
-	HANDLE hConfigFile = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL ,NULL);
-	if (hConfigFile == INVALID_HANDLE_VALUE)
-	{ // Cannot open the configuration file
-		return (HRESULT)GetLastError();
-	};
-	 
-	// Now load configuration file
-	CloseHandle(hConfigFile);
 	return LoadConfigFromFile(path);
+}
+
+void CStateMachine::SaveConfigToLocalFile(void)
+{
+	// Get the path to Get file C:\Users\[User]\AppData\Roaming
+	TCHAR path[MAX_PATH];
+	BOOL GotSpecialFolder = SHGetSpecialFolderPath(NULL, (LPTSTR)&path, CSIDL_APPDATA , FALSE);
+	if (!GotSpecialFolder)
+	{ // Strange error - can't find the user's roaming folder
+		return;
+	};
+
+	// Get the path to the configuration file
+	errno_t concat = wcscat_s((LPTSTR)&path, MAX_PATH, STR_CTRL_XML);
+	if (concat)
+	{ // Cannot create the correct string
+		return;
+	};
+
+	SaveConfigToFile(path);
 }
 
 HRESULT CStateMachine::LoadConfigFromDefaultFile(void)
 {
-	// Open configuration file
-	HANDLE hConfigFile = CreateFile(STR_DEFLT_CTRL_XML, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL ,NULL);
-	if (hConfigFile == INVALID_HANDLE_VALUE)
-	{ // Cannot open the configuration file
-		return (HRESULT)GetLastError();
-	};
-	 
-	// Now load configuration file
-	CloseHandle(hConfigFile);
 	return LoadConfigFromFile(STR_DEFLT_CTRL_XML);
 }
 
@@ -129,3 +142,10 @@ HRESULT CStateMachine::LoadConfigFromFile(LPCWSTR FileName)
 	return S_OK;
 }
 
+
+void CStateMachine::SaveConfigToFile(LPCWSTR FileName)
+{
+	LPWSTR t= _wcsdup(FileName);
+	m_config.SaveConfigFile(t);
+	delete(t);
+}

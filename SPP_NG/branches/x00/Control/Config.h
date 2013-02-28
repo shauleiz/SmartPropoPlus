@@ -54,6 +54,7 @@ public:
 	CConfig(void);
 	virtual ~CConfig(void);
 	bool LoadConfigFile(LPCWSTR FileName);
+	bool SaveConfigFile(LPCWSTR FileName);
 	bool ExistCaptureEP(void);
 	bool GetFirstCaptureEP(const CaptureEndPoint * data);
 	bool GetSelectedCaptureEP(const CaptureEndPoint * data, bool Current=true);
