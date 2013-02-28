@@ -77,6 +77,59 @@ bool CConfig::LoadConfigFile(LPCWSTR FileName)
 	return true;
 }
 
+bool CConfig::SaveConfigFile(LPCWSTR FileName)
+{
+	FILE * f;
+	WCHAR * bSlash;
+
+	// Create directory if does not exist
+	TCHAR CurrentDir[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, CurrentDir);
+
+	bSlash = wcsrchr((WCHAR *)FileName, L'\\');
+	*bSlash = L'\0';
+	CreateDirectory(FileName, NULL);
+	*bSlash = L'\\';
+
+	// Create File if needed
+	HANDLE hFile = CreateFile(
+		FileName,
+		GENERIC_READ | GENERIC_WRITE,
+		FILE_SHARE_WRITE|FILE_SHARE_READ,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+	
+	DWORD lasterr = GetLastError();
+	// Open/Create XML file
+	errno_t err = _wfopen_s(&f, FileName, L"w+b, ccs=UTF-8");
+	if (err)
+	{
+		lasterr = GetLastError();
+		return false;
+	};
+
+	// Get the saved image of the already loaded XML configuration file
+	TiXmlDocument * doc = (TiXmlDocument *)m_hDoc.ToNode();
+	if (!doc)
+	{
+		const char * desc = doc->ErrorDesc();
+		return false;
+	};
+
+	// Save it in the given file
+	bool saved = doc->SaveFile(f);
+	if (!saved)
+	{
+		const char * desc = doc->ErrorDesc();
+		return false;
+	};
+
+	fclose(f);
+	return true;
+}
+
 /* Capture EndPoint related methods:
 
 	ExistCaptureEP(): Test is there's at least one <CaptureEndPoint> entry

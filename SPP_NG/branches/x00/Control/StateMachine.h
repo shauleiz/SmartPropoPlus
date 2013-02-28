@@ -30,14 +30,16 @@ public:
 protected: // Class variables
 	HWND hWnd;
 	HINSTANCE hInst;
-	CU_STATE state;
+	CU_STATE m_state;
 	class CConfig m_config;
 
 protected: // Class internal functions
 	LRESULT NotifyParent(UINT message, WPARAM wParam=NULL, LPARAM lParam=NULL);
 	HRESULT CStateMachine::LoadConfigFromLocalFile(void);
 	HRESULT LoadConfigFromDefaultFile(void);
+	void SaveConfigToFile(LPCWSTR FileName);
 	HRESULT LoadConfigFromFile(LPCWSTR FileName);
 	bool IsIdentical(LPCWSTR wStr, const char * utf8);
 	bool IsIdentical(const char * utf8, LPCWSTR wStr);
+	void SaveConfigToLocalFile(void);
 };

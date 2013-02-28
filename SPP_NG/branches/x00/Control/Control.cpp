@@ -320,9 +320,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		};
 		break;
 	case WMAPP_SM_INIT:
-		AddNotificationIcon(hWnd, IDI_GREEN);	// Add system-tray icon
-		AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_DFLT_TOOLTIP, NIIF_INFO );// Add system-tray balloon
-        break;
+		NotificationGraphics(hWnd,lParam);
+		break;
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -330,6 +329,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+void NotificationGraphics(HWND hWnd, DWORD_PTR state)
+{
+	// Adds notification icon and a corresponding balloon
+	switch (state)
+	{
+	case ERR:
+		AddNotificationIcon(hWnd, IDI_RED);	// Add red system-tray icon
+		AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_ERR_TOOLTIP, NIIF_INFO );// Add system-tray balloon
+		break;
+	case CONF:
+		AddNotificationIcon(hWnd, IDI_YELLOW);	// Add yellow system-tray icon
+		AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_DFLT_TOOLTIP, NIIF_INFO );// Add system-tray balloon
+		break;
+	case UNDEF:
+		AddNotificationIcon(hWnd, IDI_RED);	// Add red system-tray icon
+		AddNotificationBalloon(STR_EN_TTL_SPP_NONE, STR_EN_UNDF_TOOLTIP, NIIF_INFO );// Add system-tray balloon
+		break;
+	default:
+		break;
+	};
+}
 
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
