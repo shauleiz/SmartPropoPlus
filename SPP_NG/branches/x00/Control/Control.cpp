@@ -16,10 +16,14 @@
 #include "Common.h"
 #include "config.h"
 #include "StateMachine.h"
+#include "SppInterface.h"
 
 #define MAX_LOADSTRING 100
+#pragma  comment(lib, "SppInterface.lib")
+
 
 // Global Variables:
+CSppInterface * Gui;
 CStateMachine * sm;
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
@@ -79,6 +83,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	MSG msg;
 	HACCEL hAccelTable;
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CONTROL));
+
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -156,6 +161,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // Initialize state machine
    if (!sm->InitInstance(hWnd, hInst))
 	   return FALSE;
+
+   // Load GUI
+   Gui = new(CSppInterface);
+   Gui->Initialize(hWnd);
 
    ShowWindow(hWnd, SW_HIDE); // Window is hidden
    UpdateWindow(hWnd);

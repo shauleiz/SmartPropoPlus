@@ -91,15 +91,15 @@ bool CConfig::SaveConfigFile(LPCWSTR FileName)
 	CreateDirectory(FileName, NULL);
 	*bSlash = L'\\';
 
-	// Create File if needed
-	HANDLE hFile = CreateFile(
-		FileName,
-		GENERIC_READ | GENERIC_WRITE,
-		FILE_SHARE_WRITE|FILE_SHARE_READ,
-		NULL,
-		CREATE_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+	//// Create File if needed
+	//HANDLE hFile = CreateFile(
+	//	FileName,
+	//	GENERIC_READ | GENERIC_WRITE,
+	//	FILE_SHARE_WRITE|FILE_SHARE_READ,
+	//	NULL,
+	//	CREATE_ALWAYS,
+	//	FILE_ATTRIBUTE_NORMAL,
+	//	NULL);
 	
 	DWORD lasterr = GetLastError();
 	// Open/Create XML file
