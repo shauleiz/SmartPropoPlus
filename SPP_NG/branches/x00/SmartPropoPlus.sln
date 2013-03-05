@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DecoderGen", "Decoder\Decod
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PulseScope", "Decoder\Scope\PulseScope\PulseScope.vcproj", "{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SppInterface", "Interface\SppInterface\SppInterface.vcproj", "{874A9E0B-119D-4E4C-8F60-2EBE2FA8A237}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -46,6 +48,10 @@ Global
 		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Debug|Win32.Build.0 = Debug|Win32
 		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Release|Win32.ActiveCfg = Release|Win32
 		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Release|Win32.Build.0 = Release|Win32
+		{874A9E0B-119D-4E4C-8F60-2EBE2FA8A237}.Debug|Win32.ActiveCfg = Debug|Win32
+		{874A9E0B-119D-4E4C-8F60-2EBE2FA8A237}.Debug|Win32.Build.0 = Debug|Win32
+		{874A9E0B-119D-4E4C-8F60-2EBE2FA8A237}.Release|Win32.ActiveCfg = Release|Win32
+		{874A9E0B-119D-4E4C-8F60-2EBE2FA8A237}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

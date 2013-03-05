@@ -35,14 +35,22 @@ BOOL CStateMachine::InitInstance(HWND const hWindow, HINSTANCE const hInstance)
 	// The  default configuration file is .\Control.xml
 	HRESULT hr  = LoadConfigFromLocalFile();
 	if (hr != S_OK)
+	{	// Configuration file not found-
+		// Read default (pre-installed) XML file and copy it to C:\Users\[User]\AppData\Roaming\SmartPropoPlus
 		hr = LoadConfigFromDefaultFile();
-	if (hr == S_OK)
-		SaveConfigToLocalFile();
-	else
-	{
-		m_state = ERR;
-		NotifyParent(WMAPP_SM_INIT, m_state);
-		return FALSE;
+		if (hr == S_OK)
+		{
+			m_state = CONF;
+			SaveConfigToLocalFile();
+			NotifyParent(WMAPP_SM_INIT, m_state);
+			return TRUE;
+		}
+		else
+		{
+			m_state = ERR;
+			NotifyParent(WMAPP_SM_INIT, m_state);
+			return FALSE;
+		}
 	}
 
 	// According to the current configuration deside on innitial state
