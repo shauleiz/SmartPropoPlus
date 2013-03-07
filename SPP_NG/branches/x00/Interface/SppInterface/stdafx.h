@@ -23,6 +23,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
 // C RunTime Header Files:
+#include <vector>
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>

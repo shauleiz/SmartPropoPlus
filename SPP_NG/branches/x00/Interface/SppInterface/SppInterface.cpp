@@ -4,8 +4,7 @@
 #include "stdafx.h"
 #include <Windowsx.h>
 #include "SppInterface.h"
-#include "BaseUnit.h"
-//#include "SppInterface.h"
+#include "SppInterfaceAudio.h"
 
 #pragma  comment(lib, "windowscodecs.lib")
 #pragma  comment(lib, "Dwrite.lib")
@@ -297,13 +296,13 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 
 			case WM_MOUSEMOVE:
-				if ((inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , *pSppInterface->bu->GetRect() )))
+				if ((inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , *pSppInterface->m_AudioUnit->GetRect() )))
 				{
-					pSppInterface->bu->Select();
+					pSppInterface->m_AudioUnit->Select();
 				}
 				else
 				{
-					pSppInterface->bu->UnSelect();				
+					pSppInterface->m_AudioUnit->UnSelect();				
 				}
 				pSppInterface->OnRender();
 				//wasHandled = true;
@@ -362,8 +361,8 @@ HRESULT CSppInterface::OnRender()
 		// Draw a rounded rectangle on along the left edge
 		// The recangle should have an edge and margin
 		float margin = 20.0f;
-		if (bu)
-			bu->Display(margin, margin,rtSize.width / 5 - 2*margin, rtSize.height - 2*margin);
+		if (m_AudioUnit)
+			m_AudioUnit->Display(margin, margin,rtSize.width / 5 - 2*margin, rtSize.height - 2*margin);
 
 #if 0
 		float RectWidth = rtSize.width / 5 - 2*margin;
@@ -589,11 +588,18 @@ HRESULT CSppInterface::CreateDeviceResources()
 		// Create bitmaps for buttons from files
 		// Files must be located in current folder
 
-		bu = new CBaseUnit(m_pRenderTarget);
-		if (!bu)
+		m_AudioUnit = new CSppInterfaceAudio(m_pRenderTarget);
+		if (!m_AudioUnit)
 			hr = S_FALSE;
 		else
-			bu->Initialize();
+			m_AudioUnit->Initialize();
+		// DEBUG - 
+		//m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
+		//m_AudioUnit->AddJack(L"ID Number 2", L"Friendly name for Jack number 2", 0x00453300);
+		//m_AudioUnit->AddJack(L"ID Number 3", L"Friendly name for Jack number 3");
+		//m_AudioUnit->RemoveJack(L"ID Number 1");
+		//m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
+		// - DEBUG 
 	}
 
 	return hr;

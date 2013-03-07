@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SppInterfaceAudio.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SppInterfaceChildWin.cpp"
 				>
 			</File>
@@ -240,6 +244,10 @@
 			</File>
 			<File
 				RelativePath=".\SppInterface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SppInterfaceAudio.h"
 				>
 			</File>
 			<File

@@ -27,7 +27,7 @@ public:
 public:
 	HWND m_hwnd;
 	D2D1_ROUNDED_RECT m_roundedRect;
-	class CBaseUnit *bu;
+	class CSppInterfaceAudio *m_AudioUnit;
 
 protected:
 
