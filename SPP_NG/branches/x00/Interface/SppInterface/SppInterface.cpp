@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include <Windowsx.h>
 #include "SppInterface.h"
+#include "BaseUnit.h"
+//#include "SppInterface.h"
 
 #pragma  comment(lib, "windowscodecs.lib")
 #pragma  comment(lib, "Dwrite.lib")
@@ -42,7 +44,8 @@ m_pTextFormat(NULL),
 m_pBtnTextFormat(NULL),
 m_pMsrTextFormat(NULL),
 m_pDWriteFactory(NULL),
-m_hWinThread(NULL)
+m_hWinThread(NULL),
+m_ChildWin(NULL)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -67,7 +70,7 @@ HRESULT CSppInterface::Initialize(HWND hWndParent )
 		wcex.cbClsExtra    = 0;
 		wcex.cbWndExtra    = sizeof(LONG_PTR);
 		wcex.hInstance     = HINST_THISCOMPONENT;
-		wcex.hbrBackground = NULL;
+		wcex.hbrBackground = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
 		wcex.lpszMenuName  = NULL;
 		wcex.hCursor       = LoadCursor(NULL, IDI_APPLICATION);
 		wcex.lpszClassName = L"D2DSppInterface";
@@ -88,7 +91,7 @@ HRESULT CSppInterface::Initialize(HWND hWndParent )
 		m_hwnd = CreateWindow(
 			L"D2DSppInterface",
 			L"SmartPropoPlus Configuration",
-			WS_OVERLAPPED /*| WS_THICKFRAME| WS_HSCROLL*/,
+			WS_OVERLAPPED | WS_SIZEBOX/* | WS_CLIPCHILDREN | WS_THICKFRAME| WS_HSCROLL*/,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
 			static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
@@ -101,11 +104,17 @@ HRESULT CSppInterface::Initialize(HWND hWndParent )
 		hr = m_hwnd ? S_OK : E_FAIL;
 		if (SUCCEEDED(hr))
 		{
-			// Make this window 70% alpha
-			SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-			SetLayeredWindowAttributes(m_hwnd, 0, (255 * 70) / 100, LWA_ALPHA);
+			////Make this window 50% alpha
+			//SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+			//SetLayeredWindowAttributes(m_hwnd, 0, (255 * 50) / 100, LWA_ALPHA);
+
+			// Show main window
 			ShowWindow(m_hwnd, SW_SHOWNORMAL);
 			UpdateWindow(m_hwnd);
+			
+			//// Create Chind-windows
+			//m_ChildWin = new(CSppInterfaceChildWin);
+			//m_ChildWin->Initialize(m_hwnd);
 		}
 
 	}
@@ -222,6 +231,7 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 {
 // Handles window messages.
 	LRESULT result = 0;
+	static float orig_opacity = 1;
 
 	if (message == WM_CREATE)
 	{
@@ -287,6 +297,16 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 
 			case WM_MOUSEMOVE:
+				if ((inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , *pSppInterface->bu->GetRect() )))
+				{
+					pSppInterface->bu->Select();
+				}
+				else
+				{
+					pSppInterface->bu->UnSelect();				
+				}
+				pSppInterface->OnRender();
+				//wasHandled = true;
 				break;
 			}
 		}
@@ -310,10 +330,8 @@ void CSppInterface::OnResize(UINT width, UINT height)
 		// error here, because the error will be returned again
 		// the next time EndDraw is called.
 
-#if 1
 		// When this code is commented out - resizing the window resizes the data
 		m_pRenderTarget->Resize(D2D1::SizeU(width, height));
-#endif
 	}
 }
 
@@ -337,10 +355,27 @@ HRESULT CSppInterface::OnRender()
 
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
-		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+		m_pRenderTarget->Clear(D2D1::ColorF(0.3f, 0.3f, 0.3f, 0.8f ));
 
 		D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+
+		// Draw a rounded rectangle on along the left edge
+		// The recangle should have an edge and margin
+		float margin = 20.0f;
+		if (bu)
+			bu->Display(margin, margin,rtSize.width / 5 - 2*margin, rtSize.height - 2*margin);
+
 #if 0
+		float RectWidth = rtSize.width / 5 - 2*margin;
+		float RectHeight = rtSize.height - 2*margin;
+ 
+		// Define a rounded rectangle.
+        m_roundedRect = D2D1::RoundedRect( D2D1::RectF(margin, margin, RectWidth, RectHeight), 10.f, 10.f);
+		
+		// Draw and fill the rectangle.
+        m_pRenderTarget->DrawRoundedRectangle(m_roundedRect, m_pDarkViolet, 2.f);
+		m_pRenderTarget->FillRoundedRectangle(m_roundedRect, m_pLightSlateGrayBrush);
+
 
 		// Draw a grid background.
 		float width = rtSize.width;
@@ -478,6 +513,8 @@ HRESULT CSppInterface::CreateDeviceResources()
 
 	if (!m_pRenderTarget)
 	{
+
+
 		RECT rc;
 		GetClientRect(m_hwnd, &rc);
 
@@ -488,7 +525,7 @@ HRESULT CSppInterface::CreateDeviceResources()
 
 		// Create a Direct2D render target.
 		hr = m_pDirect2dFactory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(),
+			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat( DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED ) ),
 			D2D1::HwndRenderTargetProperties(m_hwnd, size),
 			&m_pRenderTarget
 			);
@@ -535,7 +572,7 @@ HRESULT CSppInterface::CreateDeviceResources()
 		{
 			// Create a gray brush.
 			hr = m_pRenderTarget->CreateSolidColorBrush(
-				D2D1::ColorF(D2D1::ColorF::LightSlateGray),
+				D2D1::ColorF(D2D1::ColorF::LightSlateGray, 1.0f),
 				&m_pLightSlateGrayBrush
 				);
 
@@ -552,9 +589,11 @@ HRESULT CSppInterface::CreateDeviceResources()
 		// Create bitmaps for buttons from files
 		// Files must be located in current folder
 
-
-
-
+		bu = new CBaseUnit(m_pRenderTarget);
+		if (!bu)
+			hr = S_FALSE;
+		else
+			bu->Initialize();
 	}
 
 	return hr;
@@ -574,6 +613,15 @@ void CSppInterface::DiscardDeviceResources()
 	SafeRelease(&m_pButtonPauseBitmap);
 	SafeRelease(&m_pButtonPlayBitmap);
 
-}	
+}
+
+bool CSppInterface::inRect(int x, int y, D2D1_RECT_F rect)
+{
+	if (rect.bottom >=y && rect.top<=y && rect.left<=x && rect.right>=x)
+		return true;
+	else
+		return false;
+}
+
 
 
