@@ -26,8 +26,10 @@ public:
 
 public:
 	HWND m_hwnd;
+	D2D1_ROUNDED_RECT m_roundedRect;
+	class CBaseUnit *bu;
 
-private:
+protected:
 
 	// The windows procedure.
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,LPARAM lParam);
@@ -47,7 +49,11 @@ private:
     // Release device-dependent resource.
     void DiscardDeviceResources();
 
-private:
+	// Mouse inside rectangle?
+	static bool CSppInterface::inRect(int x, int y, D2D1_RECT_F rect);
+
+
+protected:
 
     ID2D1Factory* m_pDirect2dFactory;
 	IDWriteFactory *m_pDWriteFactory;
@@ -71,6 +77,9 @@ private:
 	ID2D1Bitmap			*m_pButtonPlayBitmap;
 
 	HANDLE m_hWinThread;
+
+	class CSppInterfaceChildWin *m_ChildWin;
+	D2D1_RECT_F m_audio_rect;
 };
 
 extern SPPINTERFACE_API int nSppInterface;
