@@ -17,8 +17,11 @@ protected:
 	D2D1_ROUNDED_RECT m_roundedRect;
 	ID2D1SolidColorBrush* m_pRectFillColor;
 	ID2D1SolidColorBrush* m_pRectLineColor;
+	ID2D1SolidColorBrush* m_pBeigeBrush;
+	ID2D1SolidColorBrush* m_pBlackBrush;
 	IDWriteFactory *m_pDWriteFactory;
 	IDWriteTextFormat *m_pTextFormat;
+	IDWriteTextFormat *m_pTextFormatInfo;
 
 	float m_margin;
 	float m_left, m_top, m_right, m_bottom;
@@ -30,4 +33,5 @@ protected:
 protected:
 	void DisplaySelected(float left, float top, float right, float bottom);
 	void DisplayNotSelected(float left, float top, float right, float bottom);
+	void DisplayVerticalMessage(LPCWSTR Msg, ID2D1SolidColorBrush* pTextBrush = NULL);
 };

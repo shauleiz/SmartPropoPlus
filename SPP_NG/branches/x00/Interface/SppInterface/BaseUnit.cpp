@@ -9,7 +9,8 @@ CBaseUnit::CBaseUnit(void)
 // Initialize default values and get the Render Target
 CBaseUnit::CBaseUnit(ID2D1HwndRenderTarget* pRenderTarget) : 
 	m_margin(20.0f), m_rect_color(D2D1::ColorF::LightSlateGray), m_line_color(D2D1::ColorF::Red), m_line_width(2.f),
-	m_opacity_sel(1.0f), m_opacity_nosel(0.6f), m_pRenderTarget(NULL), m_selected(false), m_pDWriteFactory(NULL), m_pTextFormat(NULL)
+	m_opacity_sel(1.0f), m_opacity_nosel(0.6f), m_pRenderTarget(NULL), m_selected(false), m_pDWriteFactory(NULL), 
+	m_pTextFormat(NULL), m_pBeigeBrush(NULL), m_pBlackBrush(NULL), m_pTextFormatInfo(NULL)
 {
 	m_pRenderTarget = pRenderTarget;
 }
@@ -31,6 +32,10 @@ void CBaseUnit::Initialize(DWORD rect_color, DWORD line_color)
 		// Create a line brush - unselected.
 		m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(line_color), &m_pRectLineColor);
 		m_pRectLineColor->SetOpacity(m_opacity_nosel);
+		// Create other brushes
+		m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Beige, 1.0f),&m_pBeigeBrush);
+		m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.0f),&m_pBlackBrush);
+
 
 		// Create text formats
 		static const WCHAR msc_fontName[] = L"Verdana";
@@ -62,6 +67,30 @@ void CBaseUnit::Initialize(DWORD rect_color, DWORD line_color)
 			m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 			
 		}
+
+		if (SUCCEEDED(hr))
+		{
+			hr = m_pDWriteFactory->CreateTextFormat(
+				msc_fontName,
+				NULL,
+				DWRITE_FONT_WEIGHT_NORMAL,
+				DWRITE_FONT_STYLE_NORMAL,
+				DWRITE_FONT_STRETCH_NORMAL,
+				static_cast<FLOAT>(msc_fontSize/5),
+				L"", // locale
+				&m_pTextFormatInfo
+				);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			// Center the text horizontally and vertically.
+			m_pTextFormatInfo->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+			m_pTextFormatInfo->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+			
+		}
+
+
 	};
 }
 
@@ -122,4 +151,36 @@ void CBaseUnit::UnSelect(void)
 D2D1_RECT_F * CBaseUnit::GetRect(void)
 {
 	return &m_roundedRect.rect;
+}
+
+void CBaseUnit::DisplayVerticalMessage(LPCWSTR Msg, ID2D1SolidColorBrush* pTextBrush)
+{
+	// Display a vertical string on the unit's rectangle
+	// Msg: The text to display
+	// pTextBrush: The brush to use (Default: the rectangle line color
+
+	D2D1_RECT_F  rect = m_roundedRect.rect;
+	D2D1_RECT_F  textrect;
+	
+	if (!pTextBrush)
+		pTextBrush = m_pRectLineColor;
+
+	// Print warning 
+	textrect.bottom = (rect.bottom + rect.top + rect.right - rect.left)/2;
+	textrect.top =    (rect.bottom + rect.top - rect.right + rect.left)/2;
+	textrect.right =  (rect.right + rect.left + rect.bottom - rect.top)/2;
+	textrect.left =   (rect.right + rect.left - rect.bottom + rect.top)/2;
+	m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(
+		90.0f, D2D1::Point2F(((rect.left+rect.right)/2), (rect.top+rect.bottom)/2)));
+
+	m_pRenderTarget->DrawText(
+		Msg,
+		wcslen( Msg ),
+		m_pTextFormat,
+		&textrect,
+		pTextBrush
+		);
+
+	m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+	return;
 }
