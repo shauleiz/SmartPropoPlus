@@ -77,21 +77,24 @@ int CSppInterfaceAudio::RenderJacks(void)
 	if (!n_slots)
 	{
 		// Print warning 
-		textrect.bottom = rect.left;
-		textrect.top = rect.right;
-		textrect.right = rect.bottom;
-		textrect.left = rect.top;
-		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(
-  //          90.0f,
-		//	D2D1::Point2F(((textrect.top+textrect.bottom)/2), (textrect.left+textrect.right)/2))
-  //      );
+		textrect.bottom = (rect.bottom + rect.top + rect.right - rect.left)/2;
+		textrect.top =    (rect.bottom + rect.top - rect.right + rect.left)/2;
+		textrect.right =  (rect.right + rect.left + rect.bottom - rect.top)/2;
+		textrect.left =   (rect.right + rect.left - rect.bottom + rect.top)/2;
+		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(
+            90.0f,
+			D2D1::Point2F(((rect.left+rect.right)/2), (rect.top+rect.bottom)/2))
+        );
 		m_pRenderTarget->DrawText(
 			L"No inputs",
 			ARRAYSIZE(L"No inputs") - 1,
 			m_pTextFormat,
-			&rect,
+			&textrect,
 			m_pRectLineColor
 			);
+
+		m_pRenderTarget->DrawRectangle(&textrect, m_pRectLineColor);
+		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 		return 0;
 	};
 
