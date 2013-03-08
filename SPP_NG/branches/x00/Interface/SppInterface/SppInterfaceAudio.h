@@ -23,6 +23,8 @@ public:
 
 private:
 	int RenderJacks(void);
+	void DisplayFriendlyName(LPCWSTR Msg, D2D1_POINT_2F jack_hole, ID2D1SolidColorBrush* pTextBrush = 0);
+
 
 private:
 	std::vector<Jack *> m_Jacks;

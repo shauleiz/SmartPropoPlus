@@ -590,21 +590,25 @@ HRESULT CSppInterface::CreateDeviceResources()
 				);
 		}
 
-		// Create bitmaps for buttons from files
-		// Files must be located in current folder
-
 		m_AudioUnit = new CSppInterfaceAudio(m_pRenderTarget);
 		if (!m_AudioUnit)
 			hr = S_FALSE;
 		else
 			m_AudioUnit->Initialize();
 		// DEBUG - 
-		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
-		m_AudioUnit->AddJack(L"ID Number 2", L"Friendly name for Jack number 2", 0x00453300);
+		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00CD0033);
+		m_AudioUnit->AddJack(L"ID Number 2", L"Friendly name for Jack number 2", 0x00CDFF00);
 		m_AudioUnit->AddJack(L"ID Number 3", L"Friendly name for Jack number 3");
+		m_AudioUnit->AddJack(L"ID Number 4", L"Friendly name for Jack number 4", 0x00CD00CD);
+		m_AudioUnit->AddJack(L"ID Number 5", L"Friendly name for Jack number 5", 0x0000FFCD);
+		m_AudioUnit->AddJack(L"ID Number 6", L"Friendly name for Jack number 6");
+		m_AudioUnit->AddJack(L"ID Number 7", L"Friendly name for Jack number 7", 0x00CD0033);
+		m_AudioUnit->AddJack(L"ID Number 8", L"Friendly name for Jack number 8", 0x00CDFF00);
+		m_AudioUnit->AddJack(L"ID Number 9", L"Friendly name for Jack number 9");
 		m_AudioUnit->RemoveJack(L"ID Number 1");
-		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
+		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00CD0033);
 		// - DEBUG 
+
 	}
 
 	return hr;
