@@ -39,9 +39,14 @@ m_pDirect2dFactory(NULL),
 m_pRenderTarget(NULL),
 m_pLightSlateGrayBrush(NULL),
 m_pCornflowerBlueBrush(NULL),
+m_pMeasureBrush(NULL),
+m_pDarkViolet(NULL),
 m_pTextFormat(NULL),
 m_pBtnTextFormat(NULL),
 m_pMsrTextFormat(NULL),
+m_pButtonColor(NULL),
+m_pButtonPauseBitmap(NULL),
+m_pButtonPlayBitmap(NULL),
 m_pDWriteFactory(NULL),
 m_hWinThread(NULL),
 m_ChildWin(NULL)
@@ -90,11 +95,11 @@ HRESULT CSppInterface::Initialize(HWND hWndParent )
 		m_hwnd = CreateWindow(
 			L"D2DSppInterface",
 			L"SmartPropoPlus Configuration",
-			WS_OVERLAPPED | WS_SIZEBOX/* | WS_CLIPCHILDREN | WS_THICKFRAME| WS_HSCROLL*/,
+			WS_OVERLAPPED /*| WS_SIZEBOX | WS_CLIPCHILDREN | WS_THICKFRAME| WS_HSCROLL*/,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
-			static_cast<UINT>(ceil(480.f * dpiY / 96.f)),
+			static_cast<UINT>(ceil(960.f * dpiX / 96.f)),
+			static_cast<UINT>(ceil(720.f * dpiY / 96.f)),
 			hWndParent ,
 			NULL,
 			HINST_THISCOMPONENT,
@@ -594,11 +599,11 @@ HRESULT CSppInterface::CreateDeviceResources()
 		else
 			m_AudioUnit->Initialize();
 		// DEBUG - 
-		//m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
-		//m_AudioUnit->AddJack(L"ID Number 2", L"Friendly name for Jack number 2", 0x00453300);
-		//m_AudioUnit->AddJack(L"ID Number 3", L"Friendly name for Jack number 3");
-		//m_AudioUnit->RemoveJack(L"ID Number 1");
-		//m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
+		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
+		m_AudioUnit->AddJack(L"ID Number 2", L"Friendly name for Jack number 2", 0x00453300);
+		m_AudioUnit->AddJack(L"ID Number 3", L"Friendly name for Jack number 3");
+		m_AudioUnit->RemoveJack(L"ID Number 1");
+		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00450033);
 		// - DEBUG 
 	}
 
