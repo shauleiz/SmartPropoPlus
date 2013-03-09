@@ -132,19 +132,17 @@ void CSppInterfaceAudio::DisplayFriendlyName(LPCWSTR Msg, D2D1_POINT_2F jack_hol
 	textrect.left =   jack_hole.x +15;
 
 	// Trimming
-	//DWRITE_TRIMMING trm;
-	//trm.delimiter = '/';
-	//trm.delimiterCount = 10;
-	//trm.granularity = DWRITE_TRIMMING_GRANULARITY_CHARACTER;
-	//m_pTextFormatInfo->SetTrimming(&trm, NULL);
+	IDWriteInlineObject *inlineObject = NULL;
+	m_pDWriteFactory->CreateEllipsisTrimmingSign(m_pTextFormatInfo, &inlineObject);
+	DWRITE_TRIMMING trimming = 
+	{DWRITE_TRIMMING_GRANULARITY_CHARACTER, 0, 0};
+	m_pTextFormatInfo->SetTrimming(&trimming, inlineObject);
 
-	m_pRenderTarget->DrawText(
-		Msg,
-		wcslen( Msg ),
-		m_pTextFormatInfo,
-		&textrect,
-		pTextBrush
-		);
+	// Drawing text
+	D2D1_POINT_2F origin = D2D1::Point2F(static_cast<FLOAT>(textrect.left), static_cast<FLOAT>(textrect.top));
+	IDWriteTextLayout * textLayout;
+	m_pDWriteFactory->CreateTextLayout(Msg, wcslen( Msg ), m_pTextFormatInfo, textrect.right-textrect.left, textrect.bottom - textrect.top, &textLayout);
+	m_pRenderTarget->DrawTextLayout(origin, textLayout,pTextBrush);
 
 	return;
 }
