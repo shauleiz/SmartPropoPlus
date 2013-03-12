@@ -651,7 +651,23 @@ Exit:
     SAFE_RELEASE(pPart)
 	return result;
 }
+SPPINTERFACE_API bool CAudioInputW7::IsDisconnected(PVOID Id)
+{
+	// Return true only if positively the jack is disconnected
+	// Returns false if the jack is connected OR if information not available
 
+	// Get Jack info
+	KSJACK_DESCRIPTION  JackDesc;
+	HRESULT hr = GetJackInfo((PVOID) Id, &JackDesc);
+	if (FAILED(hr))
+		return false;
+
+	if (!JackDesc.IsConnected)
+		return true;
+	else 
+		return false;
+
+}
 SPPINTERFACE_API COLORREF CAudioInputW7::GetJackColor(PVOID Id)
 /* Get the colour of the input jack
    Provided that the jack:

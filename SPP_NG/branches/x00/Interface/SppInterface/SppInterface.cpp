@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <Windowsx.h>
+#include "Common.h"
 #include "SppInterface.h"
 #include "SppInterfaceAudio.h"
 
@@ -32,8 +33,6 @@ SPPINTERFACE_API int fnSppInterface(void)
 	return 42;
 }
 
-// This is the constructor of a class that has been exported.
-// see SppInterface.h for the class definition
 CSppInterface::CSppInterface() :
 m_pDirect2dFactory(NULL),
 m_pRenderTarget(NULL),
@@ -49,8 +48,12 @@ m_pButtonPauseBitmap(NULL),
 m_pButtonPlayBitmap(NULL),
 m_pDWriteFactory(NULL),
 m_hWinThread(NULL),
-m_ChildWin(NULL)
+m_ChildWin(NULL),
+m_hwnd(NULL),
+m_AudioUnit(NULL)
 {
+// This is the constructor of a class that has been exported.
+// see SppInterface.h for the class definition
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
 }
@@ -112,8 +115,10 @@ HRESULT CSppInterface::Initialize(HWND hWndParent )
 			//SetWindowLong(m_hwnd, GWL_EXSTYLE, GetWindowLong(m_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 			//SetLayeredWindowAttributes(m_hwnd, 0, (255 * 50) / 100, LWA_ALPHA);
 
+			hr = CreateDeviceResources();
+
 			// Show main window
-			ShowWindow(m_hwnd, SW_SHOWNORMAL);
+			ShowWindow(m_hwnd, SW_HIDE);
 			UpdateWindow(m_hwnd);
 			
 			//// Create Chind-windows
@@ -125,6 +130,11 @@ HRESULT CSppInterface::Initialize(HWND hWndParent )
 
 	return hr;
 }
+HWND	CSppInterface::GetUiMainWindow()
+{
+	return m_hwnd;
+}
+
 
 HRESULT CSppInterface::CreateDeviceIndependentResources()
 // Creates resources that are not bound to a particular device.
@@ -236,6 +246,7 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 // Handles window messages.
 	LRESULT result = 0;
 	static float orig_opacity = 1;
+	jack_info * jack;
 
 	if (message == WM_CREATE)
 	{
@@ -301,6 +312,9 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 
 			case WM_MOUSEMOVE:
+				if (!pSppInterface->m_AudioUnit)
+					break;
+
 				if ((inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , *pSppInterface->m_AudioUnit->GetRect() )))
 				{
 					pSppInterface->m_AudioUnit->Select();
@@ -312,6 +326,14 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 				pSppInterface->OnRender();
 				//wasHandled = true;
 				break;
+
+			case WMAPP_GUI_SHOW:
+				pSppInterface->ShowInterface();
+				break;
+
+			case WMAPP_GUI_AUDIO:
+				jack = (jack_info *)lParam;
+				pSppInterface->m_AudioUnit->AddJack(jack->id, jack->FriendlyName, jack->color);
 			}
 		}
 
@@ -368,131 +390,6 @@ HRESULT CSppInterface::OnRender()
 		float margin = 20.0f;
 		if (m_AudioUnit)
 			m_AudioUnit->Display(margin, margin,rtSize.width / 5 - 2*margin, rtSize.height - 2*margin);
-
-#if 0
-		float RectWidth = rtSize.width / 5 - 2*margin;
-		float RectHeight = rtSize.height - 2*margin;
- 
-		// Define a rounded rectangle.
-        m_roundedRect = D2D1::RoundedRect( D2D1::RectF(margin, margin, RectWidth, RectHeight), 10.f, 10.f);
-		
-		// Draw and fill the rectangle.
-        m_pRenderTarget->DrawRoundedRectangle(m_roundedRect, m_pDarkViolet, 2.f);
-		m_pRenderTarget->FillRoundedRectangle(m_roundedRect, m_pLightSlateGrayBrush);
-
-
-		// Draw a grid background.
-		float width = rtSize.width;
-		float height = rtSize.height;
-		float low = (rtSize.height/2 + sqSize*2.5f);
-		float hi  = (rtSize.height/2 - sqSize*2.5f);
-		UINT tMaxLen;
-		WCHAR textBuffer[20];
-		tMaxLen = sizeof(textBuffer)/sizeof(WCHAR);
-
-		for (float x = 0; x < width; x += sqSize)
-		{
-			m_pRenderTarget->DrawLine(D2D1::Point2F(x, 0.0f), D2D1::Point2F(x, rtSize.height), m_pLightSlateGrayBrush, 0.5f);
-
-		// Add text - Time and Voltage
-		hr = StringCchPrintf(textBuffer, tMaxLen, L"%dmS", static_cast<UINT>(x/sqSize));
-		m_pRenderTarget->DrawText(
-			textBuffer,
-			static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
-			m_pTextFormat,
-            D2D1::RectF(static_cast<FLOAT>(x)-20.0f, rtSize.height/2+10, static_cast<FLOAT>(x)+20.0f, rtSize.height/2+20.0f),
-            m_pCornflowerBlueBrush,
-            D2D1_DRAW_TEXT_OPTIONS_NONE
-            );
-
-		}
-
-		for (float y = height/2; y < height; y += sqSize)
-		{
-			m_pRenderTarget->DrawLine(
-				D2D1::Point2F(0.0f, static_cast<FLOAT>(y+sqSize)),
-				D2D1::Point2F(rtSize.width, static_cast<FLOAT>(y+sqSize)),
-				m_pLightSlateGrayBrush,
-				0.5f
-				);
-
-			m_pRenderTarget->DrawLine(
-				D2D1::Point2F(0.0f, static_cast<FLOAT>(height - y-sqSize)),
-				D2D1::Point2F(rtSize.width, static_cast<FLOAT>(height - y-sqSize)),
-				m_pLightSlateGrayBrush,
-				0.5f
-				);
-		}
-
-		// Draw a heavy line to mark the zero voltage line
-		m_pRenderTarget->DrawLine(
-			D2D1::Point2F(0.0f, static_cast<FLOAT>(height/2)),
-			D2D1::Point2F(rtSize.width, static_cast<FLOAT>(height/2)),
-			m_pLightSlateGrayBrush,
-			1.5f
-			);
-
-		///////// Controls ////////////////////////////////////////////////////
-		// Shift Right
-		DisplayRightScrollButton();
-		if (m_manual_shift_pressed_r)
-			m_manual_shift-=50;
-
-		// Shift Left
-		DisplayLeftScrollButton();
-		if (m_manual_shift_pressed_l)
-			m_manual_shift+=50;
-
-		// Play/Pause button
-		DisplayPausePlayButtonBM(!m_isPlaying, m_PlayPauseRect);
-
-
-		/////////  Draw wave form //////////////////////////////////////////////////////
-		// Implement as Path Geometry
-		hr = m_pDirect2dFactory->CreatePathGeometry(&m_pWaveGeometry);
-		hr = m_pWaveGeometry->Open(&pSink);
-		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
-		if (m_points && m_npoints>3)
-		{
-			pSink->BeginFigure(m_points[0],D2D1_FIGURE_BEGIN_HOLLOW );
-			pSink->AddLines(m_points, m_npoints-3);
-			pSink->EndFigure(D2D1_FIGURE_END_OPEN);
-		}
-		hr = pSink->Close();
-		SafeRelease(&pSink);
-
-		// Scale & Shift wave form (Mark the triger point)
-		D2D1_MATRIX_3X2_F xFormScale= D2D1::Matrix3x2F::Scale(D2D1::Size(scale, 1.0f),D2D1::Point2F(0.0f, 0.0f));
-		D2D1_MATRIX_3X2_F xFormShift=D2D1::Matrix3x2F::Translation(2*sqSize/scale-m_offset-m_manual_shift, 0);
-		m_pRenderTarget->SetTransform(xFormShift*xFormScale); // Order of multiplection is crucial
-		m_pRenderTarget->DrawGeometry(m_pWaveGeometry, m_pDarkViolet, 1.f);
-		// Trigger point marked as two close lines
-		m_pRenderTarget->DrawLine(D2D1::Point2F(m_offset-10,rtSize.height/2+10),D2D1::Point2F(m_offset-10,rtSize.height/2-10),m_pArrowColor,7.0);
-		m_pRenderTarget->DrawLine(D2D1::Point2F(m_offset+10,rtSize.height/2+10),D2D1::Point2F(m_offset+10,rtSize.height/2-10),m_pArrowColor,7.0);
-		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		////////////////////////////////////////////////////////////////////////////////
-
-		// Draw measurement line and write measurment (in millisecs)
-		// Test if measurment is on and draw measurement line
-		// If delta is more than 0.05 milli then write value on the upper left corner
-		if (m_isMeasuring)
-		{
-			m_pRenderTarget->DrawLine(m_measureStartPoint, m_measureEndPoint, m_pMeasureBrush, 0.3f);
-			float delta = (m_measureEndPoint.x - m_measureStartPoint.x)/sqSize;
-			if (abs(delta) >= 0.05)
-			{
-				hr = StringCchPrintf(textBuffer, tMaxLen, L"%.2fmS", delta);
-				m_pRenderTarget->DrawText(
-					textBuffer,
-					static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
-					m_pMsrTextFormat,
-					D2D1::RectF(20.0f, 10.0f, 80.0f, 35.0f),
-					m_pCornflowerBlueBrush,
-					D2D1_DRAW_TEXT_OPTIONS_NONE
-					);
-			}
-		}
-#endif
 
 		hr = m_pRenderTarget->EndDraw();
 	}
@@ -595,20 +492,6 @@ HRESULT CSppInterface::CreateDeviceResources()
 			hr = S_FALSE;
 		else
 			m_AudioUnit->Initialize();
-		// DEBUG - 
-		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00CD0033);
-		m_AudioUnit->AddJack(L"ID Number 2", L"Friendly name for Jack number 2", 0x00CDFF00);
-		m_AudioUnit->AddJack(L"ID Number 3", L"Friendly name for Jack number 3");
-		m_AudioUnit->AddJack(L"ID Number 4", L"Friendly name for Jack number 4", 0x00CD00CD);
-		m_AudioUnit->AddJack(L"ID Number 5", L"Friendly name for Jack number 5", 0x0000FFCD);
-		m_AudioUnit->AddJack(L"ID Number 6", L"Friendly name for Jack number 6");
-		m_AudioUnit->AddJack(L"ID Number 7", L"Friendly name for Jack number 7", 0x00CD0033);
-		m_AudioUnit->AddJack(L"ID Number 8", L"Friendly name for Jack number 8", 0x00CDFF00);
-		m_AudioUnit->AddJack(L"ID Number 9", L"Friendly name for Jack number 9");
-		m_AudioUnit->RemoveJack(L"ID Number 1");
-		m_AudioUnit->AddJack(L"ID Number 1", L"Friendly name for Jack number 1", 0x00CD0033);
-		// - DEBUG 
-
 	}
 
 	return hr;
@@ -639,4 +522,16 @@ bool CSppInterface::inRect(int x, int y, D2D1_RECT_F rect)
 }
 
 
+
+void CSppInterface::ShowInterface()
+{
+	ShowWindow(m_hwnd, SW_SHOW);
+	UpdateWindow(m_hwnd);
+}
+
+void CSppInterface::HideInterface()
+{
+	ShowWindow(m_hwnd, SW_HIDE);
+	UpdateWindow(m_hwnd);
+}
 

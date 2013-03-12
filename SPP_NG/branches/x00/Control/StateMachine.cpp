@@ -6,6 +6,7 @@ using namespace std;
 #include "StateMachine.h"
 #include <tinyxml.h>
 #include <tinystr.h>
+#include "WinMessages.h"
 
 
 CStateMachine::CStateMachine()
@@ -55,6 +56,7 @@ BOOL CStateMachine::InitInstance(HWND const hWindow, HINSTANCE const hInstance)
 
 	// According to the current configuration deside on innitial state
 	// 
+
 
 	// Notify at the end of the inialization
 	NotifyParent(WMAPP_SM_INIT, m_state);
@@ -157,3 +159,4 @@ void CStateMachine::SaveConfigToFile(LPCWSTR FileName)
 	m_config.SaveConfigFile(t);
 	delete(t);
 }
+

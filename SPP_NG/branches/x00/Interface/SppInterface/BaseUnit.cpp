@@ -184,3 +184,6 @@ void CBaseUnit::DisplayVerticalMessage(LPCWSTR Msg, ID2D1SolidColorBrush* pTextB
 	m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 	return;
 }
+
+void CBaseUnit::Message2ui(DWORD msg, PVOID payload)
+{/* Place holder*/}

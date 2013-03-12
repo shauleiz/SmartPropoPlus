@@ -36,6 +36,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #include <dwrite.h>
 #include <wincodec.h>
 
+#include <winMessages.h>
 
 template<class Interface>
 inline void SafeRelease(Interface **ppInterfaceToRelease)
