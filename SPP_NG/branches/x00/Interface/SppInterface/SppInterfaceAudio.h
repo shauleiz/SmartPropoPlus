@@ -20,6 +20,9 @@ public:
 	bool AddJack(LPCWSTR id, LPCWSTR FriendlyName, COLORREF color=0);
 	bool RemoveJack(LPCWSTR id);
 	void Display(float left, float top, float right, float bottom);
+	void SetSelected(LPCWSTR id);
+	void Message2ui(DWORD msg, PVOID payload);
+
 
 private:
 	int RenderJacks(void);
@@ -28,4 +31,5 @@ private:
 
 private:
 	std::vector<Jack *> m_Jacks;
+	WCHAR * selected_id;
 };

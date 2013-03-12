@@ -142,6 +142,7 @@ public:
 	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
 	SPPINTERFACE_API COLORREF	GetJackColor(PVOID Id);
+	SPPINTERFACE_API bool		IsDisconnected(PVOID Id);
 
 	SPPINTERFACE_API bool		RegisterLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID,LPVOID=NULL);

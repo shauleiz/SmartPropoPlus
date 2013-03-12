@@ -5,7 +5,7 @@ CSppInterfaceAudio::CSppInterfaceAudio(void)
 {
 }
 
-CSppInterfaceAudio::CSppInterfaceAudio(ID2D1HwndRenderTarget* pRenderTarget) : CBaseUnit(pRenderTarget)
+CSppInterfaceAudio::CSppInterfaceAudio(ID2D1HwndRenderTarget* pRenderTarget) : CBaseUnit(pRenderTarget), selected_id(NULL)
 {
 	m_Jacks.clear();
 }
@@ -86,11 +86,17 @@ int CSppInterfaceAudio::RenderJacks(void)
 	float slot_size = (margin_bottom-margin_top)/n_slots;
 	for (int i=0 ; i<n_slots; i++)
 	{
-		// Draw a slot as a white rectange
-		m_pRectFillColor->SetOpacity(0.1f);
+		// Draw a slot as a white rectange (selected with thick line)
+		float width = 1.f;
+		m_pRectFillColor->SetOpacity(0.3f);
 		D2D1_RECT_F slot_rect = D2D1::RectF(rect.left+2, margin_top+i*slot_size+2, rect.right-2,margin_top+(i+1)*slot_size-2);
-		m_pRenderTarget->DrawRectangle(&slot_rect, m_Jacks[i]->m_pRectLineColor);
-		//m_pRenderTarget->FillRectangle(&slot_rect, m_Jacks[i]->m_pRectFillColor);
+		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect( slot_rect, 3.f, 3.f);
+		m_pRenderTarget->DrawRoundedRectangle(roundedRect, m_Jacks[i]->m_pRectLineColor, width);
+		if (selected_id && !wcscmp(selected_id, m_Jacks[i]->id))
+		{	// Selected device
+			m_pRenderTarget->FillRoundedRectangle(&roundedRect,  m_Jacks[i]->m_pRectLineColor);
+			m_pRenderTarget->DrawRoundedRectangle(roundedRect,  m_pRectLineColor, width);
+		}
 
 		// Draw jack as a black hole inside a set of color rings
 		D2D1_ELLIPSE ring;
@@ -144,5 +150,31 @@ void CSppInterfaceAudio::DisplayFriendlyName(LPCWSTR Msg, D2D1_POINT_2F jack_hol
 	m_pDWriteFactory->CreateTextLayout(Msg, wcslen( Msg ), m_pTextFormatInfo, textrect.right-textrect.left, textrect.bottom - textrect.top, &textLayout);
 	m_pRenderTarget->DrawTextLayout(origin, textLayout,pTextBrush);
 
+	SafeRelease(&inlineObject);
+	SafeRelease(&textLayout);
+
 	return;
+}
+
+void CSppInterfaceAudio::SetSelected(LPCWSTR id)
+{
+	if (selected_id)
+	{
+		delete(selected_id);
+		selected_id = NULL;
+	}
+	selected_id = _wcsdup(id);
+}
+
+void CSppInterfaceAudio::Message2ui(DWORD msg, PVOID payload)
+{
+	// This is the entry point for messages comming from the control unit
+	// this GUI element
+	switch (msg)
+	{
+	case WMAPP_DEV_INFO: // New/Apdated device (= capture endpoint) info arrived
+
+	default:
+		return;
+	};
 }

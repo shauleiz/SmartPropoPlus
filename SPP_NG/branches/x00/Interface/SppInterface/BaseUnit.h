@@ -11,6 +11,7 @@ public:
 	void Select(void);
 	void UnSelect(void);
 	D2D1_RECT_F * GetRect();
+	void Message2ui(DWORD msg, PVOID payload);
 
 protected:
 	ID2D1HwndRenderTarget* m_pRenderTarget;

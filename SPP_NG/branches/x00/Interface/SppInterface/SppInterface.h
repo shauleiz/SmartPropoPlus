@@ -23,10 +23,9 @@ class SPPINTERFACE_API CSppInterface {
 public:
 	CSppInterface(void);
 	HRESULT Initialize(HWND hWndParent );
+	HWND	GetUiMainWindow();
 
 public:
-	HWND m_hwnd;
-	D2D1_ROUNDED_RECT m_roundedRect;
 	class CSppInterfaceAudio *m_AudioUnit;
 
 protected:
@@ -52,6 +51,9 @@ protected:
 	// Mouse inside rectangle?
 	static bool CSppInterface::inRect(int x, int y, D2D1_RECT_F rect);
 
+	// Show/Hide main window
+	void ShowInterface();
+	void HideInterface();
 
 protected:
 
@@ -80,6 +82,10 @@ protected:
 
 	class CSppInterfaceChildWin *m_ChildWin;
 	D2D1_RECT_F m_audio_rect;
+
+	HWND m_hwnd;
+	D2D1_ROUNDED_RECT m_roundedRect;
+
 };
 
 extern SPPINTERFACE_API int nSppInterface;

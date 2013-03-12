@@ -15,16 +15,24 @@
 #include "Control.h"
 #include "Common.h"
 #include "config.h"
+#include "WinMessages.h"
 #include "StateMachine.h"
 #include "SppInterface.h"
+
+#include <vector>
+#include <Audioclient.h>
+#include <devicetopology.h>
+#include <Mmdeviceapi.h>
+#include "AudioInputW7.h"
 
 #define MAX_LOADSTRING 100
 #pragma  comment(lib, "SppInterface.lib")
 
 
 // Global Variables:
-CSppInterface * Gui;
-CStateMachine * sm;
+CSppInterface * g_ui;							// Application central user interface
+CStateMachine * g_sm;							// Application central state machine
+CAudioInputW7 *	g_audio;						// Audio object
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
@@ -73,7 +81,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	// Perform application initialization:
-	sm = new CStateMachine;
 	if (!InitInstance (hInstance, nCmdShow))
 	{
 		MessageBox(NULL, STR_EN_CANNOT_INIT, STR_EN_TTL_SPP_ERR, MB_OK|MB_ICONERROR);
@@ -147,6 +154,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 
    HWND hWnd;
+   HRESULT hr = S_OK;
 
    hInst = hInstance; // Store instance handle in our global variable
 
@@ -158,13 +166,28 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   // Initialize Audio Object
+   g_audio = new CAudioInputW7(hWnd);
+
    // Initialize state machine
-   if (!sm->InitInstance(hWnd, hInst))
+   g_sm = new CStateMachine;
+   if (!g_sm->InitInstance(hWnd, hInst))
+   {
+	   delete g_sm;
 	   return FALSE;
+   }
 
    // Load GUI
-   Gui = new(CSppInterface);
-   Gui->Initialize(hWnd);
+   g_ui = new(CSppInterface);
+   g_ui->Initialize(hWnd);
+   if (!SUCCEEDED(hr))
+   {
+	   delete g_ui;
+	   return FALSE;
+   }
+
+   // DEBUG: Display GUI for configuration - Later, make it state-dependent
+   OpenConfigurationWindow(g_ui->GetUiMainWindow());
 
    ShowWindow(hWnd, SW_HIDE); // Window is hidden
    UpdateWindow(hWnd);
@@ -330,6 +353,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WMAPP_SM_INIT:
 		NotificationGraphics(hWnd,lParam);
+		if ((CU_STATE)lParam == CONF)
+			OpenConfigurationWindow(g_ui->GetUiMainWindow());
+		break;
+
+	case WMAPP_SM_GUI:
+		OpenConfigurationWindow(g_ui->GetUiMainWindow());
 		break;
 
 	default:
@@ -378,4 +407,60 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return (INT_PTR)FALSE;
+}
+
+void OpenConfigurationWindow(HWND hWnd)
+{
+	if (!hWnd)
+		return;
+
+	PopulateUI_Jacks(hWnd);
+	SendMessage(hWnd, WMAPP_GUI_SHOW, 0, 0);
+}
+
+bool PopulateUI_Jacks(HWND hWnd)
+{
+	bool br = true;
+	HRESULT hr = S_OK;
+	PVOID id;
+	int size;
+	LPWSTR DevFriendlyName;
+	jack_info info;
+
+	if (!g_audio)
+		return false;
+
+	// Enumerate all Capture Endpoints
+	hr = g_audio->Enumerate();
+	if (!SUCCEEDED(hr))
+	{
+		delete g_audio;
+		return false;
+	};
+
+	// For every valid endpoint - send it to the GUI
+	int limit = g_audio->CountCaptureDevices();
+	for (int i=0; i<limit; i++)
+	{
+		hr = g_audio->GetCaptureDeviceId(i, &size, &id);
+		if (FAILED(hr))
+			continue;
+		hr = g_audio->GetCaptureDeviceName(id, &DevFriendlyName);
+		if (FAILED(hr))
+			continue;
+
+		info.struct_size = sizeof(jack_info);
+		if (g_audio->IsExternal(id) && !g_audio->IsDisconnected(id))
+		{
+			info.FriendlyName = DevFriendlyName;
+			info.id = (LPWSTR)id;
+			info.Enabled = g_audio->IsCaptureDeviceActive(id);
+			info.color =  g_audio->GetJackColor(id);
+			SendMessage(hWnd, WMAPP_GUI_AUDIO, POPULATE_JACKS, (LPARAM)&info);
+		};
+	} ;
+
+
+
+	return br;
 }
