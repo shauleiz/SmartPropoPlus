@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Common.h"
 #include "SppInterfaceAudio.h"
 
 CSppInterfaceAudio::CSppInterfaceAudio(void)
@@ -132,10 +133,10 @@ void CSppInterfaceAudio::DisplayFriendlyName(LPCWSTR Msg, D2D1_POINT_2F jack_hol
 		pTextBrush = m_pBlackBrush;
 
 	// Set delimitting rectangle
-	textrect.bottom = jack_hole.y + 3;
-	textrect.top =    jack_hole.y - 3;
+	textrect.bottom = jack_hole.y + 15;
+	textrect.top =    jack_hole.y - 15;
 	textrect.right =  m_roundedRect.rect.right-3;
-	textrect.left =   jack_hole.x +15;
+	textrect.left =   jack_hole.x +25;
 
 	// Trimming
 	IDWriteInlineObject *inlineObject = NULL;
@@ -170,11 +171,23 @@ void CSppInterfaceAudio::Message2ui(DWORD msg, PVOID payload)
 {
 	// This is the entry point for messages comming from the control unit
 	// this GUI element
+	
+	jack_info * jack;
 	switch (msg)
 	{
-	case WMAPP_DEV_INFO: // New/Apdated device (= capture endpoint) info arrived
+	// Add a new jack 
+	case POPULATE_JACKS:
+		jack = (jack_info *)payload;
+		AddJack(jack->id, jack->FriendlyName, jack->color);
+		break;
+
+	// Set the default endpoint
+	case SET_DEF_JACKS:
+		SetSelected((LPCWSTR)payload);
+		break;
 
 	default:
 		return;
 	};
 }
+
