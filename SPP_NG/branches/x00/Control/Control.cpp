@@ -351,6 +351,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 		};
 		break;
+	case WMAPP_DEFDEV_CHANGED:
+		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, SET_DEF_JACKS, wParam);
+		break;
+	case WMAPP_DEV_PROPTY:
+		break;
 	case WMAPP_SM_INIT:
 		NotificationGraphics(hWnd,lParam);
 		if ((CU_STATE)lParam == CONF)
@@ -449,6 +454,8 @@ bool PopulateUI_Jacks(HWND hWnd)
 		if (FAILED(hr))
 			continue;
 
+		// If endpoint is valid (external and NOT disconnected) then pass its info to the GUI
+		// If it is the default device send this info too
 		info.struct_size = sizeof(jack_info);
 		if (g_audio->IsExternal(id) && !g_audio->IsDisconnected(id))
 		{
@@ -457,6 +464,8 @@ bool PopulateUI_Jacks(HWND hWnd)
 			info.Enabled = g_audio->IsCaptureDeviceActive(id);
 			info.color =  g_audio->GetJackColor(id);
 			SendMessage(hWnd, WMAPP_GUI_AUDIO, POPULATE_JACKS, (LPARAM)&info);
+			if (g_audio->IsCaptureDeviceDefault(id))
+				SendMessage(hWnd, WMAPP_GUI_AUDIO, SET_DEF_JACKS, (LPARAM)id);
 		};
 	} ;
 

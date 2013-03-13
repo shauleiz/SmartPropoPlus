@@ -246,7 +246,6 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 // Handles window messages.
 	LRESULT result = 0;
 	static float orig_opacity = 1;
-	jack_info * jack;
 
 	if (message == WM_CREATE)
 	{
@@ -329,11 +328,13 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 			case WMAPP_GUI_SHOW:
 				pSppInterface->ShowInterface();
+				pSppInterface->OnRender();
 				break;
 
 			case WMAPP_GUI_AUDIO:
-				jack = (jack_info *)lParam;
-				pSppInterface->m_AudioUnit->AddJack(jack->id, jack->FriendlyName, jack->color);
+				pSppInterface->m_AudioUnit->Message2ui(wParam, (PVOID)lParam);
+				InvalidateRect(hwnd, NULL, FALSE);
+				break;
 			}
 		}
 
@@ -389,7 +390,7 @@ HRESULT CSppInterface::OnRender()
 		// The recangle should have an edge and margin
 		float margin = 20.0f;
 		if (m_AudioUnit)
-			m_AudioUnit->Display(margin, margin,rtSize.width / 5 - 2*margin, rtSize.height - 2*margin);
+			m_AudioUnit->Display(margin, margin,rtSize.width/4 - 2*margin, rtSize.height - 2*margin);
 
 		hr = m_pRenderTarget->EndDraw();
 	}

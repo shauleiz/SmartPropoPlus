@@ -994,7 +994,7 @@ HRESULT	CAudioInputW7::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR p
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		PostMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
+		SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 HRESULT	CAudioInputW7::DeviceAdded(LPCWSTR pwstrDeviceId)
