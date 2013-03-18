@@ -354,6 +354,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WMAPP_DEFDEV_CHANGED:
 		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, SET_DEF_JACKS, wParam);
 		break;
+	case WMAPP_DEV_ADDED:
+		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, REM_ALL_JACK, wParam);
+		PopulateUI_Jacks(g_ui->GetUiMainWindow());
+		break;
+	case WMAPP_DEV_REM:
+		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, REM_JACK, wParam);
+		break;
 	case WMAPP_DEV_PROPTY:
 		break;
 	case WMAPP_SM_INIT:
@@ -445,7 +452,7 @@ bool PopulateUI_Jacks(HWND hWnd)
 
 	// For every valid endpoint - send it to the GUI
 	int limit = g_audio->CountCaptureDevices();
-	for (int i=0; i<limit; i++)
+	for (int i=1; i<=limit; i++)
 	{
 		hr = g_audio->GetCaptureDeviceId(i, &size, &id);
 		if (FAILED(hr))

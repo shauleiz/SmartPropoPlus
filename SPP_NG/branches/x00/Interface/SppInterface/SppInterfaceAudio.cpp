@@ -9,6 +9,7 @@ CSppInterfaceAudio::CSppInterfaceAudio(void)
 CSppInterfaceAudio::CSppInterfaceAudio(ID2D1HwndRenderTarget* pRenderTarget) : CBaseUnit(pRenderTarget), selected_id(NULL)
 {
 	m_Jacks.clear();
+	m_header_text = L"Audio Jacks";
 }
 CSppInterfaceAudio::~CSppInterfaceAudio(void)
 {
@@ -35,6 +36,8 @@ bool CSppInterfaceAudio::AddJack(LPCWSTR id, LPCWSTR FriendlyName, COLORREF colo
 	return true;
 }
 
+
+
 bool CSppInterfaceAudio::RemoveJack(LPCWSTR id)
 {
 	// If id exists then remove it and return true
@@ -54,6 +57,24 @@ bool CSppInterfaceAudio::RemoveJack(LPCWSTR id)
 
 	// Not found
 	return false;
+}
+
+bool CSppInterfaceAudio::RemoveAllJack(void)
+{
+	int size = m_Jacks.size();
+	if (!size)
+		return false;
+
+	for (int i=0; i<size; i++)
+	{
+		delete m_Jacks[i]->FriendlyName;
+		delete m_Jacks[i]->id;
+		SafeRelease(&m_Jacks[i]->m_pRectFillColor);
+		SafeRelease(&m_Jacks[i]->m_pRectLineColor);
+	};
+
+	m_Jacks.clear();
+	return true;
 }
 
 void CSppInterfaceAudio::Display(float left, float top, float right, float bottom)
@@ -184,6 +205,16 @@ void CSppInterfaceAudio::Message2ui(DWORD msg, PVOID payload)
 	// Set the default endpoint
 	case SET_DEF_JACKS:
 		SetSelected((LPCWSTR)payload);
+		break;
+
+	// Remove an endpoint by its ID
+	case REM_JACK:
+		RemoveJack((LPCWSTR)payload);
+		break;
+
+	// Remove an endpoint by its ID
+	case REM_ALL_JACK:
+		RemoveAllJack();
 		break;
 
 	default:
