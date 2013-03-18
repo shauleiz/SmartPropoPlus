@@ -591,7 +591,7 @@ bool	CAudioInputW7::IsExternal(PVOID Id)
 */
 {
 	IDeviceTopology *pDeviceTopology = NULL;
-	IMMEndpoint * pEndpoint = NULL;
+	//IMMEndpoint * pEndpoint = NULL;
 	IMMDevice *pDevice = NULL;
     IConnector *pConnFrom = NULL;
     IConnector *pConnTo = NULL;
@@ -643,12 +643,10 @@ bool	CAudioInputW7::IsExternal(PVOID Id)
 		result = true;
 
 Exit:
-	SAFE_RELEASE(pEndpoint);
-	SAFE_RELEASE(pDevice);
-    SAFE_RELEASE(pDeviceTopology)
+	// BUG: UN-COmment when fixed SAFE_RELEASE(pConnTo)
     SAFE_RELEASE(pConnFrom)
-    SAFE_RELEASE(pConnTo)
-    SAFE_RELEASE(pPart)
+    SAFE_RELEASE(pDeviceTopology)
+	SAFE_RELEASE(pDevice);
 	return result;
 }
 SPPINTERFACE_API bool CAudioInputW7::IsDisconnected(PVOID Id)
@@ -993,7 +991,7 @@ HRESULT	CAudioInputW7::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR p
 // Called (asynch) when Default device was changed
 {
 	// Send message to calling window indicating what happend
-	if (m_hPrntWnd)
+	if (m_hPrntWnd && role == eMultimedia)
 		SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
@@ -1011,7 +1009,7 @@ HRESULT	CAudioInputW7::DeviceRemoved(LPCWSTR pwstrDeviceId)
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		PostMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
+		SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -1020,8 +1018,20 @@ HRESULT	CAudioInputW7::DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewStat
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		PostMessage(m_hPrntWnd, WMAPP_DEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
-	return S_OK;
+	{
+		if (dwNewState & DEVICE_STATE_ACTIVE)
+		{
+			PostMessage(m_hPrntWnd, WMAPP_DEV_ADDED, (WPARAM)pwstrDeviceId, NULL);
+			return S_OK;
+		};
+
+		if (dwNewState & DEVICE_STATE_UNPLUGGED)
+		{
+			SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
+			return S_OK;
+		};
+	};
+	return S_FALSE;
 }
 
 HRESULT	CAudioInputW7::PropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPERTYKEY key)

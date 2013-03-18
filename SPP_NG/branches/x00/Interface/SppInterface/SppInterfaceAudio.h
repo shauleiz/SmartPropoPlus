@@ -19,6 +19,7 @@ public:
 	virtual ~CSppInterfaceAudio(void);
 	bool AddJack(LPCWSTR id, LPCWSTR FriendlyName, COLORREF color=0);
 	bool RemoveJack(LPCWSTR id);
+	bool RemoveAllJack(void);
 	void Display(float left, float top, float right, float bottom);
 	void SetSelected(LPCWSTR id);
 	void Message2ui(DWORD msg, PVOID payload);
