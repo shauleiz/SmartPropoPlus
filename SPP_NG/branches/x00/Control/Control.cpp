@@ -352,14 +352,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		};
 		break;
 	case WMAPP_DEFDEV_CHANGED:
-		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, SET_DEF_JACKS, wParam);
-		break;
 	case WMAPP_DEV_ADDED:
+	case WMAPP_DEV_REM:
 		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, REM_ALL_JACK, wParam);
 		PopulateUI_Jacks(g_ui->GetUiMainWindow());
-		break;
-	case WMAPP_DEV_REM:
-		SendMessage(g_ui->GetUiMainWindow(), WMAPP_GUI_AUDIO, REM_JACK, wParam);
 		break;
 	case WMAPP_DEV_PROPTY:
 		break;

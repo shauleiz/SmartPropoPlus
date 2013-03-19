@@ -310,18 +310,14 @@ LRESULT CALLBACK CSppInterface::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 			//	break;
 
 
-			case WM_MOUSEMOVE:
-				if (!pSppInterface->m_AudioUnit)
-					break;
+			case WM_LBUTTONDOWN:
+				if (pSppInterface->m_AudioUnit)
+					pSppInterface->m_AudioUnit->MouseLeftBtnDown(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
-				if ((inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , *pSppInterface->m_AudioUnit->GetRect() )))
-				{
-					pSppInterface->m_AudioUnit->Select();
-				}
-				else
-				{
-					pSppInterface->m_AudioUnit->UnSelect();				
-				}
+			case WM_MOUSEMOVE:
+				if (pSppInterface->m_AudioUnit)
+					pSppInterface->m_AudioUnit->MouseOver(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
 				pSppInterface->OnRender();
 				//wasHandled = true;
 				break;

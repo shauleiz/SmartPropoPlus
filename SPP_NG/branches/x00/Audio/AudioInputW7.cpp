@@ -643,7 +643,7 @@ bool	CAudioInputW7::IsExternal(PVOID Id)
 		result = true;
 
 Exit:
-	// BUG: UN-COmment when fixed SAFE_RELEASE(pConnTo)
+	SAFE_RELEASE(pConnTo)
     SAFE_RELEASE(pConnFrom)
     SAFE_RELEASE(pDeviceTopology)
 	SAFE_RELEASE(pDevice);
@@ -992,7 +992,7 @@ HRESULT	CAudioInputW7::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR p
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd && role == eMultimedia)
-		SendMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEFDEV_CHANGED, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 HRESULT	CAudioInputW7::DeviceAdded(LPCWSTR pwstrDeviceId)
@@ -1009,7 +1009,7 @@ HRESULT	CAudioInputW7::DeviceRemoved(LPCWSTR pwstrDeviceId)
 {
 	// Send message to calling window indicating what happend
 	if (m_hPrntWnd)
-		SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
+		PostMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }
 
@@ -1027,7 +1027,7 @@ HRESULT	CAudioInputW7::DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewStat
 
 		if (dwNewState & DEVICE_STATE_UNPLUGGED)
 		{
-			SendMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
+			PostMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
 			return S_OK;
 		};
 	};

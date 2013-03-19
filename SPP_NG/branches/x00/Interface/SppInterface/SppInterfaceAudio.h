@@ -23,7 +23,7 @@ public:
 	void Display(float left, float top, float right, float bottom);
 	void SetSelected(LPCWSTR id);
 	void Message2ui(DWORD msg, PVOID payload);
-
+	void MouseLeftBtnDown(int x, int y);
 
 private:
 	int RenderJacks(void);

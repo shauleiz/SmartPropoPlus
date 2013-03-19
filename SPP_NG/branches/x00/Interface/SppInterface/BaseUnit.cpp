@@ -11,7 +11,7 @@ CBaseUnit::CBaseUnit(ID2D1HwndRenderTarget* pRenderTarget) :
 	m_margin(20.0f), m_rect_color(D2D1::ColorF::LightSlateGray), m_line_color(D2D1::ColorF::Red), m_line_width(2.f),
 	m_opacity_sel(1.0f), m_opacity_nosel(0.6f), m_pRenderTarget(NULL), m_selected(false), m_pDWriteFactory(NULL), 
 	m_pTextFormat(NULL), m_pBeigeBrush(NULL), m_pBlackBrush(NULL), m_pTextFormatInfo(NULL), m_header_text(L"Your text"),
-	m_pPinionBitmap(NULL)
+	m_pPinionBitmap(NULL), m_icon_selected(false)
 {
 	m_pRenderTarget = pRenderTarget;
 }
@@ -218,10 +218,13 @@ void CBaseUnit::DisplayHeader(LPCWSTR text, ID2D1SolidColorBrush * color)
 
 	if (m_selected)
 	{
-		// Draw a bitmap in the upper-right corner of the window.
+		// Draw an icon (pinion) in the upper-right corner of the window.
+		// Draw a rectangle around the icon if mouse is over it. 
 		m_iconrect = textrect;
 		m_iconrect.left = m_iconrect.right - (textrect.bottom - textrect.top);
 		m_pRenderTarget->DrawBitmap(m_pPinionBitmap,m_iconrect);
+		if (m_icon_selected)
+			m_pRenderTarget->DrawRectangle(m_iconrect,color, 0.4f);
 	};
 
 
@@ -236,14 +239,19 @@ void CBaseUnit::Display(float left, float top, float right, float bottom)
 		DisplayNotSelected(left, top, right, bottom);
 }
 
-void CBaseUnit::Select(void)
+void CBaseUnit::Select(int x,int y)
 {
 	m_selected = true;
+	if (inRect(x,y,m_iconrect))
+		m_icon_selected = true;
+	else
+		m_icon_selected = false;
 }
 
 void CBaseUnit::UnSelect(void)
 {
 	m_selected = false;
+	m_icon_selected = false;
 }
 
 D2D1_RECT_F * CBaseUnit::GetRect(void)
@@ -445,4 +453,26 @@ HRESULT CBaseUnit::LoadResourceBitmap(
     SafeRelease(&pScaler);
 
     return hr;
+}
+
+bool CBaseUnit::inRect(int x, int y, D2D1_RECT_F rect)
+{
+	if (rect.bottom >=y && rect.top<=y && rect.left<=x && rect.right>=x)
+		return true;
+	else
+		return false;
+}
+
+void  CBaseUnit::MouseOver(int x, int y)
+// If coordinates are within the unit then mark it selected
+{
+	if ((inRect(x, y , m_roundedRect.rect )))
+		Select(x, y);
+	else
+		UnSelect();				
+}
+
+void  CBaseUnit::MouseLeftBtnDown(int x, int y)
+// Place holder
+{
 }
