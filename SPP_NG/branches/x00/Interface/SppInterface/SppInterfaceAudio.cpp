@@ -83,6 +83,14 @@ void CSppInterfaceAudio::Display(float left, float top, float right, float botto
 	RenderJacks();
 }
 
+void CSppInterfaceAudio::MouseLeftBtnDown(int x, int y)
+{
+	if (this->inRect(x, y, m_iconrect))
+	{
+		int i = 0;
+	};
+}
+
 int CSppInterfaceAudio::RenderJacks(void)
 {
 	// Render an audio jack as a colored ring around a black circle.

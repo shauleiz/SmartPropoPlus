@@ -8,9 +8,11 @@ public:
 	virtual ~CBaseUnit(void);
 	void Initialize(DWORD rect_color = (D2D1::ColorF::LightSlateGray), DWORD line_color = (D2D1::ColorF::Red));
 	void Display(float left, float top, float right, float bottom);
-	void Select(void);
+	void Select(int x,int y);
 	void UnSelect(void);
 	D2D1_RECT_F * GetRect();
+	void MouseOver(int x, int y);
+	void MouseLeftBtnDown(int x, int y);
 	void Message2ui(DWORD msg, PVOID payload);
 
 protected:
@@ -25,7 +27,7 @@ protected:
 	IDWriteTextFormat *m_pTextFormat;
 	IDWriteTextFormat *m_pHeaderTextFormat;
 	IDWriteTextFormat *m_pTextFormatInfo;
-    IWICImagingFactory	*m_pWICFactory;
+	IWICImagingFactory	*m_pWICFactory;
 	ID2D1Bitmap			*m_pPinionBitmap;
 	D2D1_RECT_F			m_iconrect;
 
@@ -36,6 +38,8 @@ protected:
 	float m_line_width;
 	float m_opacity_sel, m_opacity_nosel;
 	bool m_selected;
+	bool m_header_selected;
+	bool m_icon_selected;
 	LPCWSTR	m_header_text;
 
 protected:
@@ -43,14 +47,14 @@ protected:
 	void DisplayNotSelected(float left, float top, float right, float bottom);
 	void DisplayVerticalMessage(LPCWSTR Msg, ID2D1SolidColorBrush* pTextBrush = NULL);
 	void DisplayHeader(LPCWSTR text = NULL, ID2D1SolidColorBrush * color = NULL);
-	    HRESULT LoadResourceBitmap(
-        ID2D1RenderTarget *pRenderTarget,
-        IWICImagingFactory *pIWICFactory,
-        PCWSTR resourceName,
-        PCWSTR resourceType,
-        UINT destinationWidth,
-        UINT destinationHeight,
-        ID2D1Bitmap **ppBitmap
-        );
-
+	HRESULT LoadResourceBitmap(
+		ID2D1RenderTarget *pRenderTarget,
+		IWICImagingFactory *pIWICFactory,
+		PCWSTR resourceName,
+		PCWSTR resourceType,
+		UINT destinationWidth,
+		UINT destinationHeight,
+		ID2D1Bitmap **ppBitmap
+		);
+	static bool inRect(int x, int y, D2D1_RECT_F rect);
 };
