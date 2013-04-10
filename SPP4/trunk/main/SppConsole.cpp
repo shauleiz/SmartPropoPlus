@@ -15,6 +15,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPTSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+	HANDLE hDlgCLosed=NULL;
+
 	// Read Command line
 	// TODO: This is only an example of how to parse the command line
 	int argc = 0;
@@ -55,10 +57,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	else
 		hMuxex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
-	SppConsoleDlg Dialog = SppConsoleDlg(hPrevInstance);
-	//Dialog.Hide();
-	Dialog.Show();
+	// Create Dialog box, initialize it then show it
+	SppConsoleDlg * Dialog = new SppConsoleDlg(hInstance);
+	Dialog->Show();
 
+	// Loop forever in the dialog box until user kills it
+	Dialog->MsgLoop();
+	delete(Dialog);
 
 	return 0;
 }
