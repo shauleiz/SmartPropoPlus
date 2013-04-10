@@ -3,8 +3,10 @@
 
 #include "stdafx.h"
 #include <Shellapi.h>
+#include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
 #include "SppConsole.h"
+#include "SppMain.h"
 #include "SppConsoleDlg.h"
 
 
@@ -32,15 +34,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WM_INTERSPPCONSOLE	= RegisterWindowMessage(INTERSPPCONSOLE);
 	if (!WM_INTERSPPCONSOLE)
 	{
-		_stprintf_s(msg, TEXT("wWinMain(): WM_INTERSPPCONSOLE = %d - cannot register window message INTERSPPCONSOLE"), MAX_MSG_SIZE, WM_INTERSPPCONSOLE);
-		::MessageBox(NULL,msg, TEXT("SmartPropoPlus Message") , MB_SYSTEMMODAL);
+		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_INTERSPPCONSOLE , WM_INTERSPPCONSOLE);
+		::MessageBox(NULL,msg, SPP_MSG , MB_SYSTEMMODAL);
 		return -1;
 	};
 	WM_INTERSPPAPPS		= RegisterWindowMessage(INTERSPPAPPS);
 	if (!WM_INTERSPPAPPS)
 	{
-		_stprintf_s(msg, TEXT("wWinMain(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS"), MAX_MSG_SIZE, WM_INTERSPPAPPS);
-		::MessageBox(NULL,msg, TEXT("SmartPropoPlus Message") , MB_SYSTEMMODAL);
+		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_INTERSPPAPPS, WM_INTERSPPAPPS);
+		::MessageBox(NULL,msg, SPP_MSG , MB_SYSTEMMODAL);
 		return -1;
 	};
 
@@ -58,11 +60,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		hMuxex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
 	// Create Dialog box, initialize it then show it
-	SppConsoleDlg * Dialog = new SppConsoleDlg(hInstance);
+	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance);
+	CSppMain *		Spp		= new CSppMain();
+	if (!Spp->Start())
+		goto ExitApp;
 	Dialog->Show();
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
+
+	ExitApp:
 	delete(Dialog);
 
 	return 0;

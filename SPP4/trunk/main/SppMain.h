@@ -18,4 +18,7 @@ class SPPMAIN_API CSppMain {
 	~CSppMain();
 	bool Start();
 
+private:
+	bool m_PropoStarted;
+
 };

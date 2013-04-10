@@ -1,5 +1,4 @@
 /* Generic SmartPropoPlus header file */
-#include "windows.h"
 #if defined(__cplusplus)
 extern "C"
 {
@@ -8,26 +7,26 @@ extern "C"
 #ifndef __SMARTPROPOPLUS
 #define __SMARTPROPOPLUS
 /** Definitions **/
-#define REG_FMS "Software\\Flying-Model-Simulator"
-#define REG_SPP "Software\\Flying-Model-Simulator\\SmartPropoPlus"
-#define REG_MOD "Software\\Flying-Model-Simulator\\SmartPropoPlus\\Modulation-Types"
-#define REG_AUD "Software\\Flying-Model-Simulator\\SmartPropoPlus\\Audio-Sources"
+#define REG_FMS _T("Software\\Flying-Model-Simulator")
+#define REG_SPP _T("Software\\Flying-Model-Simulator\\SmartPropoPlus")
+#define REG_MOD _T("Software\\Flying-Model-Simulator\\SmartPropoPlus\\Modulation-Types")
+#define REG_AUD _T("Software\\Flying-Model-Simulator\\SmartPropoPlus\\Audio-Sources")
 
-#define MOD_TYPE_PPM	"PPM"
-#define MOD_TYPE_PPMW	"PPMW"
-#define MOD_TYPE_JR 	"JR"
-#define MOD_TYPE_FUT	"FUT"
-#define MOD_TYPE_AIR1	"AIR1"
-#define MOD_TYPE_AIR2	"AIR2"
-#define MOD_TYPE_WAL	"WAL"
+#define MOD_TYPE_PPM	_T("PPM")
+#define MOD_TYPE_PPMW	_T("PPMW")
+#define MOD_TYPE_JR 	_T("JR")
+#define MOD_TYPE_FUT	_T("FUT")
+#define MOD_TYPE_AIR1	_T("AIR1")
+#define MOD_TYPE_AIR2	_T("AIR2")
+#define MOD_TYPE_WAL	_T("WAL")
 
-#define MOD_NAME_PPM	"PPM (Generic)"
-#define MOD_NAME_PPMW	"PPM (Walkera)"
-#define MOD_NAME_JR 	"JR (PCM)"
-#define MOD_NAME_FUT	"Futaba (PCM)"
-#define MOD_NAME_AIR1	"Sanwa/Air (PCM1)"
-#define MOD_NAME_AIR2	"Sanwa/Air (PCM2)"
-#define MOD_NAME_WAL	"Walkera (PCM)"
+#define MOD_NAME_PPM	_T("PPM (Generic)")
+#define MOD_NAME_PPMW	_T("PPM (Walkera)")
+#define MOD_NAME_JR 	_T("JR (PCM)")
+#define MOD_NAME_FUT	_T("Futaba (PCM)")
+#define MOD_NAME_AIR1	_T("Sanwa/Air (PCM1)")
+#define MOD_NAME_AIR2	_T("Sanwa/Air (PCM2)")
+#define MOD_NAME_WAL	_T("Walkera (PCM)")
 
 #define MOD_DEF_STR  {\
 						MOD_TYPE_PPM, MOD_NAME_PPM,\
@@ -44,27 +43,27 @@ extern "C"
 #define	MNM_POS_HID	"Positive"
 #define	MNM_NEG_HID	"Negative"
 
-#define MOD_ACTIVE	"Active"
-#define SHIFT_POS	"Positive-Shift"
-#define SHIFT_AUTO	"Shift-Auto-Detect"
-#define DEBUG_LEVEL	"Debug-Level"
-#define	MIXER_DEV	L"Mixer-Device"
-#define	ENDPOINT	L"EndPoint-Device"
-#define	AUDIO		"Audio"
+#define MOD_ACTIVE	_T("Active")
+#define SHIFT_POS	_T("Positive-Shift")
+#define SHIFT_AUTO	_T("Shift-Auto-Detect")
+#define DEBUG_LEVEL	_T("Debug-Level")
+#define	MIXER_DEV	_T("Mixer-Device")
+#define	ENDPOINT	_T("EndPoint-Device")
+#define	AUDIO		_T("Audio")
 
-#define	SEL_FLTR	"Selected-Filter"
+#define	SEL_FLTR	_T("Selected-Filter")
 
-#define	PPJ_EXT		"PPJoy_Extension"
+#define	PPJ_EXT		_T("PPJoy_Extension")
 
-#define	DEF_VOL_MIC	"Default Volume Level - Microphone"
-#define	DEF_VOL_AUX	"Default Volume Level - Aux"
-#define	DEF_VOL_LIN	"Default Volume Level - Line"
-#define	DEF_VOL_ANL	"Default Volume Level - Analog"
-#define	DEF_VOL_UNK	"Default Volume Level - Unknown"
+#define	DEF_VOL_MIC	_T("Default Volume Level - Microphone")
+#define	DEF_VOL_AUX	_T("Default Volume Level - Aux")
+#define	DEF_VOL_LIN	_T("Default Volume Level - Line")
+#define	DEF_VOL_ANL	_T("Default Volume Level - Analog")
+#define	DEF_VOL_UNK	_T("Default Volume Level - Unknown")
 
-#define MUTEX_LABEL	"SPP Global Shared memory Mutex"
-#define BLOCK_LABEL	"SPP Global Shared memory Block"
-#define EVENT_MIXER	"Mixer Switching Event"
+#define MUTEX_LABEL	_T("SPP Global Shared memory Mutex")
+#define BLOCK_LABEL	_T("SPP Global Shared memory Block")
+#define EVENT_MIXER	_T("Mixer Switching Event")
 #define	VER_DLL		0x0003030b /* DLL File Version */
 #define	VER_GUI		0x0003030b /* GUI File Version */
 
@@ -77,8 +76,6 @@ extern "C"
 
 
 #define MAX_VAL_NAME 254
-#define MAX_MODS     127
-#define MAX_FLTRS    127
 
 #define PPJDLL_NAME		TEXT("PPJoyEx")
 #define CTRL_LOG_FILE	"SPP_ctrl.log"
@@ -86,7 +83,8 @@ extern "C"
 #define DATA_LOG_FILE	"SPP_data.log"
 #define SEPARATOR		"*************************************************************************"
 
-#define	SPP_ERROR_MSG	"SmartPropoPlus Error"
+#define	SPP_ERROR_MSG		TEXT("SmartPropoPlus Error")
+#define SPP_MSG				TEXT("SmartPropoPlus Message")
 
 #define CONSOLE_TT			"SmartPropoPlus Console"
 #define CONSOLE_TT_OFF		"SmartPropoPlus is OFF"
@@ -149,6 +147,10 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define	INTERSPPAPPS		TEXT("Inter SPP Application Message 2")
 #define DEFLT_WAVE			L"WAVE_MAPPER"
 
+/* SPP Console messages */
+#define CN_NO_INTERSPPCONSOLE	TEXT("wWinMain(): WM_INTERSPPCONSOLE = %u - cannot register window message INTERSPPCONSOLE")
+#define CN_NO_INTERSPPAPPS		TEXT("wWinMain(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS")
+
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1
 #define WM_LEFT		WM_APP+2
@@ -171,8 +173,8 @@ For further details please go to the SmartPropoPlus Home using the link below."
 /** Data types and structures ***/
 struct Modulation
 {
-	char * ModTypeInternal;
-	char * ModTypeDisplay;
+	LPTSTR ModTypeInternal;
+	LPTSTR ModTypeDisplay;
 	int index;
 };
 
@@ -198,7 +200,7 @@ void SetPositiveShift(const int sel);
 struct Modulations * GetModulation(int Create);
 void FreeModulation(struct Modulations * modulation);
 int GetDebugLevel(void);
-const char * ModeDisplayFromInternalName(const char * internal);
+LPCTSTR ModeDisplayFromInternalName(LPCTSTR internal);
 int GetDefaultVolumeValue(unsigned long SrcType);
 int SetDefaultVolumeValue(unsigned long SrcType, unsigned long  VolumeValue);
 int GetCurrentAudioState();
@@ -214,7 +216,7 @@ void SetCurrentMixerDevice(LPCWSTR MixerName);
 void SetCurrentEndpointDevice(LPCWSTR MixerName);
 void SwitchMixerRequest(LPCWSTR MixerName);
 void SwitchMixerAck(LPWSTR MixerName);
-void SetSwitchMixerRequestStat(enum MDSTAT Stat);
+void SetSwitchMixerRequestStat(enum SharedDataBlock::MDSTAT Stat);
 void SetCurrentInputLine(LPCWSTR MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);
 int isVista(void);
@@ -226,7 +228,7 @@ void SetNumberOfFilters(const int n);
 int GetNumberOfFilters();
 void SetSelectedFilterIndex(const int i);
 int GetSelectedFilterIndex();
-char * GetFilterNameByIndex(const int i);
+LPTSTR GetFilterNameByIndex(const int i);
 //void SetFilterNameByIndex(const int i, const char * name);
 //char * GetFilterNameByIndex(const int i);
 void SetFilterNames(const char ** name);
