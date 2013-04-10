@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SmartPropoPlus.h" />
     <ClInclude Include="SppConsole.h" />
     <ClInclude Include="SppConsoleDlg.h" />
     <ClInclude Include="stdafx.h" />

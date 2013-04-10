@@ -1,5 +1,4 @@
 /** SmartPropoPlus Registry Interface **/
-#include "windows.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -18,7 +17,7 @@ void SetCurrentEndpointDeviceToRegistry(LPCWSTR  MixerName);
 int GetCurrentInputLineFromRegistry(unsigned int *SrcID);
 int GetInputLineFromRegistry(LPCWSTR MixerName, unsigned int *SrcID);
 void SetCurrentInputLineToRegistry(LPCWSTR MixerName, unsigned int SrcID);
-int SetActiveModeToRegistry(const char * selected);
+int SetActiveModeToRegistry(LPCTSTR selected);
 void SetShiftAutoDetectToRegistry(const int sel);
 void SetPositiveShiftToRegistry(const int sel);
 struct Modulations * GetModulationFromRegistry(int Create);
@@ -36,8 +35,8 @@ int isSppRegistryExist();
 int isFmsRegistryExist();
 int isModRegistryUpdate();
 
-int SetSelectedFilterNameToRegistry(const char * selected);
-char * GetSelectedFilterNameFromRegistry();
+int SetSelectedFilterNameToRegistry(LPCTSTR selected);
+LPTSTR GetSelectedFilterNameFromRegistry();
 
 #if defined(__cplusplus)
 }
