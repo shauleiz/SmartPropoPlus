@@ -10,11 +10,30 @@
 #define SPPMAIN_API __declspec(dllimport)
 #endif
 
-#include <functional>
-using std::tr1::function;
 
-//typedef  void ( * PP)(int width, BOOL input);
-typedef  std::function<void (int, BOOL)> PP;
+#include <vector>
+#include <functional>
+//using std::tr1::function;
+typedef  std::vector<std::function<void (int, BOOL)>> vPP;
+
+
+#define PW_FUTABA	6.623
+#define PW_JR		7.340
+#define PPM_MIN		30.0
+#define PPM_MAX		80.0
+#define PPM_TRIG	200
+#define PPM_SEP		15.0
+#define PPMW_MIN	18.0
+#define PPMW_MAX	70.0
+#define PPMW_TRIG	200
+#define PPMW_SEP	15.0
+
+#define MAX_JS_CH	12
+
+
+/* Globals */
+int gDebugLevel = 0;
+FILE * gCtrlLogFile = NULL;
 
 
 class SPPMAIN_API CSppMain {
@@ -26,12 +45,14 @@ class SPPMAIN_API CSppMain {
 private:
 	int LoadProcessPulseFunctions();
 	void ProcessPulsePpm(int width, BOOL input);
+	std::function<void (int, BOOL)> f;
 
 
 private:
 	bool	m_PropoStarted;
 	LPVOID	m_pSharedBlock;
 	LPWSTR	m_MixerName;
-	//LPVOID	*m_ListProcessPulseFunc;
-	PP * m_ListProcessPulseFunc;
+	int		m_JsChPostProc_selected;
+	int		m_Position[MAX_JS_CH];
+	vPP		m_ListProcessPulseFunc;
 };

@@ -193,6 +193,7 @@ struct JsChPostProcInfo
 	far char ** name_fltr;	// list of display name of filters
 } ;
 
+
 /* Function Prototypes */
 int SetActiveMode(const char * selected);
 void SetShiftAutoDetect(const int sel);
