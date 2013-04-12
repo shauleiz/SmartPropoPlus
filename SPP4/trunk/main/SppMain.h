@@ -10,6 +10,11 @@
 #define SPPMAIN_API __declspec(dllimport)
 #endif
 
+#include <functional>
+using std::tr1::function;
+
+//typedef  void ( * PP)(int width, BOOL input);
+typedef  std::function<void (int, BOOL)> PP;
 
 
 class SPPMAIN_API CSppMain {
@@ -19,6 +24,14 @@ class SPPMAIN_API CSppMain {
 	bool Start();
 
 private:
-	bool m_PropoStarted;
+	int LoadProcessPulseFunctions();
+	void ProcessPulsePpm(int width, BOOL input);
 
+
+private:
+	bool	m_PropoStarted;
+	LPVOID	m_pSharedBlock;
+	LPWSTR	m_MixerName;
+	//LPVOID	*m_ListProcessPulseFunc;
+	PP * m_ListProcessPulseFunc;
 };
