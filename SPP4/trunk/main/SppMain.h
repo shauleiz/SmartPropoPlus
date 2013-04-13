@@ -13,8 +13,12 @@
 
 #include <vector>
 #include <functional>
-//using std::tr1::function;
-typedef  std::vector<std::function<void (int, BOOL)>> vPP;
+
+using std::function;
+using std::placeholders::_1;
+using std::placeholders::_2;
+
+typedef  std::vector<function<void (int, BOOL)>> vPP;
 
 
 #define PW_FUTABA	6.623
@@ -45,7 +49,7 @@ class SPPMAIN_API CSppMain {
 private:
 	int LoadProcessPulseFunctions();
 	void ProcessPulsePpm(int width, BOOL input);
-	std::function<void (int, BOOL)> f;
+	function<void (int, BOOL)> f;
 
 
 private:

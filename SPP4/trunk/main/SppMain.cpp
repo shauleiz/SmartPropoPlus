@@ -15,6 +15,12 @@ CSppMain::CSppMain() :
 	m_JsChPostProc_selected(-1)
 {
 	f = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
+	//std::function<void(CSppMain&, int, BOOL)> g1 = &CSppMain::ProcessPulsePpm;
+	function<void(int, BOOL)> g2 = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
+	//std::function<void(CSppMain*, int, BOOL)> g3 = &CSppMain::ProcessPulsePpm;
+	function<void(int, BOOL)> g4 = std::bind( &CSppMain::ProcessPulsePpm, this, _1, _2);
+	g4(222, FALSE);
+
 	//f = ProcessPulseTest;
 	m_ListProcessPulseFunc.clear();
 }
@@ -92,9 +98,15 @@ int CSppMain::LoadProcessPulseFunctions()
 		};
 
 
+		//Changes based on
+		//	http://stackoverflow.com/questions/7582546/using-generic-stdfunction-objects-with-member-functions-in-one-class
+
 		if (!_tcscmp(tmp, MOD_TYPE_PPM))
 		{	
-			m_ListProcessPulseFunc[0*nMod+index] = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};	
+			m_ListProcessPulseFunc[0*nMod+index] = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
+			m_ListProcessPulseFunc[0*nMod+index](100,TRUE);
+
+
 			//m_ListProcessPulseFunc[1*nMod+index] = (void *)ProcessPulseFutabaPpm;	/* Negative  Detect*/
 			//m_ListProcessPulseFunc[2*nMod+index] = (void *)ProcessPulseJrPpm;		/* Positive  Detect*/
 		}
