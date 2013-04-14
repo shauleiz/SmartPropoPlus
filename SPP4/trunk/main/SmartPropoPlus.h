@@ -13,6 +13,8 @@ extern "C"
 #define REG_AUD _T("Software\\Flying-Model-Simulator\\SmartPropoPlus\\Audio-Sources")
 
 #define MOD_TYPE_PPM	_T("PPM")
+#define MOD_TYPE_PPMP	_T("PPMPOS")
+#define MOD_TYPE_PPMN	_T("PPMNEG")
 #define MOD_TYPE_PPMW	_T("PPMW")
 #define MOD_TYPE_JR 	_T("JR")
 #define MOD_TYPE_FUT	_T("FUT")
@@ -21,6 +23,8 @@ extern "C"
 #define MOD_TYPE_WAL	_T("WAL")
 
 #define MOD_NAME_PPM	_T("PPM (Generic)")
+#define MOD_NAME_PPMP	_T("PPM (Positive)")
+#define MOD_NAME_PPMN	_T("PPM (Negative)")
 #define MOD_NAME_PPMW	_T("PPM (Walkera)")
 #define MOD_NAME_JR 	_T("JR (PCM)")
 #define MOD_NAME_FUT	_T("Futaba (PCM)")
@@ -30,6 +34,8 @@ extern "C"
 
 #define MOD_DEF_STR  {\
 						MOD_TYPE_PPM, MOD_NAME_PPM,\
+						MOD_TYPE_PPMP, MOD_NAME_PPMP,\
+						MOD_TYPE_PPMN, MOD_NAME_PPMN,\
 						MOD_TYPE_PPMW, MOD_NAME_PPMW,\
 						MOD_TYPE_JR,  MOD_NAME_JR,\
 						MOD_TYPE_FUT, MOD_NAME_FUT,\

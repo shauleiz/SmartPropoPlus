@@ -18,7 +18,17 @@ using std::function;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-typedef  std::vector<function<void (int, BOOL)>> vPP;
+#define  PP function<void (int, BOOL)>
+
+struct MOD_STRUCT {
+	BOOL isPpm;
+	LPCTSTR ModType;
+	LPCTSTR ModName;
+	PP func;   
+};
+
+typedef  std::vector<PP> vPP;
+typedef  std::vector<MOD_STRUCT> vMOD;
 
 
 #define PW_FUTABA	6.623
@@ -58,5 +68,5 @@ private:
 	LPWSTR	m_MixerName;
 	int		m_JsChPostProc_selected;
 	int		m_Position[MAX_JS_CH];
-	vPP		m_ListProcessPulseFunc;
+	vMOD	m_ListProcessPulseFunc;
 };
