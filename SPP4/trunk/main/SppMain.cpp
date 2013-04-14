@@ -14,14 +14,6 @@ CSppMain::CSppMain() :
 	m_MixerName(NULL),
 	m_JsChPostProc_selected(-1)
 {
-	f = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
-	//std::function<void(CSppMain&, int, BOOL)> g1 = &CSppMain::ProcessPulsePpm;
-	function<void(int, BOOL)> g2 = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
-	//std::function<void(CSppMain*, int, BOOL)> g3 = &CSppMain::ProcessPulsePpm;
-	function<void(int, BOOL)> g4 = std::bind( &CSppMain::ProcessPulsePpm, this, _1, _2);
-	g4(222, FALSE);
-
-	//f = ProcessPulseTest;
 	m_ListProcessPulseFunc.clear();
 }
 
@@ -69,91 +61,65 @@ int CSppMain::LoadProcessPulseFunctions()
 {
 	int index=0;
 	TCHAR tmp[MAX_VAL_NAME];
-	int nMod;
+	int nMod=0;
 
 
-	/* Version 3.3.2 */
-	if (m_pSharedBlock && ((SharedDataBlock *)m_pSharedBlock)->nModulations > 0)
-		nMod = ((SharedDataBlock *)m_pSharedBlock)->nModulations;
-	else
-	{	
-		MessageBox(NULL,MM_NO_NUM_MOD, MM_STD_HDR , MB_SYSTEMMODAL);
-		nMod = 1;
-	};
 
-	//m_ListProcessPulseFunc = (PP *)calloc(3*nMod+1, sizeof(PP));
-	m_ListProcessPulseFunc.resize(3*nMod+1);
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPM;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPM;
+	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
+	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
 
-	/* Loop on list of modulation types */
-	while(index < nMod && index<MAX_MODS)
-	{
-		/* Get the internal name of the modulation */
-		if (m_pSharedBlock && ((SharedDataBlock *)m_pSharedBlock)->pInternalModName)/* Version 3.3.2 */
-			_tcscpy_s(tmp, MAX_MODS, (TCHAR *)((SharedDataBlock *)m_pSharedBlock)->pInternalModName[index]);
-		/* Version 3.3.2 */
-		else
-		{
-			/* TODO: Take it from the registry */
-			_tcscpy_s(tmp,10,  _T("PPM"));
-		};
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMP;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMP;
+	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMN;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMN;
+	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
-		//Changes based on
-		//	http://stackoverflow.com/questions/7582546/using-generic-stdfunction-objects-with-member-functions-in-one-class
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMW;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMW;
+	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
-		if (!_tcscmp(tmp, MOD_TYPE_PPM))
-		{	
-			m_ListProcessPulseFunc[0*nMod+index] = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
-			m_ListProcessPulseFunc[0*nMod+index](100,TRUE);
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_JR;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_JR;
+	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_FUT;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_FUT;
+	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
-			//m_ListProcessPulseFunc[1*nMod+index] = (void *)ProcessPulseFutabaPpm;	/* Negative  Detect*/
-			//m_ListProcessPulseFunc[2*nMod+index] = (void *)ProcessPulseJrPpm;		/* Positive  Detect*/
-		}
-#if 0
-		else if (!_tcscmp(tmp, MOD_TYPE_PPMW))
-		{
-			m_ListProcessPulseFunc[0*nMod+index] = (void **)ProcessPulseWK2401Ppm;
-			m_ListProcessPulseFunc[1*nMod+index] = (void **)ProcessPulseWK2401Ppm;
-			m_ListProcessPulseFunc[2*nMod+index] = (void **)ProcessPulseWK2401Ppm;
-		}
-		else if (!_tcscmp(tmp, MOD_TYPE_JR))
-		{
-			m_ListProcessPulseFunc[0*nMod+index] = (void **)ProcessPulseJrPcm;
-			m_ListProcessPulseFunc[1*nMod+index] = (void **)ProcessPulseJrPcm;
-			m_ListProcessPulseFunc[2*nMod+index] = (void **)ProcessPulseJrPcm;
-		}
-		else if (!_tcscmp(tmp, MOD_TYPE_FUT))
-		{
-			m_ListProcessPulseFunc[0*nMod+index] = (void **)ProcessPulseFutabaPcm;
-			m_ListProcessPulseFunc[1*nMod+index] = (void **)ProcessPulseFutabaPcm;
-			m_ListProcessPulseFunc[2*nMod+index] = (void **)ProcessPulseFutabaPcm;
-		}
-		else if (!_tcscmp(tmp, MOD_TYPE_AIR1))
-		{
-			m_ListProcessPulseFunc[0*nMod+index] = (void **)ProcessPulseAirPcm1;
-			m_ListProcessPulseFunc[1*nMod+index] = (void **)ProcessPulseAirPcm1;
-			m_ListProcessPulseFunc[2*nMod+index] = (void **)ProcessPulseAirPcm1;
-		}
-		else if (!_tcscmp(tmp, MOD_TYPE_AIR2))
-		{
-			m_ListProcessPulseFunc[0*nMod+index] = (void **)ProcessPulseAirPcm2;
-			m_ListProcessPulseFunc[1*nMod+index] = (void **)ProcessPulseAirPcm2;
-			m_ListProcessPulseFunc[2*nMod+index] = (void **)ProcessPulseAirPcm2;
-		}
-		else if (!_tcscmp(tmp, MOD_TYPE_WAL))
-		{
-			m_ListProcessPulseFunc[0*nMod+index] = (void **)ProcessPulseWalPcm;
-			m_ListProcessPulseFunc[1*nMod+index] = (void **)ProcessPulseWalPcm;
-			m_ListProcessPulseFunc[2*nMod+index] = (void **)ProcessPulseWalPcm;
-		}
-#endif
-		index++;
-	};
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_AIR1;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_AIR1;
+	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_AIR2;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_AIR2;
+	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
 
-	//m_ListProcessPulseFunc[2*nMod+index] = NULL;
-	return index;
+	m_ListProcessPulseFunc.resize(++nMod);
+	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_WAL;
+	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_WAL;
+	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
+	m_ListProcessPulseFunc[nMod-1].func = nullptr; // TODO: Add proper function
+
+	return nMod;
 }
 
 /*
@@ -177,8 +143,8 @@ int CSppMain::LoadProcessPulseFunctions()
 	if (width < 5)
 		return;
 
-	if (gDebugLevel>=2 && gCtrlLogFile /*&& !(i++%50)*/)
-		fprintf(gCtrlLogFile,"\n%s - ProcessPulsePpm(width=%d, input=%d)", _strtime_s( tbuffer, 10 ), width, input);
+	if (gDebugLevel>=2 && gCtrlLogFile && !(_strtime_s( tbuffer, 10 ))/*&& !(i++%50)*/)
+		fprintf(gCtrlLogFile,"\n%s - ProcessPulsePpm(width=%d, input=%d)", tbuffer, width, input);
 
 	/* If pulse is a separator then go to the next one */
 	if (width < PPM_SEP+7 || former_sync)
