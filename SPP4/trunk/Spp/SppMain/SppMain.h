@@ -146,6 +146,7 @@ static int air2_symbol[16] = {
 #define PPMW_SEP	15.0
 
 #define MAX_JS_CH	12
+#define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
 
 
 /* Globals */
@@ -175,6 +176,9 @@ private:
 	__inline  int  smooth(int orig, int newval);
 	int  __fastcall Convert15bits(unsigned int in);
 	int  __fastcall  CSppMain::Convert20bits(int in);
+	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
+	void ListenToGui(void);
+
 
 private:	// Walkera (PCM) helper functions
 	unsigned char  WalkeraConvert2Bin(int width);
@@ -196,4 +200,7 @@ private:
 	int		m_JsChPostProc_selected;
 	int		m_Position[MAX_JS_CH];
 	vMOD	m_ListProcessPulseFunc;
+	HANDLE	m_hMutexStartStop;
+	volatile BOOL m_closeRequest;
+	volatile BOOL m_waveRecording;
 };
