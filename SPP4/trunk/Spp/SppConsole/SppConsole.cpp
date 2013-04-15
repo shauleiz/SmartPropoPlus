@@ -19,6 +19,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	HANDLE hDlgCLosed=NULL;
 
+	// TODO: Ensure Vista SP2 or higher
+
 	// Read Command line
 	// TODO: This is only an example of how to parse the command line
 	int argc = 0;

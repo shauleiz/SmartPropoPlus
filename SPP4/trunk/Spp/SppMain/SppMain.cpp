@@ -6,13 +6,15 @@
 #include "SmartPropoPlus.h"
 #include "SppMain.h"
 
- void  ProcessPulseTest(int width, BOOL input){}
 
 SPPMAIN_API CSppMain::CSppMain() :
 	m_PropoStarted(false),
 	m_pSharedBlock(NULL),
 	m_MixerName(NULL),
-	m_JsChPostProc_selected(-1)
+	m_JsChPostProc_selected(-1),
+	m_hMutexStartStop(NULL),
+	m_closeRequest(FALSE),
+	 m_waveRecording(FALSE)
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -42,10 +44,69 @@ SPPMAIN_API bool CSppMain::Start()
 	// - Other default values
 	m_pSharedBlock = CreateSharedDataStruct(Modulation);
 
+	// Create a list of ProcessPulse functions
 	int nActiveModulations = LoadProcessPulseFunctions();
+
+	// Get Debug level from the registry (if exists) and start debugging 
+	gDebugLevel = GetDebugLevel();
+	//_DebugWelcomePopUp(Modulation);
+
+	// Initialize the mutex than prevents simultaneous Start/Stop streaming
+	m_hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
+	if (!m_hMutexStartStop)
+		return false;
+
+	// Start a thread that listens to the GUI
+	DWORD dwThreadId;
+	HANDLE hThreadListen = CreateThread(
+		NULL,				// no security attribute
+		0,					// default stack size
+		ListenToGuiStatic,	// Static member that is a launchpad to the actual function
+		this,				// thread parameter
+		0,					// not suspended
+		&dwThreadId);		// returns thread ID
+	if (!hThreadListen)
+		return false;
+
+	// 
+	// TODO: Init();
 
 	return true;
 }
+
+/*
+	Tests status of the global data block 4 times a second
+	If changed the make the required change in the operation of this unit
+*/
+void CSppMain::ListenToGui(void)
+{
+	SharedDataBlock * DataBlock = (SharedDataBlock *)m_pSharedBlock;
+	HRESULT hr = S_OK;
+
+	// Loop while close request has not arrived
+	while (!m_closeRequest)
+	{
+		// Test every 100mSec
+		Sleep(100);
+
+		// Conditions that meen that there's nothing to do so keep on listening
+		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::RUNNING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::FAILED)
+			continue;
+
+		/* Request to change device - kill capture thread */
+		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ)
+		{
+			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
+			m_waveRecording = FALSE;
+			// TODO: Add Audio interface class
+			//if (CurrentWaveInInfoW7 && CurrentWaveInInfoW7->pClientIn)
+			//	hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
+		};
+
+
+	};
+}
+
 
 /*
 	Create a list of pointers to functions (ProcessPulseXXX)
@@ -1298,8 +1359,6 @@ int  __fastcall  CSppMain::Convert20bits(int in)
 	return 1023-2*value;
 }
 
-
-
 __inline  int  CSppMain::smooth(int orig, int newval)
 {
 	if (newval<0)
@@ -1316,5 +1375,12 @@ __inline  int  CSppMain::smooth(int orig, int newval)
 void CSppMain::SendPPJoy(int nChannels, int *Channel)
 {
 	
+}
+
+DWORD WINAPI CSppMain::ListenToGuiStatic(LPVOID obj)
+{
+	if (obj)
+		((CSppMain *)obj)->ListenToGui();
+	return 0;
 }
 
