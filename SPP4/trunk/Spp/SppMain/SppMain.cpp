@@ -14,7 +14,8 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_JsChPostProc_selected(-1),
 	m_hMutexStartStop(NULL),
 	m_closeRequest(FALSE),
-	 m_waveRecording(FALSE)
+	m_waveRecording(FALSE),
+	m_hCaptureAudioThread(NULL)
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -78,6 +79,7 @@ SPPMAIN_API bool CSppMain::Start()
 	Tests status of the global data block 4 times a second
 	If changed the make the required change in the operation of this unit
 */
+
 void CSppMain::ListenToGui(void)
 {
 	SharedDataBlock * DataBlock = (SharedDataBlock *)m_pSharedBlock;
@@ -103,12 +105,33 @@ void CSppMain::ListenToGui(void)
 			//	hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
 		};
 
+		/* If capture thread does not exist*/
+		if (!m_hCaptureAudioThread && DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPING)
+		{
+			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
+			// TODO: ReleaseEndPoint(CurrentWaveInInfoW7);
+		};
 
+		/* Start the new capture stream */
+		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPED)
+		{
+			// TODO: hr = StartStreamingW7(DataBlock->SrcName);
+			if (FAILED(hr))
+			{
+				// TODO: ReportChange();
+				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+			}
+			else
+			{
+				// TODO: ReportChange();
+				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
+			};
+		};
 	};
 }
 
 
-/*
+	/*
 	Create a list of pointers to functions (ProcessPulseXXX)
 	The order is acording to the order of the modulation types in the Global Memory.
 	The number of entries is 3 times the number of modulations + 1
@@ -116,7 +139,7 @@ void CSppMain::ListenToGui(void)
 	The second set will consist of the negative-shift version of the functions
 	The third set will consist of the positive-shift version of the functions
 	The addional input is a final NULL entry
-*/
+	*/
 int CSppMain::LoadProcessPulseFunctions()
 {
 	int index=0;
