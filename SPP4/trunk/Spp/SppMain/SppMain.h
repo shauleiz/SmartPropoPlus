@@ -18,6 +18,13 @@ using std::function;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
+#ifdef _DEBUG
+#pragma  comment(lib, "..\\Debug\\AudioLib.lib")
+#else
+#pragma  comment(lib, "..\\Release\\AudioLib.lib")
+#endif
+
+
 #define  PP function<void (int, BOOL)>
 
 struct MOD_STRUCT {
@@ -201,6 +208,7 @@ private:
 	int		m_Position[MAX_JS_CH];
 	vMOD	m_ListProcessPulseFunc;
 	HANDLE	m_hMutexStartStop;
+	HANDLE	m_hCaptureAudioThread;
 	volatile BOOL m_closeRequest;
 	volatile BOOL m_waveRecording;
 };
