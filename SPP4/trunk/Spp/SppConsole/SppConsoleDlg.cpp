@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
-#include "SppConsoleDlg.h"
 #include "SppConsole.h"
+#include "SppConsoleDlg.h"
 
 #define MAX_LOADSTRING 100
 
@@ -27,7 +28,7 @@ SppConsoleDlg::SppConsoleDlg(HINSTANCE hInstance)
 	m_hInstance = hInstance;
 
 	// Create the dialog box (Hidden)
-	m_hDlg = CreateDialog((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg);	
+	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg, (LPARAM)this);	
 
 	// Add icon to system tray
 	m_tnid.cbSize = 0;
@@ -127,13 +128,23 @@ bool SppConsoleDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip)
     return res; 
 }
 
+void  SppConsoleDlg::CleanAudioList(void)
+{
+}
+
+void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
+{
+}
+
 // Message handler for spp dialog box.
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(lParam);
+	static SppConsoleDlg * DialogObj = NULL;
+
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		DialogObj = (SppConsoleDlg *)lParam;
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -145,7 +156,22 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			return (INT_PTR)TRUE;
 		}
 		break;
+		
+	case REM_ALL_JACK:
+		DialogObj->CleanAudioList();
+		break;
+
+	case POPULATE_JACKS:
+		DialogObj->AddLine2AudioList((jack_info *)(wParam));
+		break;
+
 	}
 	return (INT_PTR)FALSE;
 }
 
+
+
+HWND SppConsoleDlg::GetHandle(void)
+{
+	return m_hDlg;
+}

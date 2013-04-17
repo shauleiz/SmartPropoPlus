@@ -7,6 +7,7 @@
 #include "SppMain.h"
 
 
+
 SPPMAIN_API CSppMain::CSppMain() :
 	m_PropoStarted(false),
 	m_pSharedBlock(NULL),
@@ -44,6 +45,8 @@ SPPMAIN_API bool CSppMain::Start()
 	// - List of modulations as acquired above
 	// - Other default values
 	m_pSharedBlock = CreateSharedDataStruct(Modulation);
+	if (!m_pSharedBlock)
+		return false;
 
 	// Create a list of ProcessPulse functions
 	int nActiveModulations = LoadProcessPulseFunctions();
@@ -58,6 +61,13 @@ SPPMAIN_API bool CSppMain::Start()
 		return false;
 
 	// Start a thread that listens to the GUI
+	thread * t1 = NULL;
+	t1 = new thread(ListenToGuiStatic, this);
+	if (!t1)
+		return false;
+	thread::id id = t1->get_id();
+	t1->join();
+
 	DWORD dwThreadId;
 	HANDLE hThreadListen = CreateThread(
 		NULL,				// no security attribute
@@ -68,8 +78,6 @@ SPPMAIN_API bool CSppMain::Start()
 		&dwThreadId);		// returns thread ID
 	if (!hThreadListen)
 		return false;
-
-	// 
 	// TODO: Init();
 
 	return true;

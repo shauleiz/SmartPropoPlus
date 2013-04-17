@@ -3,13 +3,25 @@
 
 #include "stdafx.h"
 #include <Shellapi.h>
+#include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
-#include "SppConsole.h"
+#include "..\SppAudio\AudioInputW7.h"
 #include "..\SppMain\SppMain.h"
+#include "SppConsole.h"
 #include "SppConsoleDlg.h"
 
+// Globals
+class CAudioInputW7 * Audio;
 
+// Declarations
+void CaptureDevicesPopulate(HWND hDlg);
+LRESULT CALLBACK MainWindowProc(
+  _In_  HWND hwnd,
+  _In_  UINT uMsg,
+  _In_  WPARAM wParam,
+  _In_  LPARAM lParam
+);
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -61,12 +73,59 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	else
 		hMuxex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
+	// Create main window that will receive messages from other parts of the application
+	// and will relay the data to the dialog window.
+	// This window will be visible only in Debug mode
+	WNDCLASSEX WndClsEx;
+	WndClsEx.cbSize = sizeof(WNDCLASSEX);
+	WndClsEx.style = NULL;
+	WndClsEx.lpfnWndProc = MainWindowProc;
+	WndClsEx.cbClsExtra = 0;
+	WndClsEx.cbWndExtra = 0;
+	WndClsEx.hInstance = hInstance;
+	WndClsEx.hIcon = NULL;
+	WndClsEx.hCursor = NULL;
+	WndClsEx.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	WndClsEx.lpszMenuName = NULL;
+	WndClsEx.lpszClassName = MAIN_CLASS_NAME;
+	WndClsEx.hIconSm = NULL;
+	ATOM WndClassMain = RegisterClassEx(&WndClsEx);
+	if (!WndClassMain)
+		return false;
+
+	HWND hwnd = CreateWindow( 
+        MAIN_CLASS_NAME,        // name of window class 
+        MAIN_WND_TITLE,         // title-bar string 
+        WS_OVERLAPPEDWINDOW, // top-level window 
+        CW_USEDEFAULT,       // default horizontal position 
+        CW_USEDEFAULT,       // default vertical position 
+        CW_USEDEFAULT,       // default width 
+        CW_USEDEFAULT,       // default height 
+        (HWND) NULL,         // no owner window 
+        (HMENU) NULL,        // use class menu 
+        hInstance,           // handle to application instance 
+        (LPVOID) NULL);      // no window-creation data 
+	DWORD err = GetLastError();
+	if (!hwnd)
+		return false;
+
+	// Start the audio 
+	Audio = new CAudioInputW7(hwnd);
+	if (!Audio)
+		return false;
+
+	// Start reading audio data
+	CSppMain *		Spp		= new CSppMain();
+
 	// Create Dialog box, initialize it then show it
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance);
-	CSppMain *		Spp		= new CSppMain();
+	HWND hDialog = Dialog->GetHandle();
+	CaptureDevicesPopulate(hDialog);
+	
 	if (!Spp->Start())
 		goto ExitApp;
-	Dialog->Show();
+
+	Dialog->Show(); // If not asked to be iconified
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
@@ -77,8 +136,81 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return 0;
 }
 
+/* Window Procedure for the amin (hidden) window*/
+LRESULT CALLBACK MainWindowProc(
+  _In_  HWND hwnd,
+  _In_  UINT uMsg,
+  _In_  WPARAM wParam,
+  _In_  LPARAM lParam
+  ) {    switch (uMsg) 
+    { 
+        case WM_CREATE: 
+            // Initialize the window. 
+            return 0; 
+ 
+        case WM_PAINT: 
+            // Paint the window's client area. 
+            return 0; 
+ 
+        case WM_SIZE: 
+            // Set the size and position of the window. 
+            return 0; 
+ 
+        case WM_DESTROY: 
+            // Clean up window-specific data objects. 
+            return 0; 
+ 
+        // 
+        // Process other messages. 
+        // 
+ 
+        default: 
+            return DefWindowProc(hwnd, uMsg, wParam, lParam); 
+    } 
+    return 0; 
+}
 
+// Get all audio capture devices 
+// Send their details to dialog box and mark the selected one
+void CaptureDevicesPopulate(HWND hDlg)
+{
+	int size;
+	HRESULT hr;
+	jack_info jack;
+	jack.struct_size = sizeof(jack_info);
 
+	// Send message: Clear list of capture devices
+	SendMessage(hDlg, REM_ALL_JACK,0, 0);
 
+	for (int i=1; i<=Audio->CountCaptureDevices(); i++)
+	{
+		hr =Audio->GetCaptureDeviceId(i, &size, (PVOID *)&jack.id);
+		if (FAILED(hr))
+			continue;
 
+		//// Display only active devices
+		//if (!Audio->IsCaptureDeviceActive((PVOID)jack.id))
+		//	continue;
 
+		// Display physical devices
+		if (!Audio->IsExternal((PVOID) jack.id))
+			continue;
+
+		// Get device name from id
+		hr = Audio->GetCaptureDeviceName((PVOID) jack.id, &jack.FriendlyName);
+		if (FAILED(hr))
+			continue;
+
+		// Get device number of channels
+		jack.nChannels = Audio->GetNumberChannels((PVOID)jack.id);
+
+		// Get device jack color
+		jack.color = Audio->GetJackColor((PVOID) jack.id);
+
+		// Is device default
+		jack.Default = Audio->IsCaptureDeviceDefault((PVOID)jack.id);
+
+		SendMessage(hDlg, POPULATE_JACKS, (WPARAM)&jack, 0);
+	};
+
+}

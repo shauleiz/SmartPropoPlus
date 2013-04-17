@@ -3,10 +3,6 @@
 
 #include "stdafx.h"
 #include <stdio.h>
-#include <vector>
-#include <Audioclient.h>
-#include <devicetopology.h>
-#include <Mmdeviceapi.h>
 #include "WinMessages.h"
 #include "AudioInputW7.h"
 #include "NotificationClient.h"
@@ -200,7 +196,7 @@ SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 	m_CaptureDevices.clear();
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
-	// Save handle to parent window - will be used fpr notifications
+	// Save handle to parent window - will be used for notifications
 	m_hPrntWnd = hWnd;
 
 	// Set default callback functions

@@ -13,6 +13,11 @@
 #pragma once
 
 #include "resource.h"
+#include <devicetopology.h>
+#include <Mmdeviceapi.h>
+#include <Audioclient.h>
+#include <vector>
+
 
 #define EXIT_ON_ERROR(hres) \
               if (FAILED(hres)) { /*DbgPopUp(__LINE__, hres);*/ goto Exit; }

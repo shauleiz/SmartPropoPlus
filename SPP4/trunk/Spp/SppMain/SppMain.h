@@ -13,8 +13,10 @@
 
 #include <vector>
 #include <functional>
+#include <thread>
 
 using std::function;
+using std::thread;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -36,6 +38,82 @@ struct MOD_STRUCT {
 
 typedef  std::vector<PP> vPP;
 typedef  std::vector<MOD_STRUCT> vMOD;
+
+
+
+#define PW_FUTABA	6.623
+#define PW_JR		7.340
+#define PPM_MIN		30.0
+#define PPM_MAX		80.0
+#define PPM_TRIG	200
+#define PPM_SEP		15.0
+#define PPMW_MIN	18.0
+#define PPMW_MAX	70.0
+#define PPMW_TRIG	200
+#define PPMW_SEP	15.0
+
+#define MAX_JS_CH	12
+#define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
+
+
+/* Globals */
+int gDebugLevel = 0;
+FILE * gCtrlLogFile = NULL;
+
+
+class /*SPPMAIN_API*/ CSppMain {
+	public:
+	SPPMAIN_API CSppMain(void);
+	SPPMAIN_API ~CSppMain();
+	SPPMAIN_API bool Start();
+
+private:
+	int LoadProcessPulseFunctions();
+	void ProcessPulsePpm(int width, BOOL input);
+	void ProcessPulseWalPcm(int width, BOOL input);
+	void ProcessPulseAirPcm1(int width, BOOL input);
+	void ProcessPulseAirPcm2(int width, BOOL input);
+	void ProcessPulseJrPcm(int width, BOOL input);
+	void ProcessPulseFutabaPcm(int width, BOOL input);
+	void ProcessPulseWK2401Ppm(int width, BOOL input);
+	void ProcessPulseFutabaPpm(int width, BOOL input);
+	void ProcessPulseJrPpm(int width, BOOL input);
+
+	void SendPPJoy(int nChannels, int *Channel);
+	__inline  int  smooth(int orig, int newval);
+	int  __fastcall Convert15bits(unsigned int in);
+	int  __fastcall  CSppMain::Convert20bits(int in);
+	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
+	void ListenToGui(void);
+
+
+private:	// Walkera (PCM) helper functions
+	unsigned char  WalkeraConvert2Bin(int width);
+	unsigned char  WalkeraConvert2Oct(int width);
+	int WalkeraElevator(const unsigned char * cycle);
+	int WalkeraAilerons(const unsigned char * cycle);
+	int WalkeraThrottle(const unsigned char * cycle);
+	int WalkeraRudder(const unsigned char * cycle);
+	int WalkeraGear(const unsigned char * cycle);
+	int WalkeraPitch(const unsigned char * cycle);
+	int WalkeraGyro(const unsigned char * cycle);
+	int WalkeraChannel8(const unsigned char * cycle);
+	int * WalkeraCheckSum(const unsigned char * cycle);
+
+private:
+	bool	m_PropoStarted;
+	LPVOID	m_pSharedBlock;
+	LPWSTR	m_MixerName;
+	int		m_JsChPostProc_selected;
+	int		m_Position[MAX_JS_CH];
+	vMOD	m_ListProcessPulseFunc;
+	HANDLE	m_hMutexStartStop;
+	HANDLE	m_hCaptureAudioThread;
+	volatile BOOL m_closeRequest;
+	volatile BOOL m_waveRecording;
+};
+
+
 
 static int futaba_symbol[1024] = {
     -1, -1, -1, -1, -1, -1, -1, 63, -1, -1, -1, -1, 62, -1, -1, 39,
@@ -138,77 +216,4 @@ static int air1_msb[32] = {
 
 static int air2_symbol[16] = {
 	-1, -1, -1, -1,  0,  0, -1,  2, -1, -1, -1, -1,   1,  1, -1,  3
-};
-
-
-#define PW_FUTABA	6.623
-#define PW_JR		7.340
-#define PPM_MIN		30.0
-#define PPM_MAX		80.0
-#define PPM_TRIG	200
-#define PPM_SEP		15.0
-#define PPMW_MIN	18.0
-#define PPMW_MAX	70.0
-#define PPMW_TRIG	200
-#define PPMW_SEP	15.0
-
-#define MAX_JS_CH	12
-#define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
-
-
-/* Globals */
-int gDebugLevel = 0;
-FILE * gCtrlLogFile = NULL;
-
-
-class /*SPPMAIN_API*/ CSppMain {
-	public:
-	SPPMAIN_API CSppMain(void);
-	SPPMAIN_API ~CSppMain();
-	SPPMAIN_API bool Start();
-
-private:
-	int LoadProcessPulseFunctions();
-	void ProcessPulsePpm(int width, BOOL input);
-	void ProcessPulseWalPcm(int width, BOOL input);
-	void ProcessPulseAirPcm1(int width, BOOL input);
-	void ProcessPulseAirPcm2(int width, BOOL input);
-	void ProcessPulseJrPcm(int width, BOOL input);
-	void ProcessPulseFutabaPcm(int width, BOOL input);
-	void ProcessPulseWK2401Ppm(int width, BOOL input);
-	void ProcessPulseFutabaPpm(int width, BOOL input);
-	void ProcessPulseJrPpm(int width, BOOL input);
-
-	void SendPPJoy(int nChannels, int *Channel);
-	__inline  int  smooth(int orig, int newval);
-	int  __fastcall Convert15bits(unsigned int in);
-	int  __fastcall  CSppMain::Convert20bits(int in);
-	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
-	void ListenToGui(void);
-
-
-private:	// Walkera (PCM) helper functions
-	unsigned char  WalkeraConvert2Bin(int width);
-	unsigned char  WalkeraConvert2Oct(int width);
-	int WalkeraElevator(const unsigned char * cycle);
-	int WalkeraAilerons(const unsigned char * cycle);
-	int WalkeraThrottle(const unsigned char * cycle);
-	int WalkeraRudder(const unsigned char * cycle);
-	int WalkeraGear(const unsigned char * cycle);
-	int WalkeraPitch(const unsigned char * cycle);
-	int WalkeraGyro(const unsigned char * cycle);
-	int WalkeraChannel8(const unsigned char * cycle);
-	int * WalkeraCheckSum(const unsigned char * cycle);
-
-private:
-	bool	m_PropoStarted;
-	LPVOID	m_pSharedBlock;
-	LPWSTR	m_MixerName;
-	int		m_JsChPostProc_selected;
-	int		m_Position[MAX_JS_CH];
-	vMOD	m_ListProcessPulseFunc;
-	HANDLE	m_hMutexStartStop;
-	HANDLE	m_hCaptureAudioThread;
-	volatile BOOL m_closeRequest;
-	volatile BOOL m_waveRecording;
 };

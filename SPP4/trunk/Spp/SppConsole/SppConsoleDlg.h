@@ -9,6 +9,11 @@ public:
 	void Hide();
 	void RegisterEndEvent(HANDLE * h);
 	bool MsgLoop(void);
+	HWND GetHandle(void);
+
+public: // Called from window procedure
+	void CleanAudioList(void);
+	void AddLine2AudioList(jack_info * jack);
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip);
