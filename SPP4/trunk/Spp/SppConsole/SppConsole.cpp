@@ -14,6 +14,7 @@
 // Globals
 HWND hDialog;
 class CAudioInputW7 * Audio;
+LPCTSTR AudioId = NULL;
 
 // Declarations
 void CaptureDevicesPopulate(HWND hDlg);
@@ -115,16 +116,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!Audio)
 		return false;
 
-	// Start reading audio data
-	CSppMain *		Spp		= new CSppMain();
 
 	// Create Dialog box, initialize it then show it
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
 	
-	//if (!Spp->Start())
-	//	goto ExitApp;
+	// Start reading audio data
+	CSppMain *		Spp		= new CSppMain();
+
+	if (!Spp->Start(hwnd))
+		goto ExitApp;
 
 	Dialog->Show(); // If not asked to be iconified
 
@@ -170,6 +172,13 @@ LRESULT CALLBACK MainWindowProc(
 			CaptureDevicesPopulate(hDialog);
 			break;
 
+		case GET_ACTIVE_ID:
+			return (LRESULT)AudioId;
+
+		case SET_MOD_INFO:
+			SendMessage(hDialog, SET_MOD_INFO, wParam, lParam);
+			break;
+
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
@@ -188,6 +197,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 
 	// Send message: Clear list of capture devices
 	SendMessage(hDlg, REM_ALL_JACK,0, 0);
+	AudioId = NULL;
 
 	for (int i=1; i<=Audio->CountCaptureDevices(); i++)
 	{
@@ -216,6 +226,8 @@ void CaptureDevicesPopulate(HWND hDlg)
 
 		// Is device default
 		jack.Default = Audio->IsCaptureDeviceDefault((PVOID)jack.id);
+		if (jack.Default)
+			AudioId = jack.FriendlyName;
 
 		SendMessage(hDlg, POPULATE_JACKS, (WPARAM)&jack, 0);
 	};

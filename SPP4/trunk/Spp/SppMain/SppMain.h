@@ -33,12 +33,13 @@ struct MOD_STRUCT {
 	BOOL isPpm;
 	LPCTSTR ModType;
 	LPCTSTR ModName;
+	BOOL ModSelect;
 	PP func;   
 };
 
 typedef  std::vector<PP> vPP;
 typedef  std::vector<MOD_STRUCT> vMOD;
-
+typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
 
 
 #define PW_FUTABA	6.623
@@ -56,16 +57,13 @@ typedef  std::vector<MOD_STRUCT> vMOD;
 #define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
 
 
-/* Globals */
-int gDebugLevel = 0;
-FILE * gCtrlLogFile = NULL;
 
 
 class /*SPPMAIN_API*/ CSppMain {
 	public:
 	SPPMAIN_API CSppMain(void);
 	SPPMAIN_API ~CSppMain();
-	SPPMAIN_API bool Start();
+	SPPMAIN_API bool Start(HWND hParentWnd);
 
 private:
 	int LoadProcessPulseFunctions();
@@ -85,6 +83,7 @@ private:
 	int  __fastcall  CSppMain::Convert20bits(int in);
 	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
 	void ListenToGui(void);
+	void SendModInfoToParent(HWND hParentWnd);
 
 
 private:	// Walkera (PCM) helper functions
@@ -111,6 +110,7 @@ private:
 	HANDLE	m_hCaptureAudioThread;
 	volatile BOOL m_closeRequest;
 	volatile BOOL m_waveRecording;
+	struct Modulations *  m_Modulation;
 };
 
 
