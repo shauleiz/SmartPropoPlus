@@ -12,6 +12,7 @@
 #include "SppConsoleDlg.h"
 
 // Globals
+HWND hDialog;
 class CAudioInputW7 * Audio;
 
 // Declarations
@@ -119,11 +120,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Create Dialog box, initialize it then show it
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance);
-	HWND hDialog = Dialog->GetHandle();
+	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
 	
-	if (!Spp->Start())
-		goto ExitApp;
+	//if (!Spp->Start())
+	//	goto ExitApp;
 
 	Dialog->Show(); // If not asked to be iconified
 
@@ -162,7 +163,13 @@ LRESULT CALLBACK MainWindowProc(
  
         // 
         // Process other messages. 
-        // 
+        //
+		case WMAPP_DEFDEV_CHANGED:
+		case WMAPP_DEV_ADDED:
+		case WMAPP_DEV_REM:
+			CaptureDevicesPopulate(hDialog);
+			break;
+
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 

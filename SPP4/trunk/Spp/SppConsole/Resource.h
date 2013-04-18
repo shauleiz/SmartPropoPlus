@@ -10,7 +10,7 @@
 #define IDD_SPPDIAG                             111
 #define IDI_SPPCONSOLE                          114
 #define IDS_APP_TITLE                           40000
-#define IDC_LIST_AUDIOSRC                       40001
 #define IDC_RADIOPPM                            40004
 #define IDC_RADIO_PCM                           40005
 #define IDC_LIST_SUBMOD                         40007
+#define IDC_LIST_AUDIOSRC                       40009

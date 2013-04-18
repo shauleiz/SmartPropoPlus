@@ -2,6 +2,7 @@
 #include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
+#include "Commctrl.h"
 #include "SppConsole.h"
 #include "SppConsoleDlg.h"
 
@@ -130,10 +131,28 @@ bool SppConsoleDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip)
 
 void  SppConsoleDlg::CleanAudioList(void)
 {
+	HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
+	ListView_DeleteAllItems(hAudioList);
 }
 
 void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
 {
+	HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
+	if (!jack->nChannels)
+		return;
+	LV_ITEM item;
+	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+	item.iItem = 0;
+	item.iSubItem = 0;
+	item.pszText = jack->FriendlyName;
+    item.stateMask = 0;
+    item.iSubItem  = 0;
+    item.state     = 0;
+
+	int i = ListView_InsertItem(hAudioList, &item);
+
+	if (jack->Default)
+		ListView_SetItemState(hAudioList, i, 0xF|LVIS_FOCUSED, 0xF|LVIS_FOCUSED);
 }
 
 // Message handler for spp dialog box.

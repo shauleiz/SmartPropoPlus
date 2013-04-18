@@ -1021,7 +1021,7 @@ HRESULT	CAudioInputW7::DeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewStat
 			return S_OK;
 		};
 
-		if (dwNewState & DEVICE_STATE_UNPLUGGED)
+		if ((dwNewState & DEVICE_STATE_UNPLUGGED) || (dwNewState & DEVICE_STATE_DISABLED))
 		{
 			PostMessage(m_hPrntWnd, WMAPP_DEV_REM, (WPARAM)pwstrDeviceId, NULL);
 			return S_OK;
