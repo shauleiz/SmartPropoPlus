@@ -14,6 +14,9 @@ public:
 public: // Called from window procedure
 	void CleanAudioList(void);
 	void AddLine2AudioList(jack_info * jack);
+	void AddLine2ModList(MOD_STRUCT * mod);
+	void SelChanged(WORD ListBoxId, HWND hListBox);
+
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip);

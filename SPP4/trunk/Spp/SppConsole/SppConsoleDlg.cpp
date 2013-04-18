@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "Windowsx.h"
 #include "WinMessages.h"
+#include "..\SppMain\SppMain.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
 #include "Commctrl.h"
@@ -135,11 +137,36 @@ void  SppConsoleDlg::CleanAudioList(void)
 	ListView_DeleteAllItems(hAudioList);
 }
 
+void SppConsoleDlg::AddLine2ModList(MOD_STRUCT * mod)
+{
+	if (!mod)
+		return;
+
+	if (mod->isPpm)
+	{ // PPM
+		HWND hPPMList = GetDlgItem(m_hDlg,  IDC_LIST_PPM);
+		int pos = (int)SendMessage(hPPMList, LB_ADDSTRING, 0, (LPARAM)mod->ModName);
+		SendMessage(hPPMList, LB_SETITEMDATA, pos, (LPARAM) mod->ModType); 
+		if (mod->ModSelect)
+			SendMessage(hPPMList, LB_SETCURSEL , pos, 0); 
+	}
+	else
+	{ // PCM
+		HWND hPCMList = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
+		int pos = (int)SendMessage(hPCMList, LB_ADDSTRING, 0, (LPARAM)mod->ModName); 
+		if (mod->ModSelect)
+			SendMessage(hPCMList, LB_SETCURSEL , pos, 0); 
+	};
+}
+
 void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
 {
+	// Audio jack must have at least one audio channel (mono)
 	HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
 	if (!jack->nChannels)
 		return;
+
+	// Insert audio jack name
 	LV_ITEM item;
 	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
 	item.iItem = 0;
@@ -148,11 +175,35 @@ void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
     item.stateMask = 0;
     item.iSubItem  = 0;
     item.state     = 0;
-
 	int i = ListView_InsertItem(hAudioList, &item);
 
+	ListView_SetItemText(hAudioList, i, 1, TEXT("SI"));
+
+	// Set the default jack as focused (and selected)
 	if (jack->Default)
 		ListView_SetItemState(hAudioList, i, 0xF|LVIS_FOCUSED, 0xF|LVIS_FOCUSED);
+
+
+}
+
+void SppConsoleDlg::SelChanged(WORD ListBoxId, HWND hListBox)
+{
+	// Case the message origin is one of the Modulation PPM/PCM list boxes
+	// Clear all selection from the other box then get the selected entry.
+	// Notify parent window of the new selected item
+	if ((ListBoxId==IDC_LIST_PPM) || (ListBoxId==IDC_LIST_PCM))
+	{
+		HWND h = NULL;
+		if (ListBoxId==IDC_LIST_PPM)
+			h = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
+		else
+			h = GetDlgItem(m_hDlg,  IDC_LIST_PPM);
+
+			int sel = ListBox_GetCurSel(h);
+			if (sel == LB_ERR)
+				return;
+			sel = SendMessage(h, LB_SETCURSEL , -1, 0);
+	};
 }
 
 // Message handler for spp dialog box.
@@ -174,6 +225,13 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			PostQuitMessage(0);
 			return (INT_PTR)TRUE;
 		}
+
+		if (HIWORD(wParam) == LBN_SELCHANGE )
+		{
+			DialogObj->SelChanged(LOWORD(wParam), (HWND)lParam);
+			break;
+		}
+
 		break;
 		
 	case REM_ALL_JACK:
@@ -182,6 +240,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case POPULATE_JACKS:
 		DialogObj->AddLine2AudioList((jack_info *)(wParam));
+		break;
+
+	case SET_MOD_INFO:
+		DialogObj->AddLine2ModList((MOD_STRUCT *)(wParam));
 		break;
 
 	}

@@ -2,10 +2,14 @@
 //
 
 #include "stdafx.h"
+#include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
 #include "SppMain.h"
 
+/* Globals */
+int gDebugLevel = 0;
+FILE * gCtrlLogFile = NULL;
 
 
 SPPMAIN_API CSppMain::CSppMain() :
@@ -24,32 +28,44 @@ SPPMAIN_API CSppMain::CSppMain() :
 SPPMAIN_API CSppMain::~CSppMain() {}
 
 
-SPPMAIN_API bool CSppMain::Start()
+SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 {
+	LPCTSTR AudioId = NULL;
+
 	// Start only once
 	if (m_PropoStarted)
 		return false;
 	m_PropoStarted = true;
 
+	if (!hParentWnd)
+		return false;
 
 	// Get list of modulation types: PPM/PCM(JR) ....
 	// Mark the selected modulation type
-	struct Modulations *  Modulation = GetModulation(0);
+	m_Modulation = GetModulation(0);
+
 
 	//// Audio system from registry
 	//// Commented out becaus currently SPP uses default device
 	//if (GetCurrentAudioState())			// Get  Mixer Device (selected or preferred) 
 	//	m_MixerName = GetCurrentMixerDevice();	// Selected
 
+	// Get selected audio capture endpoint id from the parent window
+	AudioId = (LPCTSTR)SendMessage(hParentWnd, GET_ACTIVE_ID, 0, 0);
+
+
 	// Create shared memory block and fill it with:
 	// - List of modulations as acquired above
 	// - Other default values
-	m_pSharedBlock = CreateSharedDataStruct(Modulation);
+	m_pSharedBlock = CreateSharedDataStruct(m_Modulation);
 	if (!m_pSharedBlock)
 		return false;
 
 	// Create a list of ProcessPulse functions
 	int nActiveModulations = LoadProcessPulseFunctions();
+
+	// Pass to the parent window the list modulations
+	SendModInfoToParent(hParentWnd);
 
 	// Get Debug level from the registry (if exists) and start debugging 
 	gDebugLevel = GetDebugLevel();
@@ -59,6 +75,8 @@ SPPMAIN_API bool CSppMain::Start()
 	m_hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
 	if (!m_hMutexStartStop)
 		return false;
+
+	return true; // TODO: Remove
 
 	// Start a thread that listens to the GUI
 	thread * t1 = NULL;
@@ -140,13 +158,14 @@ void CSppMain::ListenToGui(void)
 
 
 	/*
-	Create a list of pointers to functions (ProcessPulseXXX)
-	The order is acording to the order of the modulation types in the Global Memory.
-	The number of entries is 3 times the number of modulations + 1
-	The first set will consist of the default (autodetect) version of the functions
-	The second set will consist of the negative-shift version of the functions
-	The third set will consist of the positive-shift version of the functions
-	The addional input is a final NULL entry
+		Create a list of structures
+		Each structure represents a modulatin type.
+		Structure Contains:
+		- Pointer to function (ProcessPulseXXX): func
+		- Modulation type: ModType
+		- Modulation friendly name: ModName
+		- Modulation category (PPM or not): isPpm
+		- Is this modulation selected: ModSelect
 	*/
 int CSppMain::LoadProcessPulseFunctions()
 {
@@ -160,54 +179,99 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPM;
 	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMP;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMP;
 	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseJrPpm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMN;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMN;
 	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseFutabaPpm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMW;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMW;
 	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseWK2401Ppm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_JR;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_JR;
 	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseJrPcm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_FUT;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_FUT;
 	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseFutabaPcm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_AIR1;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_AIR1;
 	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseAirPcm1(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_AIR2;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_AIR2;
 	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
 	m_ListProcessPulseFunc[nMod-1].func =  [=] (int width, BOOL input) {this->ProcessPulseAirPcm2(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	m_ListProcessPulseFunc.resize(++nMod);
 	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_WAL;
 	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_WAL;
 	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseWalPcm(width, input);};
+	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
+		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+	else
+		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
 	return nMod;
 }
@@ -1415,3 +1479,11 @@ DWORD WINAPI CSppMain::ListenToGuiStatic(LPVOID obj)
 	return 0;
 }
 
+void CSppMain::SendModInfoToParent(HWND hParentWnd)
+{
+	if (!hParentWnd || !m_ListProcessPulseFunc.size())
+		return;
+
+	for (iMOD i=m_ListProcessPulseFunc.begin(); i != m_ListProcessPulseFunc.end(); i++)
+		SendMessage(hParentWnd, SET_MOD_INFO, (WPARAM)(&(*i)) , 0);
+}
