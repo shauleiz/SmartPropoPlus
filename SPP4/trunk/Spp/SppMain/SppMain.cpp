@@ -27,6 +27,10 @@ SPPMAIN_API CSppMain::CSppMain() :
 
 SPPMAIN_API CSppMain::~CSppMain() {}
 
+SPPMAIN_API void CSppMain::SelectMod(LPCTSTR ModType)
+{
+	SetActiveMode(ModType);
+}
 
 SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 {
@@ -42,7 +46,7 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 
 	// Get list of modulation types: PPM/PCM(JR) ....
 	// Mark the selected modulation type
-	m_Modulation = GetModulation(0);
+	m_Modulation = GetModulation(1);
 
 
 	//// Audio system from registry

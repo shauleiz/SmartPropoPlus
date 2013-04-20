@@ -64,6 +64,7 @@ class /*SPPMAIN_API*/ CSppMain {
 	SPPMAIN_API CSppMain(void);
 	SPPMAIN_API ~CSppMain();
 	SPPMAIN_API bool Start(HWND hParentWnd);
+	SPPMAIN_API void SelectMod(LPCTSTR ModType);
 
 private:
 	int LoadProcessPulseFunctions();

@@ -26,3 +26,4 @@ UINT const REM_JACK			=			BASE_SUB+4;				// The payload is a pointer the id of t
 UINT const REM_ALL_JACK		=			BASE_SUB+5;				// remove all jacks from GUI
 UINT const GET_ACTIVE_ID	=			BASE_SUB+6;				// Get pointer to ID string of selected ID
 UINT const SET_MOD_INFO		=			BASE_SUB+7;				// The payload is a pointer to struct MOD_STRUCT
+UINT const MOD_CHANGED		=			BASE_SUB+8;				// The payload is a pointer to the internal name of the selected modulation
