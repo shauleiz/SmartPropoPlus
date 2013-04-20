@@ -26,9 +26,10 @@ SppConsoleDlg::SppConsoleDlg(void)
 {
 }
 
-SppConsoleDlg::SppConsoleDlg(HINSTANCE hInstance)
+SppConsoleDlg::SppConsoleDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 {
 	m_hInstance = hInstance;
+	m_ConsoleWnd = ConsoleWnd;
 
 	// Create the dialog box (Hidden)
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg, (LPARAM)this);	
@@ -154,6 +155,7 @@ void SppConsoleDlg::AddLine2ModList(MOD_STRUCT * mod)
 	{ // PCM
 		HWND hPCMList = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
 		int pos = (int)SendMessage(hPCMList, LB_ADDSTRING, 0, (LPARAM)mod->ModName); 
+		SendMessage(hPCMList, LB_SETITEMDATA, pos, (LPARAM) mod->ModType); 
 		if (mod->ModSelect)
 			SendMessage(hPCMList, LB_SETCURSEL , pos, 0); 
 	};
@@ -177,7 +179,7 @@ void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
     item.state     = 0;
 	int i = ListView_InsertItem(hAudioList, &item);
 
-	ListView_SetItemText(hAudioList, i, 1, TEXT("SI"));
+	ListView_SetItemText(hAudioList, i, 1, TEXT("SI")); // TODO: Replace later with real stuff
 
 	// Set the default jack as focused (and selected)
 	if (jack->Default)
@@ -193,16 +195,34 @@ void SppConsoleDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 	// Notify parent window of the new selected item
 	if ((ListBoxId==IDC_LIST_PPM) || (ListBoxId==IDC_LIST_PCM))
 	{
-		HWND h = NULL;
-		if (ListBoxId==IDC_LIST_PPM)
-			h = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
-		else
-			h = GetDlgItem(m_hDlg,  IDC_LIST_PPM);
+		HWND hPpm = GetDlgItem(m_hDlg,  IDC_LIST_PPM);
+		HWND hPcm = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
+		int SelPrev = -1;
+		int SelNew = -1;
+		HWND hPrev = NULL;
+		HWND hNew = NULL;
 
-			int sel = ListBox_GetCurSel(h);
-			if (sel == LB_ERR)
-				return;
-			sel = SendMessage(h, LB_SETCURSEL , -1, 0);
+		if (ListBoxId==IDC_LIST_PPM)
+		{
+			hPrev = hPcm;
+			hNew  = hPpm;
+		}
+		else
+		{
+			hPrev = hPpm;
+			hNew  = hPcm;
+		}
+
+		SelPrev = ListBox_GetCurSel(hPrev);
+		SelNew = ListBox_GetCurSel(hNew);
+		SendMessage(hPrev, LB_SETCURSEL , -1, 0);
+		if (SelNew == LB_ERR)
+			return;
+
+			// Get a handle to the parent window
+		LPCTSTR mod = (LPCTSTR)SendMessage(hNew, LB_GETITEMDATA, SelNew, NULL);
+		SendMessage(m_ConsoleWnd, MOD_CHANGED, (WPARAM)mod, 0);
+
 	};
 }
 

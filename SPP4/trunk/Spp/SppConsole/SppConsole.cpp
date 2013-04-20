@@ -15,6 +15,7 @@
 HWND hDialog;
 class CAudioInputW7 * Audio;
 LPCTSTR AudioId = NULL;
+class CSppMain * Spp = NULL;
 
 // Declarations
 void CaptureDevicesPopulate(HWND hDlg);
@@ -118,12 +119,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 	// Create Dialog box, initialize it then show it
-	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance);
+	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
 	
 	// Start reading audio data
-	CSppMain *		Spp		= new CSppMain();
+	Spp		= new CSppMain();
 
 	if (!Spp->Start(hwnd))
 		goto ExitApp;
@@ -177,6 +178,11 @@ LRESULT CALLBACK MainWindowProc(
 
 		case SET_MOD_INFO:
 			SendMessage(hDialog, SET_MOD_INFO, wParam, lParam);
+			break;
+
+		case MOD_CHANGED:
+			if (Spp)
+				Spp->SelectMod((LPCTSTR)wParam);
 			break;
 
  

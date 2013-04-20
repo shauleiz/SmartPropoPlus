@@ -201,7 +201,7 @@ struct JsChPostProcInfo
 
 
 /* Function Prototypes */
-int SetActiveMode(const char * selected);
+int SetActiveMode(LPCWSTR selected);
 void SetShiftAutoDetect(const int sel);
 void SetPositiveShift(const int sel);
 struct Modulations * GetModulation(int Create);

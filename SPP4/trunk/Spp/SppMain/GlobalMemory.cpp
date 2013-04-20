@@ -252,7 +252,7 @@ int SetActiveModeToGlobalMemory(LPCTSTR selected)
 	/* Convert Display Name to Internal Name */
 	while (DefMods[nMod*2])
 	{
-		if (_tcscmp(DefMods[1+nMod*2], selected))
+		if (_tcscmp(DefMods[nMod*2], selected))
 		{
 			nMod++;
 			continue;

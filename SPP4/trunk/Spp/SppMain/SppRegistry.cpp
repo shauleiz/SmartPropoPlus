@@ -520,7 +520,7 @@ int SetActiveModeToRegistry(LPCTSTR selected)
 	/* Convert Display Name to Internal Name */
 	while (DefMods[nMod*2])
 	{
-		if (_tcscmp(DefMods[1+nMod*2], selected))
+		if (_tcscmp(DefMods[nMod*2], selected))
 		{
 			nMod++;
 			continue;
@@ -534,7 +534,7 @@ int SetActiveModeToRegistry(LPCTSTR selected)
 		return -1;
 
 	/* Set Active entry */
-	RegSetValueEx(hkResult, MOD_ACTIVE,0, REG_SZ, (const BYTE* )DefMods[nMod*2], 1+(DWORD)_tcslen(DefMods[nMod*2]));
+	RegSetValueEx(hkResult, MOD_ACTIVE,0, REG_SZ, (const BYTE* )DefMods[nMod*2], (DWORD)((_tcslen(DefMods[nMod*2])+1)*sizeof(LPCTSTR)));
 
 	RegCloseKey(hkResult);
 	return nMod;

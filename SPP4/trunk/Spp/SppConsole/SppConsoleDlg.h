@@ -3,7 +3,7 @@ class SppConsoleDlg
 {
 public:
 	SppConsoleDlg(void);
-	SppConsoleDlg(HINSTANCE hInstance);
+	SppConsoleDlg(HINSTANCE hInstance, HWND	ConsoleWnd);
 	virtual ~SppConsoleDlg(void);
 	void Show();
 	void Hide();
@@ -31,5 +31,6 @@ private:
 	NOTIFYICONDATA m_tnid;
 	HANDLE	m_hEndEvent;
 	HANDLE	m_hThread;
+	HWND	m_ConsoleWnd;
 };
 
