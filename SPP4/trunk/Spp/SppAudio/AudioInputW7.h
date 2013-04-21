@@ -152,6 +152,8 @@ public:
 	SPPINTERFACE_API bool		RegisterLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterProcessPulse(LPVOID,LPVOID=NULL);
+	SPPINTERFACE_API HRESULT	GetAudioPacket(PBYTE * pBuffer, PUINT pBufLength);
+
 
 
 	//bool	RegisterChangeNotification(CBF f);
@@ -180,6 +182,7 @@ protected:
 	HANDLE			m_hCaptureAudioThread;
 	WAVEFORMATEX	m_CurrentWaveFormat;
 	bool			m_CurrentChannelIsRight;
+	PVOID			m_CurrentId;
 	PVOID			m_LogAudioParam;
 	PVOID			m_LogParam;
 	PVOID			m_ProcPulseParam;

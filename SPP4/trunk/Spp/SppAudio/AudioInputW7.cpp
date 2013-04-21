@@ -195,6 +195,7 @@ SPPINTERFACE_API CAudioInputW7::CAudioInputW7(HWND hWnd)
 	m_nMixers = 0;
 	m_CaptureDevices.clear();
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	m_CurrentId = NULL;
 
 	// Save handle to parent window - will be used for notifications
 	m_hPrntWnd = hWnd;
@@ -1355,14 +1356,18 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id, bool RightChannel)
 		EXIT_ON_ERROR(hr);
 	};
 
-	// Create capturing thread
-	hr = CreateCuptureThread(Id);
-	if (FAILED(hr))
-	{
-		LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
-		LogStatus(GEN_STATUS,WARN,STRSTRM5,m_LogParam);
-		EXIT_ON_ERROR(hr);
-	};
+	// The ID of the currently streaming capture endpoint
+	m_CurrentId = Id;
+
+	//// Create capturing thread
+	//hr = CreateCuptureThread(Id);
+	//if (FAILED(hr))
+	//{
+	//	LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
+	//	LogStatus(GEN_STATUS,WARN,STRSTRM5,m_LogParam);
+	//	EXIT_ON_ERROR(hr);
+	//};
+	return true;
 
 Exit:
 	return false;
@@ -1682,6 +1687,90 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 
 	return hr;
 }
+
+// Call this method to get the next audio data
+// 
+//	Parameters:
+//		pBuffer: Pointer to pointer to output buffer
+//		pBufLength: Pointer to length of buffer in bytes
+//
+// Returns:
+//	S_OK  if buffer is valid.
+//
+HRESULT CAudioInputW7::GetAudioPacket(PBYTE * pBuffer, PUINT pBufLength)
+{
+	UINT32 packetLength=0, packetLengthNext=0;
+	HRESULT hr = S_OK;
+	DWORD retval, flags;
+	BYTE *pDataIn;
+	static UINT32 pad=0;
+
+	// Skip the waiting if padding is waiting to be processed
+	if (!pad)
+	{
+		// Wait for next buffer event to be signaled.
+		retval = WaitForSingleObject(g_hAudioBufferReady, 2000);
+
+		//In case of timeout - continue
+		if (retval == WAIT_TIMEOUT)
+		{
+			return S_FALSE;
+		};
+	};
+
+
+	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL, m_LogAudioParam);
+
+	// Get pointer to next data packet in capture buffer.
+	pDataIn = 0;
+	flags = 0;
+	hr = m_pCaptureClient->GetBuffer(&pDataIn, &packetLength, &flags, NULL, NULL);
+	if (FAILED(hr) /*|| flags*/)
+	{
+		m_pCaptureClient->ReleaseBuffer(packetLength);
+		LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr),m_LogParam);
+		return hr;
+	}; 
+
+	// Detect glitch in data (Unused in Vista)
+	if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
+	{
+		m_pCaptureClient->ReleaseBuffer(packetLength);
+		hr = AUDCLNT_E_BUFFER_ERROR;
+		LogStatus(PROCPACK_DISC,WARN,GetWasapiText(hr),m_LogParam);
+		return 	hr;
+	};
+
+
+	// Log packets - usually just NO-OP
+	LogAudio(ALOG_PACK, packetLength*m_CurrentWaveFormat.nChannels, pDataIn, m_LogAudioParam);
+
+	// Export buffer to caller
+	*pBuffer = pDataIn;
+	*pBufLength = packetLength;
+
+
+	/* Release the buffer*/
+	hr = m_pCaptureClient->ReleaseBuffer(packetLength);
+	if (FAILED(hr))
+	{
+		// In case of failure - continue
+		LogStatus(PROCPACK_RLS,ERR,GetWasapiText(hr),m_LogParam);
+		return hr;
+	};
+
+	// Test how many frames where left - usually none.
+	// See: http://social.msdn.microsoft.com/Forums/en-US/windowspro-audiodevelopment/thread/0d4a839d-2c10-49f6-965d-094b692af4f0
+	hr = m_pAudioClient->GetCurrentPadding(&pad);
+	if (FAILED(hr))
+	{
+		LogStatus(PROCPACK_PADD,ERR,GetWasapiText(hr),m_LogParam);
+		return hr;
+	};
+
+	return hr;
+}
+
 
 HRESULT CAudioInputW7::InitPulseDataObj(CPulseData * pPulseDataObj)
 {
