@@ -122,9 +122,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
+	Audio->StartStreaming((PVOID)AudioId);
 	
 	// Start reading audio data
 	Spp		= new CSppMain();
+	Spp->SetAudioObj(Audio);
 
 	if (!Spp->Start(hwnd))
 		goto ExitApp;
@@ -233,7 +235,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 		// Is device default
 		jack.Default = Audio->IsCaptureDeviceDefault((PVOID)jack.id);
 		if (jack.Default)
-			AudioId = jack.FriendlyName;
+			AudioId = jack.id;
 
 		SendMessage(hDlg, POPULATE_JACKS, (WPARAM)&jack, 0);
 	};

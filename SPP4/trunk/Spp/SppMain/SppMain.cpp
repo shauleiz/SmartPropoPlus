@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "../SppAudio/AudioInputW7.h"
 #include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
@@ -20,7 +21,9 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_hMutexStartStop(NULL),
 	m_closeRequest(FALSE),
 	m_waveRecording(FALSE),
-	m_hCaptureAudioThread(NULL)
+	m_hCaptureAudioThread(NULL),
+	m_Audio(NULL),
+	m_tCapture(NULL)
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -80,6 +83,11 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	if (!m_hMutexStartStop)
 		return false;
 
+	// Start a thread that listnes to the audio
+	m_tCapture = new thread(CaptureAudioStatic, this);
+	if (!m_tCapture)
+		return false;
+
 	return true; // TODO: Remove
 
 	// Start a thread that listens to the GUI
@@ -90,19 +98,14 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	thread::id id = t1->get_id();
 	t1->join();
 
-	DWORD dwThreadId;
-	HANDLE hThreadListen = CreateThread(
-		NULL,				// no security attribute
-		0,					// default stack size
-		ListenToGuiStatic,	// Static member that is a launchpad to the actual function
-		this,				// thread parameter
-		0,					// not suspended
-		&dwThreadId);		// returns thread ID
-	if (!hThreadListen)
-		return false;
 	// TODO: Init();
 
 	return true;
+}
+
+SPPMAIN_API void CSppMain::SetAudioObj(class CAudioInputW7 * Audio)
+{
+	m_Audio = Audio;
 }
 
 /*
@@ -159,6 +162,72 @@ void CSppMain::ListenToGui(void)
 		};
 	};
 }
+
+void CSppMain::CaptureAudio(void)
+{
+	PBYTE	buffer=NULL;
+	UINT	bSize=0;
+	HRESULT	hr = S_OK;
+
+	while (m_waveRecording)
+	{
+		hr = m_Audio->GetAudioPacket(&buffer, &bSize);
+		if (hr != S_OK)
+			continue;
+	};
+}
+
+/*
+	ProcessData - process a single audio sample of unknown type (8-16 bits mono)
+	The audio sample may be 8-bit PCM, ranging 0-255, mid-point is 128
+	The audio sample may be 16-bit PCM, ranging from -32768 to 32767, mid-point is 0
+	The minimal step is 1
+*/
+void __fastcall  CSppMain::ProcessData(UINT i)
+{
+    static double min = 0;	/* Sticky minimum sample value */
+    static double max = 0;	/* Sticky maximum sample value */
+    static int high = 0;	/* Number of contingious above-threshold samples */
+    static int low = 0;		/* Number of contingious below-threshold samples */
+    double threshold;		/* calculated mid-point */
+	static int FormerInput;
+
+	/* Initialization of the min/max vaues */
+    max -= 0.1;
+    min += 0.1;
+    if (max < min) max = min + 1;
+
+    if (i> max) max = i;			/* Update max value */
+    else if (i < min) min = i;		/* Update min value */
+    threshold = (min + max) / 2;	/* Update mid-point value */
+	threshold = CalcThreshold(i);	/* Version 3.3.3 */
+
+	/* TODO: move this to some other place - why call it every time? 
+	SetActiveProcessPulseFunction(DataBlock);*/
+
+	/* Update the width of the number of the low/high samples */
+	/* If edge, then call ProcessPulse() to process the previous high/low level */
+    if (i > threshold) 
+	{
+	high++;
+        if (low) 
+		{
+			low=low*192000; // TODO: Normalize number of samples
+			ProcessPulsePpm(low, FALSE); // TODO: Replace by virtual function
+            low = 0;
+        }
+    } else 
+	{
+        low++;
+        if (high) 
+		{
+			high=high*192000; // TODO: Normalize number of sumples
+            ProcessPulsePpm(high, TRUE);// TODO: Replace by virtual function
+            high = 0;
+        }
+    }
+}
+
 
 
 	/*
@@ -1469,6 +1538,53 @@ __inline  int  CSppMain::smooth(int orig, int newval)
 	return newval;
 
 }
+
+/*
+	Calculate audio threshold
+	____________________________________________________________________
+	Based on RCAudio V 3.0 and original Smartpropo
+	copyright (C) Philippe G.De Coninck 2007
+	
+	Copied from: http://www.rcuniverse.com/forum/m_3413991/tm.htm
+	____________________________________________________________________
+*/
+_inline double  CSppMain::CalcThreshold(int value)
+{
+	// RCAudio V 3.0 : (C) Philippe G.De Coninck 2007
+
+	static double aud_max_val, aud_min_val;
+	static int cAboveThr, cBelowThr;
+	double threthold;
+	double delta_max = fabs(value - aud_max_val);
+	double delta_min = fabs(value - aud_min_val);
+
+	if (delta_max > delta_min) aud_min_val = (4*aud_min_val + value)/5;
+	else aud_max_val = (4*aud_max_val + value)/5;
+
+	if (aud_max_val < aud_min_val + 2) {
+		aud_max_val = aud_min_val + 1;
+		aud_min_val = aud_min_val - 1;
+	}
+
+	threthold = (aud_max_val + aud_min_val)/2;
+
+	/* Patch: reset threshold if nothing happens */
+	if (value > threthold)
+	{
+		cAboveThr++;
+		cBelowThr=0;
+	}
+	else
+	{
+		cAboveThr=0;
+		cBelowThr++;
+	};
+	if (cAboveThr>=10000 || cBelowThr>=10000)
+		aud_max_val=aud_min_val=0;
+
+	return(threthold); 
+}
+
 // TODO: Replace this function with a function that interacts with vJoy 2.x
 // TODO: Rename to Send2vJoy
 void CSppMain::SendPPJoy(int nChannels, int *Channel)
@@ -1480,6 +1596,13 @@ DWORD WINAPI CSppMain::ListenToGuiStatic(LPVOID obj)
 {
 	if (obj)
 		((CSppMain *)obj)->ListenToGui();
+	return 0;
+}
+
+DWORD WINAPI CSppMain::CaptureAudioStatic(LPVOID obj)
+{
+	if (obj)
+		((CSppMain *)obj)->CaptureAudio();
 	return 0;
 }
 

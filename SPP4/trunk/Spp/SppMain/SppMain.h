@@ -65,6 +65,8 @@ class /*SPPMAIN_API*/ CSppMain {
 	SPPMAIN_API ~CSppMain();
 	SPPMAIN_API bool Start(HWND hParentWnd);
 	SPPMAIN_API void SelectMod(LPCTSTR ModType);
+	SPPMAIN_API void SetAudioObj(class CAudioInputW7 * Audio);
+
 
 private:
 	int LoadProcessPulseFunctions();
@@ -83,8 +85,14 @@ private:
 	int  __fastcall Convert15bits(unsigned int in);
 	int  __fastcall  CSppMain::Convert20bits(int in);
 	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
+	static DWORD WINAPI  CaptureAudioStatic(LPVOID obj);
 	void ListenToGui(void);
+	void CaptureAudio(void);
 	void SendModInfoToParent(HWND hParentWnd);
+	void __fastcall ProcessData(UINT i);
+	_inline double  CalcThreshold(int value);
+
+
 
 
 private:	// Walkera (PCM) helper functions
@@ -112,6 +120,8 @@ private:
 	volatile BOOL m_closeRequest;
 	volatile BOOL m_waveRecording;
 	struct Modulations *  m_Modulation;
+	class CAudioInputW7 * m_Audio;
+	thread * m_tCapture;
 };
 
 
