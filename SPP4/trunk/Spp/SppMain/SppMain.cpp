@@ -23,7 +23,12 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_waveRecording(FALSE),
 	m_hCaptureAudioThread(NULL),
 	m_Audio(NULL),
-	m_tCapture(NULL)
+	m_tCapture(NULL),
+	m_WaveNChannels(2), // TODO: Remove initialization and get real data
+	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
+	m_WaveRate(192000), // TODO: Remove initialization and get real data
+	m_WaveInputChannel(0)// TODO: Remove initialization and get real data
+
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -84,10 +89,12 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 		return false;
 
 	// Start a thread that listnes to the audio
+	m_waveRecording = TRUE;
 	m_tCapture = new thread(CaptureAudioStatic, this);
 	if (!m_tCapture)
 		return false;
 
+	// m_tCapture->join();
 	return true; // TODO: Remove
 
 	// Start a thread that listens to the GUI
@@ -168,14 +175,98 @@ void CSppMain::CaptureAudio(void)
 	PBYTE	buffer=NULL;
 	UINT	bSize=0;
 	HRESULT	hr = S_OK;
+	UINT	bMax = 8000; // TODO: Change to dynamic size
+
+	buffer = new BYTE[bMax];
 
 	while (m_waveRecording)
 	{
-		hr = m_Audio->GetAudioPacket(&buffer, &bSize);
+		// Debug only: hr = m_Audio->ProcessAudioPacket(NULL);
+		hr = m_Audio->GetAudioPacket(buffer, &bSize, bMax);
 		if (hr != S_OK)
 			continue;
+
+		// Here the processing of the audio is done
+		hr = ProcessWave(buffer, bSize);
+		if (hr != S_OK)
+			break;
+
 	};
+	delete (buffer);
+
 }
+
+HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
+/*
+	ProcessWave processes a wave packet
+	Return value:
+		S_OK:		Processing of the data was completed - ready to get the next packet
+		E_xxx:		Error
+
+	Input parameters:
+		[IN] pWavePacket:	Pointer to the beginning of the wave packet
+		[IN] packetLength:	Length of packet
+		[IN] right_channel:	Process right channel(Second channel) - Default is left channel (Ignored for mono waves)
+*/
+{
+
+
+	HRESULT hr = S_OK;
+	UINT PulseLength = 0;
+	bool negative;
+
+	// for every sample in the packet, read data carrying channels
+	// If mono (m_WaveNChannels==1) then increment sample index by 1
+	// If stereo (m_WaveNChannels==2) then increment sample index by 2
+	// If stereo then read the first channel if you need the left channel or the second if it is the right channel you want
+	unsigned char sample8;
+	signed short sample;
+	for (UINT32 i=0; i<packetLength*m_WaveNChannels;i+=m_WaveNChannels)
+	{
+		// Get one sample
+		if (m_WaveBitsPerSample == 8)
+		{// 8-bit PCM, ranging 0-255, mid-point is 128
+			sample8 =	(unsigned char)pWavePacket[i+m_WaveInputChannel];
+			sample	=	(signed short)sample8;
+		} else if (m_WaveBitsPerSample == 16)
+			// 16-bit PCM, ranging from -32768 to 32767, mid-point is 0
+			sample = ((signed short *)pWavePacket)[i+m_WaveInputChannel];
+		else break;
+
+
+		// Here the samples are assemblied into pulses
+		// negative is true when pulse is LOW
+		PulseLength = Sample2Pulse(sample, &negative);
+
+		// Normalize pulse length to 192K sampling rate
+		PulseLength = NormalizePulse(PulseLength);
+
+		// If valid pulse the process the pulse
+		// TODO (?): Very short pulses are ignored (Glitch)
+		if (PulseLength/*>3*/)
+		{
+			// TODO: This is for debug only:
+			static int i =0;
+			static std::vector<UINT> vPulseLength;
+			if (i>200)
+			{
+				i=0;
+				vPulseLength.clear();
+			};
+			i++;
+			vPulseLength.push_back(PulseLength);
+
+			ProcessPulsePpm(PulseLength, negative); // TODO: Replace with generic ProcessPulse
+		}
+	};
+
+
+
+	EXIT_ON_ERROR(hr);
+Exit:
+	return hr;
+}
+
 
 /*
 	ProcessData - process a single audio sample of unknown type (8-16 bits mono)
@@ -349,6 +440,85 @@ int CSppMain::LoadProcessPulseFunctions()
 	return nMod;
 }
 
+inline UINT CSppMain::Sample2Pulse(short sample, bool * negative)
+{
+
+	static double min = 0;	/* Sticky minimum sample value */
+    static double max = 0;	/* Sticky maximum sample value */
+    static int high = 0;	/* Number of contingious above-threshold samples */
+    static int low = 0;		/* Number of contingious below-threshold samples */
+    double threshold;		/* calculated mid-point */
+	UINT pulse = 0;
+
+	/* Initialization of the min/max vaues */
+    max -= 0.1;
+    min += 0.1;
+    if (max < min) max = min + 1;
+
+    if (sample> max) max = sample;				/* Update max value */
+    else if (sample < min) min = sample;		/* Update min value */
+    //threshold = (min + max) / 2;				/* Update mid-point value */
+	threshold = CalcThreshold(sample);			/* Version 3.3.3 */
+
+	/* Update the width of the number of the low/high samples */
+	/* If edge, then call ProcessPulse() to process the previous high/low level */
+	if (sample > threshold) 
+	{
+		high++;
+		if (low) 
+		{
+			pulse = low;
+			*negative = true;
+			low = 0;
+		}
+	} else 
+	{
+		low++;
+		if (high) 
+		{
+			pulse = high;
+			*negative = false;
+			high = 0;
+		}
+	};
+
+	// Case of very long (20000) pulses
+	if (high >= 20000)
+	{
+		pulse = high;
+		*negative = false;
+		high = 0;
+	}
+	else if (low  >= 20000)
+	{
+		pulse = low;
+		*negative = true;
+		low = 0;
+	};
+
+	return pulse;
+}
+
+inline UINT CSppMain::NormalizePulse(UINT Length)
+// Normalize pulse length to 192K sampling rate
+{
+	switch(m_WaveRate)
+	{
+	case 192000:
+	case 0:
+		return Length;
+	case 96000:
+		return Length*2;
+	case 48000:
+		return Length*4;
+	case 44100:
+		return (UINT)(Length*4.35);
+	default:
+		return Length*192000/m_WaveRate;
+	};
+
+	return 0;
+}
 
 /***********************************************************************/
 /* ProcessPulse functions - One function for each supported modulation */
@@ -371,14 +541,14 @@ int CSppMain::LoadProcessPulseFunctions()
 	static int i = 0;
 	static int PrevWidth[14];	/* array of previous width values */
 
-	if (width < 5)
+	if (width < PPM_GLITCH)
 		return;
 
 	if (gDebugLevel>=2 && gCtrlLogFile && !(_strtime_s( tbuffer, 10 ))/*&& !(i++%50)*/)
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulsePpm(width=%d, input=%d)", tbuffer, width, input);
 
 	/* If pulse is a separator then go to the next one */
-	if (width < PPM_SEP+7 || former_sync)
+	if (width < PPM_SEP|| former_sync)
 	{
 		former_sync = 0;
 		return;
@@ -469,7 +639,7 @@ int CSppMain::LoadProcessPulseFunctions()
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseFutabaPpm(width=%d, input=%d)", tbuffer , width, input);
 
 	/* If pulse is a separator then go to the next one */
-	if (!input || width < PPM_SEP+7 || former_sync)
+	if (!input || width < PPM_SEP || former_sync)
 	{
 		former_sync = 0;
 		return;
@@ -557,7 +727,7 @@ int CSppMain::LoadProcessPulseFunctions()
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseJrPpm(width=%d, input=%d)", tbuffer , width, input);
 
 	/* If pulse is a separator then go to the next one */
-	if (input || width < PPM_SEP+7 || former_sync)
+	if (input || width < PPM_SEP || former_sync)
 	{
 		former_sync = 0;
 		return;

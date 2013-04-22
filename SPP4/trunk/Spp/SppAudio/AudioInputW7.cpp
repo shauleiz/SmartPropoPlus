@@ -1657,13 +1657,16 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		// ProcessWave converts the audio into pulses
 		// The pulses are fed (as they are detected) into the decoder
 		// ProcessWave exits when the buffer was read.
-		hr = pPulseDataObj->ProcessWave(pDataIn,packetLength); 
-		if (FAILED(hr))
+		if (pPulseDataObj)
 		{
-			// In case of failure - continue
-			LogStatus(PROCPACK_PRW,ERR,GetWasapiText(hr),m_LogParam);
-			return hr;
-		};
+			hr = pPulseDataObj->ProcessWave(pDataIn,packetLength); 
+			if (FAILED(hr))
+			{
+				// In case of failure - continue
+				LogStatus(PROCPACK_PRW,ERR,GetWasapiText(hr),m_LogParam);
+				return hr;
+			};
+		}
 
 		/* Release the buffer*/
 		hr = m_pCaptureClient->ReleaseBuffer(packetLength);
@@ -1691,13 +1694,13 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 // Call this method to get the next audio data
 // 
 //	Parameters:
-//		pBuffer: Pointer to pointer to output buffer
+//		pBuffer: Pointer to output buffer
 //		pBufLength: Pointer to length of buffer in bytes
 //
 // Returns:
 //	S_OK  if buffer is valid.
 //
-HRESULT CAudioInputW7::GetAudioPacket(PBYTE * pBuffer, PUINT pBufLength)
+HRESULT CAudioInputW7::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 {
 	UINT32 packetLength=0, packetLengthNext=0;
 	HRESULT hr = S_OK;
@@ -1716,7 +1719,8 @@ HRESULT CAudioInputW7::GetAudioPacket(PBYTE * pBuffer, PUINT pBufLength)
 		{
 			return S_FALSE;
 		};
-	};
+	};		
+
 
 
 	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL, m_LogAudioParam);
@@ -1746,7 +1750,7 @@ HRESULT CAudioInputW7::GetAudioPacket(PBYTE * pBuffer, PUINT pBufLength)
 	LogAudio(ALOG_PACK, packetLength*m_CurrentWaveFormat.nChannels, pDataIn, m_LogAudioParam);
 
 	// Export buffer to caller
-	*pBuffer = pDataIn;
+	memcpy_s(pBuffer, bMax, pDataIn, packetLength);
 	*pBufLength = packetLength;
 
 
