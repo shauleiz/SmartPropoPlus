@@ -42,12 +42,15 @@ typedef  std::vector<MOD_STRUCT> vMOD;
 typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
 
 
+// Definition of some time limits
+// All values are in number of samples normalized to 192K samples per second
 #define PW_FUTABA	6.623
 #define PW_JR		7.340
-#define PPM_MIN		30.0
-#define PPM_MAX		80.0
-#define PPM_TRIG	200
-#define PPM_SEP		15.0
+#define PPM_MIN		96.0  // PPM minimal pulse width (0.5 mSec)
+#define PPM_MAX		288.0 // PPM maximal pulse width (1.5 mSec)
+#define PPM_TRIG	870.0 // PPM inter packet  separator pulse ( = 4.5mSec)
+#define PPM_SEP		75.0  // PPM inter-channel separator pulse  - this is a maximum value that can never occur
+#define PPM_GLITCH	21.0  // Pulses of this size or less are just a glitch
 #define PPMW_MIN	18.0
 #define PPMW_MAX	70.0
 #define PPMW_TRIG	200
@@ -91,8 +94,9 @@ private:
 	void SendModInfoToParent(HWND hParentWnd);
 	void __fastcall ProcessData(UINT i);
 	_inline double  CalcThreshold(int value);
-
-
+	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);
+	inline UINT Sample2Pulse(short sample, bool * negative);
+	inline UINT NormalizePulse(UINT Length);
 
 
 private:	// Walkera (PCM) helper functions
@@ -122,6 +126,10 @@ private:
 	struct Modulations *  m_Modulation;
 	class CAudioInputW7 * m_Audio;
 	thread * m_tCapture;
+	UINT m_WaveNChannels;
+	UINT m_WaveBitsPerSample;
+	UINT m_WaveRate;
+	int  m_WaveInputChannel;		// Input channel: Left(0), Right(1)
 };
 
 

@@ -144,7 +144,7 @@ public:
 	SPPINTERFACE_API bool		IsExternal(PVOID Id);
 	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
 	SPPINTERFACE_API bool		StartStreaming(PVOID Id, bool RightChannel=false);
-	HRESULT ProcessAudioPacket(CPulseData * pPulseDataObj);
+	SPPINTERFACE_API HRESULT	ProcessAudioPacket(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
 	SPPINTERFACE_API COLORREF	GetJackColor(PVOID Id);
 	SPPINTERFACE_API bool		IsDisconnected(PVOID Id);
@@ -152,7 +152,7 @@ public:
 	SPPINTERFACE_API bool		RegisterLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterProcessPulse(LPVOID,LPVOID=NULL);
-	SPPINTERFACE_API HRESULT	GetAudioPacket(PBYTE * pBuffer, PUINT pBufLength);
+	SPPINTERFACE_API HRESULT	GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax);
 
 
 
