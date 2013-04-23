@@ -245,17 +245,6 @@ HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
 		{
-			// TODO: This is for debug only:
-			static int i =0;
-			static std::vector<UINT> vPulseLength;
-			if (i>200)
-			{
-				i=0;
-				vPulseLength.clear();
-			};
-			i++;
-			vPulseLength.push_back(PulseLength);
-
 			ProcessPulsePpm(PulseLength, negative); // TODO: Replace with generic ProcessPulse
 		}
 	};

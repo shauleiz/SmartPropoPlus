@@ -1750,7 +1750,7 @@ HRESULT CAudioInputW7::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax
 	LogAudio(ALOG_PACK, packetLength*m_CurrentWaveFormat.nChannels, pDataIn, m_LogAudioParam);
 
 	// Export buffer to caller
-	memcpy_s(pBuffer, bMax, pDataIn, packetLength);
+	memcpy_s(pBuffer, bMax, pDataIn, packetLength*m_CurrentWaveFormat.wBitsPerSample*m_CurrentWaveFormat.nChannels/8); // TODO: Test for all combinations (Mono/16 bits)
 	*pBufLength = packetLength;
 
 
