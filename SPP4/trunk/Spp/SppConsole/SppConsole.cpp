@@ -122,7 +122,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
-	Audio->StartStreaming((PVOID)AudioId);
 	
 	// Start reading audio data
 	Spp		= new CSppMain();
@@ -132,6 +131,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		goto ExitApp;
 
 	Dialog->Show(); // If not asked to be iconified
+
+	Spp->AudioChanged();
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();

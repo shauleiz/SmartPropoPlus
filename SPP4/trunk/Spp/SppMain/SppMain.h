@@ -69,7 +69,7 @@ class /*SPPMAIN_API*/ CSppMain {
 	SPPMAIN_API bool Start(HWND hParentWnd);
 	SPPMAIN_API void SelectMod(LPCTSTR ModType);
 	SPPMAIN_API void SetAudioObj(class CAudioInputW7 * Audio);
-
+	SPPMAIN_API void AudioChanged(void);
 
 private:
 	int LoadProcessPulseFunctions();
@@ -130,6 +130,7 @@ private:
 	UINT m_WaveBitsPerSample;
 	UINT m_WaveRate;
 	int  m_WaveInputChannel;		// Input channel: Left(0), Right(1)
+	HWND m_hParentWnd;
 };
 
 

@@ -1314,7 +1314,6 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id, bool RightChannel)
 	2. Initialize endpoint
 	3. Test usability of endpoint
 	4. Start capture stream
-	5. Create capturing thread
 */
 {
 	HRESULT hr = S_OK;
