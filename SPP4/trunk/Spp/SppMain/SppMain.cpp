@@ -24,11 +24,11 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_hCaptureAudioThread(NULL),
 	m_Audio(NULL),
 	m_tCapture(NULL),
+	m_hParentWnd(NULL),
 	m_WaveNChannels(2), // TODO: Remove initialization and get real data
 	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
 	m_WaveRate(192000), // TODO: Remove initialization and get real data
 	m_WaveInputChannel(0)// TODO: Remove initialization and get real data
-
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -52,6 +52,8 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	if (!hParentWnd)
 		return false;
 
+	m_hParentWnd = hParentWnd;
+
 	// Get list of modulation types: PPM/PCM(JR) ....
 	// Mark the selected modulation type
 	m_Modulation = GetModulation(1);
@@ -63,7 +65,7 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	//	m_MixerName = GetCurrentMixerDevice();	// Selected
 
 	// Get selected audio capture endpoint id from the parent window
-	AudioId = (LPCTSTR)SendMessage(hParentWnd, GET_ACTIVE_ID, 0, 0);
+	AudioId = (LPCTSTR)SendMessage(m_hParentWnd, GET_ACTIVE_ID, 0, 0);
 
 
 	// Create shared memory block and fill it with:
@@ -77,7 +79,7 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	int nActiveModulations = LoadProcessPulseFunctions();
 
 	// Pass to the parent window the list modulations
-	SendModInfoToParent(hParentWnd);
+	SendModInfoToParent(m_hParentWnd);
 
 	// Get Debug level from the registry (if exists) and start debugging 
 	gDebugLevel = GetDebugLevel();
@@ -88,22 +90,23 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	if (!m_hMutexStartStop)
 		return false;
 
-	// Start a thread that listnes to the audio
-	m_waveRecording = TRUE;
-	m_tCapture = new thread(CaptureAudioStatic, this);
-	if (!m_tCapture)
-		return false;
-
-	// m_tCapture->join();
-	return true; // TODO: Remove
-
 	// Start a thread that listens to the GUI
 	thread * t1 = NULL;
 	t1 = new thread(ListenToGuiStatic, this);
 	if (!t1)
 		return false;
 	thread::id id = t1->get_id();
+	return true;
+
 	t1->join();
+
+
+	// Start a thread that listnes to the audio
+	m_waveRecording = TRUE;
+	m_Audio->StartStreaming((PVOID)AudioId);
+	m_tCapture = new thread(CaptureAudioStatic, this);
+	if (!m_tCapture)
+		return false;
 
 	// TODO: Init();
 
@@ -155,15 +158,21 @@ void CSppMain::ListenToGui(void)
 		/* Start the new capture stream */
 		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPED)
 		{
-			// TODO: hr = StartStreamingW7(DataBlock->SrcName);
-			if (FAILED(hr))
+			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, GET_ACTIVE_ID, 0, 0);
+			m_waveRecording = TRUE;
+			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
 			{
+
 				// TODO: ReportChange();
 				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
 			}
 			else
 			{
 				// TODO: ReportChange();
+				m_tCapture = new thread(CaptureAudioStatic, this);
+				if (!m_tCapture)
+					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+				else
 				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
 			};
 		};
@@ -181,7 +190,6 @@ void CSppMain::CaptureAudio(void)
 
 	while (m_waveRecording)
 	{
-		// Debug only: hr = m_Audio->ProcessAudioPacket(NULL);
 		hr = m_Audio->GetAudioPacket(buffer, &bSize, bMax);
 		if (hr != S_OK)
 			continue;
@@ -194,6 +202,11 @@ void CSppMain::CaptureAudio(void)
 	};
 	delete (buffer);
 
+}
+
+void CSppMain::AudioChanged(void)
+{
+	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
 }
 
 HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
