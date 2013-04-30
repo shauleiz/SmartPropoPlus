@@ -597,11 +597,11 @@ far void * CreateSharedDataStruct(struct Modulations * data)
 	
 	/* Wait for Mutex */
 	ghDataLock = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTEX_LABEL);
-	//if (!ghDataLock)
-	//	return NULL;
-	WaitForSingleObject(ghDataLock, INFINITE);
+	if (ghDataLock)
+		WaitForSingleObject(ghDataLock, INFINITE);
+	else
+		ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 
-	ghDataLock = CreateMutex(NULL, TRUE, MUTEX_LABEL);
 	if (!ghDataLock)
 		return NULL;
 	

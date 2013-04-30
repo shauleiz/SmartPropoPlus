@@ -173,6 +173,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMAPP_DEFDEV_CHANGED:
 		case WMAPP_DEV_ADDED:
 		case WMAPP_DEV_REM:
+			Spp->AudioChanged();
 			CaptureDevicesPopulate(hDialog);
 			break;
 

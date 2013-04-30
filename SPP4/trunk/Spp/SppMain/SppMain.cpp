@@ -20,10 +20,10 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_JsChPostProc_selected(-1),
 	m_hMutexStartStop(NULL),
 	m_closeRequest(FALSE),
-	m_waveRecording(FALSE),
-	m_hCaptureAudioThread(NULL),
-	m_Audio(NULL),
 	m_tCapture(NULL),
+	m_waveRecording(FALSE),
+	m_tCaptureActive(FALSE),
+	m_Audio(NULL),
 	m_hParentWnd(NULL),
 	m_WaveNChannels(2), // TODO: Remove initialization and get real data
 	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
@@ -105,10 +105,6 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	m_waveRecording = TRUE;
 	m_Audio->StartStreaming((PVOID)AudioId);
 	m_tCapture = new thread(CaptureAudioStatic, this);
-	if (!m_tCapture)
-		return false;
-
-	// TODO: Init();
 
 	return true;
 }
@@ -134,22 +130,32 @@ void CSppMain::ListenToGui(void)
 		// Test every 100mSec
 		Sleep(100);
 
+		/* If capture thread does not exist then free thread object */
+		if (m_tCapture && !m_tCaptureActive)
+		{
+			delete(m_tCapture);
+			m_tCapture = NULL;
+		}
+
 		// Conditions that meen that there's nothing to do so keep on listening
 		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::RUNNING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::FAILED)
 			continue;
 
 		/* Request to change device - kill capture thread */
-		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ)
+		if (m_tCapture && DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ)
 		{
 			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
 			m_waveRecording = FALSE;
+			if (m_tCapture->joinable())
+				m_tCapture->join();
+			continue;
 			// TODO: Add Audio interface class
 			//if (CurrentWaveInInfoW7 && CurrentWaveInInfoW7->pClientIn)
 			//	hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
 		};
 
-		/* If capture thread does not exist*/
-		if (!m_hCaptureAudioThread && DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPING)
+
+		if ( !m_tCapture && ( DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ))
 		{
 			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
 			// TODO: ReleaseEndPoint(CurrentWaveInInfoW7);
@@ -162,18 +168,17 @@ void CSppMain::ListenToGui(void)
 			m_waveRecording = TRUE;
 			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
 			{
-
 				// TODO: ReportChange();
 				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
 			}
 			else
 			{
 				// TODO: ReportChange();
-				m_tCapture = new thread(CaptureAudioStatic, this);
+				m_tCapture =  new thread(CaptureAudioStatic, this);
 				if (!m_tCapture)
 					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
 				else
-				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
+					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
 			};
 		};
 	};
@@ -188,8 +193,13 @@ void CSppMain::CaptureAudio(void)
 
 	buffer = new BYTE[bMax];
 
+	// Get the wave rate for this audio source
+	m_WaveRate = m_Audio->GetnSamplesPerSec();
+	m_WaveBitsPerSample = m_Audio->GetwBitsPerSample();
+
 	while (m_waveRecording)
 	{
+		m_tCaptureActive = TRUE;
 		hr = m_Audio->GetAudioPacket(buffer, &bSize, bMax);
 		if (hr != S_OK)
 			continue;
@@ -201,7 +211,8 @@ void CSppMain::CaptureAudio(void)
 
 	};
 	delete (buffer);
-
+	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
+	m_tCaptureActive = FALSE;
 }
 
 void CSppMain::AudioChanged(void)
