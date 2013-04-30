@@ -154,6 +154,10 @@ public:
 	SPPINTERFACE_API bool		RegisterProcessPulse(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API HRESULT	GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax);
 
+	SPPINTERFACE_API DWORD		GetnSamplesPerSec(void);
+	SPPINTERFACE_API WORD		GetwBitsPerSample(void);
+
+
 
 
 	//bool	RegisterChangeNotification(CBF f);

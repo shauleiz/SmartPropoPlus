@@ -120,12 +120,13 @@ private:
 	int		m_Position[MAX_JS_CH];
 	vMOD	m_ListProcessPulseFunc;
 	HANDLE	m_hMutexStartStop;
-	HANDLE	m_hCaptureAudioThread;
+	//HANDLE	m_hCaptureAudioThread;
 	volatile BOOL m_closeRequest;
 	volatile BOOL m_waveRecording;
 	struct Modulations *  m_Modulation;
 	class CAudioInputW7 * m_Audio;
 	thread * m_tCapture;
+	bool	m_tCaptureActive;
 	UINT m_WaveNChannels;
 	UINT m_WaveBitsPerSample;
 	UINT m_WaveRate;

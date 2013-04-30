@@ -762,6 +762,15 @@ Exit:
     return hr;
 }
 
+SPPINTERFACE_API DWORD CAudioInputW7::GetnSamplesPerSec(void)
+{
+	return m_CurrentWaveFormat.nSamplesPerSec;
+}
+
+SPPINTERFACE_API WORD CAudioInputW7::GetwBitsPerSample(void)
+{
+	return m_CurrentWaveFormat.wBitsPerSample;
+}
 
 
 SPPINTERFACE_API int CAudioInputW7::GetNumberChannels(PVOID Id)
@@ -1318,6 +1327,7 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id, bool RightChannel)
 {
 	HRESULT hr = S_OK;
 	m_CurrentChannelIsRight = RightChannel;
+	static int _deb=0;
 
 	// Stop streaming current endpoint
 	hr = StopCurrentStream();
@@ -1338,6 +1348,7 @@ SPPINTERFACE_API bool CAudioInputW7::StartStreaming(PVOID Id, bool RightChannel)
 	};
 
 	// Initialize endpoint
+	_deb++;
 	hr = InitEndPoint(Id);
 	if (FAILED(hr))
 	{
@@ -1678,7 +1689,11 @@ HRESULT CAudioInputW7::ProcessAudioPacket(CPulseData * pPulseDataObj)
 
 		// Test how many frames where left - usually none.
 		// See: http://social.msdn.microsoft.com/Forums/en-US/windowspro-audiodevelopment/thread/0d4a839d-2c10-49f6-965d-094b692af4f0
-		hr = m_pAudioClient->GetCurrentPadding(&pad);
+		if (m_pAudioClient)
+			hr = m_pAudioClient->GetCurrentPadding(&pad);
+		else
+			return S_FALSE;
+
 		if (FAILED(hr))
 		{
 			LogStatus(PROCPACK_PADD,ERR,GetWasapiText(hr),m_LogParam);
@@ -1764,7 +1779,11 @@ HRESULT CAudioInputW7::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax
 
 	// Test how many frames where left - usually none.
 	// See: http://social.msdn.microsoft.com/Forums/en-US/windowspro-audiodevelopment/thread/0d4a839d-2c10-49f6-965d-094b692af4f0
-	hr = m_pAudioClient->GetCurrentPadding(&pad);
+	if (m_pAudioClient)
+		hr = m_pAudioClient->GetCurrentPadding(&pad);
+	else
+		return S_FALSE;
+
 	if (FAILED(hr))
 	{
 		LogStatus(PROCPACK_PADD,ERR,GetWasapiText(hr),m_LogParam);
