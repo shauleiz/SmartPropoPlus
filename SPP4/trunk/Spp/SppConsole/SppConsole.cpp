@@ -177,6 +177,10 @@ LRESULT CALLBACK MainWindowProc(
 			CaptureDevicesPopulate(hDialog);
 			break;
 
+		case WMAPP_DEV_PROPTY:
+			Spp->AudioChanged();
+			break;
+
 		case GET_ACTIVE_ID:
 			return (LRESULT)AudioId;
 
