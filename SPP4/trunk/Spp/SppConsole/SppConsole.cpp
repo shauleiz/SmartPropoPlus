@@ -133,6 +133,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->Show(); // If not asked to be iconified
 
 	Spp->AudioChanged();
+	Spp->MonitorChannels();
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
@@ -193,6 +194,8 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->SelectMod((LPCTSTR)wParam);
 			break;
 
+		case WMAPP_CH_MNTR:
+			break;
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 

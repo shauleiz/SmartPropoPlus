@@ -70,6 +70,7 @@ class /*SPPMAIN_API*/ CSppMain {
 	SPPMAIN_API void SelectMod(LPCTSTR ModType);
 	SPPMAIN_API void SetAudioObj(class CAudioInputW7 * Audio);
 	SPPMAIN_API void AudioChanged(void);
+	SPPMAIN_API void MonitorChannels(BOOL Start=TRUE);
 
 private:
 	int LoadProcessPulseFunctions();
@@ -89,8 +90,10 @@ private:
 	int  __fastcall  CSppMain::Convert20bits(int in);
 	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
 	static DWORD WINAPI  CaptureAudioStatic(LPVOID obj);
+	static DWORD WINAPI  PollChannelsStatic(LPVOID obj);
 	void ListenToGui(void);
 	void CaptureAudio(void);
+	void PollChannels(void);
 	void SendModInfoToParent(HWND hParentWnd);
 	void __fastcall ProcessData(UINT i);
 	_inline double  CalcThreshold(int value);
@@ -132,6 +135,7 @@ private:
 	UINT m_WaveRate;
 	int  m_WaveInputChannel;		// Input channel: Left(0), Right(1)
 	HWND m_hParentWnd;
+	BOOL m_chMonitor;
 };
 
 

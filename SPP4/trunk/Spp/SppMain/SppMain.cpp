@@ -23,6 +23,7 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_tCapture(NULL),
 	m_waveRecording(FALSE),
 	m_tCaptureActive(FALSE),
+	m_chMonitor(FALSE),
 	m_Audio(NULL),
 	m_hParentWnd(NULL),
 	m_WaveNChannels(2), // TODO: Remove initialization and get real data
@@ -221,9 +222,83 @@ void CSppMain::CaptureAudio(void)
 	m_tCaptureActive = FALSE;
 }
 
+void CSppMain::PollChannels(void)
+{
+	if (!m_hParentWnd)
+		return;
+
+	// Create shadow array of the channel data
+	int nCh = sizeof(m_Position);
+	std::vector<int> vChannels;
+	vChannels.resize(nCh, 0);
+
+	// Poll the channel values and send them over to the parent window
+	while(m_chMonitor)
+	{
+		// For every channel, check if changed
+		// If changed, POST message at the parent
+		for (UINT i=0; i<nCh; i++)
+		{
+			if (vChannels[i] != m_Position[i])
+			{
+				vChannels[i] = m_Position[i];
+				PostMessage(m_hParentWnd, WMAPP_CH_MNTR, i, vChannels[i]);
+			};
+		}; // For loop
+	}; // While loop
+}
+
+
 void CSppMain::AudioChanged(void)
 {
 	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
+}
+
+/*
+	Start/Stop sperate thread that monitors the channel (Position[]) values
+	The thread polls the channels and sends periodic updates to the parent window
+*/
+void CSppMain::MonitorChannels(BOOL Start)
+{
+	static thread * tMonitor = NULL;
+	static bool isRunning = false;
+	static std::timed_mutex mtx; // Sync - access to this function is sequential
+	std::chrono::milliseconds timeout(100);
+
+	// Sanity check
+	if (!m_hParentWnd)
+		return;
+
+	// Acquiring the lock for this function
+	if (!mtx.try_lock_for(timeout))
+		return;
+
+	// Cannot stop if not running and cannot start if already running
+	if ((Start && isRunning) || (!Start && !isRunning))
+		goto End;
+
+	
+	if (Start)
+	{// Starting a monitoring thread
+		m_chMonitor = true;
+		tMonitor = new thread(PollChannelsStatic, this);
+		if (!tMonitor)
+			goto End;
+		isRunning = true;
+	}
+	else
+	{
+		m_chMonitor = false;
+		if (tMonitor && tMonitor->joinable())
+			tMonitor->join();
+		isRunning = false;
+		delete(tMonitor);
+		tMonitor = NULL;
+	};
+
+End:
+	mtx.unlock();
+	return;
 }
 
 HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
@@ -1814,6 +1889,13 @@ DWORD WINAPI CSppMain::CaptureAudioStatic(LPVOID obj)
 {
 	if (obj)
 		((CSppMain *)obj)->CaptureAudio();
+	return 0;
+}
+
+DWORD WINAPI CSppMain::PollChannelsStatic(LPVOID obj)
+{
+	if (obj)
+		((CSppMain *)obj)->PollChannels();
 	return 0;
 }
 
