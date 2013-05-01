@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <Strsafe.h>
 #include <Shellapi.h>
+#include <mutex>
+#include <array>
 
 
 // TODO: reference additional headers your program requires here

@@ -16,8 +16,8 @@ UINT const WMAPP_DEV_INFO =			WM_APP + 106;			// Device information available
 UINT const WMAPP_GUI_SHOW =			WM_APP + 200;			// Show GUI Window
 UINT const WMAPP_GUI_HIDE =			WM_APP + 201;			// Hide GUI Window
 UINT const WMAPP_GUI_AUDIO =		WM_APP + 202;			// Information destination: Audio GUI
+UINT const WMAPP_CH_MNTR =			WM_APP + 203;			// Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
 
-// Messages to GUI sub-units
 UINT const BASE_SUB			=			1000;					// Base value
 UINT const POPULATE_JACKS	=			BASE_SUB+1;				// The payload is a pointer to struct jack_info
 UINT const SET_DEF_JACKS	=			BASE_SUB+2;				// The payload is a pointer the id of the default jack
