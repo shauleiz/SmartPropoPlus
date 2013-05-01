@@ -133,6 +133,8 @@ void CSppMain::ListenToGui(void)
 		/* If capture thread does not exist then free thread object */
 		if (m_tCapture && !m_tCaptureActive)
 		{
+			if (m_tCapture->joinable())
+				m_tCapture->join();
 			delete(m_tCapture);
 			m_tCapture = NULL;
 		}
@@ -202,7 +204,11 @@ void CSppMain::CaptureAudio(void)
 		m_tCaptureActive = TRUE;
 		hr = m_Audio->GetAudioPacket(buffer, &bSize, bMax);
 		if (hr != S_OK)
+		{
+			//if (hr = AUDCLNT_E_DEVICE_INVALIDATED)
+			//	break;
 			continue;
+		}
 
 		// Here the processing of the audio is done
 		hr = ProcessWave(buffer, bSize);
@@ -236,8 +242,14 @@ HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 
 
 	HRESULT hr = S_OK;
-	UINT PulseLength = 0;
+	UINT rawPulseLength, PulseLength = 0;
 	bool negative;
+
+#ifdef _DEBUG
+		static std::vector<UINT> raw_pulses;
+		static std::vector<UINT> nrm_pulses;
+		static int raw_count=0;
+#endif
 
 	// for every sample in the packet, read data carrying channels
 	// If mono (m_WaveNChannels==1) then increment sample index by 1
@@ -263,7 +275,23 @@ HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		PulseLength = Sample2Pulse(sample, &negative);
 
 		// Normalize pulse length to 192K sampling rate
+		rawPulseLength = PulseLength;
 		PulseLength = NormalizePulse(PulseLength);
+#ifdef _DEBUG
+		if (PulseLength)
+		{
+			if (raw_count<200)
+				raw_count++;
+			else
+			{
+				raw_count=0;
+				raw_pulses.clear();
+				nrm_pulses.clear();
+			};
+			raw_pulses.push_back(rawPulseLength);
+			nrm_pulses.push_back(PulseLength);
+		};
+#endif
 
 		// If valid pulse the process the pulse
 		// TODO (?): Very short pulses are ignored (Glitch)
