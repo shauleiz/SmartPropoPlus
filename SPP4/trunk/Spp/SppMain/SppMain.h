@@ -55,6 +55,7 @@ typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
 #define PPMW_MAX	70.0
 #define PPMW_TRIG	200
 #define PPMW_SEP	15.0
+#define PPM_JITTER	5.0
 
 #define MAX_JS_CH	12
 #define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")

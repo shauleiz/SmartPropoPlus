@@ -228,7 +228,7 @@ void CSppMain::PollChannels(void)
 		return;
 
 	// Create shadow array of the channel data
-	int nCh = sizeof(m_Position);
+	UINT nCh = sizeof(m_Position);
 	std::vector<int> vChannels;
 	vChannels.resize(nCh, 0);
 
@@ -245,6 +245,8 @@ void CSppMain::PollChannels(void)
 				PostMessage(m_hParentWnd, WMAPP_CH_MNTR, i, vChannels[i]);
 			};
 		}; // For loop
+		Sleep(20);
+
 	}; // While loop
 }
 
@@ -681,8 +683,8 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
     if (!sync) 
 		return; /* still waiting for sync */
 
-	// Cancel jitter /* Version 3.3.3 */
-	if (abs(PrevWidth[datacount] - width) < 2)
+	// Cancel jitter
+	if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
 		width = PrevWidth[datacount];
 	PrevWidth[datacount] = width;
 
@@ -772,7 +774,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
     if (!sync) return; /* still waiting for sync */
 
 	// Cancel jitter /* Version 3.3.3 */
-	if (abs(PrevWidth[datacount] - width) < 2)
+	if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
 		width = PrevWidth[datacount];
 	PrevWidth[datacount] = width;
 
@@ -860,7 +862,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
     if (!sync) return; /* still waiting for sync */
 
 	// Cancel jitter /* Version 3.3.3 */
-	if (abs(PrevWidth[datacount] - width) < 2)
+	if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
 		width = PrevWidth[datacount];
 	PrevWidth[datacount] = width;
 
@@ -954,7 +956,7 @@ void  CSppMain::ProcessPulseWK2401Ppm(int width, BOOL input)
 		return;
 
 	// Cancel jitter /* Version 3.3.3 */
-	if (abs(PrevWidth[datacount] - width) < 2)
+	if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
 		width = PrevWidth[datacount];
 	PrevWidth[datacount] = width;
 
