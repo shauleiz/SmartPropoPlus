@@ -26,6 +26,7 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_chMonitor(FALSE),
 	m_Audio(NULL),
 	m_hParentWnd(NULL),
+	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2), // TODO: Remove initialization and get real data
 	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
 	m_WaveRate(192000), // TODO: Remove initialization and get real data
@@ -38,7 +39,9 @@ SPPMAIN_API CSppMain::~CSppMain() {}
 
 SPPMAIN_API void CSppMain::SelectMod(LPCTSTR ModType)
 {
-	SetActiveMode(ModType);
+	SetActiveMode(ModType); // Set the active mode in memory and in registry
+	m_Modulation->Active = GetModulation(FALSE)->Active; // Get the index of the new active modulation
+	LoadProcessPulseFunctions();
 }
 
 SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
@@ -245,7 +248,8 @@ void CSppMain::PollChannels(void)
 				PostMessage(m_hParentWnd, WMAPP_CH_MNTR, i, vChannels[i]);
 			};
 		}; // For loop
-		Sleep(20);
+
+		sleep_for(20); // nanoSec
 
 	}; // While loop
 }
@@ -374,7 +378,8 @@ HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
 		{
-			ProcessPulsePpm(PulseLength, negative); // TODO: Replace with generic ProcessPulse
+			// Call the correct function ProcessPulseXXX() 
+			m_ListProcessPulseFunc[m_iActiveProcessPulseFunc].func(PulseLength, negative);
 		}
 	};
 
@@ -463,7 +468,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -474,7 +482,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseJrPpm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -485,7 +496,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseFutabaPpm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -496,7 +510,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseWK2401Ppm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -507,7 +524,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseJrPcm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -518,7 +538,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseFutabaPcm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -529,7 +552,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseAirPcm1(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -540,7 +566,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func =  [=] (int width, BOOL input) {this->ProcessPulseAirPcm2(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
@@ -551,7 +580,10 @@ int CSppMain::LoadProcessPulseFunctions()
 	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseWalPcm(width, input);};
 	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
 		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
+	{
 		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
+		m_iActiveProcessPulseFunc = nMod-1;
+	}
 	else
 		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
 
