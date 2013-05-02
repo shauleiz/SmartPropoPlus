@@ -26,7 +26,7 @@ using std::placeholders::_2;
 #pragma  comment(lib, "..\\Release\\AudioLib.lib")
 #endif
 
-
+#define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
 #define  PP function<void (int, BOOL)>
 
 struct MOD_STRUCT {
@@ -123,6 +123,7 @@ private:
 	int		m_JsChPostProc_selected;
 	int		m_Position[MAX_JS_CH];
 	vMOD	m_ListProcessPulseFunc;
+	UINT	m_iActiveProcessPulseFunc;
 	HANDLE	m_hMutexStartStop;
 	//HANDLE	m_hCaptureAudioThread;
 	volatile BOOL m_closeRequest;

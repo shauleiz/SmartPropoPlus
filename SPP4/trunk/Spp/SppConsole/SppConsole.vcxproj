@@ -82,8 +82,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\SmartPropoPlus.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SmartPropoPlus.h" />
     <ClInclude Include="SppConsole.h" />
     <ClInclude Include="SppConsoleDlg.h" />
     <ClInclude Include="stdafx.h" />
