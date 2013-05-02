@@ -138,6 +138,18 @@ void  SppConsoleDlg::CleanAudioList(void)
 	ListView_DeleteAllItems(hAudioList);
 }
 
+// Update the position of the progress bar that corresponds to the channel
+void  SppConsoleDlg::SetRawChData(UINT iCh, UINT data)
+{
+	// Check if this channel is supported
+	if (iCh > (IDC_LAST-IDC_CH1))
+		return;
+
+	HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
+	SendMessage(hCh, PBM_SETPOS, data, 0);
+
+}
+
 void SppConsoleDlg::AddLine2ModList(MOD_STRUCT * mod)
 {
 	if (!mod)
@@ -159,6 +171,29 @@ void SppConsoleDlg::AddLine2ModList(MOD_STRUCT * mod)
 		if (mod->ModSelect)
 			SendMessage(hPCMList, LB_SETCURSEL , pos, 0); 
 	};
+}
+
+// Tell the parent window (Main application)
+// to stop/start monitoring the raw channel data
+void  SppConsoleDlg::MonitorRawCh(WORD cb)
+{
+	// Get data
+	HWND hMonitorChCB = GetDlgItem(m_hDlg,  cb);
+	int start = Button_GetCheck(hMonitorChCB);
+
+	// Clear display
+	UINT ch= IDC_CH1;
+	HWND hCh;
+	do 
+	{
+		hCh = GetDlgItem(m_hDlg,  ch);
+		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		ch++;
+	} while (ch<=IDC_LAST);
+
+	// Pass request
+	SendMessage(m_ConsoleWnd, CH_MONITOR , start, 0);
 }
 
 void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
@@ -252,6 +287,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
+		if (LOWORD(wParam) == IDC_CH_MONITOR)
+			DialogObj->MonitorRawCh(LOWORD(wParam));
+
 		break;
 		
 	case REM_ALL_JACK:
@@ -264,6 +302,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case SET_MOD_INFO:
 		DialogObj->AddLine2ModList((MOD_STRUCT *)(wParam));
+		break;
+
+	case WMAPP_CH_MNTR:
+		DialogObj->SetRawChData(wParam, lParam);
 		break;
 
 	}

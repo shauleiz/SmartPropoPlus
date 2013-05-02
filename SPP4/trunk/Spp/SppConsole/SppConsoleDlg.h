@@ -15,7 +15,9 @@ public: // Called from window procedure
 	void CleanAudioList(void);
 	void AddLine2AudioList(jack_info * jack);
 	void AddLine2ModList(MOD_STRUCT * mod);
+	void SetRawChData(UINT iCh, UINT data);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
+	void MonitorRawCh(WORD cb);
 
 
 private:
