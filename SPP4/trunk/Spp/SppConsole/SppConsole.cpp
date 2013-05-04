@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <Shellapi.h>
+#include "vJoyInterface.h"
 #include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
@@ -19,6 +20,8 @@ class CSppMain * Spp = NULL;
 
 // Declarations
 void CaptureDevicesPopulate(HWND hDlg);
+void	Acquire_vJoy();
+
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
   _In_  UINT uMsg,
@@ -133,7 +136,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->Show(); // If not asked to be iconified
 
 	Spp->AudioChanged();
-	//Spp->MonitorChannels();
+
+	// Acquire vJoy device (number 1)
+	Acquire_vJoy();
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
@@ -255,4 +260,53 @@ void CaptureDevicesPopulate(HWND hDlg)
 		SendMessage(hDlg, POPULATE_JACKS, (WPARAM)&jack, 0);
 	};
 
+}
+void	Acquire_vJoy()
+{
+	// vJoy Exists and Enabled
+	if (!vJoyEnabled())
+	{
+		MessageBox(NULL, L"vJoy device does not exist or is disabled",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
+		return; // vJoy not installed or disabled
+	}
+
+	// Version is 2.0.2 or higher
+	SHORT ver = GetvJoyVersion();
+	if (ver < VJOY_MIN_VER)
+	{
+		MessageBox(NULL, L"vJoy device version is too old - version 2.0.2 or higher required",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
+		return; // vJoy not installed or disabled
+	}
+
+	// For device number 1 - get status the acquire
+	UINT rID = 1;
+	VjdStat stat = GetVJDStatus(rID);
+
+	switch (stat)
+	{
+	case VJD_STAT_OWN: // The  vJoy Device is owned by this application.
+		break;
+
+	case VJD_STAT_FREE: // The  vJoy Device is NOT owned by any application (including this one).
+		if (!AcquireVJD(rID))
+		{
+			MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
+			return; 
+		};
+		break;
+
+	case VJD_STAT_BUSY: // The  vJoy Device is owned by another application.
+		MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired\r\nThe Device is owned by another application",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
+		return; 
+
+	case VJD_STAT_MISS: // The  vJoy Device is missing. It either does not exist or the driver is disabled.
+		MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired\r\nThe Device either does not exist or the driver is disabled",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
+		return; 
+
+	default:
+		MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired for unknown reason",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
+	}; // Switch
+
+	// Reset device
+	ResetVJD(rID);
 }
