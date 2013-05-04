@@ -44,18 +44,21 @@ typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
 
 // Definition of some time limits
 // All values are in number of samples normalized to 192K samples per second
-#define PW_FUTABA	6.623
-#define PW_JR		7.340
+#define PW_FUTABA	27.5
+#define PW_JR		31.95
 #define PPM_MIN		96.0  // PPM minimal pulse width (0.5 mSec)
 #define PPM_MAX		288.0 // PPM maximal pulse width (1.5 mSec)
 #define PPM_TRIG	870.0 // PPM inter packet  separator pulse ( = 4.5mSec)
 #define PPM_SEP		95.0  // PPM inter-channel separator pulse  - this is a maximum value that can never occur
 #define PPM_GLITCH	21.0  // Pulses of this size or less are just a glitch
-#define PPMW_MIN	18.0
-#define PPMW_MAX	70.0
-#define PPMW_TRIG	200
-#define PPMW_SEP	15.0
+#define PPMW_MIN	78.4
+#define PPMW_MAX	304.8
+#define PPMW_TRIG	870.0 // PPM inter packet  separator pulse ( = 4.5mSec)
+#define PPMW_SEP	65.3
 #define PPM_JITTER	5.0
+#define SANWA1_MIN	34.83
+#define SANWA2_MIN	52.24
+#define PCMW_SYNC	243.809
 
 #define MAX_JS_CH	12
 #define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")

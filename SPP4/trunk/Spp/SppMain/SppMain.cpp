@@ -972,7 +972,7 @@ void  CSppMain::ProcessPulseWK2401Ppm(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && !(_strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseWK2401Ppm(width=%d, input=%d)", tbuffer, width, input);
 
-	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
+	/* sync is detected at the end of a very long pulse (over  4.5mSec) */
     if (width > PPMW_TRIG) {
         sync = 1;
         datacount = 0;
@@ -1072,8 +1072,22 @@ void CSppMain::ProcessPulseFutabaPcm(int width, BOOL input)
 	char tbuffer [9];
 	static int i = 0;
 
+#ifdef _DEBUG
+	static int _d = 0;
+	static std::array<int, 1000> _arWidth;
+	if (_d<1000)
+	{
+		_arWidth[_d] = width;
+		_d++;
+	}
+	else
+	{
+		_d=0;
+		_arWidth.fill(-1);
+	};
+#endif
 
-    width = (int)floor(width / PW_FUTABA + 0.5);
+    width = (int)floor(width / PW_FUTABA);
 
 	/* 
 		Sync is determined as 18-bit wide pulse 
@@ -1281,7 +1295,7 @@ void CSppMain::ProcessPulseAirPcm1(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && i++%10 && !( _strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm1(%d)", tbuffer, width);
 
-		pulse = width/8; // Width to bits
+		pulse = width/SANWA1_MIN; // Width to bits
 		if (pulse == 4)  // 4-bit pulse marks a bigining of a data chunk
 		{
 			if (!input)
@@ -1291,14 +1305,14 @@ void CSppMain::ProcessPulseAirPcm1(int width, BOOL input)
 			}
 			else
 			{	// Second data chunk - get joystick m_Position from channel data
-				m_Position[0] = smooth(m_Position[0], Convert15bits(data[1]));
-				m_Position[1] = smooth(m_Position[1], Convert15bits(data[2]));
-				m_Position[2] = smooth(m_Position[2], Convert15bits(data[3]));
-				m_Position[3] = smooth(m_Position[3], Convert15bits(data[4]));
-				m_Position[4] = smooth(m_Position[4], Convert15bits(data[6]));
-				m_Position[5] = smooth(m_Position[5], Convert15bits(data[7]));
-				m_Position[6] = smooth(m_Position[6], Convert15bits(data[8]));
-				m_Position[7] = smooth(m_Position[7], Convert15bits(data[9]));
+				m_Position[0] = smooth(m_Position[0], Convert15bits(data[8])); // Elevator (Ch1)
+				m_Position[1] = smooth(m_Position[1], Convert15bits(data[7])); // Ailron (Ch2)
+				m_Position[2] = smooth(m_Position[2], Convert15bits(data[6])); // Throttle (Ch3)
+				m_Position[3] = smooth(m_Position[3], Convert15bits(data[9])); // Rudder (Ch4)
+				m_Position[4] = smooth(m_Position[4], Convert15bits(data[1])); // Gear (Ch5)
+				m_Position[5] = smooth(m_Position[5], Convert15bits(data[2])); // Flaps (Ch6)
+				m_Position[6] = smooth(m_Position[6], Convert15bits(data[3])); // Aux1 (Ch7)
+				m_Position[7] = smooth(m_Position[7], Convert15bits(data[4])); // Aux2 (Ch8)
 
 				SendPPJoy(fixed_n_channel-1, m_Position);
 			};
@@ -1361,7 +1375,7 @@ void CSppMain::ProcessPulseAirPcm2(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && !(i++%50) && !(_strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm2(Width=%d, input=%d)", tbuffer, width, input);
 
-		pulse = width/12; // Width to bits
+		pulse = width/SANWA2_MIN; // Width to bits
 		if (pulse == 7)  // 4-bit pulse marks a biginind of a data chunk
 		{
 			if (!input)
@@ -1371,12 +1385,12 @@ void CSppMain::ProcessPulseAirPcm2(int width, BOOL input)
 			}
 			else
 			{	// Second data chunk - get joystick m_Position from channel data
-				m_Position[0] = smooth(m_Position[0], Convert20bits(data[2]));
-				m_Position[1] = smooth(m_Position[1], Convert20bits(data[7]));
-				m_Position[2] = smooth(m_Position[2], Convert20bits(data[6]));
-				m_Position[3] = smooth(m_Position[3], Convert20bits(data[3]));
-				m_Position[4] = smooth(m_Position[4], Convert20bits(data[1]));
-				m_Position[5] = smooth(m_Position[5], Convert20bits(data[5]));
+				m_Position[0] = smooth(m_Position[0], Convert20bits(data[2])); // Elevator	(Ch1)
+				m_Position[1] = smooth(m_Position[1], Convert20bits(data[3])); // Ailerons	(Ch2)
+				m_Position[2] = smooth(m_Position[2], Convert20bits(data[6])); // Throtle	(Ch3)
+				m_Position[3] = smooth(m_Position[3], Convert20bits(data[7])); // Rudder	(Ch4)
+				m_Position[4] = smooth(m_Position[4], Convert20bits(data[1])); // Gear		(Ch5)
+				m_Position[5] = smooth(m_Position[5], Convert20bits(data[5])); // Flaps		(Ch6)
 
 				SendPPJoy(6, m_Position);
 			};
@@ -1444,6 +1458,7 @@ void CSppMain::ProcessPulseWalPcm(int width, BOOL input)
 	int vPulse;
 	int * cs;
 
+	width = width*44.1/192; // Normalize to 44.1K
 
 	/* Detect Sync pulse - if detected then reset pulse counter and return */
 	if (width>56)
