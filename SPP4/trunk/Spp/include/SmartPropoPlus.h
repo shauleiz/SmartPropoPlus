@@ -72,6 +72,7 @@ extern "C"
 #define EVENT_MIXER	_T("Mixer Switching Event")
 #define	VER_DLL		0x0003030b /* DLL File Version */
 #define	VER_GUI		0x0003030b /* GUI File Version */
+#define	VJOY_MIN_VER	0x202	/* Minimum vJoy version supported */
 
 
 #define TX_VOLUME_MIC		5

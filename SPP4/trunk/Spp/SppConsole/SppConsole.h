@@ -4,8 +4,10 @@
 
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\Debug\\SppMain.lib")
+#pragma  comment(lib, "..\\Debug\\vJoyInterface.lib")
 #else
 #pragma  comment(lib, "..\\Release\\SppMain.lib")
+#pragma  comment(lib, "..\\Release\\vJoyInterface.lib")
 #endif
 
 #define MAIN_CLASS_NAME TEXT("Main_Window_Class_Name")

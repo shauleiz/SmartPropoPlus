@@ -22,8 +22,10 @@ using std::placeholders::_2;
 
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\Debug\\AudioLib.lib")
+#pragma  comment(lib, "..\\Debug\\vJoyInterface.lib")
 #else
 #pragma  comment(lib, "..\\Release\\AudioLib.lib")
+#pragma  comment(lib, "..\\Release\\vJoyInterface.lib")
 #endif
 
 #define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));

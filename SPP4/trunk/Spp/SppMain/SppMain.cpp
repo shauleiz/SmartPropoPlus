@@ -2,6 +2,8 @@
 //
 
 #include "stdafx.h"
+#include "vJoyInterface.h"
+#include "public.h"
 #include "../SppAudio/AudioInputW7.h"
 #include "WinMessages.h"
 #include "GlobalMemory.h"
@@ -89,6 +91,7 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	gDebugLevel = GetDebugLevel();
 	//_DebugWelcomePopUp(Modulation);
 
+
 	// Initialize the mutex than prevents simultaneous Start/Stop streaming
 	m_hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
 	if (!m_hMutexStartStop)
@@ -102,15 +105,6 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	thread::id id = t1->get_id();
 	return true;
 
-	t1->join();
-
-
-	// Start a thread that listnes to the audio
-	m_waveRecording = TRUE;
-	m_Audio->StartStreaming((PVOID)AudioId);
-	m_tCapture = new thread(CaptureAudioStatic, this);
-
-	return true;
 }
 
 SPPMAIN_API void CSppMain::SetAudioObj(class CAudioInputW7 * Audio)
@@ -1295,7 +1289,7 @@ void CSppMain::ProcessPulseAirPcm1(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && i++%10 && !( _strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm1(%d)", tbuffer, width);
 
-		pulse = width/SANWA1_MIN; // Width to bits
+		pulse = (int)(width/SANWA1_MIN); // Width to bits
 		if (pulse == 4)  // 4-bit pulse marks a bigining of a data chunk
 		{
 			if (!input)
@@ -1375,7 +1369,7 @@ void CSppMain::ProcessPulseAirPcm2(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && !(i++%50) && !(_strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm2(Width=%d, input=%d)", tbuffer, width, input);
 
-		pulse = width/SANWA2_MIN; // Width to bits
+		pulse = (int)(width/SANWA2_MIN); // Width to bits
 		if (pulse == 7)  // 4-bit pulse marks a biginind of a data chunk
 		{
 			if (!input)
@@ -1458,7 +1452,7 @@ void CSppMain::ProcessPulseWalPcm(int width, BOOL input)
 	int vPulse;
 	int * cs;
 
-	width = width*44.1/192; // Normalize to 44.1K
+	width = (int)(width*44.1/192); // Normalize to 44.1K
 
 	/* Detect Sync pulse - if detected then reset pulse counter and return */
 	if (width>56)
@@ -1920,11 +1914,20 @@ _inline double  CSppMain::CalcThreshold(int value)
 	return(threthold); 
 }
 
-// TODO: Replace this function with a function that interacts with vJoy 2.x
 // TODO: Rename to Send2vJoy
+// TODO: Normalize the calling functions to the range 0-32K
 void CSppMain::SendPPJoy(int nChannels, int *Channel)
 {
-	
+	BOOL writeOk;
+	UINT rID = 1; // TODO: Device 1 is hardcoded
+	int i, k;
+
+
+	for (i=0; i<=nChannels && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
+		writeOk =  SetAxis(Channel[i],  rID, HID_USAGE_X+i); // TODO: Fix vJoyInterface.cpp Line 561 to return correct value (Urgent!)
+
+	for (k=0; k<nChannels-i;k++)
+		writeOk =  SetBtn(Channel[i+k]>511, rID,k+1); // Replace 511 with some constant definition
 }
 
 DWORD WINAPI CSppMain::ListenToGuiStatic(LPVOID obj)
