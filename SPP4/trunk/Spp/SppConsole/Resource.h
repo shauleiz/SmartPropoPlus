@@ -10,6 +10,7 @@
 #define IDD_SPPDIAG                             111
 #define IDI_SPPCONSOLE                          114
 #define IDC_CH_MONITOR                          1001
+#define IDC_LIST_FILTERS                        1002
 #define IDS_APP_TITLE                           40000
 #define IDC_LIST_AUDIOSRC                       40009
 #define IDC_LIST_PCM                            40010
@@ -22,7 +23,6 @@
 #define IDC_CH6                                 40018
 #define IDC_CH7                                 40019
 #define IDC_CH8                                 40020
-#define IDC_LAST                                40020
 #define IDC_TXT_CH1                             40030
 #define IDC_TXT_CH2                             40031
 #define IDC_TXT_CH3                             40032

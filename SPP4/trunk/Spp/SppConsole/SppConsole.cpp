@@ -19,8 +19,9 @@ LPCTSTR AudioId = NULL;
 class CSppMain * Spp = NULL;
 
 // Declarations
-void CaptureDevicesPopulate(HWND hDlg);
-void	Acquire_vJoy();
+void		CaptureDevicesPopulate(HWND hDlg);
+HINSTANCE	FilterPopulate(HWND hDlg);
+void		Acquire_vJoy();
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -125,6 +126,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
+	FilterPopulate(hDialog);
 	
 	// Start reading audio data
 	Spp		= new CSppMain();
@@ -261,6 +263,78 @@ void CaptureDevicesPopulate(HWND hDlg)
 	};
 
 }
+
+HINSTANCE FilterPopulate(HWND hDlg)
+{
+	HINSTANCE h;
+	long filter_ver;
+	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
+	LPFNDLLFUNC0 GetDllVersion;
+	int				(CALLBACK *pGetNumberOfFilters)(void);
+	const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
+	const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
+	const int		(CALLBACK *pSelectFilterByIndex)(const int iFilter);
+	const int		(CALLBACK * pGetIndexOfSelectedFilter)(void);
+
+
+
+	// TODO: Recompile DLL without MFC
+	// Load the filter DLL file - If does not exist send message to GUI (Call it 4.0.0)
+	h = LoadLibraryEx(FILTERDLL_NAME, NULL, 0);
+	if (!h)
+	{
+		SendMessage(hDlg, FILTER_DLL, false, 0);
+		return NULL;
+	}
+	else
+		SendMessage(hDlg, FILTER_DLL, true, 0);
+
+	// Verify that the DLL version is not too old
+	GetDllVersion = (LPFNDLLFUNC0)GetProcAddress(h,"GetDllVersion");
+	if (!GetDllVersion)
+	{
+		SendMessage(hDlg, FILTER_DLL, false, 0);
+		return NULL;
+	};
+	filter_ver = GetDllVersion();
+	if (filter_ver < 0x30100) // TODO: Newer DLLs support wide characters
+	{
+		SendMessage(hDlg, FILTER_VER, false, filter_ver);
+		return NULL;
+	};
+
+	//// Build the list in the GUI
+	//		Get the number of filters
+	int nFilters;
+	pGetNumberOfFilters = (int  (CALLBACK *)(void))GetProcAddress(h,"GetNumberOfFilters");
+	if (pGetNumberOfFilters)
+		nFilters  = pGetNumberOfFilters();
+	else
+	{
+		SendMessage(hDlg, FILTER_NUM, 0, 0);
+		return NULL;
+	};
+	SendMessage(hDlg, FILTER_NUM, nFilters, 0);
+
+	// Get interface functions
+	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
+	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterIdByIndex");
+	pSelectFilterByIndex = (const int  (CALLBACK *)(const int iFilter))GetProcAddress(h,"SelectFilterByIndex");
+	pGetIndexOfSelectedFilter = (const int  (CALLBACK *)(void))GetProcAddress(h,"GetIndexOfSelectedFilter");
+
+	// For every filter send data to GUI
+	const char * FilterName;
+	int FilterId = -1;
+	for (int iFilter=0; iFilter<nFilters ; iFilter++)
+	{
+		FilterName = pGetFilterNameByIndexA(iFilter);
+		SendMessage(hDlg, FILTER_ADDA, iFilter, (LPARAM)FilterName);
+	};
+
+	return h;
+}
+
+
 void	Acquire_vJoy()
 {
 	// vJoy Exists and Enabled
