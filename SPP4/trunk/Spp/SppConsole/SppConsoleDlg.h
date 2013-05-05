@@ -18,6 +18,7 @@ public: // Called from window procedure
 	void SetRawChData(UINT iCh, UINT data);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
 	void MonitorRawCh(WORD cb);
+	void AddLine2FilterListA(int iFilter, const char * FilterName);
 
 
 private:

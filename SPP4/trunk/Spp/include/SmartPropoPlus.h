@@ -84,6 +84,7 @@ extern "C"
 
 #define MAX_VAL_NAME 254
 
+#define FILTERDLL_NAME	TEXT("JsChPostProc.dll")
 #define PPJDLL_NAME		TEXT("PPJoyEx")
 #define CTRL_LOG_FILE	"SPP_ctrl.log"
 #define CHNL_LOG_FILE	"SPP_chnl.log"

@@ -142,11 +142,43 @@ void  SppConsoleDlg::CleanAudioList(void)
 void  SppConsoleDlg::SetRawChData(UINT iCh, UINT data)
 {
 	// Check if this channel is supported
-	if (iCh > (IDC_LAST-IDC_CH1))
+	if (iCh > (IDC_CH8-IDC_CH1))
 		return;
 
 	HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
 	SendMessage(hCh, PBM_SETPOS, data, 0);
+
+}
+
+void SppConsoleDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
+{
+	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
+	//int pos = (int)SendMessage(hFilterList, LB_ADDSTRING, 0, (LPARAM)FilterName);
+	//SendMessage(hFilterList, LB_SETITEMDATA, pos, (LPARAM) iFilter);
+
+	DWORD exStyles = LVS_EX_CHECKBOXES;
+	ListView_SetExtendedListViewStyleEx(hFilterList, exStyles, exStyles);
+
+	// Convert to a wchar_t*
+    size_t origsize = strlen(FilterName) + 1;
+    const size_t newsize = 100;
+    size_t convertedChars = 0;
+    wchar_t FilterNameW[newsize];
+	mbstowcs_s(&convertedChars, FilterNameW, origsize, FilterName, _TRUNCATE);
+
+	// Insert filter name
+	LV_ITEM item;
+	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE ;
+	item.iItem = 0;
+	item.iSubItem = 0;
+	item.pszText =  FilterNameW;
+    item.stateMask = 0;
+    item.iSubItem  = 0;
+    item.state     = 0;
+	int pos = ListView_InsertItem(hFilterList, &item);
+	///
+
+	//ListView_SetItemText(hFilterList, i, 1, TEXT("SI")); // TODO: Replace later with real stuff
 
 }
 
@@ -190,7 +222,7 @@ void  SppConsoleDlg::MonitorRawCh(WORD cb)
 		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 		ch++;
-	} while (ch<=IDC_LAST);
+	} while (ch<=IDC_CH8);
 
 	// Pass request
 	SendMessage(m_ConsoleWnd, CH_MONITOR , start, 0);
@@ -307,6 +339,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMAPP_CH_MNTR:
 		DialogObj->SetRawChData(wParam, lParam);
 		break;
+
+	case FILTER_ADDA:
+		DialogObj->AddLine2FilterListA((int)wParam, (const char *)lParam);
+
 
 	}
 	return (INT_PTR)FALSE;
