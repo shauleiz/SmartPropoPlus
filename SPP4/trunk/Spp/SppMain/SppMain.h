@@ -143,6 +143,7 @@ private:
 	int  m_WaveInputChannel;		// Input channel: Left(0), Right(1)
 	HWND m_hParentWnd;
 	BOOL m_chMonitor;
+	bool m_vJoyReady;
 };
 
 

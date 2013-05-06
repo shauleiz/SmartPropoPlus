@@ -28,6 +28,7 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_chMonitor(FALSE),
 	m_Audio(NULL),
 	m_hParentWnd(NULL),
+	m_vJoyReady(false),
 	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2), // TODO: Remove initialization and get real data
 	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
@@ -98,11 +99,10 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 		return false;
 
 	// Start a thread that listens to the GUI
-	thread * t1 = NULL;
-	t1 = new thread(ListenToGuiStatic, this);
-	if (!t1)
+	thread * tListenToGui = new thread(ListenToGuiStatic, this);
+	if (!tListenToGui)
 		return false;
-	thread::id id = t1->get_id();
+
 	return true;
 
 }
@@ -127,6 +127,15 @@ void CSppMain::ListenToGui(void)
 	{
 		// Test every 100mSec
 		Sleep(100);
+
+		// Monitor vJoy (device #1)
+		int rID = 1; // TODO: Make the device ID programable
+		VjdStat stat = GetVJDStatus(rID);
+		if (stat = VJD_STAT_OWN)
+			m_vJoyReady = true;
+		else
+			m_vJoyReady = AcquireVJD(rID);
+
 
 		/* If capture thread does not exist then free thread object */
 		if (m_tCapture && !m_tCaptureActive)
@@ -1800,7 +1809,6 @@ int * CSppMain::WalkeraCheckSum(const unsigned char * cycle)
 	return cs;
 }
 
-//#ifdef AIR_PCM1
 /* Helper function - Airtronic/Sanwa PCM1 data convertor */
 int  __fastcall CSppMain::Convert15bits(unsigned int in)
 {
@@ -1825,7 +1833,6 @@ int  __fastcall CSppMain::Convert15bits(unsigned int in)
 	return 1023-(quintet[2]*256+quintet[1]*16+quintet[0]);
 
 }
-//#elif defined AIR_PCM2
 /* Helper function - Airtronic/Sanwa PCM2 data convertor */
 int  __fastcall  CSppMain::Convert20bits(int in)
 {
@@ -1922,9 +1929,11 @@ void CSppMain::SendPPJoy(int nChannels, int *Channel)
 	UINT rID = 1; // TODO: Device 1 is hardcoded
 	int i, k;
 
+	if (!m_vJoyReady)
+		return;
 
 	for (i=0; i<=nChannels && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
-		writeOk =  SetAxis(Channel[i],  rID, HID_USAGE_X+i); // TODO: Fix vJoyInterface.cpp Line 561 to return correct value (Urgent!)
+		writeOk =  SetAxis(32*Channel[i],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
 
 	for (k=0; k<nChannels-i;k++)
 		writeOk =  SetBtn(Channel[i+k]>511, rID,k+1); // Replace 511 with some constant definition
