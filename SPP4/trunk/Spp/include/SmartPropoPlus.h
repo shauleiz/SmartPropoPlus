@@ -240,7 +240,7 @@ int GetSelectedFilterIndex();
 LPTSTR GetFilterNameByIndex(const int i);
 //void SetFilterNameByIndex(const int i, const char * name);
 //char * GetFilterNameByIndex(const int i);
-void SetFilterNames(const char ** name);
+void SetFilterNames(LPCTSTR* name);
 
 void SppMessageBoxWithErrorCode(void);
 

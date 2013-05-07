@@ -90,6 +90,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SppMain\GlobalMemory.cpp" />
+    <ClCompile Include="..\SppMain\SmartPropoPlus.cpp" />
+    <ClCompile Include="..\SppMain\SppRegistry.cpp" />
     <ClCompile Include="SppConsole.cpp" />
     <ClCompile Include="SppConsoleDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
