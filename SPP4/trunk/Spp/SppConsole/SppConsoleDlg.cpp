@@ -157,14 +157,14 @@ void SppConsoleDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 	//SendMessage(hFilterList, LB_SETITEMDATA, pos, (LPARAM) iFilter);
 
 	DWORD exStyles = LVS_EX_CHECKBOXES;
-	ListView_SetExtendedListViewStyleEx(hFilterList, exStyles, exStyles);
+	ListView_SetExtendedListViewStyleEx(hFilterList, exStyles, exStyles); // TODO: Move to initialization of dialog box
 
 	// Convert to a wchar_t*
     size_t origsize = strlen(FilterName) + 1;
     const size_t newsize = 100;
     size_t convertedChars = 0;
     wchar_t FilterNameW[newsize];
-	mbstowcs_s(&convertedChars, FilterNameW, origsize, FilterName, _TRUNCATE);
+	mbstowcs_s(&convertedChars, FilterNameW, origsize, FilterName, _TRUNCATE); // Filter names are converted from ASCII to UNICODE
 
 	// Insert filter name
 	LV_ITEM item;
@@ -226,6 +226,37 @@ void  SppConsoleDlg::MonitorRawCh(WORD cb)
 
 	// Pass request
 	SendMessage(m_ConsoleWnd, CH_MONITOR , start, 0);
+}
+
+void SppConsoleDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
+{
+	LPNMLISTVIEW change;
+	BOOL checked;
+	HWND hFilterList;
+	int count;
+	UINT ItemState = 0;
+
+	switch (((LPNMHDR)lParam)->code)
+	{
+	case LVN_ITEMCHANGED:
+		hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
+		change = (LPNMLISTVIEW)lParam;
+		count = ListView_GetItemCount(hFilterList);
+
+		// If checkbox was clicked then change the select state accordingly
+		if (change->uNewState&0x1000 && change->uOldState&0x2000)
+				ListView_SetItemState(hFilterList, change->iItem, 0, LVIS_SELECTED | LVIS_FOCUSED)
+		else if (change->uNewState&0x2000 && change->uOldState&0x1000)
+			ListView_SetItemState(hFilterList, change->iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+
+		// The selected item only is checked
+		if (change->uNewState&LVIS_SELECTED)
+				ListView_SetCheckState(hFilterList, change->iItem, TRUE)
+		else if (!(change->uNewState & (LVIS_SELECTED | 0x2000)))
+				ListView_SetCheckState(hFilterList, change->iItem, FALSE);
+
+		break;
+	};
 }
 
 void  SppConsoleDlg::AddLine2AudioList(jack_info * jack)
@@ -300,6 +331,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	switch (message)
 	{
+
+	case WM_NOTIFY:
+		if (((LPNMHDR)lParam)->idFrom  == IDC_LIST_FILTERS)
+			DialogObj->FilterListEvent(wParam, lParam);
+		return (INT_PTR)TRUE;
+
 	case WM_INITDIALOG:
 		DialogObj = (SppConsoleDlg *)lParam;
 		return (INT_PTR)TRUE;
@@ -321,6 +358,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 		if (LOWORD(wParam) == IDC_CH_MONITOR)
 			DialogObj->MonitorRawCh(LOWORD(wParam));
+
+
+
 
 		break;
 		

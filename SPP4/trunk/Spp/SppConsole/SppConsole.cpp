@@ -126,7 +126,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SppConsoleDlg *	Dialog	= new SppConsoleDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
-	FilterPopulate(hDialog);
 	
 	// Start reading audio data
 	Spp		= new CSppMain();
@@ -137,6 +136,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Dialog->Show(); // If not asked to be iconified
 
+	FilterPopulate(hDialog);
 	Spp->AudioChanged();
 
 	// Acquire vJoy device (number 1)
@@ -267,6 +267,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 HINSTANCE FilterPopulate(HWND hDlg)
 {
 	HINSTANCE h;
+	LPCTSTR * names;
 	long filter_ver;
 	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
 	LPFNDLLFUNC0 GetDllVersion;
@@ -330,6 +331,20 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		FilterName = pGetFilterNameByIndexA(iFilter);
 		SendMessage(hDlg, FILTER_ADDA, iFilter, (LPARAM)FilterName);
 	};
+
+	// Update global memory block
+	SetNumberOfFilters(nFilters);
+		
+	/* Get Selected filter from DLL */
+	int sel = -1;
+	if (pGetIndexOfSelectedFilter)
+		sel = pGetIndexOfSelectedFilter();
+	if (sel >= 0)
+		SetSelectedFilterIndex(sel);
+	
+	// SetFilterNames(names);
+
+	int iFilterSel = GetSelectedFilterIndex();
 
 	return h;
 }
