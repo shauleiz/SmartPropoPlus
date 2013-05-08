@@ -168,13 +168,14 @@ void SppConsoleDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 
 	// Insert filter name
 	LV_ITEM item;
-	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE ;
+	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE | LVIF_PARAM;
 	item.iItem = 0;
 	item.iSubItem = 0;
 	item.pszText =  FilterNameW;
     item.stateMask = 0;
     item.iSubItem  = 0;
     item.state     = 0;
+	item.lParam    = iFilter;
 	int pos = ListView_InsertItem(hFilterList, &item);
 	///
 
@@ -228,12 +229,38 @@ void  SppConsoleDlg::MonitorRawCh(WORD cb)
 	SendMessage(m_ConsoleWnd, CH_MONITOR , start, 0);
 }
 
+// Get selected filter fro GUI (if any) and send its filter index to parent window
+void SppConsoleDlg::UpdateFilter(void)
+{
+	// Loop on all entries in filter list
+	// Find the first checked entry (Assumption: Only one entry at most can be checked)
+	// Send filter index  (-1 means no filter) parent
+	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
+	int count = ListView_GetItemCount(hFilterList);
+	int iFilter = -1;
+	LVITEM item;
+
+	for (int i = 0; i<count; i++)
+	{
+		if (ListView_GetCheckState(hFilterList, i))
+		{
+			item.iItem = i;
+			item.iSubItem = 0;
+			item.mask = LVIF_PARAM;
+			if (ListView_GetItem(hFilterList,&item))
+				iFilter = item.lParam;
+		}; // if
+	}; // for
+
+	SendMessage(m_ConsoleWnd, FILTER_CHANGED, (WPARAM)iFilter, 0);
+}
+
 void SppConsoleDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
 {
 	LPNMLISTVIEW change;
-	BOOL checked;
+	//BOOL checked;
 	HWND hFilterList;
-	int count;
+	// int count;
 	UINT ItemState = 0;
 
 	switch (((LPNMHDR)lParam)->code)
@@ -241,7 +268,7 @@ void SppConsoleDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
 	case LVN_ITEMCHANGED:
 		hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
 		change = (LPNMLISTVIEW)lParam;
-		count = ListView_GetItemCount(hFilterList);
+		//count = ListView_GetItemCount(hFilterList);
 
 		// If checkbox was clicked then change the select state accordingly
 		if (change->uNewState&0x1000 && change->uOldState&0x2000)
@@ -254,6 +281,8 @@ void SppConsoleDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
 				ListView_SetCheckState(hFilterList, change->iItem, TRUE)
 		else if (!(change->uNewState & (LVIS_SELECTED | 0x2000)))
 				ListView_SetCheckState(hFilterList, change->iItem, FALSE);
+
+		UpdateFilter();
 
 		break;
 	};
@@ -334,7 +363,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WM_NOTIFY:
 		if (((LPNMHDR)lParam)->idFrom  == IDC_LIST_FILTERS)
+		{
 			DialogObj->FilterListEvent(wParam, lParam);
+		}
 		return (INT_PTR)TRUE;
 
 	case WM_INITDIALOG:

@@ -43,6 +43,12 @@ typedef  std::vector<PP> vPP;
 typedef  std::vector<MOD_STRUCT> vMOD;
 typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
 
+typedef struct _JS_CHANNELS	// Joystick channel data
+{
+	int ch;			// Number of channels
+	int * value;		// Pointer to data buffer ; ch>n>=0 ; value[n] holds channel (n+1) 
+} JS_CHANNELS, * PJS_CHANNELS;
+
 
 // Definition of some time limits
 // All values are in number of samples normalized to 192K samples per second
@@ -77,6 +83,7 @@ class /*SPPMAIN_API*/ CSppMain {
 	SPPMAIN_API void SetAudioObj(class CAudioInputW7 * Audio);
 	SPPMAIN_API void AudioChanged(void);
 	SPPMAIN_API void MonitorChannels(BOOL Start=TRUE);
+	SPPMAIN_API void SelectFilter(int, LPVOID);
 
 private:
 	int LoadProcessPulseFunctions();
@@ -91,9 +98,10 @@ private:
 	void ProcessPulseJrPpm(int width, BOOL input);
 
 	void SendPPJoy(int nChannels, int *Channel);
+	int RunJsFilter(int * ch, int nChannels);
 	__inline  int  smooth(int orig, int newval);
 	int  __fastcall Convert15bits(unsigned int in);
-	int  __fastcall  CSppMain::Convert20bits(int in);
+	int  __fastcall Convert20bits(int in);
 	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
 	static DWORD WINAPI  CaptureAudioStatic(LPVOID obj);
 	static DWORD WINAPI  PollChannelsStatic(LPVOID obj);
@@ -106,6 +114,7 @@ private:
 	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);
 	inline UINT Sample2Pulse(short sample, bool * negative);
 	inline UINT NormalizePulse(UINT Length);
+	PJS_CHANNELS (WINAPI *ProcessChannels)(PJS_CHANNELS, int max, int min);
 
 
 private:	// Walkera (PCM) helper functions
@@ -143,7 +152,7 @@ private:
 	int  m_WaveInputChannel;		// Input channel: Left(0), Right(1)
 	HWND m_hParentWnd;
 	BOOL m_chMonitor;
-	bool m_vJoyReady;
+	BOOL m_vJoyReady;
 };
 
 

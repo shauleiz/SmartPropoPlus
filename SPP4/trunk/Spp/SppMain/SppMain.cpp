@@ -29,6 +29,7 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_Audio(NULL),
 	m_hParentWnd(NULL),
 	m_vJoyReady(false),
+	ProcessChannels(NULL),
 	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2), // TODO: Remove initialization and get real data
 	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
@@ -45,6 +46,24 @@ SPPMAIN_API void CSppMain::SelectMod(LPCTSTR ModType)
 	SetActiveMode(ModType); // Set the active mode in memory and in registry
 	m_Modulation->Active = GetModulation(FALSE)->Active; // Get the index of the new active modulation
 	LoadProcessPulseFunctions();
+}
+
+// Called to inform SPP that a filter has been selected or diselected
+// iFilter is the filter index
+// If ifilter==-1 the no filter selected
+SPPMAIN_API void CSppMain::SelectFilter(int iFilter, LPVOID pProcessChannels)
+{
+	if (iFilter == m_JsChPostProc_selected)
+		return; // Filter not changed - NOOP
+
+	// Update selected filter
+	m_JsChPostProc_selected = iFilter;
+
+	if (m_JsChPostProc_selected == -1)
+		ProcessChannels = NULL;
+
+	ProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))pProcessChannels;
+
 }
 
 SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
@@ -1923,20 +1942,61 @@ _inline double  CSppMain::CalcThreshold(int value)
 
 // TODO: Rename to Send2vJoy
 // TODO: Normalize the calling functions to the range 0-32K
-void CSppMain::SendPPJoy(int nChannels, int *Channel)
+void CSppMain::SendPPJoy(int nChannels, int * Channel)
 {
 	BOOL writeOk;
 	UINT rID = 1; // TODO: Device 1 is hardcoded
 	int i, k;
+	int ch[MAX_JS_CH];
+	int n_ch = 0;
 
 	if (!m_vJoyReady)
 		return;
 
-	for (i=0; i<=nChannels && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
-		writeOk =  SetAxis(32*Channel[i],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+	/* Duplicate channel data */
+	memcpy(ch, Channel, MAX_JS_CH*sizeof(int));
+	n_ch = nChannels;
 
-	for (k=0; k<nChannels-i;k++)
-		writeOk =  SetBtn(Channel[i+k]>511, rID,k+1); // Replace 511 with some constant definition
+	if (ProcessChannels)
+	{
+		n_ch = RunJsFilter(ch, nChannels+1);
+		if (!n_ch)
+			n_ch = nChannels;
+	}
+
+
+	for (i=0; i<=n_ch && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
+		writeOk =  SetAxis(32*ch[i],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+
+	for (k=0; k<n_ch-i;k++)
+		writeOk =  SetBtn(ch[i+k]>511, rID,k+1); // Replace 511 with some constant definition
+}
+
+/* Run Joystick post processor filter */
+int CSppMain::RunJsFilter(int * ch, int nChannels)
+{
+	JS_CHANNELS  * js_filter_out, js_data;
+	int n_out_ch=0;
+
+	// Sanity check
+	if (!ProcessChannels || m_JsChPostProc_selected ==-1)
+		return 0;
+
+		js_data.ch = nChannels;
+		js_data.value = ch;
+		js_filter_out = ProcessChannels(&js_data, 1023, 0);
+		if (js_filter_out && js_filter_out->ch>0 && js_filter_out->ch<=MAX_JS_CH)
+		{
+			for (int i=0;i<js_filter_out->ch;i++)
+			{
+				ch[i] = js_filter_out->value[i];
+				js_filter_out->value[i] = 0;
+			};
+			n_out_ch = js_filter_out->ch;
+			js_filter_out->ch=0;
+		}
+
+	return n_out_ch;
 }
 
 DWORD WINAPI CSppMain::ListenToGuiStatic(LPVOID obj)
