@@ -33,3 +33,4 @@ UINT const FILTER_VER		=			BASE_SUB+11;			// The payload is boolean + version: I
 UINT const FILTER_NUM		=			BASE_SUB+12;			// The payload is the number of filters in the filter DLL 
 UINT const FILTER_ADDA		=			BASE_SUB+13;			// The payload is: Filter Index and Pointer to filter name (ASCII)
 UINT const FILTER_ADDW		=			BASE_SUB+13;			// The payload is: Filter Index and Pointer to filter name (WCHAR)
+UINT const FILTER_CHANGED	=			BASE_SUB+14;			// The payload is: Filter Index of the selected filter (if none then -1)

@@ -17,11 +17,14 @@ HWND hDialog;
 class CAudioInputW7 * Audio;
 LPCTSTR AudioId = NULL;
 class CSppMain * Spp = NULL;
+HINSTANCE hDllFilters = 0;
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
 HINSTANCE	FilterPopulate(HWND hDlg);
 void		Acquire_vJoy();
+void		SelectFilter(int iFilter);
+
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -209,6 +212,9 @@ LRESULT CALLBACK MainWindowProc(
 		case WMAPP_CH_MNTR:
 			SendMessage(hDialog, uMsg, wParam, lParam);
 			break;
+
+		case FILTER_CHANGED:
+			SelectFilter((int)wParam);
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
@@ -267,7 +273,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 HINSTANCE FilterPopulate(HWND hDlg)
 {
 	HINSTANCE h;
-	LPCTSTR * names;
+	//LPCTSTR * names;
 	long filter_ver;
 	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
 	LPFNDLLFUNC0 GetDllVersion;
@@ -289,6 +295,9 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	}
 	else
 		SendMessage(hDlg, FILTER_DLL, true, 0);
+
+	// Assign global handle to Filters' DLL
+	hDllFilters = h;
 
 	// Verify that the DLL version is not too old
 	GetDllVersion = (LPFNDLLFUNC0)GetProcAddress(h,"GetDllVersion");
@@ -332,23 +341,42 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		SendMessage(hDlg, FILTER_ADDA, iFilter, (LPARAM)FilterName);
 	};
 
+	// 
+
 	// Update global memory block
-	SetNumberOfFilters(nFilters);
+	//SetNumberOfFilters(nFilters);
 		
 	/* Get Selected filter from DLL */
-	int sel = -1;
-	if (pGetIndexOfSelectedFilter)
-		sel = pGetIndexOfSelectedFilter();
-	if (sel >= 0)
-		SetSelectedFilterIndex(sel);
+	//int sel = -1;
+	//if (pGetIndexOfSelectedFilter)
+	//	sel = pGetIndexOfSelectedFilter();
+	//if (sel >= 0)
+	//	SetSelectedFilterIndex(sel);
 	
-	// SetFilterNames(names);
-
-	int iFilterSel = GetSelectedFilterIndex();
 
 	return h;
 }
 
+void		SelectFilter(int iFilter)
+{
+	const int  (WINAPI * pSelectFilterByIndex)(const int iFilter);
+	PJS_CHANNELS (WINAPI * pProcessChannels)(PJS_CHANNELS, int max, int min);
+
+	if (!hDllFilters)
+		return;
+
+	// Update the DLL which is the selected filter
+	pSelectFilterByIndex = (const int  (WINAPI *)(const int iFilter))GetProcAddress(hDllFilters,"SelectFilterByIndex");
+	if (pSelectFilterByIndex)
+		pSelectFilterByIndex(iFilter);
+	else
+		return;
+
+	// Get the pointer to the filter function
+	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
+
+	Spp->SelectFilter(iFilter, (LPVOID)pProcessChannels);
+}
 
 void	Acquire_vJoy()
 {
