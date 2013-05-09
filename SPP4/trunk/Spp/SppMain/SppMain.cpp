@@ -780,7 +780,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
 	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	};
 				
-	SendPPJoy(datacount, m_Position);
+	SendPPJoy(11, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
 		fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -870,7 +870,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
 	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	};
 			
-	SendPPJoy(datacount, m_Position);
+	SendPPJoy(11, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
 		fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -958,7 +958,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
 	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	};
 				
-	SendPPJoy(datacount, m_Position);
+	SendPPJoy(11, m_Position);
 
 	if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
 
@@ -1032,7 +1032,7 @@ void  CSppMain::ProcessPulseWK2401Ppm(int width, BOOL input)
 	
 	m_Position[datacount] = data[datacount];	/* Assign data to joystick channels */
 
-	SendPPJoy(datacount, m_Position);
+	SendPPJoy(11, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
 		fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -1955,11 +1955,11 @@ void CSppMain::SendPPJoy(int nChannels, int * Channel)
 
 	/* Duplicate channel data */
 	memcpy(ch, Channel, MAX_JS_CH*sizeof(int));
-	n_ch = nChannels;
+	n_ch = nChannels; 
 
 	if (ProcessChannels)
 	{
-		n_ch = RunJsFilter(ch, nChannels+1);
+		n_ch = RunJsFilter(ch,nChannels+1);
 		if (!n_ch)
 			n_ch = nChannels;
 	}
