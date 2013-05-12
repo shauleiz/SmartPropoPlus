@@ -74,13 +74,13 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 
 
 
-class /*SPPMAIN_API*/ CSppMain {
+class /*SPPMAIN_API*/ CSppProcess {
 	public:
-	SPPMAIN_API CSppMain(void);
-	SPPMAIN_API ~CSppMain();
+	SPPMAIN_API CSppProcess(void);
+	SPPMAIN_API ~CSppProcess();
 	SPPMAIN_API bool Start(HWND hParentWnd);
 	SPPMAIN_API void SelectMod(LPCTSTR ModType);
-	SPPMAIN_API void SetAudioObj(class CAudioInputW7 * Audio);
+	SPPMAIN_API void SetAudioObj(class CSppAudio * Audio);
 	SPPMAIN_API void AudioChanged(void);
 	SPPMAIN_API void MonitorChannels(BOOL Start=TRUE);
 	SPPMAIN_API void SelectFilter(int, LPVOID);
@@ -143,7 +143,7 @@ private:
 	volatile BOOL m_closeRequest;
 	volatile BOOL m_waveRecording;
 	struct Modulations *  m_Modulation;
-	class CAudioInputW7 * m_Audio;
+	class CSppAudio * m_Audio;
 	thread * m_tCapture;
 	bool	m_tCaptureActive;
 	UINT m_WaveNChannels;

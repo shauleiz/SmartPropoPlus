@@ -97,7 +97,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AudioInputW7.h" />
+    <ClInclude Include="SppAudio.h" />
     <ClInclude Include="NotificationClient.h" />
     <ClInclude Include="PolicyConfig.h" />
     <ClInclude Include="PulseData.h" />
@@ -107,7 +107,7 @@
     <ClInclude Include="..\include\WinMessages.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioInputW7.cpp" />
+    <ClCompile Include="SppAudio.cpp" />
     <ClCompile Include="NotificationClient.cpp" />
     <ClCompile Include="PulseData.cpp" />
     <ClCompile Include="stdafx.cpp" />

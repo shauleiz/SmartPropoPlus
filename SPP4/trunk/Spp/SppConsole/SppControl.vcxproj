@@ -13,8 +13,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{50D03AC2-EA69-46EB-AABA-67305DDE5D1D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SppConsole</RootNamespace>
-    <ProjectName>SppConsole</ProjectName>
+    <RootNamespace>SppControl</RootNamespace>
+    <ProjectName>SppControl</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -101,11 +101,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico" />
-    <Image Include="SppControl.ico" />
+    <ResourceCompile Include="SppControl.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SppControl.rc" />
+    <Image Include="small.ico" />
+    <Image Include="SppControl.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

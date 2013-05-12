@@ -7,7 +7,7 @@
 #include <Mmdeviceapi.h>
 #include "WinMessages.h"
 #include <Audioclient.h>
-#include "AudioInputW7.h"
+#include "SppAudio.h"
 #include "NotificationClient.h"
 #include <Functiondiscoverykeys_devpkey.h>
 
@@ -36,7 +36,7 @@ CMMNotificationClient::~CMMNotificationClient()
 	SAFE_RELEASE(_pEnumerator)
 }
 
-void STDMETHODCALLTYPE CMMNotificationClient::GetParent(CAudioInputW7 * Parent)
+void STDMETHODCALLTYPE CMMNotificationClient::GetParent(CSppAudio * Parent)
 {
 	_Parent = Parent;
 }

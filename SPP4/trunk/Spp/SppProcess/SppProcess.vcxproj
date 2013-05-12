@@ -13,7 +13,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{69ACDE52-342D-4753-90FE-0E03B1F537AD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SppMain</RootNamespace>
+    <RootNamespace>SppProcess</RootNamespace>
+    <ProjectName>SppProcess</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -81,7 +82,7 @@
   <ItemGroup>
     <ClInclude Include="GlobalMemory.h" />
     <ClInclude Include="SmartPropoPlus.h" />
-    <ClInclude Include="SppMain.h" />
+    <ClInclude Include="SppProcess.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -96,7 +97,7 @@
     </ClCompile>
     <ClCompile Include="GlobalMemory.cpp" />
     <ClCompile Include="SmartPropoPlus.cpp" />
-    <ClCompile Include="SppMain.cpp" />
+    <ClCompile Include="SppProcess.cpp" />
     <ClCompile Include="SppRegistry.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
