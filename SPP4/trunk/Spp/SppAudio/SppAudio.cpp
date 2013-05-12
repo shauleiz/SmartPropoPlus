@@ -772,6 +772,10 @@ SPPINTERFACE_API WORD CSppAudio::GetwBitsPerSample(void)
 	return m_CurrentWaveFormat.wBitsPerSample;
 }
 
+SPPINTERFACE_API int CSppAudio::GetNumberChannels(void)
+{
+	return m_CurrentWaveFormat.nChannels;
+}
 
 SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 // Return number of channels of an endpoint device
