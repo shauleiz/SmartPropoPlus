@@ -215,6 +215,13 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_FILTER:
 			SelectFilter((int)wParam);
+			break;
+
+		case WMSPP_PRCS_GETSPR:
+			return Audio->GetnSamplesPerSec();
+
+		case WMSPP_PRCS_GETBPS:
+			return Audio->GetwBitsPerSample();
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
