@@ -148,10 +148,10 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define	MM_WASAPI_NOREQ	_T("Could not find requested device\r\nStarting default device")
 
 #define CONSOLE_TITLE		"SmartPropoPlus Console"
-#define	MUTXCONSOLE			TEXT("SPPconsole Exists Mutex 1")
+#define	MUTXCONSOLE			TEXT("SPPcontrol Exists Mutex 1")
 #define	MUTXWINMM			"WINMM Dll is running"
 #define	MUTXPROPOSTARTED	"WINMM Dll - Propo Started"
-#define	INTERSPPCONSOLE		TEXT("Inter SPPconsole Message 1")
+#define	INTERSPPCONSOLE		TEXT("Inter SPPcontrol Message 1")
 #define	INTERSPPAPPS		TEXT("Inter SPP Application Message 2")
 #define DEFLT_WAVE			L"WAVE_MAPPER"
 

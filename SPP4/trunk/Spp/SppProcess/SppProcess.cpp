@@ -1,21 +1,21 @@
-// SppMain.cpp : Defines the exported functions for the DLL application.
+// SppProcess.cpp : Defines the exported functions for the DLL application.
 //
 
 #include "stdafx.h"
 #include "vJoyInterface.h"
 #include "public.h"
-#include "../SppAudio/AudioInputW7.h"
+#include "../SppAudio/SppAudio.h"
 #include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
-#include "SppMain.h"
+#include "SppProcess.h"
 
 /* Globals */
 int gDebugLevel = 0;
 FILE * gCtrlLogFile = NULL;
 
 
-SPPMAIN_API CSppMain::CSppMain() :
+SPPMAIN_API CSppProcess::CSppProcess() :
 	m_PropoStarted(false),
 	m_pSharedBlock(NULL),
 	m_MixerName(NULL),
@@ -39,9 +39,9 @@ SPPMAIN_API CSppMain::CSppMain() :
 	m_ListProcessPulseFunc.clear();
 }
 
-SPPMAIN_API CSppMain::~CSppMain() {}
+SPPMAIN_API CSppProcess::~CSppProcess() {}
 
-SPPMAIN_API void CSppMain::SelectMod(LPCTSTR ModType)
+SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 {
 	SetActiveMode(ModType); // Set the active mode in memory and in registry
 	m_Modulation->Active = GetModulation(FALSE)->Active; // Get the index of the new active modulation
@@ -51,7 +51,7 @@ SPPMAIN_API void CSppMain::SelectMod(LPCTSTR ModType)
 // Called to inform SPP that a filter has been selected or diselected
 // iFilter is the filter index
 // If ifilter==-1 the no filter selected
-SPPMAIN_API void CSppMain::SelectFilter(int iFilter, LPVOID pProcessChannels)
+SPPMAIN_API void CSppProcess::SelectFilter(int iFilter, LPVOID pProcessChannels)
 {
 	if (iFilter == m_JsChPostProc_selected)
 		return; // Filter not changed - NOOP
@@ -66,7 +66,7 @@ SPPMAIN_API void CSppMain::SelectFilter(int iFilter, LPVOID pProcessChannels)
 
 }
 
-SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
+SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 {
 	LPCTSTR AudioId = NULL;
 
@@ -91,7 +91,7 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 	//	m_MixerName = GetCurrentMixerDevice();	// Selected
 
 	// Get selected audio capture endpoint id from the parent window
-	AudioId = (LPCTSTR)SendMessage(m_hParentWnd, GET_ACTIVE_ID, 0, 0);
+	AudioId = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
 
 
 	// Create shared memory block and fill it with:
@@ -126,7 +126,7 @@ SPPMAIN_API bool CSppMain::Start(HWND hParentWnd)
 
 }
 
-SPPMAIN_API void CSppMain::SetAudioObj(class CAudioInputW7 * Audio)
+SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 {
 	m_Audio = Audio;
 }
@@ -136,7 +136,7 @@ SPPMAIN_API void CSppMain::SetAudioObj(class CAudioInputW7 * Audio)
 	If changed the make the required change in the operation of this unit
 */
 
-void CSppMain::ListenToGui(void)
+void CSppProcess::ListenToGui(void)
 {
 	SharedDataBlock * DataBlock = (SharedDataBlock *)m_pSharedBlock;
 	HRESULT hr = S_OK;
@@ -192,7 +192,7 @@ void CSppMain::ListenToGui(void)
 		/* Start the new capture stream */
 		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPED)
 		{
-			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, GET_ACTIVE_ID, 0, 0);
+			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
 			m_waveRecording = TRUE;
 			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
 			{
@@ -212,7 +212,7 @@ void CSppMain::ListenToGui(void)
 	};
 }
 
-void CSppMain::CaptureAudio(void)
+void CSppProcess::CaptureAudio(void)
 {
 	PBYTE	buffer=NULL;
 	UINT	bSize=0;
@@ -247,7 +247,7 @@ void CSppMain::CaptureAudio(void)
 	m_tCaptureActive = FALSE;
 }
 
-void CSppMain::PollChannels(void)
+void CSppProcess::PollChannels(void)
 {
 	if (!m_hParentWnd)
 		return;
@@ -267,7 +267,7 @@ void CSppMain::PollChannels(void)
 			if (vChannels[i] != m_Position[i])
 			{
 				vChannels[i] = m_Position[i];
-				PostMessage(m_hParentWnd, WMAPP_CH_MNTR, i, vChannels[i]);
+				PostMessage(m_hParentWnd, WMSPP_PRCS_CHMNTR, i, vChannels[i]);
 			};
 		}; // For loop
 
@@ -277,7 +277,7 @@ void CSppMain::PollChannels(void)
 }
 
 
-void CSppMain::AudioChanged(void)
+void CSppProcess::AudioChanged(void)
 {
 	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
 }
@@ -286,7 +286,7 @@ void CSppMain::AudioChanged(void)
 	Start/Stop sperate thread that monitors the channel (Position[]) values
 	The thread polls the channels and sends periodic updates to the parent window
 */
-void CSppMain::MonitorChannels(BOOL Start)
+void CSppProcess::MonitorChannels(BOOL Start)
 {
 	static thread * tMonitor = NULL;
 	static bool isRunning = false;
@@ -329,7 +329,7 @@ End:
 	return;
 }
 
-HRESULT	CSppMain::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
+HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 /*
 	ProcessWave processes a wave packet
 	Return value:
@@ -419,7 +419,7 @@ Exit:
 	The audio sample may be 16-bit PCM, ranging from -32768 to 32767, mid-point is 0
 	The minimal step is 1
 */
-void __fastcall  CSppMain::ProcessData(UINT i)
+void __fastcall  CSppProcess::ProcessData(UINT i)
 {
     static double min = 0;	/* Sticky minimum sample value */
     static double max = 0;	/* Sticky maximum sample value */
@@ -476,7 +476,7 @@ void __fastcall  CSppMain::ProcessData(UINT i)
 		- Modulation category (PPM or not): isPpm
 		- Is this modulation selected: ModSelect
 	*/
-int CSppMain::LoadProcessPulseFunctions()
+int CSppProcess::LoadProcessPulseFunctions()
 {
 	int index=0;
 	int nMod=0;
@@ -612,7 +612,7 @@ int CSppMain::LoadProcessPulseFunctions()
 	return nMod;
 }
 
-inline UINT CSppMain::Sample2Pulse(short sample, bool * negative)
+inline UINT CSppProcess::Sample2Pulse(short sample, bool * negative)
 {
 
 	static double min = 0;	/* Sticky minimum sample value */
@@ -671,7 +671,7 @@ inline UINT CSppMain::Sample2Pulse(short sample, bool * negative)
 	return pulse;
 }
 
-inline UINT CSppMain::NormalizePulse(UINT Length)
+inline UINT CSppProcess::NormalizePulse(UINT Length)
 // Normalize pulse length to 192K sampling rate
 {
 	switch(m_WaveRate)
@@ -701,7 +701,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
 	The size of a high pulse may vary between 30 to 70 samples, mapped to joystick values of 1024 to 438
 	where the mid-point of 50 samples is translated to joystick position of 731.
 */
- void  CSppMain::ProcessPulsePpm(int width, BOOL input)
+ void  CSppProcess::ProcessPulsePpm(int width, BOOL input)
 {
     static int sync = 0;
 
@@ -791,7 +791,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
 	return;
 }
 
- void  CSppMain::ProcessPulseFutabaPpm(int width, BOOL input)
+ void  CSppProcess::ProcessPulseFutabaPpm(int width, BOOL input)
 {
     static int sync = 0;
 
@@ -879,7 +879,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
     datacount++;
 	return;
 }
- void  CSppMain::ProcessPulseJrPpm(int width, BOOL input)
+ void  CSppProcess::ProcessPulseJrPpm(int width, BOOL input)
 {
     static int sync = 0;
 
@@ -975,7 +975,7 @@ inline UINT CSppMain::NormalizePulse(UINT Length)
 	2. Any pulse of over PPMW_TRIG (=200) is considered as a sync pulse. 
 	3. Polarity ('input') of the Sync pulse is the polarity of the following data pulses
 */
-void  CSppMain::ProcessPulseWK2401Ppm(int width, BOOL input)
+void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
 {
     static int sync = 0;
 	static BOOL Polarity;
@@ -1081,7 +1081,7 @@ void  CSppMain::ProcessPulseWK2401Ppm(int width, BOOL input)
 		AUX[13] lower bit = 0 Provided AUX[12] = 0x1
 
 */
-void CSppMain::ProcessPulseFutabaPcm(int width, BOOL input)
+void CSppProcess::ProcessPulseFutabaPcm(int width, BOOL input)
 {
     static int sync = 0;
 
@@ -1232,7 +1232,7 @@ void CSppMain::ProcessPulseFutabaPcm(int width, BOOL input)
 
 	return;
 }
-void CSppMain::ProcessPulseJrPcm(int width, BOOL input)
+void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
 {
     static int sync = 0;
 
@@ -1300,7 +1300,7 @@ void CSppMain::ProcessPulseJrPcm(int width, BOOL input)
 
 	Channel data is converted using function "Convert15bits()" (and inverted) into a joystick posision.
 */
-void CSppMain::ProcessPulseAirPcm1(int width, BOOL input)
+void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 {
 	int pulse;
 	static int sync;
@@ -1381,7 +1381,7 @@ void CSppMain::ProcessPulseAirPcm1(int width, BOOL input)
 
 	Channel data is converted using function "Convert20bits()" (and inverted) into a joystick posision. 
 */
-void CSppMain::ProcessPulseAirPcm2(int width, BOOL input)
+void CSppProcess::ProcessPulseAirPcm2(int width, BOOL input)
 {
 	int pulse;
 	static int sync;
@@ -1471,7 +1471,7 @@ void CSppMain::ProcessPulseAirPcm2(int width, BOOL input)
 		7:	34-35 samples
 		8:	38-39 samples
 */
-void CSppMain::ProcessPulseWalPcm(int width, BOOL input)
+void CSppProcess::ProcessPulseWalPcm(int width, BOOL input)
 {
 	static int nPulse;
 	static unsigned char cycle[50];
@@ -1544,7 +1544,7 @@ void CSppMain::ProcessPulseWalPcm(int width, BOOL input)
 
 /************** Walkera PCM helper functions **************/
 /* Convert pulse width to binary value */
-unsigned char  CSppMain::WalkeraConvert2Bin(int width)
+unsigned char  CSppProcess::WalkeraConvert2Bin(int width)
 {
 	switch (width)
 	{
@@ -1566,7 +1566,7 @@ unsigned char  CSppMain::WalkeraConvert2Bin(int width)
 };
 
 /* Convert pulse width to octal value */
-unsigned char  CSppMain::WalkeraConvert2Oct(int width)
+unsigned char  CSppProcess::WalkeraConvert2Oct(int width)
 {
 	switch (width)
 	{
@@ -1623,7 +1623,7 @@ unsigned char  CSppMain::WalkeraConvert2Oct(int width)
 	cycle[5]:			0/1
 	MSBit of cycle[6]:	0/1
 */
-int CSppMain::WalkeraElevator(const unsigned char * cycle)
+int CSppProcess::WalkeraElevator(const unsigned char * cycle)
 {
 	int value;
 
@@ -1648,7 +1648,7 @@ int CSppMain::WalkeraElevator(const unsigned char * cycle)
 	cycle[9]:	Binary
 	cycle[10]:	Octal (LSB)
 */
-int CSppMain::WalkeraAilerons(const unsigned char * cycle)
+int CSppProcess::WalkeraAilerons(const unsigned char * cycle)
 {
 	int value, msb;
 
@@ -1674,7 +1674,7 @@ int CSppMain::WalkeraAilerons(const unsigned char * cycle)
 	cycle[14]:	Octal
 	cycle[15]:	Binary (LSB)
 */
-int CSppMain::WalkeraThrottle(const unsigned char * cycle)
+int CSppProcess::WalkeraThrottle(const unsigned char * cycle)
 {
 	int value;
 
@@ -1699,7 +1699,7 @@ int CSppMain::WalkeraThrottle(const unsigned char * cycle)
 	cycle[19]:	Binary
 	cycle[20]:	Octal (LSB)
 */
-int CSppMain::WalkeraRudder(const unsigned char * cycle)
+int CSppProcess::WalkeraRudder(const unsigned char * cycle)
 {
 	int value,  msb;
 
@@ -1721,7 +1721,7 @@ int CSppMain::WalkeraRudder(const unsigned char * cycle)
 /*
 	Data: cycle[23]
 */
-int CSppMain::WalkeraGear(const unsigned char * cycle)
+int CSppProcess::WalkeraGear(const unsigned char * cycle)
 {
 	int value;
 
@@ -1747,7 +1747,7 @@ int CSppMain::WalkeraGear(const unsigned char * cycle)
 	cycle[31]:	Binary
 	cycle[32]:	Octal (LSB)
 */
-int CSppMain::WalkeraPitch(const unsigned char * cycle)
+int CSppProcess::WalkeraPitch(const unsigned char * cycle)
 {
 	int value,  msb;
 
@@ -1767,7 +1767,7 @@ int CSppMain::WalkeraPitch(const unsigned char * cycle)
 };
 
 
-int CSppMain::WalkeraGyro(const unsigned char * cycle)
+int CSppProcess::WalkeraGyro(const unsigned char * cycle)
 {
 	int value;
 
@@ -1782,7 +1782,7 @@ int CSppMain::WalkeraGyro(const unsigned char * cycle)
 	return value;
 };
 
-int CSppMain::WalkeraChannel8(const unsigned char * cycle)
+int CSppProcess::WalkeraChannel8(const unsigned char * cycle)
 {
 	int value,  msb;
 
@@ -1805,7 +1805,7 @@ int CSppMain::WalkeraChannel8(const unsigned char * cycle)
 	CS1,CS2: For channels 1-4
 	CS3,CS4: For Channels 5-8
 */
-int * CSppMain::WalkeraCheckSum(const unsigned char * cycle)
+int * CSppProcess::WalkeraCheckSum(const unsigned char * cycle)
 {
 	int static cs[4]= {-1,-1,-1,-1};
 
@@ -1829,7 +1829,7 @@ int * CSppMain::WalkeraCheckSum(const unsigned char * cycle)
 }
 
 /* Helper function - Airtronic/Sanwa PCM1 data convertor */
-int  __fastcall CSppMain::Convert15bits(unsigned int in)
+int  __fastcall CSppProcess::Convert15bits(unsigned int in)
 {
 	int quintet[3];
 
@@ -1853,7 +1853,7 @@ int  __fastcall CSppMain::Convert15bits(unsigned int in)
 
 }
 /* Helper function - Airtronic/Sanwa PCM2 data convertor */
-int  __fastcall  CSppMain::Convert20bits(int in)
+int  __fastcall  CSppProcess::Convert20bits(int in)
 {
 	int quartet[5];
 	int value;
@@ -1882,7 +1882,7 @@ int  __fastcall  CSppMain::Convert20bits(int in)
 	return 1023-2*value;
 }
 
-__inline  int  CSppMain::smooth(int orig, int newval)
+__inline  int  CSppProcess::smooth(int orig, int newval)
 {
 	if (newval<0)
 		return orig;
@@ -1903,7 +1903,7 @@ __inline  int  CSppMain::smooth(int orig, int newval)
 	Copied from: http://www.rcuniverse.com/forum/m_3413991/tm.htm
 	____________________________________________________________________
 */
-_inline double  CSppMain::CalcThreshold(int value)
+_inline double  CSppProcess::CalcThreshold(int value)
 {
 	// RCAudio V 3.0 : (C) Philippe G.De Coninck 2007
 
@@ -1942,7 +1942,7 @@ _inline double  CSppMain::CalcThreshold(int value)
 
 // TODO: Rename to Send2vJoy
 // TODO: Normalize the calling functions to the range 0-32K
-void CSppMain::SendPPJoy(int nChannels, int * Channel)
+void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 {
 	BOOL writeOk;
 	UINT rID = 1; // TODO: Device 1 is hardcoded
@@ -1973,7 +1973,7 @@ void CSppMain::SendPPJoy(int nChannels, int * Channel)
 }
 
 /* Run Joystick post processor filter */
-int CSppMain::RunJsFilter(int * ch, int nChannels)
+int CSppProcess::RunJsFilter(int * ch, int nChannels)
 {
 	JS_CHANNELS  * js_filter_out, js_data;
 	int n_out_ch=0;
@@ -1999,32 +1999,32 @@ int CSppMain::RunJsFilter(int * ch, int nChannels)
 	return n_out_ch;
 }
 
-DWORD WINAPI CSppMain::ListenToGuiStatic(LPVOID obj)
+DWORD WINAPI CSppProcess::ListenToGuiStatic(LPVOID obj)
 {
 	if (obj)
-		((CSppMain *)obj)->ListenToGui();
+		((CSppProcess *)obj)->ListenToGui();
 	return 0;
 }
 
-DWORD WINAPI CSppMain::CaptureAudioStatic(LPVOID obj)
+DWORD WINAPI CSppProcess::CaptureAudioStatic(LPVOID obj)
 {
 	if (obj)
-		((CSppMain *)obj)->CaptureAudio();
+		((CSppProcess *)obj)->CaptureAudio();
 	return 0;
 }
 
-DWORD WINAPI CSppMain::PollChannelsStatic(LPVOID obj)
+DWORD WINAPI CSppProcess::PollChannelsStatic(LPVOID obj)
 {
 	if (obj)
-		((CSppMain *)obj)->PollChannels();
+		((CSppProcess *)obj)->PollChannels();
 	return 0;
 }
 
-void CSppMain::SendModInfoToParent(HWND hParentWnd)
+void CSppProcess::SendModInfoToParent(HWND hParentWnd)
 {
 	if (!hParentWnd || !m_ListProcessPulseFunc.size())
 		return;
 
 	for (iMOD i=m_ListProcessPulseFunc.begin(); i != m_ListProcessPulseFunc.end(); i++)
-		SendMessage(hParentWnd, SET_MOD_INFO, (WPARAM)(&(*i)) , 0);
+		SendMessage(hParentWnd, WMSPP_PRCS_SETMOD, (WPARAM)(&(*i)) , 0);
 }

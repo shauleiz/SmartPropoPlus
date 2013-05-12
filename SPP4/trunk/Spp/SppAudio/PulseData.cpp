@@ -1,6 +1,6 @@
 /*
 	CPulseData - Pulse Data Class
-	Convert input from AudioInputW7 into pulse data
+	Convert input from SppAudio into pulse data
 	A pulse is a two-entry object:
 		1. Pulse duration in 192K sample units (1,000,000/192,000 = 5.208333uSec)
 		2. Pulse Polarity (Up/Down)

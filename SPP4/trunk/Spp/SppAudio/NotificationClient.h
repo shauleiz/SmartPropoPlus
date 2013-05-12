@@ -16,12 +16,12 @@ class CMMNotificationClient : public IMMNotificationClient
 {
     LONG _cRef;
     IMMDeviceEnumerator *_pEnumerator;
-	CAudioInputW7 * _Parent;
+	CSppAudio * _Parent;
 
 public:
 	CMMNotificationClient() ;
 	virtual ~CMMNotificationClient(void);
-	void	STDMETHODCALLTYPE GetParent(CAudioInputW7 * Parent);
+	void	STDMETHODCALLTYPE GetParent(CSppAudio * Parent);
 	HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR pwstrDeviceId);
 	HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId);
 	HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId);
