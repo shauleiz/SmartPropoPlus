@@ -222,6 +222,12 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_PRCS_GETBPS:
 			return Audio->GetwBitsPerSample();
+
+		case WMSPP_PRCS_GETNCH:
+			return Audio->GetNumberChannels();
+ 
+		//case WMSPP_PRCS_GETLR:
+		//	return Audio->Get;
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 

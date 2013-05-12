@@ -31,10 +31,10 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_vJoyReady(false),
 	ProcessChannels(NULL),
 	m_iActiveProcessPulseFunc(0),
-	m_WaveNChannels(2), // TODO: Remove initialization and get real data
-	m_WaveBitsPerSample(8), // TODO: Remove initialization and get real data
-	m_WaveRate(192000), // TODO: Remove initialization and get real data
-	m_WaveInputChannel(0)// TODO: Remove initialization and get real data
+	m_WaveNChannels(2),
+	m_WaveBitsPerSample(8),
+	m_WaveRate(192000), 
+	m_WaveInputChannel(0)// TODO: Get real data from user
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -222,8 +222,10 @@ void CSppProcess::CaptureAudio(void)
 	buffer = new BYTE[bMax];
 
 	// Get the wave rate for this audio source
-	m_WaveRate =			SendMessage(m_hParentWnd, WMSPP_PRCS_GETSPR, 0,0); //m_Audio->GetnSamplesPerSec();
-	m_WaveBitsPerSample =	SendMessage(m_hParentWnd, WMSPP_PRCS_GETBPS, 0,0); //m_Audio->GetwBitsPerSample();
+	m_WaveRate			=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETSPR, 0,0);
+	m_WaveBitsPerSample	=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETBPS, 0,0);
+	m_WaveNChannels		=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETNCH, 0,0);
+	//m_WaveInputChannel	=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0,0);
 
 	while (m_waveRecording)
 	{
