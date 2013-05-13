@@ -39,3 +39,11 @@ UINT const WMSPP_PRCS_GETBPS=			BASE_SUB+16;			// Get Number of Bits per Sample 
 UINT const WMSPP_PRCS_GETNCH=			BASE_SUB+17;			// Get Number of audio channels (Mono(1)/Stereo(2))
 UINT const WMSPP_PRCS_GETLR	=			BASE_SUB+18;			// Get active audio channel (Left(0), Right(1))
 
+
+// Log Messages
+UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
+UINT const WMSPP_LOG_CNTRL	=				WMSPP_LOG_BASE + 0;				// Base value for log messages comming from SppControl
+UINT const WMSPP_LOG_AUDIO	=				WMSPP_LOG_BASE + 1000;			// Base value for log messages comming from SppAudio
+UINT const WMSPP_LOG_PRSC	=				WMSPP_LOG_BASE + 2000;			// Base value for log messages comming from SppProcess
+
+

@@ -11,6 +11,7 @@
 #include "..\SppProcess\SppProcess.h"
 #include "SppControl.h"
 #include "SppDlg.h"
+#include "SppLog.h"
 
 // Globals
 HWND hDialog;
@@ -18,13 +19,14 @@ class CSppAudio * Audio;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
+HWND hLog;
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
 HINSTANCE	FilterPopulate(HWND hDlg);
 void		Acquire_vJoy();
 void		SelectFilter(int iFilter);
-
+void	LogMessage(int Severity, int Code, LPCTSTR Msg);
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -40,6 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
 	HANDLE hDlgCLosed=NULL;
+	LoadLibrary(TEXT("Msftedit.dll")); 
 
 	// TODO: Ensure Vista SP2 or higher
 
@@ -129,15 +132,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SppDlg *	Dialog	= new SppDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
+
+	// Create Log window
+	SppLog * LogWin = new SppLog(hInstance, hwnd);
+	hLog = LogWin->GetWndHandle();
 	
 	// Start reading audio data
 	Spp		= new CSppProcess();
 	Spp->SetAudioObj(Audio);
 
 	if (!Spp->Start(hwnd))
+	{
+		LogMessage(FATAL, 333, L"Failed to start SppProcess");
 		goto ExitApp;
+	};
+	
+	LogMessage(INFO, 333, L"SppProcess started");
 
 	Dialog->Show(); // If not asked to be iconified
+	LogWin->Show(); // TODO: Remove
 
 	FilterPopulate(hDialog);
 	Spp->AudioChanged();
@@ -439,4 +452,9 @@ void	Acquire_vJoy()
 
 	// Reset device
 	ResetVJD(rID);
+}
+void	LogMessage(int Severity, int Code, LPCTSTR Msg)
+{
+	if (hLog)
+		SendMessage(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg);
 }

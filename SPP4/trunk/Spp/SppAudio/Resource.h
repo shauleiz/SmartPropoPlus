@@ -13,7 +13,6 @@
 #define IDD_LISTCAPTDEVS                        113
 #define IDREFRESH								114
 #define IDSELECT								115
-#define IDD_LOGDLG								116
 #define IDD_DIAG_VOL							117
 #define IDC_LIST1                               1001
 #define IDC_EDIT1	                            1002

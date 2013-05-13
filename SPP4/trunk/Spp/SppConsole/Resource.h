@@ -9,6 +9,7 @@
 #define IDC_SPPCONSOLE                          109
 #define IDD_SPPDIAG                             111
 #define IDI_SPPCONSOLE                          114
+#define IDD_LOGDLG                              117
 #define IDC_CH_MONITOR                          1001
 #define IDC_LIST_FILTERS                        1002
 #define IDS_APP_TITLE                           40000
@@ -31,3 +32,4 @@
 #define IDC_TXT_CH6                             40035
 #define IDC_TXT_CH7                             40036
 #define IDC_TXT_CH8                             40037
+#define IDC_EDIT_LOG                            40038
