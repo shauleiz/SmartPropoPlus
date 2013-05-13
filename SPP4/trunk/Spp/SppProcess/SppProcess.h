@@ -109,6 +109,7 @@ private:
 	void CaptureAudio(void);
 	void PollChannels(void);
 	void SendModInfoToParent(HWND hParentWnd);
+	void LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 	void __fastcall ProcessData(UINT i);
 	_inline double  CalcThreshold(int value);
 	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);

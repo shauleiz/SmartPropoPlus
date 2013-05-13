@@ -22,6 +22,7 @@
 #include <Shellapi.h>
 #include <mutex>
 #include <array>
+#include <Resource.h>
 
 
 // TODO: reference additional headers your program requires here
