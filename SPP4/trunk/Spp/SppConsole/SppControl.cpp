@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include <Shellapi.h>
 #include "vJoyInterface.h"
-#include "WinMessages.h"
 #include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
 #include "..\SppAudio\SppAudio.h"
@@ -12,6 +11,7 @@
 #include "SppControl.h"
 #include "SppDlg.h"
 #include "SppLog.h"
+#include "WinMessages.h"
 
 // Globals
 HWND hDialog;
@@ -19,6 +19,7 @@ class CSppAudio * Audio;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
+HINSTANCE g_hInstance = 0;
 HWND hLog;
 
 // Declarations
@@ -26,7 +27,8 @@ void		CaptureDevicesPopulate(HWND hDlg);
 HINSTANCE	FilterPopulate(HWND hDlg);
 void		Acquire_vJoy();
 void		SelectFilter(int iFilter);
-void	LogMessage(int Severity, int Code, LPCTSTR Msg);
+void		LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
+void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -43,6 +45,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	HANDLE hDlgCLosed=NULL;
 	LoadLibrary(TEXT("Msftedit.dll")); 
+	g_hInstance=hInstance;
 
 	// TODO: Ensure Vista SP2 or higher
 
@@ -143,11 +146,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	if (!Spp->Start(hwnd))
 	{
-		LogMessage(FATAL, 333, L"Failed to start SppProcess");
+		LogMessage(FATAL, IDS_F_STARTSPPPRS);
 		goto ExitApp;
 	};
-	
-	LogMessage(INFO, 333, L"SppProcess started");
+	    
+
+	LogMessage(INFO, IDS_I_STARTSPPPRS);
 
 	Dialog->Show(); // If not asked to be iconified
 	LogWin->Show(); // TODO: Remove
@@ -238,6 +242,13 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_PRCS_GETNCH:
 			return Audio->GetNumberChannels();
+
+		case WMSPP_LOG_PRSC+INFO:
+		case WMSPP_LOG_PRSC+WARN:
+		case WMSPP_LOG_PRSC+ERR:
+		case WMSPP_LOG_PRSC+FATAL:
+			LogMessageExt(uMsg-WMSPP_LOG_PRSC, wParam, WMSPP_LOG_PRSC, (LPCTSTR)lParam);
+			break;
  
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
@@ -300,7 +311,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 {
 	HINSTANCE h;
 	//LPCTSTR * names;
-	long filter_ver;
+	//long filter_ver;
 	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
 	LPFNDLLFUNC0 GetDllVersion;
 	int				(CALLBACK *pGetNumberOfFilters)(void);
@@ -316,11 +327,15 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	h = LoadLibraryEx(FILTERDLL_NAME, NULL, 0);
 	if (!h)
 	{
+		LogMessage(WARN, IDS_W_FILTERDLL);
 		SendMessage(hDlg, FILTER_DLL, false, 0);
 		return NULL;
 	}
 	else
+	{
+		LogMessage(INFO, IDS_I_FILTERDLL);
 		SendMessage(hDlg, FILTER_DLL, true, 0);
+	}
 
 	// Assign global handle to Filters' DLL
 	hDllFilters = h;
@@ -330,14 +345,18 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	if (!GetDllVersion)
 	{
 		SendMessage(hDlg, FILTER_DLL, false, 0);
+		LogMessage(ERR, IDS_E_FILTERDLLVER);
+		FreeLibrary(h);
+		hDllFilters = NULL;
 		return NULL;
 	};
-	filter_ver = GetDllVersion();
-	if (filter_ver < 0x30100) // TODO: Newer DLLs support wide characters
-	{
-		SendMessage(hDlg, FILTER_VER, false, filter_ver);
-		return NULL;
-	};
+
+	//filter_ver = GetDllVersion();
+	//if (filter_ver < 0x30100) // TODO: Newer DLLs support wide characters
+	//{
+	//	SendMessage(hDlg, FILTER_VER, false, filter_ver);
+	//	return NULL;
+	//};
 
 	//// Build the list in the GUI
 	//		Get the number of filters
@@ -348,6 +367,9 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	else
 	{
 		SendMessage(hDlg, FILTER_NUM, 0, 0);
+		LogMessage(ERR, IDS_E_FILTERDLLNF);
+		FreeLibrary(h);
+		hDllFilters = NULL;
 		return NULL;
 	};
 	SendMessage(hDlg, FILTER_NUM, nFilters, 0);
@@ -379,7 +401,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	//if (sel >= 0)
 	//	SetSelectedFilterIndex(sel);
 	
-
+	LogMessage(INFO, IDS_I_FILTERDLLOK);
 	return h;
 }
 
@@ -389,19 +411,26 @@ void		SelectFilter(int iFilter)
 	PJS_CHANNELS (WINAPI * pProcessChannels)(PJS_CHANNELS, int max, int min);
 
 	if (!hDllFilters)
+	{
+		LogMessage(WARN, IDS_W_FILTERSELFAIL);
 		return;
+	}
 
 	// Update the DLL which is the selected filter
 	pSelectFilterByIndex = (const int  (WINAPI *)(const int iFilter))GetProcAddress(hDllFilters,"SelectFilterByIndex");
 	if (pSelectFilterByIndex)
 		pSelectFilterByIndex(iFilter);
 	else
+	{
+		LogMessage(ERR, IDS_E_FILTERSELFAIL);
 		return;
+	};
 
 	// Get the pointer to the filter function
 	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
 
 	Spp->SelectFilter(iFilter, (LPVOID)pProcessChannels);
+	LogMessage(INFO, IDS_I_FILTERSELOK);
 }
 
 void	Acquire_vJoy()
@@ -409,6 +438,7 @@ void	Acquire_vJoy()
 	// vJoy Exists and Enabled
 	if (!vJoyEnabled())
 	{
+		LogMessage(WARN, IDS_W_VJOYMISSING);
 		MessageBox(NULL, L"vJoy device does not exist or is disabled",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
 		return; // vJoy not installed or disabled
 	}
@@ -417,6 +447,7 @@ void	Acquire_vJoy()
 	SHORT ver = GetvJoyVersion();
 	if (ver < VJOY_MIN_VER)
 	{
+		LogMessage(ERR, IDS_E_VJOYVERTOOOLD);
 		MessageBox(NULL, L"vJoy device version is too old - version 2.0.2 or higher required",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
 		return; // vJoy not installed or disabled
 	}
@@ -433,21 +464,21 @@ void	Acquire_vJoy()
 	case VJD_STAT_FREE: // The  vJoy Device is NOT owned by any application (including this one).
 		if (!AcquireVJD(rID))
 		{
-			MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
+			MessageBox(NULL, L"vJoy device number 1 cannot be acquired",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
 			return; 
 		};
 		break;
 
 	case VJD_STAT_BUSY: // The  vJoy Device is owned by another application.
-		MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired\r\nThe Device is owned by another application",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
+		MessageBox(NULL, L"vJoy device number 1 cannot be acquired\r\nThe Device is owned by another application",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
 		return; 
 
 	case VJD_STAT_MISS: // The  vJoy Device is missing. It either does not exist or the driver is disabled.
-		MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired\r\nThe Device either does not exist or the driver is disabled",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
+		MessageBox(NULL, L"vJoy device number 1 cannot be acquired\r\nThe Device either does not exist or the driver is disabled",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION); 
 		return; 
 
 	default:
-		MessageBox(NULL, L"vJoy device nymber 1 cannot be acquired for unknown reason",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, L"vJoy device number 1 cannot be acquired for unknown reason",L"SPP: vJoy error", MB_OK|MB_ICONEXCLAMATION);
 	}; // Switch
 
 	// Reset device
@@ -455,6 +486,36 @@ void	Acquire_vJoy()
 }
 void	LogMessage(int Severity, int Code, LPCTSTR Msg)
 {
-	if (hLog)
-		SendMessage(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg);
+	if (!hLog)
+		return;
+
+	TCHAR pBuf[1000] = {NULL};
+	int len;
+
+	if (!Msg)
+	{
+		len = LoadString(g_hInstance, Code, reinterpret_cast< LPWSTR >( &pBuf ), sizeof(pBuf)/sizeof(TCHAR) );
+		if (len)
+			Msg = pBuf;
+	};
+
+	SendMessage(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg);
+}
+
+void	LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg)
+{
+	if (!hLog)
+		return;
+
+	TCHAR pBuf[1000] = {NULL};
+	int len;
+
+	if (!Msg)
+	{
+		len = LoadString(g_hInstance, Code, reinterpret_cast< LPWSTR >( &pBuf ), sizeof(pBuf)/sizeof(TCHAR) );
+		if (len)
+			Msg = pBuf;
+	};
+
+	SendMessage(hLog , Src + Severity, (WPARAM)Code, (LPARAM)Msg);
 }

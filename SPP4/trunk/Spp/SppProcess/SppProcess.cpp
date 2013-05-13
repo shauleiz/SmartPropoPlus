@@ -63,6 +63,7 @@ SPPMAIN_API void CSppProcess::SelectFilter(int iFilter, LPVOID pProcessChannels)
 		ProcessChannels = NULL;
 
 	ProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))pProcessChannels;
+	LogMessage(INFO, IDS_I_FILTERSELOK);
 
 }
 
@@ -2029,4 +2030,12 @@ void CSppProcess::SendModInfoToParent(HWND hParentWnd)
 
 	for (iMOD i=m_ListProcessPulseFunc.begin(); i != m_ListProcessPulseFunc.end(); i++)
 		SendMessage(hParentWnd, WMSPP_PRCS_SETMOD, (WPARAM)(&(*i)) , 0);
+}
+
+void	CSppProcess::LogMessage(int Severity, int Code, LPCTSTR Msg)
+{
+	if (!m_hParentWnd)
+		return;
+
+	SendMessage(m_hParentWnd , WMSPP_LOG_PRSC + Severity, (WPARAM)Code, (LPARAM)Msg);
 }
