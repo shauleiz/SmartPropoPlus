@@ -199,6 +199,7 @@ SPPINTERFACE_API CSppAudio::CSppAudio(HWND hWnd)
 
 	// Save handle to parent window - will be used for notifications
 	m_hPrntWnd = hWnd;
+	m_hInstance = GetModuleHandle(NULL);
 
 	// Set default callback functions
 	RegisterLog(Log);
@@ -345,7 +346,8 @@ HRESULT	CSppAudio::Enumerate(void)
 	PROPVARIANT varName;
 	HRESULT hr = S_OK;
 
-	LogStatus(GEN_STATUS,INFO,ENUM1,m_LogParam);
+	//LogStatus(GEN_STATUS,INFO,ENUM1,m_LogParam);
+	LogMessage(INFO,IDS_I_ENUM1);
 
 	// Initialize data staructure
 	while (!m_CaptureDevices.empty())
@@ -388,8 +390,6 @@ HRESULT	CSppAudio::Enumerate(void)
 		m_CaptureDevices.back()->DeviceName = _wcsdup(varName.pwszVal);
 		m_CaptureDevices.back()->state = state;
 		m_CaptureDevices.back()->id = _wcsdup(id);
-		//LogStatus(ENUM_UID,INFO,(LPVOID)varName.pwszVal);
-		//LogStatus(ENUM_FRND,INFO,(LPVOID)id);
 
 		CoTaskMemFree(id);
 		id = NULL;
@@ -441,9 +441,16 @@ HRESULT CSppAudio::SetDefaultAudioDevice(PVOID devID)
 
 	// Logging
 	if (SUCCEEDED(hr))
-		LogStatus(CHANGE_DEFDEV,INFO,devID,m_LogParam);
+	{
+		//LogStatus(CHANGE_DEFDEV,INFO,devID,m_LogParam);
+		LogMessageWithId(INFO, IDS_I_CHANGE_DEFDEV,devID);
+	}
 	else
-		LogStatus(CHANGE_DEFDEV,WARN,GetWasapiText(hr),m_LogParam);
+	{
+		//LogStatus(CHANGE_DEFDEV,WARN,GetWasapiText(hr),m_LogParam);
+		LogMessageWithId(WARN, IDS_W_CHANGE_DEFDEV, GetWasapiText(hr));
+
+	};
 
 	return hr;
 }
@@ -479,10 +486,15 @@ HRESULT CSppAudio::EnableAudioDevice(PVOID devID, bool Enable)
 
 	// Logging
 	if (SUCCEEDED(hr))
-		LogStatus(CHANGE_ENDEV,INFO,devID,m_LogParam);
+	{
+		//LogStatus(CHANGE_ENDEV,INFO,devID,m_LogParam);
+			LogMessageWithId(INFO, IDS_CHANGE_ENDEV, devID);
+	}
 	else
-		LogStatus(CHANGE_ENDEV,WARN,GetWasapiText(hr),m_LogParam);
-
+	{
+		//LogStatus(CHANGE_ENDEV,WARN,GetWasapiText(hr),m_LogParam);
+			LogMessageWithId(WARN, IDS_CHANGE_ENDEV, devID, (LPCTSTR)GetWasapiText(hr));
+	}
 	return hr;
 }
 
@@ -556,7 +568,8 @@ bool	CSppAudio::IsCaptureDevice(PVOID Id)
 	HRESULT hr = m_pEnumerator->GetDevice((LPWSTR)Id, &pDevice);
 	if (FAILED(hr))
 	{
-		LogStatus(ISCAP_IDNOTFOUND,WARN,Id,m_LogParam);
+		//LogStatus(ISCAP_IDNOTFOUND,WARN,Id,m_LogParam);
+		LogMessageWithId(WARN, IDS_W_ISCAP_IDNOTFOUND, Id);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -564,7 +577,8 @@ bool	CSppAudio::IsCaptureDevice(PVOID Id)
 	hr = pDevice->QueryInterface(__uuidof(IMMEndpoint), (VOID **)&pEndpoint);
 	if (FAILED(hr))
 	{
-		LogStatus(ISCAP_EPNOTFOUND,ERR,Id,m_LogParam);
+		//LogStatus(ISCAP_EPNOTFOUND,ERR,Id,m_LogParam);
+		LogMessageWithId(ERR, IDS_E_ISCAP_EPNOTFOUND, Id);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -599,7 +613,8 @@ bool	CSppAudio::IsExternal(PVOID Id)
 	HRESULT hr = m_pEnumerator->GetDevice((LPWSTR)Id, &pDevice);
 	if (FAILED(hr))
 	{
-		LogStatus(ISEXT_IDNOTFOUND,WARN,Id,m_LogParam);
+		//LogStatus(ISEXT_IDNOTFOUND,WARN,Id,m_LogParam);
+		LogMessageWithId(WARN, IDS_W_ISEXT_IDNOTFOUND, Id);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -607,7 +622,8 @@ bool	CSppAudio::IsExternal(PVOID Id)
     hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL, (void**)&pDeviceTopology);
 	if (FAILED(hr))
 	{
-		LogStatus(ISEXT_TOPO,WARN,Id,m_LogParam);
+		//LogStatus(ISEXT_TOPO,WARN,Id,m_LogParam);
+		LogMessageWithId(WARN, IDS_W_ISEXT_TOPO, Id);
 		EXIT_ON_ERROR(hr);
 	};
 		
@@ -616,7 +632,8 @@ bool	CSppAudio::IsExternal(PVOID Id)
     hr = pDeviceTopology->GetConnector(0, &pConnFrom);
 	if (FAILED(hr))
 	{
-		LogStatus(ISEXT_NOCONN,WARN,Id,m_LogParam);
+		//LogStatus(ISEXT_NOCONN,WARN,Id,m_LogParam);
+		LogMessageWithId(WARN, IDS_W_ISEXT_NOCONN, Id);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -632,7 +649,8 @@ bool	CSppAudio::IsExternal(PVOID Id)
 	hr = pConnTo->GetType(&Type);
 	if (FAILED(hr))
 	{
-		LogStatus(ISEXT_NOTYPE,WARN,Id,m_LogParam);
+		//LogStatus(ISEXT_NOTYPE,WARN,Id,m_LogParam);
+		LogMessageWithId(WARN, IDS_W_ISEXT_NOTYPE, Id);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -711,8 +729,10 @@ SPPINTERFACE_API HRESULT CSppAudio::GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJ
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
 	if (FAILED(hr))
 	{
-		LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
-		LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		LogMessage(WARN, IDS_W_DEVPEAK_IDNOTFOUND);
+		LogMessageWithId(WARN, IDS_W_DEVPEAK_IDNOTFOUND, Id, GetWasapiText(hr));
+		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
+		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -791,8 +811,10 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 	hr = m_pEnumerator->GetDevice((LPCWSTR)Id, &pDevice);
 	if (FAILED(hr))
 	{
-		LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
-		LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		LogMessage(WARN, IDS_W_DEVPEAK_IDNOTFOUND);
+		LogMessageWithId(WARN, IDS_W_DEVPEAK_IDNOTFOUND, Id, GetWasapiText(hr));
+		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
+		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -800,8 +822,10 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
 	if (FAILED(hr))
 	{
-		LogStatus(DEVPEAK_ACTCLNT,WARN,Id,m_LogParam);
-		LogStatus(DEVPEAK_ACTCLNT,WARN,GetWasapiText(hr),m_LogParam);
+		LogMessage(WARN, IDS_W_DEVPEAK_ACTCLNT);
+		LogMessageWithId(WARN, IDS_W_DEVPEAK_ACTCLNT, Id, GetWasapiText(hr));
+		//LogStatus(DEVPEAK_ACTCLNT,WARN,Id,m_LogParam);
+		//LogStatus(DEVPEAK_ACTCLNT,WARN,GetWasapiText(hr),m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -809,8 +833,10 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 	hr = pAudioClient->GetMixFormat(&pwfx);
 	if (FAILED(hr))
 	{
-		LogStatus(DEVPEAK_MXFRMT,WARN,Id,m_LogParam);
-		LogStatus(DEVPEAK_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
+		LogMessage(WARN, IDS_W_DEVPEAK_MXFRMT);
+		LogMessageWithId(WARN, IDS_W_DEVPEAK_MXFRMT, Id, GetWasapiText(hr));
+		//LogStatus(DEVPEAK_MXFRMT,WARN,Id,m_LogParam);
+		//LogStatus(DEVPEAK_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -894,6 +920,8 @@ bool 	CSppAudio::AddCaptureDevice(PVOID Id)
 // Return true/false for success/failure
 
 {
+	LogMessageWithId(INFO, IDS_I_ADDDEV_START, Id);
+
 	// Already exists?
 	int i = FindCaptureDevice(Id);
 	if(i>0)
@@ -1864,3 +1892,46 @@ SPPINTERFACE_API bool	CSppAudio::RegisterProcessPulse(LPVOID f, LPVOID param)
 
 	return true;
 }
+
+void	CSppAudio::LogMessage(int Severity, int Code, LPCTSTR Msg)
+{
+	if (!m_hPrntWnd)
+		return;
+
+	TCHAR pBuf[1000] = {NULL};
+	int len;
+
+	if (!Msg)
+	{
+		len = LoadString(m_hInstance, Code, reinterpret_cast< LPWSTR >( &pBuf ), sizeof(pBuf)/sizeof(TCHAR) );
+		if (len)
+			Msg = pBuf;
+	};
+
+	SendMessage(m_hPrntWnd , WMSPP_LOG_AUDIO + Severity, (WPARAM)Code, (LPARAM)Msg);
+}
+
+	void	CSppAudio::LogMessageWithId(int Severity, int Code, LPVOID Id, LPCTSTR Msg)
+	{
+	if (!m_hPrntWnd)
+		return;
+
+	if (!Id)
+		Id = L"";
+
+	TCHAR pBuf[1000] = {NULL};
+	int len;
+
+	if (!Msg)
+	{
+		len = LoadString(m_hInstance, Code, reinterpret_cast< LPWSTR >( &pBuf ), sizeof(pBuf)/sizeof(TCHAR) );
+		if (len)
+			Msg = pBuf;
+	};
+
+	_stprintf_s(pBuf,  sizeof(pBuf)/sizeof(TCHAR), TEXT("%s (%s)"), Msg, Id);
+	Msg = pBuf;
+
+	SendMessage(m_hPrntWnd , WMSPP_LOG_AUDIO + Severity, (WPARAM)Code, (LPARAM)Msg);
+	}
+
