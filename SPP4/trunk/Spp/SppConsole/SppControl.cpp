@@ -250,6 +250,13 @@ LRESULT CALLBACK MainWindowProc(
 			LogMessageExt(uMsg-WMSPP_LOG_PRSC, wParam, WMSPP_LOG_PRSC, (LPCTSTR)lParam);
 			break;
  
+		case WMSPP_LOG_AUDIO+INFO:
+		case WMSPP_LOG_AUDIO+WARN:
+		case WMSPP_LOG_AUDIO+ERR:
+		case WMSPP_LOG_AUDIO+FATAL:
+			LogMessageExt(uMsg-WMSPP_LOG_AUDIO, wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
+			break;
+ 
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
  

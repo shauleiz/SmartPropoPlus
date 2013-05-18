@@ -122,6 +122,8 @@ protected:
 	HRESULT CreateCuptureThread(PVOID Id);
 	HRESULT SetDefaultAudioDevice(PVOID Id);
 	HRESULT EnableAudioDevice(PVOID devID, bool Enable=true);
+	void	LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
+	void	LogMessageWithId(int Severity, int Code, LPVOID Id, LPCTSTR Msg=NULL);
 	LOGFUNC	LogStatus;
 	AUDIOLOGFUNC	LogAudio;
 	PROCPULSEFUNC	ProcessPulse;
@@ -179,6 +181,7 @@ protected:
 	IAudioClient		* m_pAudioClient;
 	class CMMNotificationClient *m_pNotifyChange;
 	std::vector<CapDev *>  m_CaptureDevices;
+	HMODULE				m_hInstance;
 
 	UINT			m_nEndPoints;
 	UINT			m_nMixers;

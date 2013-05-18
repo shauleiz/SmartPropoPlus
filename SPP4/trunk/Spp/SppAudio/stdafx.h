@@ -18,6 +18,7 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <Windows.h>
+#include <Resource.h>
 
 
 
