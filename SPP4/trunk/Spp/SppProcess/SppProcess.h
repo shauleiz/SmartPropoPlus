@@ -137,6 +137,7 @@ private:
 	LPWSTR	m_MixerName;
 	int		m_JsChPostProc_selected;
 	int		m_Position[MAX_JS_CH];
+	int		m_PrcChannel[MAX_JS_CH];
 	vMOD	m_ListProcessPulseFunc;
 	UINT	m_iActiveProcessPulseFunc;
 	HANDLE	m_hMutexStartStop;

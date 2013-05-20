@@ -260,21 +260,29 @@ void CSppProcess::PollChannels(void)
 	std::vector<int> vChannels;
 	vChannels.resize(nCh, 0);
 
+	
 	// Poll the channel values and send them over to the parent window
 	while(m_chMonitor)
 	{
-		// For every channel, check if changed
-		// If changed, POST message at the parent
+		 //For every Raw channel, check if changed
+		 //If changed, POST message at the parent
 		for (UINT i=0; i<nCh; i++)
 		{
-			if (vChannels[i] != m_Position[i])
-			{
-				vChannels[i] = m_Position[i];
-				PostMessage(m_hParentWnd, WMSPP_PRCS_CHMNTR, i, vChannels[i]);
-			};
-		}; // For loop
+			//if (vChannels[i] != m_Position[i])
+			//{
+				//vChannels[i] = m_Position[i];
+				PostMessage(m_hParentWnd, WMSPP_PRCS_RCHMNT, i, m_Position[i]);
+			//};
+		}; // For loop (Raw)
 
-		sleep_for(20); // nanoSec
+		for  (UINT i=0; i<nCh; i++)
+		{
+			//vChannels[i] = m_PrcChannel[i];
+			PostMessage(m_hParentWnd, WMSPP_PRCS_PCHMNT, i,  m_PrcChannel[i]);
+		}; // For loop (Processed)
+
+		
+	sleep_for(20); // nanoSec
 
 	}; // While loop
 }
@@ -1965,6 +1973,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 		n_ch = RunJsFilter(ch,nChannels+1);
 		if (!n_ch)
 			n_ch = nChannels;
+		memcpy(m_PrcChannel, ch, MAX_JS_CH*sizeof(int));	
 	}
 
 
