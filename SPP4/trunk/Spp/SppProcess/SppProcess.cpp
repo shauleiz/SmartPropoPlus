@@ -48,6 +48,8 @@ SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 	LoadProcessPulseFunctions();
 }
 
+
+
 // Called to inform SPP that a filter has been selected or diselected
 // iFilter is the filter index
 // If ifilter==-1 the no filter selected

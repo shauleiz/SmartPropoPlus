@@ -229,6 +229,15 @@ void  SppDlg::ShowLogWindow(WORD cb)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_LOG , show, 0);
 }
 
+void  SppDlg::RecordInSignal(WORD cb)
+{
+	// Get data
+	HWND hRecordInSignalChCB = GetDlgItem(m_hDlg,  cb);
+	int record = Button_GetCheck(hRecordInSignalChCB);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_INSIG , record, 0);
+
+}
+
 // Tell the parent window (Main application)
 // to stop/start monitoring the raw channel data
 void  SppDlg::MonitorRawCh(WORD cb)
@@ -444,6 +453,13 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			DialogObj->ShowLogWindow(LOWORD(wParam));
 			break;
 		};
+
+		if (LOWORD(wParam) == IDC_CH_INSIG)
+		{
+			DialogObj->RecordInSignal(LOWORD(wParam));
+			break;
+		};
+
 
 
 

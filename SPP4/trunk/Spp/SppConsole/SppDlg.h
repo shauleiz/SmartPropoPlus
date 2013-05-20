@@ -21,6 +21,7 @@ public: // Called from window procedure
 	void MonitorRawCh(WORD cb);
 	void MonitorPrcCh(WORD cb);
 	void ShowLogWindow(WORD cb);
+	void RecordInSignal(WORD cb);
 	void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void UpdateFilter(void);

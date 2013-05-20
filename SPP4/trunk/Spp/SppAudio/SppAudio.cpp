@@ -196,6 +196,7 @@ SPPINTERFACE_API CSppAudio::CSppAudio(HWND hWnd)
 	m_CaptureDevices.clear();
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	m_CurrentId = NULL;
+	m_DbgInputSignal = FALSE;
 
 	// Save handle to parent window - will be used for notifications
 	m_hPrntWnd = hWnd;
@@ -780,6 +781,16 @@ Exit:
     SAFE_RELEASE(pConnTo)
     SAFE_RELEASE(pPart)
     return hr;
+}
+
+SPPINTERFACE_API void CSppAudio::StartDbgInputSignal(void)
+{
+	m_DbgInputSignal = TRUE;
+}
+
+SPPINTERFACE_API void CSppAudio::StopDbgInputSignal(void)
+{
+	m_DbgInputSignal = FALSE;
 }
 
 SPPINTERFACE_API DWORD CSppAudio::GetnSamplesPerSec(void)
@@ -1846,7 +1857,12 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 		LogMessage(ERR, IDS_E_PROCPACK_GETBUF, GetWasapiText(hr));
 		//LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr),m_LogParam);
 		return hr;
-	}; 
+	};
+
+	// If debugging required then send the buffer content for debugging
+	if (m_DbgInputSignal && m_hPrntWnd)
+		SendDbgInputSignal(pDataIn, packetLength, m_CurrentWaveFormat.nChannels, m_CurrentWaveFormat.wBitsPerSample);
+
 
 	// Detect glitch in data (Unused in Vista)
 	if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
@@ -1894,6 +1910,40 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 	return hr;
 }
 
+// This function is called when debugging the raw input signal (Digitized Audio)
+// The input contains the data buffer and additional parameters to help interprete this buffer
+//	buffer: Pointer to byte buffer containing data packet
+//	bSize:	Frame count in the data packet
+//	nChannels: Number of channels in a frame: 1 (Mono) or 2 (Stereo)
+//	wBitsPerSample: 8/16 bits per channel
+//
+// The overall buffer size (In bytes) will be bSize*nChannels*wBitsPerSample
+// The Left channel is the first in a stereophonic (nChannels==2) frame
+// The Right channel is the second in a stereophonic (nChannels==2) frame
+// For 8-bit channel: Value ranging 0-255, mid-point is 127
+// For 16-bit channel: Value ranging-32768 to 32767, mid-point is 0
+inline void CSppAudio::SendDbgInputSignal(PBYTE buffer, UINT bSize, WORD nChannels, WORD wBitsPerSample)
+{
+	// Creating data structure that will send information to parent window
+	static struct InputSignalStruct 
+	{
+		BYTE sStruct; // Size of structure in bytes
+		UINT bSize;  // Number of frames
+		WORD nChannels;
+		WORD wBitsPerSample;
+		DWORD dwCount;
+	} sInputSig;
+
+	static DWORD counter=0;
+
+	sInputSig.sStruct = sizeof(InputSignalStruct);
+	sInputSig.bSize = bSize;
+	sInputSig.nChannels = nChannels;
+	sInputSig.wBitsPerSample = wBitsPerSample;
+	sInputSig.dwCount = counter++;
+
+	PostMessage(m_hPrntWnd, WMSPP_AUDIO_INSIG, (WPARAM)buffer, (LPARAM)&sInputSig);
+}
 
 HRESULT CSppAudio::InitPulseDataObj(CPulseData * pPulseDataObj)
 {
@@ -2005,4 +2055,5 @@ void	CSppAudio::LogMessage(int Severity, int Code, LPCTSTR Msg)
 
 	SendMessage(m_hPrntWnd , WMSPP_LOG_AUDIO + Severity, (WPARAM)Code, (LPARAM)Msg);
 	}
+
 

@@ -124,6 +124,9 @@ protected:
 	HRESULT EnableAudioDevice(PVOID devID, bool Enable=true);
 	void	LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 	void	LogMessageWithId(int Severity, int Code, LPVOID Id, LPCTSTR Msg=NULL);
+	inline void SendDbgInputSignal(PBYTE buffer, UINT bSize, WORD nChannels, WORD wBitsPerSample);
+
+
 	LOGFUNC	LogStatus;
 	AUDIOLOGFUNC	LogAudio;
 	PROCPULSEFUNC	ProcessPulse;
@@ -159,6 +162,9 @@ public:
 
 	SPPINTERFACE_API DWORD		GetnSamplesPerSec(void);
 	SPPINTERFACE_API WORD		GetwBitsPerSample(void);
+	SPPINTERFACE_API void		StartDbgInputSignal(void);
+	SPPINTERFACE_API void		StopDbgInputSignal(void);
+
 
 
 
@@ -194,6 +200,8 @@ protected:
 	PVOID			m_LogAudioParam;
 	PVOID			m_LogParam;
 	PVOID			m_ProcPulseParam;
+	bool			m_DbgInputSignal;
+
 
 public:
 	CPulseData			* m_pPulseDataObj;

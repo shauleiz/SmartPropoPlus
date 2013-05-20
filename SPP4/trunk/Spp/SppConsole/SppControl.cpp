@@ -11,12 +11,14 @@
 #include "SppControl.h"
 #include "SppDlg.h"
 #include "SppLog.h"
+#include "SppDbg.h"
 #include "WinMessages.h"
 
 // Globals
 HWND hDialog;
-class CSppAudio * Audio;
+class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
+class SppDbg * DbgObj = NULL;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
@@ -30,6 +32,7 @@ void		Acquire_vJoy();
 void		SelectFilter(int iFilter);
 void		LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
+void		DbgInputSignal(bool start);
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -131,6 +134,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!Audio)
 		return false;
 
+	// Crate Debugging object
+	DbgObj = new SppDbg();
 
 	// Create Dialog box, initialize it then show it
 	SppDlg *	Dialog	= new SppDlg(hInstance, hwnd);
@@ -233,6 +238,10 @@ LRESULT CALLBACK MainWindowProc(
 				LogWin->Hide();
 			break;
 
+		case WMSPP_DLG_INSIG:
+			DbgInputSignal(wParam);
+			break;
+
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_PCHMNT:
 			SendMessage(hDialog, uMsg, wParam, lParam);
@@ -265,6 +274,9 @@ LRESULT CALLBACK MainWindowProc(
 			LogMessageExt(uMsg-WMSPP_LOG_AUDIO, wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
 			break;
  
+		case WMSPP_AUDIO_INSIG:
+			DbgObj->InputSignalReady((PBYTE)wParam, (PVOID)lParam);
+			break;
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
  
@@ -533,4 +545,22 @@ void	LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg)
 	};
 
 	SendMessage(hLog , Src + Severity, (WPARAM)Code, (LPARAM)Msg);
+}
+
+// Start/Stop debugging the raw input data (digitized audio)
+void		DbgInputSignal(bool start)
+{
+	if (!DbgObj || !Audio)
+		return;
+
+	if (start)
+	{
+		DbgObj->StartDbgInputSignal();
+		Audio->StartDbgInputSignal();
+	}
+	else
+	{
+		Audio->StopDbgInputSignal();
+		DbgObj->StopDbgInputSignal();
+	}
 }
