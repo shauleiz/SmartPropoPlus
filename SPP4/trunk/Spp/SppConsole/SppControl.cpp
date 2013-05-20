@@ -16,6 +16,7 @@
 // Globals
 HWND hDialog;
 class CSppAudio * Audio;
+class SppLog * LogWin = NULL;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
@@ -137,7 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	CaptureDevicesPopulate(hDialog);
 
 	// Create Log window
-	SppLog * LogWin = new SppLog(hInstance, hwnd);
+	LogWin = new SppLog(hInstance, hwnd);
 	hLog = LogWin->GetWndHandle();
 	
 	// Start reading audio data
@@ -154,7 +155,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LogMessage(INFO, IDS_I_STARTSPPPRS);
 
 	Dialog->Show(); // If not asked to be iconified
-	LogWin->Show(); // TODO: Remove
 
 	FilterPopulate(hDialog);
 	Spp->AudioChanged();
@@ -226,7 +226,15 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->MonitorChannels(wParam);
 			break;
 
-		case WMSPP_PRCS_CHMNTR:
+		case WMSPP_DLG_LOG:
+			if (wParam)
+				LogWin->Show();
+			else
+				LogWin->Hide();
+			break;
+
+		case WMSPP_PRCS_RCHMNT:
+		case WMSPP_PRCS_PCHMNT:
 			SendMessage(hDialog, uMsg, wParam, lParam);
 			break;
 

@@ -150,6 +150,18 @@ void  SppDlg::SetRawChData(UINT iCh, UINT data)
 
 }
 
+// Update the position of the progress bar that corresponds to the channel
+void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
+{
+	// Check if this channel is supported
+	if (iCh > (IDC_CHPP8-IDC_CHPP1))
+		return;
+
+	HWND hCh = GetDlgItem(m_hDlg,  IDC_CHPP1+iCh);
+	SendMessage(hCh, PBM_SETPOS, data, 0);
+
+}
+
 void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 {
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
@@ -206,6 +218,17 @@ void SppDlg::AddLine2ModList(MOD_STRUCT * mod)
 	};
 }
 
+
+// Tell the parent window (Main application)
+// to show/hide log window
+void  SppDlg::ShowLogWindow(WORD cb)
+{
+	// Get data
+	HWND hLogChCB = GetDlgItem(m_hDlg,  cb);
+	int show = Button_GetCheck(hLogChCB);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_LOG , show, 0);
+}
+
 // Tell the parent window (Main application)
 // to stop/start monitoring the raw channel data
 void  SppDlg::MonitorRawCh(WORD cb)
@@ -224,6 +247,28 @@ void  SppDlg::MonitorRawCh(WORD cb)
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 		ch++;
 	} while (ch<=IDC_CH8);
+
+	// Pass request
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
+}
+// Tell the parent window (Main application)
+// to stop/start monitoring the processed channel data
+void  SppDlg::MonitorPrcCh(WORD cb)
+{
+	// Get data
+	HWND hMonitorChCB = GetDlgItem(m_hDlg,  cb);
+	int start = Button_GetCheck(hMonitorChCB);
+
+	// Clear display
+	UINT ch= IDC_CHPP1;
+	HWND hCh;
+	do 
+	{
+		hCh = GetDlgItem(m_hDlg,  ch);
+		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		ch++;
+	} while (ch<=IDC_CHPP8);
 
 	// Pass request
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
@@ -388,8 +433,17 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		}
 
 		if (LOWORD(wParam) == IDC_CH_MONITOR)
+		{
 			DialogObj->MonitorRawCh(LOWORD(wParam));
+			DialogObj->MonitorPrcCh(LOWORD(wParam));
+			break;
+		};
 
+		if (LOWORD(wParam) == IDC_CH_LOG)
+		{
+			DialogObj->ShowLogWindow(LOWORD(wParam));
+			break;
+		};
 
 
 
@@ -407,8 +461,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->AddLine2ModList((MOD_STRUCT *)(wParam));
 		break;
 
-	case WMSPP_PRCS_CHMNTR:
+	case WMSPP_PRCS_RCHMNT:
 		DialogObj->SetRawChData(wParam, lParam);
+		break;
+
+	case WMSPP_PRCS_PCHMNT:
+		DialogObj->SetProcessedChData(wParam, lParam);
 		break;
 
 	case FILTER_ADDA:

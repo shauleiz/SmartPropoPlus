@@ -16,8 +16,11 @@ public: // Called from window procedure
 	void AddLine2AudioList(jack_info * jack);
 	void AddLine2ModList(MOD_STRUCT * mod);
 	void SetRawChData(UINT iCh, UINT data);
+	void SetProcessedChData(UINT iCh, UINT data);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
 	void MonitorRawCh(WORD cb);
+	void MonitorPrcCh(WORD cb);
+	void ShowLogWindow(WORD cb);
 	void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void UpdateFilter(void);

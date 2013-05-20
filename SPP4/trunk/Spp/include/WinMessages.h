@@ -16,7 +16,8 @@ UINT const WMAPP_DEV_INFO	=			WM_APP + 106;			// Device information available
 UINT const WMAPP_GUI_SHOW	=			WM_APP + 200;			// Show GUI Window
 UINT const WMAPP_GUI_HIDE	=			WM_APP + 201;			// Hide GUI Window
 UINT const WMAPP_GUI_AUDIO	=			WM_APP + 202;			// Information destination: Audio GUI
-UINT const WMSPP_PRCS_CHMNTR=			WM_APP + 203;			// Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
+UINT const WMSPP_PRCS_RCHMNT=			WM_APP + 203;			// Raw Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
+UINT const WMSPP_PRCS_PCHMNT=			WM_APP + 204;			// Processed Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
 
 UINT const BASE_SUB			=			1000;					// Base value
 UINT const POPULATE_JACKS	=			BASE_SUB+1;				// The payload is a pointer to struct jack_info
@@ -38,6 +39,7 @@ UINT const WMSPP_PRCS_GETSPR=			BASE_SUB+15;			// Get Number of Samples/Second f
 UINT const WMSPP_PRCS_GETBPS=			BASE_SUB+16;			// Get Number of Bits per Sample for the default capture device
 UINT const WMSPP_PRCS_GETNCH=			BASE_SUB+17;			// Get Number of audio channels (Mono(1)/Stereo(2))
 UINT const WMSPP_PRCS_GETLR	=			BASE_SUB+18;			// Get active audio channel (Left(0), Right(1))
+UINT const WMSPP_DLG_LOG	=			BASE_SUB+19;			// The payload is boolean Show/Hide log window
 
 
 // Log Messages
