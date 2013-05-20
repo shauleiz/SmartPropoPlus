@@ -256,9 +256,9 @@ void CSppProcess::PollChannels(void)
 		return;
 
 	// Create shadow array of the channel data
-	UINT nCh = sizeof(m_Position);
-	std::vector<int> vChannels;
-	vChannels.resize(nCh, 0);
+	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
+	static std::vector<int> vRawChannels (nCh, 0);
+	static std::vector<int> vPrcChannels (nCh, 0);
 
 	
 	// Poll the channel values and send them over to the parent window
@@ -268,17 +268,22 @@ void CSppProcess::PollChannels(void)
 		 //If changed, POST message at the parent
 		for (UINT i=0; i<nCh; i++)
 		{
-			//if (vChannels[i] != m_Position[i])
-			//{
-				//vChannels[i] = m_Position[i];
-				PostMessage(m_hParentWnd, WMSPP_PRCS_RCHMNT, i, m_Position[i]);
-			//};
+			if (vRawChannels[i] != m_Position[i])
+			{
+				vRawChannels[i] = m_Position[i];
+				PostMessage(m_hParentWnd, WMSPP_PRCS_RCHMNT, i,vRawChannels[i]);
+			};
 		}; // For loop (Raw)
 
+		 //For every Processed channel, check if changed
+		 //If changed, POST message at the parent
 		for  (UINT i=0; i<nCh; i++)
 		{
-			//vChannels[i] = m_PrcChannel[i];
-			PostMessage(m_hParentWnd, WMSPP_PRCS_PCHMNT, i,  m_PrcChannel[i]);
+			if (vPrcChannels[i] != m_PrcChannel[i])
+			{
+				vPrcChannels[i] = m_PrcChannel[i];
+				PostMessage(m_hParentWnd, WMSPP_PRCS_PCHMNT, i,vPrcChannels[i]);
+			};
 		}; // For loop (Processed)
 
 		
@@ -1973,9 +1978,10 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 		n_ch = RunJsFilter(ch,nChannels+1);
 		if (!n_ch)
 			n_ch = nChannels;
-		memcpy(m_PrcChannel, ch, MAX_JS_CH*sizeof(int));	
 	}
 
+	// Create a public duplication of processed data for monitoring
+	memcpy(m_PrcChannel, ch, MAX_JS_CH*sizeof(int));	
 
 	for (i=0; i<=n_ch && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
 		writeOk =  SetAxis(32*ch[i],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
