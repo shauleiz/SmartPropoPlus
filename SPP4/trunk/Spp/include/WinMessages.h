@@ -12,6 +12,7 @@ UINT const WMAPP_DEV_CHANGED=			WM_APP + 103;			// Device changed
 UINT const WMSPP_AUDIO_PROP =			WM_APP + 104;			// Device property changed
 UINT const WMAPP_POS_READY	=			WM_APP + 105;			// Joystick Position data is ready
 UINT const WMAPP_DEV_INFO	=			WM_APP + 106;			// Device information available
+UINT const WMSPP_AUDIO_INSIG	=		WM_APP + 107;			// Input signal (raw audio) available
 
 UINT const WMAPP_GUI_SHOW	=			WM_APP + 200;			// Show GUI Window
 UINT const WMAPP_GUI_HIDE	=			WM_APP + 201;			// Hide GUI Window
@@ -40,6 +41,7 @@ UINT const WMSPP_PRCS_GETBPS=			BASE_SUB+16;			// Get Number of Bits per Sample 
 UINT const WMSPP_PRCS_GETNCH=			BASE_SUB+17;			// Get Number of audio channels (Mono(1)/Stereo(2))
 UINT const WMSPP_PRCS_GETLR	=			BASE_SUB+18;			// Get active audio channel (Left(0), Right(1))
 UINT const WMSPP_DLG_LOG	=			BASE_SUB+19;			// The payload is boolean Show/Hide log window
+UINT const WMSPP_DLG_INSIG	=			BASE_SUB+20;			// The payload is boolean Show/Hide log window
 
 
 // Log Messages
