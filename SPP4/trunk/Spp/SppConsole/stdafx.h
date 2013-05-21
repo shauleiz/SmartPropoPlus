@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <Strsafe.h>
 #include <Shellapi.h>
-
+#include <fstream>
+#include <iostream>
+#include <sstream> 
 
 // TODO: reference additional headers your program requires here
