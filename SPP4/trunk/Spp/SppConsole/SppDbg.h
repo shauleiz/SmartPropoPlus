@@ -10,6 +10,6 @@ public:
 
 private:
 	FILE * m_FileDbgInSig;
-	char m_FileDbgInSigName[FILENAME_MAX];
+	TCHAR m_FileDbgInSigName[MAX_PATH];
 };
 

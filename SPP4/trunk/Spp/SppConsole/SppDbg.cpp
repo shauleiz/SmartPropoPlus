@@ -10,19 +10,40 @@ SppDbg::SppDbg(void) :
 
 SppDbg::~SppDbg(void)
 {
+	StopDbgInputSignal();
 }
 
 void SppDbg::StartDbgInputSignal(void)
 {
 
-	memcpy_s(m_FileDbgInSigName, FILENAME_MAX,  "SPPDBGINSIG.TXT", FILENAME_MAX);// TODO: Make the file name configurable
+	memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", MAX_PATH);
 	if (!m_FileDbgInSig)
-		fopen_s(&m_FileDbgInSig,m_FileDbgInSigName, "w+"); 
+		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+"); 
 }
 
 void SppDbg::StopDbgInputSignal(void)
 {
+	if (!m_FileDbgInSig)
+		return;
+
+	OPENFILENAME ofn;
 	fclose(m_FileDbgInSig);
+
+	// Get destination file
+	char szFileName[MAX_PATH] = "";
+	memcpy_s(szFileName, MAX_PATH, m_FileDbgInSigName, MAX_PATH);
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn); 
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFilter = (LPCWSTR)L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = (LPWSTR)szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_OVERWRITEPROMPT;
+    ofn.lpstrDefExt = (LPCWSTR)L"txt";
+	GetSaveFileName(&ofn);
+
+	// Move tempfile to selected destination
+	BOOL moved = MoveFileEx(m_FileDbgInSigName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING);
 }
 
 // Data packet arrives with raw input signal (Digital Audio)
@@ -57,7 +78,7 @@ void SppDbg::InputSignalReady(PBYTE buffer, PVOID info)
 	if (sInputSig->nChannels == 2)
 		sep = '/';
 	else
-		sep = ' ';
+		sep = ',';
 
 	int line=0;
 	int row=0;
