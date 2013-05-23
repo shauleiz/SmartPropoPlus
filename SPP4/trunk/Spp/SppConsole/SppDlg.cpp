@@ -302,7 +302,7 @@ void SppDlg::UpdateFilter(void)
 			item.iSubItem = 0;
 			item.mask = LVIF_PARAM;
 			if (ListView_GetItem(hFilterList,&item))
-				iFilter = item.lParam;
+				iFilter = (int)item.lParam;
 		}; // if
 	}; // for
 
@@ -478,11 +478,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_PRCS_RCHMNT:
-		DialogObj->SetRawChData(wParam, lParam);
+		DialogObj->SetRawChData((UINT)wParam, (UINT)lParam);
 		break;
 
 	case WMSPP_PRCS_PCHMNT:
-		DialogObj->SetProcessedChData(wParam, lParam);
+		DialogObj->SetProcessedChData((UINT)wParam, (UINT)lParam);
 		break;
 
 	case FILTER_ADDA:
