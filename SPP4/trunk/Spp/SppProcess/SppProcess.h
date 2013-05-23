@@ -20,12 +20,22 @@ using std::thread;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
+#ifdef X64
+#ifdef _DEBUG
+#pragma  comment(lib, "..\\x64\\Debug\\AudioLib.lib")
+#pragma  comment(lib, "..\\x64\\Debug\\vJoyInterface.lib")
+#else
+#pragma  comment(lib, "..\\x64\\Release\\AudioLib.lib")
+#pragma  comment(lib, "..\\x64\\Release\\vJoyInterface.lib")
+#endif
+#else
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\Debug\\AudioLib.lib")
 #pragma  comment(lib, "..\\Debug\\vJoyInterface.lib")
 #else
 #pragma  comment(lib, "..\\Release\\AudioLib.lib")
 #pragma  comment(lib, "..\\Release\\vJoyInterface.lib")
+#endif
 #endif
 
 #define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));

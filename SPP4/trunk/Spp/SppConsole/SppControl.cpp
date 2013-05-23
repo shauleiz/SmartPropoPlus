@@ -228,7 +228,7 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_MONITOR:
 			if (Spp)
-				Spp->MonitorChannels(wParam);
+				Spp->MonitorChannels((BOOL)wParam);
 			break;
 
 		case WMSPP_DLG_LOG:
@@ -239,7 +239,10 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_DLG_INSIG:
-			DbgInputSignal(wParam);
+			if (wParam)
+				DbgInputSignal(true);
+			else
+				DbgInputSignal(false);
 			break;
 
 		case WMSPP_PRCS_RCHMNT:
@@ -264,14 +267,14 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_LOG_PRSC+WARN:
 		case WMSPP_LOG_PRSC+ERR:
 		case WMSPP_LOG_PRSC+FATAL:
-			LogMessageExt(uMsg-WMSPP_LOG_PRSC, wParam, WMSPP_LOG_PRSC, (LPCTSTR)lParam);
+			LogMessageExt(uMsg-WMSPP_LOG_PRSC, (int)wParam, WMSPP_LOG_PRSC, (LPCTSTR)lParam);
 			break;
  
 		case WMSPP_LOG_AUDIO+INFO:
 		case WMSPP_LOG_AUDIO+WARN:
 		case WMSPP_LOG_AUDIO+ERR:
 		case WMSPP_LOG_AUDIO+FATAL:
-			LogMessageExt(uMsg-WMSPP_LOG_AUDIO, wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
+			LogMessageExt(uMsg-WMSPP_LOG_AUDIO, (int)wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
 			break;
  
 		case WMSPP_AUDIO_INSIG:
