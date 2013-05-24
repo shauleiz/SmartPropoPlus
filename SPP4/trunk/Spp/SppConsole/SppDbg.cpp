@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "GlobalMemory.h"
+#include "SmartPropoPlus.h"
 #include "SppDbg.h"
 
 
@@ -11,6 +13,7 @@ SppDbg::SppDbg(void) :
 SppDbg::~SppDbg(void)
 {
 	StopDbgInputSignal();
+	StopDbgPulse();
 }
 
 void SppDbg::StartDbgInputSignal(void)
@@ -19,6 +22,14 @@ void SppDbg::StartDbgInputSignal(void)
 	memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", MAX_PATH);
 	if (!m_FileDbgInSig)
 		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+"); 
+}
+
+void SppDbg::StartDbgPulse(void)
+{
+
+	memcpy_s(m_FileDbgPulseName, MAX_PATH,  L"SPPDBGPULSE.TXT", MAX_PATH);
+	if (!m_FileDbgPulse)
+		_wfopen_s(&m_FileDbgPulse,m_FileDbgPulseName, L"w+"); 
 }
 
 void SppDbg::StopDbgInputSignal(void)
@@ -44,6 +55,30 @@ void SppDbg::StopDbgInputSignal(void)
 
 	// Move tempfile to selected destination
 	BOOL moved = MoveFileEx(m_FileDbgInSigName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING);
+}
+void SppDbg::StopDbgPulse(void)
+{
+	if (!m_FileDbgPulse)
+		return;
+
+	OPENFILENAME ofn;
+	fclose(m_FileDbgPulse);
+
+	// Get destination file
+	char szFileName[MAX_PATH] = "";
+	memcpy_s(szFileName, MAX_PATH, m_FileDbgPulseName, MAX_PATH);
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn); 
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFilter = (LPCWSTR)L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFile = (LPWSTR)szFileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_OVERWRITEPROMPT;
+    ofn.lpstrDefExt = (LPCWSTR)L"txt";
+	GetSaveFileName(&ofn);
+
+	// Move tempfile to selected destination
+	BOOL moved = MoveFileEx(m_FileDbgPulseName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING);
 }
 
 // Data packet arrives with raw input signal (Digital Audio)
@@ -117,3 +152,44 @@ void SppDbg::InputSignalReady(PBYTE buffer, PVOID info)
 		}
 }
 
+// Data packet arrives with Pulse data (Raw & Normalized) along with an array of samples
+// Get the data and write it into a file
+void SppDbg::PulseReady(PVOID buffer, UINT ArraySize)
+{
+	if (!m_FileDbgPulse || !buffer)
+		return;
+
+	DbgPulseInfo * sPulseInfo = (DbgPulseInfo *)buffer;
+
+	// Print Pulse data
+	fprintf(m_FileDbgPulse,  "\n>>> Pulse length (Raw/Normalized): %d/%d, ", sPulseInfo->RawPulse,  sPulseInfo->NormPulse);
+	if (sPulseInfo->negative)
+		fprintf(m_FileDbgPulse,  "Low\n");
+	else
+		fprintf(m_FileDbgPulse,  "High\n");
+
+	// Print samples
+	int line=0;
+	int row=0;
+	USHORT  * Samples = (USHORT  *)sPulseInfo->Samples;
+
+	for (UINT i=0; i<ArraySize; i++)
+	{
+		if (!row)
+			fprintf(m_FileDbgPulse,  ">> %3d,  ", line++);
+		row++;
+
+		fprintf(m_FileDbgPulse,  "%06d", Samples[i]);
+		if (row == 16)
+		{
+			fprintf(m_FileDbgPulse,"\n");
+			row=0;
+		}
+		else
+			fprintf(m_FileDbgPulse,", ");
+
+	}
+
+
+
+}

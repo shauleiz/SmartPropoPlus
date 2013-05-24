@@ -201,6 +201,14 @@ struct JsChPostProcInfo
 	far char ** name_fltr;	// list of display name of filters
 } ;
 
+struct DbgPulseInfo
+{
+	UINT size;
+	LPVOID Samples;
+	UINT RawPulse;
+	UINT NormPulse;
+	bool negative;
+};
 
 /* Function Prototypes */
 int SetActiveMode(LPCWSTR selected);

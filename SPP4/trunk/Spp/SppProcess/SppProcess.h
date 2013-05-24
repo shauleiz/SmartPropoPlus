@@ -85,7 +85,7 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 
 
 class /*SPPMAIN_API*/ CSppProcess {
-	public:
+public:
 	SPPMAIN_API CSppProcess(void);
 	SPPMAIN_API ~CSppProcess();
 	SPPMAIN_API bool Start(HWND hParentWnd);
@@ -94,6 +94,8 @@ class /*SPPMAIN_API*/ CSppProcess {
 	SPPMAIN_API void AudioChanged(void);
 	SPPMAIN_API void MonitorChannels(BOOL Start=TRUE);
 	SPPMAIN_API void SelectFilter(int, LPVOID);
+	SPPMAIN_API void StartDbgPulse(void);
+	SPPMAIN_API void StopDbgPulse(void);
 
 private:
 	int LoadProcessPulseFunctions();
@@ -126,6 +128,8 @@ private:
 	inline UINT Sample2Pulse(short sample, bool * negative);
 	inline UINT NormalizePulse(UINT Length);
 	PJS_CHANNELS (WINAPI *ProcessChannels)(PJS_CHANNELS, int max, int min);
+	void SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength, UINT PulseLength);
+
 
 
 private:	// Walkera (PCM) helper functions
@@ -165,6 +169,7 @@ private:
 	HWND m_hParentWnd;
 	BOOL m_chMonitor;
 	BOOL m_vJoyReady;
+	BOOL m_DbgPulse;
 };
 
 

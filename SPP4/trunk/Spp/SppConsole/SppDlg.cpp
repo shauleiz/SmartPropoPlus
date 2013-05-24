@@ -229,6 +229,16 @@ void  SppDlg::ShowLogWindow(WORD cb)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_LOG , show, 0);
 }
 
+void  SppDlg::RecordPulse(WORD cb)
+{
+	// Get data
+	HWND hRecordPulseChCB = GetDlgItem(m_hDlg,  cb);
+	int record = Button_GetCheck(hRecordPulseChCB);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_PULSE , record, 0);
+
+}
+
+
 void  SppDlg::RecordInSignal(WORD cb)
 {
 	// Get data
@@ -457,6 +467,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (LOWORD(wParam) == IDC_CH_INSIG)
 		{
 			DialogObj->RecordInSignal(LOWORD(wParam));
+			break;
+		};
+
+		if (LOWORD(wParam) == IDC_CH_PULSE)
+		{
+			DialogObj->RecordPulse(LOWORD(wParam));
 			break;
 		};
 
