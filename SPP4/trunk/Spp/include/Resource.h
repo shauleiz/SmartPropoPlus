@@ -28,6 +28,7 @@
 #define IDC_TXT_CHPP6                           1016
 #define IDC_TXT_CHPP7                           1017
 #define IDC_TXT_CHPP8                           1018
+#define IDC_CH_PULSE                            1019
 #define IDC_LIST_FILTERS                        1080
 #define IDC_CH_LOG                              1081
 #define IDS_APP_TITLE                           40000

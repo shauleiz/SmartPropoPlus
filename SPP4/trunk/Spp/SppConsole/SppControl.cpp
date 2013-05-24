@@ -33,6 +33,7 @@ void		SelectFilter(int iFilter);
 void		LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
+void		DbgPulse(bool start);
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -245,6 +246,13 @@ LRESULT CALLBACK MainWindowProc(
 				DbgInputSignal(false);
 			break;
 
+		case WMSPP_DLG_PULSE:
+			if (wParam)
+				DbgPulse(true);
+			else
+				DbgPulse(false);
+			break;
+
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_PCHMNT:
 			SendMessage(hDialog, uMsg, wParam, lParam);
@@ -279,6 +287,10 @@ LRESULT CALLBACK MainWindowProc(
  
 		case WMSPP_AUDIO_INSIG:
 			DbgObj->InputSignalReady((PBYTE)wParam, (PVOID)lParam);
+			break;
+ 
+		case WMSPP_PROC_PULSE:
+			DbgObj->PulseReady((PVOID)wParam, (UINT)lParam);
 			break;
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
@@ -565,5 +577,24 @@ void		DbgInputSignal(bool start)
 	{
 		Audio->StopDbgInputSignal();
 		DbgObj->StopDbgInputSignal();
+	}
+}
+
+
+// Start/Stop debugging the raw input data (digitized audio)
+void		DbgPulse(bool start)
+{
+	if (!DbgObj || !Audio)
+		return;
+
+	if (start)
+	{
+		DbgObj->StartDbgPulse();
+		Spp->StartDbgPulse();
+	}
+	else
+	{
+		Spp->StopDbgPulse();
+		DbgObj->StopDbgPulse();
 	}
 }

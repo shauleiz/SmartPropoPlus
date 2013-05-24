@@ -29,6 +29,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_Audio(NULL),
 	m_hParentWnd(NULL),
 	m_vJoyReady(false),
+	m_DbgPulse(FALSE),
 	ProcessChannels(NULL),
 	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2),
@@ -48,6 +49,15 @@ SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 	LoadProcessPulseFunctions();
 }
 
+SPPMAIN_API void CSppProcess::StartDbgPulse(void)
+{
+	m_DbgPulse = TRUE;
+}
+
+SPPMAIN_API void CSppProcess::StopDbgPulse(void)
+{
+	m_DbgPulse = FALSE;
+}
 
 
 // Called to inform SPP that a filter has been selected or diselected
@@ -398,6 +408,11 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// Normalize pulse length to 192K sampling rate
 		rawPulseLength = PulseLength;
 		PulseLength = NormalizePulse(PulseLength);
+
+		// Debug pulse
+		if (m_DbgPulse && m_hParentWnd)
+			SendDbgPulse(sample,  negative,  rawPulseLength,  PulseLength);
+
 #ifdef _DEBUG
 		if (PulseLength)
 		{
@@ -2055,4 +2070,43 @@ void	CSppProcess::LogMessage(int Severity, int Code, LPCTSTR Msg)
 		return;
 
 	SendMessage(m_hParentWnd , WMSPP_LOG_PRSC + Severity, (WPARAM)Code, (LPARAM)Msg);
+}
+
+// Called with every input sample - sends data only on pulse end
+// Accumulates sample data until pulse end - then sends the data to parent window
+// Sample date accumulated in two interleaving arrays
+void CSppProcess::SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength, UINT PulseLength)
+{
+	// Preparing arrays to accumulate samples
+	const UINT ArraySize = 4000;
+	static USHORT  Samples[ArraySize][2];
+	static UCHAR iArray = 0;
+	static UINT iSample=0;
+	static DbgPulseInfo info;
+
+	// Send message if new pulse or if the array is going to overrun
+	if ( (iSample >= ArraySize) || rawPulseLength)
+	{
+		// Prepare data
+		info.size = sizeof(DbgPulseInfo);
+		info.Samples = (LPVOID)(&(Samples[iArray]));
+		info.RawPulse = rawPulseLength;
+		info.NormPulse = PulseLength;
+		info.negative= negative;
+		// Post data 
+		SendMessage(m_hParentWnd, WMSPP_PROC_PULSE, (WPARAM)&info, (LPARAM)iSample);
+
+		// Prepare to continue
+		if (iArray)
+			iArray = 0;
+		else
+			iArray = 1;
+		iSample = 0;
+	}
+
+	// Put a new sample in current array (Make sure array not overrun)
+	Samples[iArray][iSample++] = sample;
+
+
+
 }
