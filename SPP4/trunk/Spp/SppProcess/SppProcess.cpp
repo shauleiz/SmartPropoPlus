@@ -125,10 +125,10 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	//_DebugWelcomePopUp(Modulation);
 
 
-	// Initialize the mutex than prevents simultaneous Start/Stop streaming
-	m_hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
-	if (!m_hMutexStartStop)
-		return false;
+	//// Initialize the mutex than prevents simultaneous Start/Stop streaming
+	//m_hMutexStartStop = CreateMutex(NULL, FALSE, MUTEX_STOP_START);
+	//if (!m_hMutexStartStop)
+	//	return false;
 
 	// Start a thread that listens to the GUI
 	thread * tListenToGui = new thread(ListenToGuiStatic, this);

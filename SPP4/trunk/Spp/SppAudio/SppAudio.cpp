@@ -31,34 +31,8 @@ void   DbgPopUp(int Line, DWORD Error)
 	MessageBoxA(NULL, Combined, "Error",  MB_SYSTEMMODAL|MB_ICONERROR);
 #endif
 }
-bool   g_CaptureAudioThreadRunnig;		// If false - signal to capture audio thread to stop
-HANDLE g_hEventStopCaptureAudioThread;	// Handle to event that is set when the audio thread is stopping
 HANDLE g_hAudioBufferReady = NULL;
 
-DWORD WINAPI CaptureAudio(LPVOID param)
-/*
-	Capture loop - running on a dedicated thread
-	param: Pointer to the calling CSppAudio object
-*/
-{
-	HRESULT hr = S_OK;
-	// Initialize capture thread
-	CSppAudio * parent = (CSppAudio *)param;
-	//CPulseData * pPulseDataObj = new CPulseData;
-	parent->InitPulseDataObj(parent->m_pPulseDataObj);
-
-	// Capture loop
-	do
-	{
-		hr = parent->ProcessAudioPacket(parent->m_pPulseDataObj);
-	}while (g_CaptureAudioThreadRunnig);
-
-	// Exit capture thread
-	delete parent->m_pPulseDataObj;
-	parent->m_pPulseDataObj = NULL;
-	SetEvent(g_hEventStopCaptureAudioThread);
-	return 0;
-}
 
 void Log(int Code, int Severity, LPVOID Data)
 {
@@ -260,9 +234,9 @@ bool CSppAudio::Create(void)
 	HRESULT hr = S_OK;
 	m_pCaptureClient = NULL;
 	m_pAudioClient = NULL;
-	m_hCaptureAudioThread = NULL;
-	g_hEventStopCaptureAudioThread = NULL;
-	g_CaptureAudioThreadRunnig = false;
+	//m_hCaptureAudioThread = NULL;
+	//g_hEventStopCaptureAudioThread = NULL;
+	//g_CaptureAudioThreadRunnig = false;
 	m_CurrentWaveFormat.cbSize = 0;
 	m_CurrentWaveFormat.nAvgBytesPerSec = 0;
 	m_CurrentWaveFormat.nBlockAlign = 0;
@@ -1452,15 +1426,6 @@ SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
 
 	// The ID of the currently streaming capture endpoint
 	m_CurrentId = Id;
-
-	//// Create capturing thread
-	//hr = CreateCuptureThread(Id);
-	//if (FAILED(hr))
-	//{
-	//	LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
-	//	LogStatus(GEN_STATUS,WARN,STRSTRM5,m_LogParam);
-	//	EXIT_ON_ERROR(hr);
-	//};
 	return true;
 
 Exit:
@@ -1618,33 +1583,6 @@ HRESULT CSppAudio::StopCurrentStream(void)
 		return S_FALSE;
 
 	hr = m_pAudioClient->Stop();  // Stop recording.
-
-	// Stop capture thread
-	if (g_hEventStopCaptureAudioThread)
-	{
-		g_CaptureAudioThreadRunnig = false;
-		DWORD dwWaitResult = WaitForSingleObject(g_hEventStopCaptureAudioThread, 2000);
-		if (dwWaitResult != WAIT_OBJECT_0)
-			TerminateThread(m_hCaptureAudioThread,-1);
-		CloseHandle(g_hEventStopCaptureAudioThread);
-		g_hEventStopCaptureAudioThread = NULL;
-		CloseHandle(m_hCaptureAudioThread);
-		if (m_pPulseDataObj)
-		{
-			delete m_pPulseDataObj;
-			m_pPulseDataObj=NULL;
-		};
-
-		m_hCaptureAudioThread = NULL;
-		m_CurrentWaveFormat.cbSize = 0;
-		m_CurrentWaveFormat.nAvgBytesPerSec = 0;
-		m_CurrentWaveFormat.nBlockAlign = 0;
-		m_CurrentWaveFormat.nChannels = 0;
-		m_CurrentWaveFormat.nSamplesPerSec = 0;
-		m_CurrentWaveFormat.wBitsPerSample = 0;
-		m_CurrentWaveFormat.wFormatTag = 0;
-	}
-
 	SAFE_RELEASE(m_pAudioClient);
 	if (FAILED(hr))
 		LogMessage(WARN, IDS_W_STPSTR_NOSTOP, GetWasapiText(hr));
@@ -1670,54 +1608,6 @@ HRESULT CSppAudio::StartCurrentStream(void)
 
 }
 
-
-HRESULT CSppAudio::CreateCuptureThread(PVOID Id)
-{
-	HRESULT hr=S_OK;
-	DWORD dwThreadId;
-
-	if (m_hCaptureAudioThread)
-		return S_FALSE;
-	if (!m_pAudioClient)
-		return S_FALSE;
-
-	/* Create a PulseData object & init */
-	m_pPulseDataObj = new CPulseData;
-	InitPulseDataObj(m_pPulseDataObj);
-	m_pPulseDataObj->SelectInputChannel(m_CurrentChannelIsRight);
-
-	/* Pass Process Pulse callback function */
-	m_pPulseDataObj->RegisterProcessPulse(ProcessPulse,m_ProcPulseParam);
-
-
-	/* signal the audio capture thread that it is OK to capture */
-	g_CaptureAudioThreadRunnig = true;
-
-	/* Create event by which the audio capture thread signals that it exits */
-	g_hEventStopCaptureAudioThread = CreateEvent( 
-        NULL,               // default security attributes
-        TRUE,               // manual-reset event
-        FALSE,              // initial state is nonsignaled
-        TEXT("Event Stop Capture Audio-Thread")  // object name TODO: Make it through resorces
-        ); 
-    if (g_hEventStopCaptureAudioThread == NULL)
-		return GetLastError();
-
-
-	/* Create capturing thread  and pass a pointer to THIS object */
-	m_hCaptureAudioThread = CreateThread(
-		NULL,				// no security attribute
-		0,					// default stack size
-		&CaptureAudio,
-		this,				// thread parameter
-		0,					// not suspended
-		&dwThreadId);		// returns thread ID
-
-	if (!m_hCaptureAudioThread)
-		return ERROR_ACCESS_DENIED;
-
-	return hr;
-}
 
 HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 {
