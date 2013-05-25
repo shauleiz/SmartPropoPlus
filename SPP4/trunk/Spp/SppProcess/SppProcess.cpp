@@ -251,13 +251,23 @@ void CSppProcess::CaptureAudio(void)
 			continue;
 		}
 
+
 		// Here the processing of the audio is done
 		hr = ProcessWave(buffer, bSize);
 		if (hr != S_OK)
 			break;
 
+		// Test buffer size and adjust if needed
+		UINT currsize = bSize*m_WaveBitsPerSample*m_WaveNChannels/8;
+		if (currsize != bMax && currsize)
+		{
+			delete [] (buffer);
+			bMax = currsize;
+			buffer = new BYTE[bMax];
+		}
 	};
-	delete (buffer);
+
+	delete [] (buffer);
 	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
 	m_tCaptureActive = FALSE;
 }
@@ -446,56 +456,56 @@ Exit:
 }
 
 
-/*
-	ProcessData - process a single audio sample of unknown type (8-16 bits mono)
-	The audio sample may be 8-bit PCM, ranging 0-255, mid-point is 128
-	The audio sample may be 16-bit PCM, ranging from -32768 to 32767, mid-point is 0
-	The minimal step is 1
-*/
-void __fastcall  CSppProcess::ProcessData(UINT i)
-{
-    static double min = 0;	/* Sticky minimum sample value */
-    static double max = 0;	/* Sticky maximum sample value */
-    static int high = 0;	/* Number of contingious above-threshold samples */
-    static int low = 0;		/* Number of contingious below-threshold samples */
-    double threshold;		/* calculated mid-point */
-	static int FormerInput;
-
-	/* Initialization of the min/max vaues */
-    max -= 0.1;
-    min += 0.1;
-    if (max < min) max = min + 1;
-
-    if (i> max) max = i;			/* Update max value */
-    else if (i < min) min = i;		/* Update min value */
-    threshold = (min + max) / 2;	/* Update mid-point value */
-	threshold = CalcThreshold(i);	/* Version 3.3.3 */
-
-	/* TODO: move this to some other place - why call it every time? 
-	SetActiveProcessPulseFunction(DataBlock);*/
-
-	/* Update the width of the number of the low/high samples */
-	/* If edge, then call ProcessPulse() to process the previous high/low level */
-    if (i > threshold) 
-	{
-	high++;
-        if (low) 
-		{
-			low=low*192000; // TODO: Normalize number of samples
-			ProcessPulsePpm(low, FALSE); // TODO: Replace by virtual function
-            low = 0;
-        }
-    } else 
-	{
-        low++;
-        if (high) 
-		{
-			high=high*192000; // TODO: Normalize number of sumples
-            ProcessPulsePpm(high, TRUE);// TODO: Replace by virtual function
-            high = 0;
-        }
-    }
-}
+///*
+//	ProcessData - process a single audio sample of unknown type (8-16 bits mono)
+//	The audio sample may be 8-bit PCM, ranging 0-255, mid-point is 128
+//	The audio sample may be 16-bit PCM, ranging from -32768 to 32767, mid-point is 0
+//	The minimal step is 1
+//*/
+//void __fastcall  CSppProcess::ProcessData(UINT i)
+//{
+//    static double min = 0;	/* Sticky minimum sample value */
+//    static double max = 0;	/* Sticky maximum sample value */
+//    static int high = 0;	/* Number of contingious above-threshold samples */
+//    static int low = 0;		/* Number of contingious below-threshold samples */
+//    double threshold;		/* calculated mid-point */
+//	static int FormerInput;
+//
+//	/* Initialization of the min/max vaues */
+//    max -= 0.1;
+//    min += 0.1;
+//    if (max < min) max = min + 1;
+//
+//    if (i> max) max = i;			/* Update max value */
+//    else if (i < min) min = i;		/* Update min value */
+//    threshold = (min + max) / 2;	/* Update mid-point value */
+//	threshold = CalcThreshold(i);	/* Version 3.3.3 */
+//
+//	/* TODO: move this to some other place - why call it every time? 
+//	SetActiveProcessPulseFunction(DataBlock);*/
+//
+//	/* Update the width of the number of the low/high samples */
+//	/* If edge, then call ProcessPulse() to process the previous high/low level */
+//    if (i > threshold) 
+//	{
+//	high++;
+//        if (low) 
+//		{
+//			low=low*192000; // TODO: Normalize number of samples
+//			ProcessPulsePpm(low, FALSE); // TODO: Replace by virtual function
+//            low = 0;
+//        }
+//    } else 
+//	{
+//        low++;
+//        if (high) 
+//		{
+//			high=high*192000; // TODO: Normalize number of sumples
+//            ProcessPulsePpm(high, TRUE);// TODO: Replace by virtual function
+//            high = 0;
+//        }
+//    }
+//}
 
 
 
