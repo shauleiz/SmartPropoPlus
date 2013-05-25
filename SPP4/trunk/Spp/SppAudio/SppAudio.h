@@ -193,7 +193,7 @@ protected:
 	UINT			m_nMixers;
 	HWND			m_hPrntWnd;
 	HANDLE			m_hAudioBufferReady;
-	HANDLE			m_hCaptureAudioThread;
+	//HANDLE			m_hCaptureAudioThread;
 	WAVEFORMATEX	m_CurrentWaveFormat;
 	bool			m_CurrentChannelIsRight;
 	PVOID			m_CurrentId;
