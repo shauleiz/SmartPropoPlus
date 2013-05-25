@@ -122,7 +122,7 @@ private:
 	void PollChannels(void);
 	void SendModInfoToParent(HWND hParentWnd);
 	void LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
-	void __fastcall ProcessData(UINT i);
+	//void __fastcall ProcessData(UINT i);
 	_inline double  CalcThreshold(int value);
 	HRESULT	ProcessWave(BYTE * pWavePacket, UINT32 packetLength);
 	inline UINT Sample2Pulse(short sample, bool * negative);
