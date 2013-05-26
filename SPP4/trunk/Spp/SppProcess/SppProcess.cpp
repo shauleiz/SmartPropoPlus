@@ -2089,7 +2089,7 @@ void CSppProcess::SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength
 {
 	// Preparing arrays to accumulate samples
 	const UINT ArraySize = 4000;
-	static USHORT  Samples[ArraySize][2];
+	static USHORT  Samples[2][ArraySize];
 	static UCHAR iArray = 0;
 	static UINT iSample=0;
 	static DbgPulseInfo info;

@@ -1940,7 +1940,7 @@ void	CSppAudio::LogMessage(int Severity, int Code, LPCTSTR Msg)
 			Msg = pBuf;
 	};
 
-	_stprintf_s(pBuf,  sizeof(pBuf)/sizeof(TCHAR), TEXT("%s (%s)"), Msg, Id);
+	_stprintf_s(pBuf,  sizeof(pBuf)/sizeof(TCHAR), TEXT("%s (%s)"), Msg, (LPTSTR)Id);
 	Msg = pBuf;
 
 	SendMessage(m_hPrntWnd , WMSPP_LOG_AUDIO + Severity, (WPARAM)Code, (LPARAM)Msg);
