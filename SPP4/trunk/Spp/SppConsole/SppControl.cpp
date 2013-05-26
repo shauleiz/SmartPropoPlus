@@ -24,6 +24,8 @@ class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
 HINSTANCE g_hInstance = 0;
 HWND hLog;
+bool Monitor = true;
+bool ChangeAudio = false;
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
@@ -34,6 +36,8 @@ void		LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
+void		thMonitor(bool * KeepAlive);
+
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -163,13 +167,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->Show(); // If not asked to be iconified
 
 	FilterPopulate(hDialog);
-	Spp->AudioChanged();
 
-	// Acquire vJoy device (number 1)
-	Acquire_vJoy();
+	// Start monitoring thread
+	static thread * tMonitor = NULL;
+	tMonitor = new thread(thMonitor, &Monitor);
+	if (!tMonitor)
+			goto ExitApp;
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
+
+ 
+	// Stop monitoring
+	Monitor = false;
+	if (tMonitor && tMonitor->joinable())
+		tMonitor->join();
 
 	ExitApp:
 	delete(Dialog);
@@ -207,12 +219,12 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_AUDIO_CHNG:
 		case WMSPP_AUDIO_ADD:
 		case WMSPP_AUDIO_REM:
-			Spp->AudioChanged();
+			ChangeAudio = true;
 			CaptureDevicesPopulate(hDialog);
 			break;
 
 		case WMSPP_AUDIO_PROP:
-			Spp->AudioChanged();
+			ChangeAudio = true;
 			break;
 
 		case WMSPP_PRCS_GETID:
@@ -579,8 +591,6 @@ void		DbgInputSignal(bool start)
 		DbgObj->StopDbgInputSignal();
 	}
 }
-
-
 // Start/Stop debugging the raw input data (digitized audio)
 void		DbgPulse(bool start)
 {
@@ -596,5 +606,51 @@ void		DbgPulse(bool start)
 	{
 		Spp->StopDbgPulse();
 		DbgObj->StopDbgPulse();
+	}
+}
+
+
+// Monitor Thread
+// Polls activity of the different modules
+// Reports health of the modules and attemps recovery when possible
+void thMonitor(bool * KeepAlive)
+{
+	bool ok;
+	bool stopped = false;
+	ChangeAudio = true;
+
+	while (*KeepAlive)
+	{
+
+		// Monitor vJoy (device #1)
+		int rID = 1; // TODO: Make the device ID programable
+		VjdStat stat = GetVJDStatus(rID);
+		if (stat = VJD_STAT_OWN)
+			Spp->vJoyReady(true);
+		else
+			AcquireVJD(rID) ? Spp->vJoyReady(true) :  Spp->vJoyReady(false);
+
+		// Change in the audio configuration was detected
+		// Ask audio unit to make the needed changes
+		// Then, reset flag
+		if (ChangeAudio && !stopped)
+		{
+			// Stop Capturing thread
+			// ok if stopped (Or does not exist)
+			stopped = Spp->StopCaptureThread();
+			break;
+		};
+
+		if (ChangeAudio && stopped)
+		{
+			// Start Capturing thread
+			// ok if started
+			stopped = Spp->StartCaptureThread();
+			ChangeAudio = stopped;
+		}; // Stopped
+
+
+		sleep_for( 100 );// Sleep for 100 milliseconds
+
 	}
 }
