@@ -59,6 +59,10 @@ SPPMAIN_API void CSppProcess::StopDbgPulse(void)
 	m_DbgPulse = FALSE;
 }
 
+SPPMAIN_API void CSppProcess::vJoyReady(bool ready)
+{
+	m_vJoyReady = ready;
+}
 
 // Called to inform SPP that a filter has been selected or diselected
 // iFilter is the filter index
@@ -160,13 +164,13 @@ void CSppProcess::ListenToGui(void)
 		// Test every 100mSec
 		Sleep(100);
 
-		// Monitor vJoy (device #1)
-		int rID = 1; // TODO: Make the device ID programable
-		VjdStat stat = GetVJDStatus(rID);
-		if (stat = VJD_STAT_OWN)
-			m_vJoyReady = true;
-		else
-			m_vJoyReady = AcquireVJD(rID);
+		//// Monitor vJoy (device #1)
+		//int rID = 1; // TODO: Make the device ID programable
+		//VjdStat stat = GetVJDStatus(rID);
+		//if (stat = VJD_STAT_OWN)
+		//	m_vJoyReady = true;
+		//else
+		//	m_vJoyReady = AcquireVJD(rID);
 
 
 		/* If capture thread does not exist then free thread object */

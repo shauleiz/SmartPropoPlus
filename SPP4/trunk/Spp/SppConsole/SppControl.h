@@ -38,5 +38,3 @@ struct jack_info
 	bool	Default;
 	int		nChannels;
 };
-
-
