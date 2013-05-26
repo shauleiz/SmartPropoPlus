@@ -19,7 +19,7 @@ SppDbg::~SppDbg(void)
 void SppDbg::StartDbgInputSignal(void)
 {
 
-	memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", MAX_PATH);
+	memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", sizeof( L"SPPDBGINSIG.TXT"));
 	if (!m_FileDbgInSig)
 		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+"); 
 }
@@ -27,7 +27,7 @@ void SppDbg::StartDbgInputSignal(void)
 void SppDbg::StartDbgPulse(void)
 {
 
-	memcpy_s(m_FileDbgPulseName, MAX_PATH,  L"SPPDBGPULSE.TXT", MAX_PATH);
+	memcpy_s(m_FileDbgPulseName, MAX_PATH,  L"SPPDBGPULSE.TXT", sizeof( L"SPPDBGPULSE.TXT"));
 	if (!m_FileDbgPulse)
 		_wfopen_s(&m_FileDbgPulse,m_FileDbgPulseName, L"w+"); 
 }
