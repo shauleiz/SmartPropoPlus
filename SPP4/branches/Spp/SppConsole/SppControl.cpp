@@ -169,6 +169,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	FilterPopulate(hDialog);
 	Spp->AudioChanged(); // TODO: Remove later
 
+
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
 	tMonitor = new thread(thMonitor, &Monitor);
@@ -215,8 +216,8 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_AUDIO_CHNG:
 		case WMSPP_AUDIO_ADD:
 		case WMSPP_AUDIO_REM:
-			Spp->AudioChanged();
 			CaptureDevicesPopulate(hDialog);
+			Spp->AudioChanged();
 			break;
 
 		case WMSPP_AUDIO_PROP:
@@ -617,6 +618,8 @@ void thMonitor(bool * KeepAlive)
 	while (*KeepAlive)
 	{
 
+		sleep_for( 100 );// Sleep for 100 milliseconds
+
 		// Monitor vJoy (device #1)
 		int rID = 1; // TODO: Make the device ID programable
 		VjdStat stat = GetVJDStatus(rID);
@@ -624,7 +627,7 @@ void thMonitor(bool * KeepAlive)
 			Spp->vJoyReady(true);
 		else
 			AcquireVJD(rID) ? Spp->vJoyReady(true) :  Spp->vJoyReady(false);
-		sleep_for( 100 );// Sleep for 100 milliseconds
+
 
 	}
 }

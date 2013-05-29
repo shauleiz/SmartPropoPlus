@@ -1393,15 +1393,15 @@ SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
 		EXIT_ON_ERROR(hr);
 	};
 
-	// Set current default endpoint
-	hr = SetDefaultAudioDevice(Id);
-	if (FAILED(hr))
-	{
-		LogMessageWithId(WARN, IDS_W_START_SET,Id);
-		//LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
-		//LogStatus(GEN_STATUS,WARN,STRSTRM2,m_LogParam);
-		EXIT_ON_ERROR(hr);
-	};
+	//// Set current default endpoint
+	//hr = SetDefaultAudioDevice(Id);
+	//if (FAILED(hr))
+	//{
+	//	LogMessageWithId(WARN, IDS_W_START_SET,Id);
+	//	//LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
+	//	//LogStatus(GEN_STATUS,WARN,STRSTRM2,m_LogParam);
+	//	EXIT_ON_ERROR(hr);
+	//};
 
 	// Initialize endpoint
 	_deb++;
