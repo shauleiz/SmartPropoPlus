@@ -96,6 +96,7 @@ public:
 	SPPMAIN_API void SelectFilter(int, LPVOID);
 	SPPMAIN_API void StartDbgPulse(void);
 	SPPMAIN_API void StopDbgPulse(void);
+	SPPMAIN_API void vJoyReady(bool ready);
 
 private:
 	int LoadProcessPulseFunctions();
