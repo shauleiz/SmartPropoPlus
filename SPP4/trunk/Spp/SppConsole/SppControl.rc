@@ -195,6 +195,13 @@ STRINGTABLE
     IDS_E_PROCPACK_PADD           "ProcessAudioPacket(): Failed to get current padding"
     IDS_I_INITPULSE               "InitPulseDataObj(): OK"
     IDS_E_INITPULSE               "InitPulseDataObj(): Could not Initialize"
+    IDS_I_RESTAUDIO               "Request to restart audio streaming"
+    IDS_E_RESTAUDIO_NOAUDIO       "No audio object - aborting request"
+    IDS_E_RESTAUDIO_NOSPP         "No SPP processing object - aborting request"
+    IDS_E_RESTAUDIO_SSFAIL        "Failed to start audio streaming - aborting request"
+    IDS_E_RESTAUDIO_NOID          "No endpoint ID to start streaming with - abort request"
+    IDS_I_RESTAUDIO_OK            "Request to restart audio streaming - OK"
+    IDS_E_RESTAUDIO_FAIL          "Request to restart audio streaming - failed to start capture thread"
 }
 
 

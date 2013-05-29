@@ -123,3 +123,10 @@
 #define IDS_E_PROCPACK_PADD                     40069
 #define IDS_I_INITPULSE                         40070
 #define IDS_E_INITPULSE                         40071
+#define IDS_I_RESTAUDIO                         40072
+#define IDS_E_RESTAUDIO_NOAUDIO                 40073
+#define IDS_E_RESTAUDIO_NOSPP                   40074
+#define IDS_E_RESTAUDIO_SSFAIL                  40075
+#define IDS_E_RESTAUDIO_NOID                    40076
+#define IDS_I_RESTAUDIO_OK                      40077
+#define IDS_E_RESTAUDIO_FAIL                    40078

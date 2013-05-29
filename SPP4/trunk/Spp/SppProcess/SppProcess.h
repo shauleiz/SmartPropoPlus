@@ -97,6 +97,8 @@ public:
 	SPPMAIN_API void StartDbgPulse(void);
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
+	SPPMAIN_API bool StopCaptureThread(void);
+	SPPMAIN_API bool StartCaptureThread(void);
 
 
 private:
