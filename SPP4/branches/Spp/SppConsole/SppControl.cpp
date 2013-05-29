@@ -24,6 +24,8 @@ class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
 HINSTANCE g_hInstance = 0;
 HWND hLog;
+bool Monitor = true;
+
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
@@ -34,6 +36,8 @@ void		LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
+void		thMonitor(bool * KeepAlive);
+
 
 LRESULT CALLBACK MainWindowProc(
   _In_  HWND hwnd,
@@ -163,10 +167,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->Show(); // If not asked to be iconified
 
 	FilterPopulate(hDialog);
-	Spp->AudioChanged();
+	Spp->AudioChanged(); // TODO: Remove later
 
-	// Acquire vJoy device (number 1)
-	Acquire_vJoy();
+	// Start monitoring thread
+	static thread * tMonitor = NULL;
+	tMonitor = new thread(thMonitor, &Monitor);
+	if (!tMonitor)
+			goto ExitApp;
+
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
@@ -596,5 +604,27 @@ void		DbgPulse(bool start)
 	{
 		Spp->StopDbgPulse();
 		DbgObj->StopDbgPulse();
+	}
+}
+
+// Monitor Thread
+// Polls activity of the different modules
+// Reports health of the modules and attemps recovery when possible
+void thMonitor(bool * KeepAlive)
+{
+	bool stopped = false;
+
+	while (*KeepAlive)
+	{
+
+		// Monitor vJoy (device #1)
+		int rID = 1; // TODO: Make the device ID programable
+		VjdStat stat = GetVJDStatus(rID);
+		if (stat == VJD_STAT_OWN)
+			Spp->vJoyReady(true);
+		else
+			AcquireVJD(rID) ? Spp->vJoyReady(true) :  Spp->vJoyReady(false);
+		sleep_for( 100 );// Sleep for 100 milliseconds
+
 	}
 }
