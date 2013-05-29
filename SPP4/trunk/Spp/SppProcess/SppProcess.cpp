@@ -64,6 +64,31 @@ SPPMAIN_API void CSppProcess::vJoyReady(bool ready)
 	m_vJoyReady = ready;
 }
 
+SPPMAIN_API bool CSppProcess::StopCaptureThread(void)
+{
+
+	if (m_tCapture && m_tCaptureActive)
+	{
+		m_waveRecording = FALSE;
+		if (m_tCapture->joinable())
+			m_tCapture->join();
+		delete(m_tCapture);
+		m_tCapture = NULL;
+	}
+	return true;
+}
+
+SPPMAIN_API bool CSppProcess::StartCaptureThread(void)
+{
+	m_waveRecording = TRUE;
+	m_tCapture =  new thread(CaptureAudioStatic, this);
+
+	if (m_tCapture)
+		return(true);
+	else
+		return(false);
+}
+
 // Called to inform SPP that a filter has been selected or diselected
 // iFilter is the filter index
 // If ifilter==-1 the no filter selected
@@ -134,10 +159,10 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	//if (!m_hMutexStartStop)
 	//	return false;
 
-	// Start a thread that listens to the GUI
-	thread * tListenToGui = new thread(ListenToGuiStatic, this);
-	if (!tListenToGui)
-		return false;
+	//// Start a thread that listens to the GUI
+	//thread * tListenToGui = new thread(ListenToGuiStatic, this);
+	//if (!tListenToGui)
+	//	return false;
 
 	return true;
 
@@ -313,7 +338,8 @@ void CSppProcess::PollChannels(void)
 		}; // For loop (Processed)
 
 		
-	sleep_for(20); // nanoSec
+	sleep_for(20); // MilliSec
+
 
 	}; // While loop
 }
