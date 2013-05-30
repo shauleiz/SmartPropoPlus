@@ -27,6 +27,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_tCaptureActive(FALSE),
 	m_chMonitor(FALSE),
 	m_Audio(NULL),
+	m_ChangeCapture(FALSE),
 	m_hParentWnd(NULL),
 	m_vJoyReady(false),
 	m_DbgPulse(FALSE),
@@ -136,8 +137,8 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	//	return false;
 
 	// Start a thread that listens to the GUI
-	thread * tListenToGui = new thread(ListenToGuiStatic, this);
-	if (!tListenToGui)
+	thread * tMonitorCapture = new thread(MonitorCaptureStatic, this);
+	if (!tMonitorCapture)
 		return false;
 
 	return true;
@@ -154,7 +155,7 @@ SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 	If changed the make the required change in the operation of this unit
 */
 
-void CSppProcess::ListenToGui(void)
+void CSppProcess::MonitorCapture(void)
 {
 	SharedDataBlock * DataBlock = (SharedDataBlock *)m_pSharedBlock;
 	HRESULT hr = S_OK;
@@ -170,35 +171,36 @@ void CSppProcess::ListenToGui(void)
 			StopCaptureAudio();*/
 
 		// Conditions that meen that there's nothing to do so keep on listening
-		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::RUNNING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::FAILED)
+		if (!m_ChangeCapture)
 			continue;
 
 		/* Request to change device - kill capture thread */
-		if (m_tCapture && DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ)
+		if (m_tCapture && m_ChangeCapture)
 		{
-			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
+			//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
 			StopCaptureAudio();
 			continue;
 		};
 
 
-		if ( !m_tCapture && ( DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ))
+		if ( !m_tCapture && m_ChangeCapture)
 		{
 			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
 			m_waveRecording = TRUE;
+			m_ChangeCapture = FALSE;
 			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
 			{
 				// TODO: ReportChange();
-				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+				//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
 			}
 			else
 			{
 				// TODO: ReportChange();
 				m_tCapture =  new thread(CaptureAudioStatic, this);
-				if (!m_tCapture)
-					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
-				else
-					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
+				//if (!m_tCapture)
+				//	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+				//else
+				//	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
 			};
 		};
 	};
@@ -308,7 +310,8 @@ void CSppProcess::PollChannels(void)
 
 void CSppProcess::AudioChanged(void)
 {
-	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
+	m_ChangeCapture = TRUE;
+	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
 }
 
 /*
@@ -2035,10 +2038,10 @@ int CSppProcess::RunJsFilter(int * ch, int nChannels)
 	return n_out_ch;
 }
 
-DWORD WINAPI CSppProcess::ListenToGuiStatic(LPVOID obj)
+DWORD WINAPI CSppProcess::MonitorCaptureStatic(LPVOID obj)
 {
 	if (obj)
-		((CSppProcess *)obj)->ListenToGui();
+		((CSppProcess *)obj)->MonitorCapture();
 	return 0;
 }
 
