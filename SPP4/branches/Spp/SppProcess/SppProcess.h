@@ -120,6 +120,7 @@ private:
 	static DWORD WINAPI  PollChannelsStatic(LPVOID obj);
 	void ListenToGui(void);
 	void CaptureAudio(void);
+	void StopCaptureAudio(void);
 	void PollChannels(void);
 	void SendModInfoToParent(HWND hParentWnd);
 	void LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
