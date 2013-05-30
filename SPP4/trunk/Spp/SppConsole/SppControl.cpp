@@ -25,7 +25,7 @@ HINSTANCE hDllFilters = 0;
 HINSTANCE g_hInstance = 0;
 HWND hLog;
 bool Monitor = true;
-std::mutex lg_mutex;
+
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
@@ -37,7 +37,6 @@ void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
-void		RestartAudio(void);
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -168,12 +167,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->Show(); // If not asked to be iconified
 
 	FilterPopulate(hDialog);
+Spp->AudioChanged(); // TODO: Remove later
 
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
 	tMonitor = new thread(thMonitor, &Monitor);
 	if (!tMonitor)
 			goto ExitApp;
+
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
@@ -220,12 +221,12 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_AUDIO_CHNG:
 		case WMSPP_AUDIO_ADD:
 		case WMSPP_AUDIO_REM:
-			CaptureDevicesPopulate(hDialog); // Gets the default endpoint & Populates GUI
-			RestartAudio();
+			CaptureDevicesPopulate(hDialog);
+			Spp->AudioChanged();
 			break;
 
 		case WMSPP_AUDIO_PROP:
-			RestartAudio();
+			Spp->AudioChanged();
 			break;
 
 		case WMSPP_PRCS_GETID:
@@ -610,17 +611,17 @@ void		DbgPulse(bool start)
 	}
 }
 
-
 // Monitor Thread
 // Polls activity of the different modules
 // Reports health of the modules and attemps recovery when possible
 void thMonitor(bool * KeepAlive)
 {
 	bool stopped = false;
-	RestartAudio();
 
 	while (*KeepAlive)
 	{
+
+		sleep_for( 100 );// Sleep for 100 milliseconds
 
 		// Monitor vJoy (device #1)
 		int rID = 1; // TODO: Make the device ID programable
@@ -629,91 +630,7 @@ void thMonitor(bool * KeepAlive)
 			Spp->vJoyReady(true);
 		else
 			AcquireVJD(rID) ? Spp->vJoyReady(true) :  Spp->vJoyReady(false);
-#if 0
 
-		// Change in the audio configuration was detected
-		// Ask audio unit to make the needed changes
-		// Then, reset flag
-		if (ChangeAudio && !stopped)
-		{
-			// Stop Capturing thread
-			// ok if stopped (Or does not exist)
-			stopped = Spp->StopCaptureThread();
-			break;
-		};
-
-		if (ChangeAudio && stopped)
-		{
-			// Start Capturing thread
-			// ok if started
-			stopped = Spp->StartCaptureThread();
-			ChangeAudio = stopped;
-		}; // Stopped
-
-#endif
-
-		sleep_for( 100 );// Sleep for 100 milliseconds
 
 	}
-}
-
-// Call this function when change occured.
-// It will try to restart the audio streaming
-void		RestartAudio(void)
-{
-	int i = 0;
-
-	std::unique_lock<std::mutex> lockRA(lg_mutex, std::defer_lock );
-	bool locked = lockRA.try_lock();
-	if (!locked)
-		return;
-
-	sleep_for(100);
-
-
-	LogMessage(INFO, IDS_I_RESTAUDIO);
-	
-	// Testing
-	if (!Audio)
-	{
-		LogMessage(ERR, IDS_E_RESTAUDIO_NOAUDIO);
-		lockRA.unlock();
-		return;
-	};
-
-	if (!Spp)
-	{
-		LogMessage(ERR, IDS_E_RESTAUDIO_NOSPP);
-		lockRA.unlock();
-		return;
-	};
-
-	if (!AudioId)
-	{
-		LogMessage(ERR, IDS_E_RESTAUDIO_NOID);
-		lockRA.unlock();
-		return;
-	};
-
-	// Request SppProcess to stop capture thread
-	// This function blocks until thread killed
-	Spp->StopCaptureThread();
-
-	// (Re)start streaming
-	if (!Audio->StartStreaming((PVOID)AudioId))
-	{
-		LogMessage(ERR, IDS_E_RESTAUDIO_SSFAIL);
-		lockRA.unlock();
-		return;
-	};
-
-	// Request SppProcess to start capture thread
-	if (Spp->StartCaptureThread())
-		LogMessage(INFO, IDS_I_RESTAUDIO_OK);
-	else
-		LogMessage(ERR, IDS_E_RESTAUDIO_FAIL);
-
-
-	lockRA.unlock();
-	return;
 }
