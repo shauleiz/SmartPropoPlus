@@ -13,12 +13,14 @@
 #include "SppLog.h"
 #include "SppDbg.h"
 #include "WinMessages.h"
+#include "..\vJoyMonitor\vJoyMonitor.h"
 
 // Globals
 HWND hDialog;
 class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
+class CvJoyMonitor * vJoyMon = NULL;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
@@ -167,7 +169,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->Show(); // If not asked to be iconified
 
 	FilterPopulate(hDialog);
-Spp->AudioChanged(); // TODO: Remove later
+	Spp->AudioChanged(); // TODO: Remove later
 
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
@@ -175,6 +177,8 @@ Spp->AudioChanged(); // TODO: Remove later
 	if (!tMonitor)
 			goto ExitApp;
 
+	// Open vJoy monitor
+	vJoyMon = new CvJoyMonitor(hInstance, hwnd);
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
