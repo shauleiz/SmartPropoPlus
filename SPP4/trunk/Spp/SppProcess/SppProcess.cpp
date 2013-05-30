@@ -27,6 +27,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_tCaptureActive(FALSE),
 	m_chMonitor(FALSE),
 	m_Audio(NULL),
+	m_ChangeCapture(FALSE),
 	m_hParentWnd(NULL),
 	m_vJoyReady(false),
 	m_DbgPulse(FALSE),
@@ -64,30 +65,6 @@ SPPMAIN_API void CSppProcess::vJoyReady(bool ready)
 	m_vJoyReady = ready;
 }
 
-SPPMAIN_API bool CSppProcess::StopCaptureThread(void)
-{
-
-	if (m_tCapture && m_tCaptureActive)
-	{
-		m_waveRecording = FALSE;
-		if (m_tCapture->joinable())
-			m_tCapture->join();
-		delete(m_tCapture);
-		m_tCapture = NULL;
-	}
-	return true;
-}
-
-SPPMAIN_API bool CSppProcess::StartCaptureThread(void)
-{
-	m_waveRecording = TRUE;
-	m_tCapture =  new thread(CaptureAudioStatic, this);
-
-	if (m_tCapture)
-		return(true);
-	else
-		return(false);
-}
 
 // Called to inform SPP that a filter has been selected or diselected
 // iFilter is the filter index
@@ -159,10 +136,12 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	//if (!m_hMutexStartStop)
 	//	return false;
 
-	//// Start a thread that listens to the GUI
-	//thread * tListenToGui = new thread(ListenToGuiStatic, this);
-	//if (!tListenToGui)
-	//	return false;
+
+	// Start a thread that listens to the GUI
+	thread * tMonitorCapture = new thread(MonitorCaptureStatic, this);
+	if (!tMonitorCapture)
+		return false;
+
 
 	return true;
 
@@ -178,7 +157,7 @@ SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 	If changed the make the required change in the operation of this unit
 */
 
-void CSppProcess::ListenToGui(void)
+void CSppProcess::MonitorCapture(void)
 {
 	SharedDataBlock * DataBlock = (SharedDataBlock *)m_pSharedBlock;
 	HRESULT hr = S_OK;
@@ -189,66 +168,38 @@ void CSppProcess::ListenToGui(void)
 		// Test every 100mSec
 		Sleep(100);
 
-		//// Monitor vJoy (device #1)
-		//int rID = 1; // TODO: Make the device ID programable
-		//VjdStat stat = GetVJDStatus(rID);
-		//if (stat = VJD_STAT_OWN)
-		//	m_vJoyReady = true;
-		//else
-		//	m_vJoyReady = AcquireVJD(rID);
-
-
-		/* If capture thread does not exist then free thread object */
-		if (m_tCapture && !m_tCaptureActive)
-		{
-			if (m_tCapture->joinable())
-				m_tCapture->join();
-			delete(m_tCapture);
-			m_tCapture = NULL;
-		}
 
 		// Conditions that meen that there's nothing to do so keep on listening
-		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::RUNNING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::FAILED)
+		if (!m_ChangeCapture)
 			continue;
 
 		/* Request to change device - kill capture thread */
-		if (m_tCapture && DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ)
+		if (m_tCapture && m_ChangeCapture)
 		{
-			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
-			m_waveRecording = FALSE;
-			if (m_tCapture->joinable())
-				m_tCapture->join();
+			//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
+			StopCaptureAudio();
 			continue;
-			// TODO: Add Audio interface class
-			//if (CurrentWaveInInfoW7 && CurrentWaveInInfoW7->pClientIn)
-			//	hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
 		};
 
 
-		if ( !m_tCapture && ( DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ))
-		{
-			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
-			// TODO: ReleaseEndPoint(CurrentWaveInInfoW7);
-		};
-
-		/* Start the new capture stream */
-		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPED)
+		if ( !m_tCapture && m_ChangeCapture)
 		{
 			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
 			m_waveRecording = TRUE;
+			m_ChangeCapture = FALSE;
 			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
 			{
 				// TODO: ReportChange();
-				SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+				//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
 			}
 			else
 			{
 				// TODO: ReportChange();
 				m_tCapture =  new thread(CaptureAudioStatic, this);
-				if (!m_tCapture)
-					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
-				else
-					SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
+				//if (!m_tCapture)
+				//	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+				//else
+				//	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
 			};
 		};
 	};
@@ -297,8 +248,20 @@ void CSppProcess::CaptureAudio(void)
 	};
 
 	delete [] (buffer);
-	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
+	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
 	m_tCaptureActive = FALSE;
+}
+
+void CSppProcess::StopCaptureAudio(void)
+{
+	if (!m_tCapture)
+		return;
+
+	m_waveRecording = FALSE;
+	if (m_tCapture->joinable())
+		m_tCapture->join();
+	delete(m_tCapture);
+	m_tCapture = NULL;
 }
 
 void CSppProcess::PollChannels(void)
@@ -347,7 +310,8 @@ void CSppProcess::PollChannels(void)
 
 void CSppProcess::AudioChanged(void)
 {
-	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
+	m_ChangeCapture = TRUE;
+	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
 }
 
 /*
@@ -2074,10 +2038,10 @@ int CSppProcess::RunJsFilter(int * ch, int nChannels)
 	return n_out_ch;
 }
 
-DWORD WINAPI CSppProcess::ListenToGuiStatic(LPVOID obj)
+DWORD WINAPI CSppProcess::MonitorCaptureStatic(LPVOID obj)
 {
 	if (obj)
-		((CSppProcess *)obj)->ListenToGui();
+		((CSppProcess *)obj)->MonitorCapture();
 	return 0;
 }
 
