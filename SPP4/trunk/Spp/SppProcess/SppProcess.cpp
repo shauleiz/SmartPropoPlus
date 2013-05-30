@@ -174,6 +174,7 @@ void CSppProcess::MonitorCapture(void)
 			continue;
 
 		/* Request to change device - kill capture thread */
+		LogMessage(INFO, IDS_I_AUDIOCHANGE);
 		if (m_tCapture && m_ChangeCapture)
 		{
 			//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
@@ -184,22 +185,20 @@ void CSppProcess::MonitorCapture(void)
 
 		if ( !m_tCapture && m_ChangeCapture)
 		{
+			LogMessage(INFO, IDS_I_STARTSTREAM);
 			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
 			m_waveRecording = TRUE;
 			m_ChangeCapture = FALSE;
 			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
-			{
-				// TODO: ReportChange();
-				//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
-			}
+				LogMessage(ERR, IDS_E_STREAMFAIL);
 			else
 			{
 				// TODO: ReportChange();
 				m_tCapture =  new thread(CaptureAudioStatic, this);
-				//if (!m_tCapture)
-				//	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::FAILED);
+				if (!m_tCapture)
+					LogMessage(ERR, IDS_E_STREAMTHRDFAIL);
 				//else
-				//	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::RUNNING);
+					LogMessage(INFO, IDS_I_STREAMTHRDOK);
 			};
 		};
 	};
@@ -220,6 +219,7 @@ void CSppProcess::CaptureAudio(void)
 	m_WaveNChannels		=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETNCH, 0,0);
 	//m_WaveInputChannel	=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0,0);
 
+	LogMessage(INFO, IDS_I_CAPTURESTART);
 	while (m_waveRecording)
 	{
 		m_tCaptureActive = TRUE;
@@ -250,6 +250,7 @@ void CSppProcess::CaptureAudio(void)
 	delete [] (buffer);
 	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
 	m_tCaptureActive = FALSE;
+	LogMessage(INFO, IDS_I_CAPTUREABORT);
 }
 
 void CSppProcess::StopCaptureAudio(void)

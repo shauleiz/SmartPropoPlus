@@ -202,6 +202,13 @@ STRINGTABLE
     IDS_E_RESTAUDIO_NOID          "No endpoint ID to start streaming with - abort request"
     IDS_I_RESTAUDIO_OK            "Request to restart audio streaming - OK"
     IDS_E_RESTAUDIO_FAIL          "Request to restart audio streaming - failed to start capture thread"
+    IDS_E_STREAMFAIL              "Failed to start audio streaming"
+    IDS_E_STREAMTHRDFAIL          "Failed to start capture thread"
+    IDS_I_STREAMTHRDOK            "Capture thread - Started"
+    IDS_I_AUDIOCHANGE             "Resuest to change audio source"
+    IDS_I_STARTSTREAM             "Starting a new audio stream and a new Capture Thread"
+    IDS_I_CAPTURESTART            "Capture thread - Starting"
+    IDS_I_CAPTUREABORT            "Capture thread - Ending"
 }
 
 
