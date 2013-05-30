@@ -130,3 +130,10 @@
 #define IDS_E_RESTAUDIO_NOID                    40076
 #define IDS_I_RESTAUDIO_OK                      40077
 #define IDS_E_RESTAUDIO_FAIL                    40078
+#define IDS_E_STREAMFAIL                        40079
+#define IDS_E_STREAMTHRDFAIL                    40080
+#define IDS_I_STREAMTHRDOK                      40081
+#define IDS_I_AUDIOCHANGE                       40082
+#define IDS_I_STARTSTREAM                       40083
+#define IDS_I_CAPTURESTART                      40084
+#define IDS_I_CAPTUREABORT                      40085

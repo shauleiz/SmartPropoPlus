@@ -349,6 +349,8 @@ void CaptureDevicesPopulate(HWND hDlg)
 
 		// Get device number of channels
 		jack.nChannels = Audio->GetNumberChannels((PVOID)jack.id);
+		if (!jack.nChannels)
+			continue;
 
 		// Get device jack color
 		jack.color = Audio->GetJackColor((PVOID) jack.id);

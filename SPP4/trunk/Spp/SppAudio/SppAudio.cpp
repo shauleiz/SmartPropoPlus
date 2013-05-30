@@ -807,10 +807,11 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 	hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
 	if (FAILED(hr))
 	{
-		LogMessage(WARN, IDS_W_DEVPEAK_ACTCLNT);
-		LogMessageWithId(WARN, IDS_W_DEVPEAK_ACTCLNT, Id, GetWasapiText(hr));
-		//LogStatus(DEVPEAK_ACTCLNT,WARN,Id,m_LogParam);
-		//LogStatus(DEVPEAK_ACTCLNT,WARN,GetWasapiText(hr),m_LogParam);
+		if (hr != AUDCLNT_E_DEVICE_INVALIDATED)
+		{
+			LogMessage(WARN, IDS_W_DEVPEAK_ACTCLNT);
+			LogMessageWithId(WARN, IDS_W_DEVPEAK_ACTCLNT, Id, GetWasapiText(hr));
+		}
 		EXIT_ON_ERROR(hr);
 	};
 
