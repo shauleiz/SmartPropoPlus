@@ -115,10 +115,10 @@ private:
 	__inline  int  smooth(int orig, int newval);
 	int  __fastcall Convert15bits(unsigned int in);
 	int  __fastcall Convert20bits(int in);
-	static DWORD WINAPI  ListenToGuiStatic(LPVOID obj);
+	static DWORD WINAPI  MonitorCaptureStatic(LPVOID obj);
 	static DWORD WINAPI  CaptureAudioStatic(LPVOID obj);
 	static DWORD WINAPI  PollChannelsStatic(LPVOID obj);
-	void ListenToGui(void);
+	void MonitorCapture(void);
 	void CaptureAudio(void);
 	void StopCaptureAudio(void);
 	void PollChannels(void);
@@ -172,6 +172,7 @@ private:
 	BOOL m_chMonitor;
 	BOOL m_vJoyReady;
 	BOOL m_DbgPulse;
+	BOOL m_ChangeCapture;
 };
 
 
