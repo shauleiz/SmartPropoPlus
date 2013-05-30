@@ -165,23 +165,9 @@ void CSppProcess::ListenToGui(void)
 		// Test every 100mSec
 		Sleep(100);
 
-		//// Monitor vJoy (device #1)
-		//int rID = 1; // TODO: Make the device ID programable
-		//VjdStat stat = GetVJDStatus(rID);
-		//if (stat = VJD_STAT_OWN)
-		//	m_vJoyReady = true;
-		//else
-		//	m_vJoyReady = AcquireVJD(rID);
-
-
-		/* If capture thread does not exist then free thread object */
+		/* If capture thread does not exist then free thread object 
 		if (m_tCapture && !m_tCaptureActive)
-		{
-			if (m_tCapture->joinable())
-				m_tCapture->join();
-			delete(m_tCapture);
-			m_tCapture = NULL;
-		}
+			StopCaptureAudio();*/
 
 		// Conditions that meen that there's nothing to do so keep on listening
 		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::RUNNING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::FAILED)
@@ -191,24 +177,12 @@ void CSppProcess::ListenToGui(void)
 		if (m_tCapture && DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ)
 		{
 			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPING);
-			m_waveRecording = FALSE;
-			if (m_tCapture->joinable())
-				m_tCapture->join();
+			StopCaptureAudio();
 			continue;
-			// TODO: Add Audio interface class
-			//if (CurrentWaveInInfoW7 && CurrentWaveInInfoW7->pClientIn)
-			//	hr = CurrentWaveInInfoW7->pClientIn->lpVtbl->Stop(CurrentWaveInInfoW7->pClientIn);
 		};
 
 
 		if ( !m_tCapture && ( DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPING || DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::CHANGE_REQ))
-		{
-			SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
-			// TODO: ReleaseEndPoint(CurrentWaveInInfoW7);
-		};
-
-		/* Start the new capture stream */
-		if (DataBlock->MixerDeviceStatus == SharedDataBlock::MDSTAT::STOPPED)
 		{
 			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
 			m_waveRecording = TRUE;
@@ -273,8 +247,20 @@ void CSppProcess::CaptureAudio(void)
 	};
 
 	delete [] (buffer);
-	SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
+	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);
 	m_tCaptureActive = FALSE;
+}
+
+void CSppProcess::StopCaptureAudio(void)
+{
+	if (!m_tCapture)
+		return;
+
+	m_waveRecording = FALSE;
+	if (m_tCapture->joinable())
+		m_tCapture->join();
+	delete(m_tCapture);
+	m_tCapture = NULL;
 }
 
 void CSppProcess::PollChannels(void)
