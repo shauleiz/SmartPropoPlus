@@ -11,6 +11,7 @@
 #define SPPINTERFACE_API __declspec(dllimport)
 #endif
 
+
 //#define STRICT
 #define DIRECTINPUT_VERSION 0x0800
 #define _CRT_SECURE_NO_DEPRECATE
@@ -37,6 +38,15 @@
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=NULL; } }
 #endif
 
+#define PID1	0xbead
+#define PID2	0xbead1234
+
+struct DI_ENUM_CONTEXT
+{
+    DIJOYCONFIG* pPreferredJoyCfg;
+    bool bPreferredJoyCfgValid;
+};
+
 class CvJoyMonitor
 {
 public:
@@ -45,12 +55,17 @@ public:
 	virtual ~CvJoyMonitor(void);
 	SPPINTERFACE_API  bool CvJoyMonitor::IsvJoyDevice(UINT iJoy);
 
+public:
+	BOOL EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance);
+
+
 private:
 	HINSTANCE				m_hInstance;
 	HWND					m_ParentWnd;
 	bool					m_DirectInput;
 	LPDIRECTINPUT8          m_pDI;
-	LPDIRECTINPUTDEVICE8    m_pJoystick;
+	LPDIRECTINPUTDEVICE8    m_pJoystick[16];
+	int						m_nvJoyDevices;
 
 };
 
