@@ -32,6 +32,7 @@
 #include <shellapi.h>
 #include <Windowsx.h>
 #include <wbemidl.h>
+#include <vector>
 
 #define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=NULL; } }
 #ifndef SAFE_RELEASE
@@ -40,6 +41,32 @@
 
 #define PID1	0xbead
 #define PID2	0xbead1234
+
+// HID Descriptor definitions
+#define HID_USAGE_X		0x30
+#define HID_USAGE_Y		0x31
+#define HID_USAGE_Z		0x32
+#define HID_USAGE_RX	0x33
+#define HID_USAGE_RY	0x34
+#define HID_USAGE_RZ	0x35
+#define HID_USAGE_SL0	0x36
+#define HID_USAGE_SL1	0x37
+#define HID_USAGE_WHL	0x38
+#define HID_USAGE_POV	0x39
+
+// DLL Interface
+SPPINTERFACE_API bool vJoyMonitorInit(HINSTANCE hInstance, HWND	ParentWnd);
+SPPINTERFACE_API int  GetIdByIndex(int iDevice);
+SPPINTERFACE_API bool ExistAxis(UINT iDevice, UINT Axis);
+SPPINTERFACE_API bool ExistAxisX(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisY(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisZ(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisRx(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisRy(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisRz(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisSL1(UINT iDevice);
+SPPINTERFACE_API bool ExistAxisSL2(UINT iDevice);
+SPPINTERFACE_API int  GetNumButtons(UINT iDevice);
 
 struct DI_ENUM_CONTEXT
 {
@@ -51,21 +78,26 @@ class CvJoyMonitor
 {
 public:
 	CvJoyMonitor(void);
-	SPPINTERFACE_API CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd);
+	CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd);
 	virtual ~CvJoyMonitor(void);
-	SPPINTERFACE_API  bool CvJoyMonitor::IsvJoyDevice(UINT iJoy);
+	void SetId(char id);
+	int  GetIdByIndex(int iDevice);
+	virtual bool ExistAxis(UINT iDevice, UINT Axis);
+	virtual int  GetNumButtons(UINT iDevice);
+	bool ExistAxisX(UINT iDevice);
+	bool ExistAxisY(UINT iDevice);
+	bool ExistAxisZ(UINT iDevice);
+	bool ExistAxisRx(UINT iDevice);
+	bool ExistAxisRy(UINT iDevice);
+	bool ExistAxisRz(UINT iDevice);
+	bool ExistAxisSL1(UINT iDevice);
+	bool ExistAxisSL2(UINT iDevice);
 
-public:
-	BOOL EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance);
-
-
-private:
+protected:
 	HINSTANCE				m_hInstance;
 	HWND					m_ParentWnd;
-	bool					m_DirectInput;
-	LPDIRECTINPUT8          m_pDI;
-	LPDIRECTINPUTDEVICE8    m_pJoystick[16];
 	int						m_nvJoyDevices;
+	std::vector<char>		m_Id;
 
 };
 

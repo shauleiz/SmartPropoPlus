@@ -27,113 +27,110 @@
 
 #include "stdafx.h"
 #include "vJoyMonitor.h"
+#include "vJoyMonitorMM.h"
+#include "vJoyMonitorDI8.h"
 
-BOOL CALLBACK    EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance, VOID* pContext );
-BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext );
 
+// Global variables
+CvJoyMonitor * g_MainObj = NULL; // Points to the active vJoyMonitor object
+bool g_isDI8;
+
+
+// Globals functions
+SPPINTERFACE_API bool vJoyMonitorInit(HINSTANCE hInstance, HWND	ParentWnd)
+{
+	LPDIRECTINPUT8          pDI=NULL;
+	// Test if DI8 installed. If Installed create an object, initialize it and store it
+	if (!ParentWnd || !hInstance)
+		return false;
+
+	// // /// //// Test if DirectInput supported.
+	// Register with the DirectInput subsystem and get a pointer
+	// to a IDirectInput interface we can use.
+	// Create a DInput object
+	if( FAILED( DirectInput8Create( GetModuleHandle( NULL ), DIRECTINPUT_VERSION, IID_IDirectInput8, ( VOID** )&pDI, NULL ) ) )
+	{
+		g_MainObj = new CvJoyMonitorMM(hInstance, ParentWnd);
+		g_isDI8 = false;
+	}
+	else
+	{
+		g_MainObj = new CvJoyMonitorDI8(hInstance, ParentWnd);
+		g_isDI8 = true;
+	}
+
+	SAFE_RELEASE( pDI );
+	if (!g_MainObj)
+		return false;
+	else
+		return true;
+}
+SPPINTERFACE_API int  GetIdByIndex(int iDevice)
+{
+	if (g_MainObj)
+		return g_MainObj->GetIdByIndex(iDevice);
+	else
+		return -1;
+}
+SPPINTERFACE_API bool ExistAxis(UINT iDevice, UINT Axis)
+{
+	if (g_MainObj)
+		return g_MainObj->ExistAxis( iDevice,  Axis);
+	else
+		return false;
+}
+
+SPPINTERFACE_API bool ExistAxisX(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_X);}
+SPPINTERFACE_API bool ExistAxisY(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_Y);}
+SPPINTERFACE_API bool ExistAxisZ(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_Z);}
+SPPINTERFACE_API bool ExistAxisRx(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_RX);}
+SPPINTERFACE_API bool ExistAxisRy(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_RY);}
+SPPINTERFACE_API bool ExistAxisRz(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_RZ);}
+SPPINTERFACE_API bool ExistAxisSL0(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_SL0);}
+SPPINTERFACE_API bool ExistAxisSL1(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_SL1);}
+SPPINTERFACE_API int  GetNumButtons(UINT iDevice) 
+{
+	if (g_MainObj)
+		return g_MainObj->GetNumButtons(iDevice);
+	else
+		return -1;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////// Class CvJoyMonitor /////////////////////////////////////////////////////////////////////////////////
 CvJoyMonitor::CvJoyMonitor(void) : m_ParentWnd(NULL), m_hInstance(NULL)
 {
 }
 
-SPPINTERFACE_API CvJoyMonitor::CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd) :
-	m_ParentWnd(ParentWnd), m_hInstance(hInstance), m_DirectInput(false),
-	m_pDI(NULL),  m_nvJoyDevices(0)
+CvJoyMonitor::CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd) :
+	m_ParentWnd(ParentWnd), m_hInstance(hInstance),  m_nvJoyDevices(0)
 
 {
-	HRESULT hr;
-
-
 	if (!m_ParentWnd || !m_hInstance)
 		return;
 
-	// // /// //// Test if DirectInput supported.
-    // Register with the DirectInput subsystem and get a pointer
-    // to a IDirectInput interface we can use.
-    // Create a DInput object
-    if( FAILED( hr = DirectInput8Create( GetModuleHandle( NULL ), DIRECTINPUT_VERSION, IID_IDirectInput8, ( VOID** )&m_pDI, NULL ) ) )
-        m_DirectInput = false;
-	else
-		m_DirectInput = true;
-
-	IsvJoyDevice(1);
+	m_Id.resize(16, -1);
 }
 
 
 CvJoyMonitor::~CvJoyMonitor(void)
 {
-	SAFE_RELEASE( m_pDI );
 }
 
-SPPINTERFACE_API  bool CvJoyMonitor::IsvJoyDevice(UINT iJoy)
+void  CvJoyMonitor::SetId(char id)
 {
-
-	// DirectInput not installed
-	if (!m_DirectInput)
-	{
-		JOYCAPS caps;
-		MMRESULT res =  joyGetDevCaps(iJoy, &caps, sizeof (JOYCAPS));
-		if (res ==JOYERR_NOERROR && caps.wPid == PID1)
-			return(true);
-		else
-			return(false);
-	}
-
-	// Direct input installed
-	else
-	{
-		// Enumerate all devices
-		if (FAILED(m_pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, this, DIEDFL_ATTACHEDONLY ) ) )
-			return false;
-	}
-
-	// For every device - get its ID
-	for (int i=0; i<m_nvJoyDevices; i++)
-	{
-	// Set the data format to "simple Joystick" - a predefined data format 
-    //
-    // A data format specifies which controls on a device we are interested in,
-    // and how they should be reported. This tells DInput that we will be
-    // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
-    if( FAILED(m_pJoystick[i]->SetDataFormat( &c_dfDIJoystick2 ) ) )
-        continue;
-
-	// Enumerate the Joystick objects. The callback function enabled user
-    // interface elements for objects that are found, and sets the min/max
-    // values property for discovered axes.
-    if( FAILED(m_pJoystick[i]->EnumObjects( EnumObjectsCallback, ( VOID* )this, DIDFT_ALL ) ) )
-        continue;
-
-	}
-
-
-	return true;
 }
 
-BOOL CALLBACK    EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance, VOID* pContext )
+int  CvJoyMonitor::GetIdByIndex(int iDevice)
 {
-		return ((CvJoyMonitor *)pContext)->EnumJoysticks(pdidInstance);
+	if (iDevice >= m_nvJoyDevices || iDevice < 0)
+		return 0;
+
+	return m_Id[iDevice];
 }
 
-BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext )
-{
-	// This is the ID (pdidoi)->wReportId
-	return TRUE;
-}
+bool CvJoyMonitor::ExistAxis(UINT iDevice, UINT Axis)
+{return false;}
 
-BOOL CvJoyMonitor::EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance)
-{
-	HRESULT hr;
-
-	if (((pdidInstance)->guidProduct).Data1 == PID2)
-	{
-		// Obtain an interface to the enumerated Joystick.
-		hr = m_pDI->CreateDevice( pdidInstance->guidInstance, &m_pJoystick[m_nvJoyDevices], NULL );
-		// If it failed, then we can't use this Joystick. (Maybe the user unplugged
-		// it while we were in the middle of enumerating it.)
-		if( FAILED( hr ) )
-			return DIENUM_CONTINUE;
-		m_nvJoyDevices++;
-	}
-
-	return TRUE;
-}
+int  CvJoyMonitor::GetNumButtons(UINT iDevice) {return -1;}

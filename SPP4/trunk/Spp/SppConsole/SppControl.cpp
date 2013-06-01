@@ -178,7 +178,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			goto ExitApp;
 
 	// Open vJoy monitor
-	vJoyMon = new CvJoyMonitor(hInstance, hwnd);
+	bool MonitorOk = vJoyMonitorInit(hInstance, hwnd);
+	// TODO: Test functions - remove later
+	int id[3];
+	bool Rx[3];
+	int nBtn[3];
+	if (MonitorOk)
+	{ 
+		
+		id[0] = GetIdByIndex(0);
+		id[1] = GetIdByIndex(1);
+		id[2] = GetIdByIndex(2);
+
+		Rx[0] = ExistAxisRx(0);
+		Rx[1] = ExistAxisRx(1);
+		Rx[2] = ExistAxisRx(2);
+
+		nBtn[0] = GetNumButtons(0);
+		nBtn[1] = GetNumButtons(1);
+		nBtn[2] = GetNumButtons(2);
+	}
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
