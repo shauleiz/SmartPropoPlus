@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Windowsx.h"
+#include "..\vJoyMonitor\vJoyMonitor.h"
 #include "WinMessages.h"
 #include "..\SppProcess\SppProcess.h"
 #include "GlobalMemory.h"
@@ -162,6 +163,47 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 
 }
 
+// Update the position of the  progress bar that corresponds to the vJoy axis
+void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
+{
+	int IdItem;
+
+	switch (Axis)
+	{
+	case HID_USAGE_X:
+		IdItem = IDC_X;
+		break;
+	case HID_USAGE_Y:
+		IdItem = IDC_Y;
+		break;
+	case HID_USAGE_Z:
+		IdItem = IDC_Z;
+		break;
+	case HID_USAGE_RX:
+		IdItem = IDC_RX;
+		break;
+	case HID_USAGE_RY:
+		IdItem = IDC_RY;
+		break;
+	case HID_USAGE_RZ:
+		IdItem = IDC_RZ;
+		break;
+	case HID_USAGE_SL0:
+		IdItem = IDC_SL0;
+		break;
+	case HID_USAGE_SL1:
+		IdItem = IDC_SL1;
+		break;
+
+	default:
+		return;
+	};
+
+	HWND hCh = GetDlgItem(m_hDlg, IdItem);
+	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
+
+}
+
 void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 {
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
@@ -270,6 +312,25 @@ void  SppDlg::MonitorRawCh(WORD cb)
 	// Pass request
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
 }
+
+// Configure the vJoy Axes progress bars
+void SppDlg::CfgJoyMonitor(HWND hDlg)
+{
+	// Clear display
+	UINT ch= IDC_X;
+	HWND hCh;
+	do 
+	{
+		hCh = GetDlgItem(hDlg,  ch);
+		SendMessage(hCh, PBM_SETRANGE ,0, 0xFFFF0000); // Range: 0-64K
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		SendMessage(hCh, PBM_SETBARCOLOR , 0, RGB(0xFF,0,0));
+
+		ch++;
+	} while (ch<=IDC_SL1);
+
+}
+
 // Tell the parent window (Main application)
 // to stop/start monitoring the processed channel data
 void  SppDlg::MonitorPrcCh(WORD cb)
@@ -434,6 +495,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
+		DialogObj->CfgJoyMonitor(hDlg);
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -503,6 +565,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case FILTER_ADDA:
 		DialogObj->AddLine2FilterListA((int)wParam, (const char *)lParam);
+
+	case WMSPP_JMON_AXIS:
+		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
 
 
 	}
