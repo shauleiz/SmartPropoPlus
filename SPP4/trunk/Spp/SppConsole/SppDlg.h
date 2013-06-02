@@ -17,8 +17,10 @@ public: // Called from window procedure
 	void AddLine2ModList(MOD_STRUCT * mod);
 	void SetRawChData(UINT iCh, UINT data);
 	void SetProcessedChData(UINT iCh, UINT data);
+	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
 	void MonitorRawCh(WORD cb);
+	void CfgJoyMonitor(HWND);
 	void MonitorPrcCh(WORD cb);
 	void ShowLogWindow(WORD cb);
 	void RecordInSignal(WORD cb);

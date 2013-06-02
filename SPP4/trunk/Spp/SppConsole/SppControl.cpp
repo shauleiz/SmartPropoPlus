@@ -294,6 +294,7 @@ LRESULT CALLBACK MainWindowProc(
 				DbgPulse(false);
 			break;
 
+		case WMSPP_JMON_AXIS:
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_PCHMNT:
 			SendMessage(hDialog, uMsg, wParam, lParam);
@@ -333,6 +334,8 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_PROC_PULSE:
 			DbgObj->PulseReady((PVOID)wParam, (UINT)lParam);
 			break;
+
+
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
  

@@ -11,7 +11,6 @@
 #define SPPINTERFACE_API __declspec(dllimport)
 #endif
 
-
 //#define STRICT
 #define DIRECTINPUT_VERSION 0x0800
 #define _CRT_SECURE_NO_DEPRECATE
@@ -19,9 +18,6 @@
 #define _WIN32_DCOM
 #endif
 
-//-----------------------------------------------------------------------------
-// Defines, constants, and global variables
-//-----------------------------------------------------------------------------
 #include <windows.h>
 #include <commctrl.h>
 #include <basetsd.h>
@@ -34,6 +30,10 @@
 #include <wbemidl.h>
 #include <vector>
 #include <thread>
+
+//-----------------------------------------------------------------------------
+// Defines, constants, and global variables
+//-----------------------------------------------------------------------------
 
 
 #define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=NULL; } }
@@ -99,6 +99,8 @@ public:
 	bool ExistAxisSL2(UINT iDevice);
 	virtual int  GetNumDevices(void);
 	virtual void StartPollingDevice(UINT iDevice);
+
+protected:
 	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 
 protected:
