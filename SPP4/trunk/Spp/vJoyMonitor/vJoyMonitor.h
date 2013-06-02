@@ -33,11 +33,14 @@
 #include <Windowsx.h>
 #include <wbemidl.h>
 #include <vector>
+#include <thread>
+
 
 #define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=NULL; } }
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=NULL; } }
 #endif
+#define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
 
 #define PID1	0xbead
 #define PID2	0xbead1234
@@ -67,6 +70,8 @@ SPPINTERFACE_API bool ExistAxisRz(UINT iDevice);
 SPPINTERFACE_API bool ExistAxisSL1(UINT iDevice);
 SPPINTERFACE_API bool ExistAxisSL2(UINT iDevice);
 SPPINTERFACE_API int  GetNumButtons(UINT iDevice);
+SPPINTERFACE_API int  GetNumvJoyDevices(void);
+SPPINTERFACE_API void StartPollingDevice(UINT iDevice);
 
 struct DI_ENUM_CONTEXT
 {
@@ -92,6 +97,9 @@ public:
 	bool ExistAxisRz(UINT iDevice);
 	bool ExistAxisSL1(UINT iDevice);
 	bool ExistAxisSL2(UINT iDevice);
+	virtual int  GetNumDevices(void);
+	virtual void StartPollingDevice(UINT iDevice);
+	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 
 protected:
 	HINSTANCE				m_hInstance;

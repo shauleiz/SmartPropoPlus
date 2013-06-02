@@ -29,6 +29,7 @@
 #include "vJoyMonitor.h"
 #include "vJoyMonitorMM.h"
 #include "vJoyMonitorDI8.h"
+#include "../include/WinMessages.h"
 
 
 // Global variables
@@ -96,6 +97,19 @@ SPPINTERFACE_API int  GetNumButtons(UINT iDevice)
 		return -1;
 
 }
+SPPINTERFACE_API int  GetNumvJoyDevices(void)
+{
+	if (g_MainObj)
+		return g_MainObj->GetNumDevices();
+	else
+		return -1;
+
+}
+SPPINTERFACE_API void StartPollingDevice(UINT iDevice)
+	{
+	if (g_MainObj)
+		return g_MainObj->StartPollingDevice(iDevice);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////// Class CvJoyMonitor /////////////////////////////////////////////////////////////////////////////////
@@ -134,3 +148,10 @@ bool CvJoyMonitor::ExistAxis(UINT iDevice, UINT Axis)
 {return false;}
 
 int  CvJoyMonitor::GetNumButtons(UINT iDevice) {return -1;}
+int   CvJoyMonitor::GetNumDevices(void) {return -1;}
+void CvJoyMonitor::StartPollingDevice(UINT iDevice) {}
+
+void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
+{
+	PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, iDev + (Axis<<16), AxisValue);
+}

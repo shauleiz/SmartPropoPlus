@@ -44,7 +44,7 @@ UINT const WMSPP_PRCS_GETLR	=			BASE_SUB+18;			// Get active audio channel (Left
 UINT const WMSPP_DLG_LOG	=			BASE_SUB+19;			// The payload is boolean Show/Hide log window
 UINT const WMSPP_DLG_INSIG	=			BASE_SUB+20;			// The payload is boolean Start recording input signal (Raw audio)
 UINT const WMSPP_DLG_PULSE	=			BASE_SUB+21;			// The payload is boolean Start recording Pulse data (Including input sig)
-
+UINT const WMSPP_JMON_AXIS	=			BASE_SUB+22;			// Inform of new value in an axis of a vJoy device
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

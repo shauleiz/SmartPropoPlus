@@ -183,8 +183,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int id[3];
 	bool Rx[3];
 	int nBtn[3];
+	int nDev;
 	if (MonitorOk)
 	{ 
+		nDev = GetNumvJoyDevices();
 		
 		id[0] = GetIdByIndex(0);
 		id[1] = GetIdByIndex(1);
@@ -197,6 +199,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		nBtn[0] = GetNumButtons(0);
 		nBtn[1] = GetNumButtons(1);
 		nBtn[2] = GetNumButtons(2);
+
+		StartPollingDevice(0);
 	}
 
 	// Loop forever in the dialog box until user kills it
