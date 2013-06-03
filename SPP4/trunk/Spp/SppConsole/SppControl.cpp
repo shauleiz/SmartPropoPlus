@@ -180,30 +180,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hwnd);
 	// TODO: Test functions - remove later
-	int id[3];
-	bool Rx[3];
-	int nBtn[3];
-	int nDev;
 	if (MonitorOk)
-	{ 
-		nDev = GetNumvJoyDevices();
-		
-		id[0] = GetIdByIndex(0);
-		id[1] = GetIdByIndex(1);
-		id[2] = GetIdByIndex(2);
-
-		Rx[0] = ExistAxisRx(0);
-		Rx[1] = ExistAxisRx(1);
-		Rx[2] = ExistAxisRx(2);
-
-		nBtn[0] = GetNumButtons(0);
-		nBtn[1] = GetNumButtons(1);
-		nBtn[2] = GetNumButtons(2);
-
 		StartPollingDevice(0);
-	}
 
 	// Loop forever in the dialog box until user kills it
+	// TODO: Initialize dialog from registry
 	Dialog->MsgLoop();
 
  
