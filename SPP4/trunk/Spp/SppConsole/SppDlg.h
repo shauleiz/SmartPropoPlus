@@ -28,6 +28,7 @@ public: // Called from window procedure
 	void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void UpdateFilter(void);
+	void vJoyMapping(void);
 
 
 private:

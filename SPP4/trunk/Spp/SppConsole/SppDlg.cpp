@@ -290,6 +290,38 @@ void  SppDlg::RecordInSignal(WORD cb)
 
 }
 
+// Mapping button clicked
+// Send all mapping info to the control unit
+void  SppDlg::vJoyMapping(void)
+{
+	TCHAR Buffer[4];
+	int nTchar;
+	int out=0;
+	UINT id = IDC_SRC_X;
+	DWORD AxesMap = 0;
+
+	// Go on all entries and get value. Empty is considered as channel 0
+	// The value has to be one/two digits - is pusshed onto the DWORD to be sent
+	do {
+	((WORD *)Buffer)[0]=4;
+	out=0;
+	HWND hEdtBox = GetDlgItem(m_hDlg,  id);
+	nTchar = Edit_GetLine(hEdtBox, 1, &Buffer, 3);
+	if (nTchar == 1 || nTchar == 2)
+	{
+		Buffer[nTchar] = NULL;
+		out = _tstoi(Buffer);
+	}
+ 	if (out>0xF)
+		out=0;
+	AxesMap = (AxesMap<<4 | out);
+	id++;
+	} while (id <= IDC_SRC_SL1);
+
+	// Send message: wParam: Mapping, lParam: Number of axes
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, AxesMap, id-1);
+}
+
 // Tell the parent window (Main application)
 // to stop/start monitoring the raw channel data
 void  SppDlg::MonitorRawCh(WORD cb)
@@ -306,6 +338,7 @@ void  SppDlg::MonitorRawCh(WORD cb)
 		hCh = GetDlgItem(m_hDlg,  ch);
 		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		SendMessage(hCh, PBM_SETBARCOLOR , 0, RGB(0,0xFF,0));
 		ch++;
 	} while (ch<=IDC_CH8);
 
@@ -491,11 +524,18 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			DialogObj->FilterListEvent(wParam, lParam);
 		}
+
+		if (((LPNMHDR)lParam)->idFrom  == IDC_BTN_MAP)
+		{
+			return  (INT_PTR)TRUE;
+		}
+
 		return (INT_PTR)TRUE;
+
 
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
-		DialogObj->CfgJoyMonitor(hDlg);
+		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -537,12 +577,16 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			DialogObj->RecordPulse(LOWORD(wParam));
 			break;
 		};
-
-
-
+		
+		if (LOWORD(wParam)  == IDC_BTN_MAP && HIWORD(wParam) == BN_CLICKED )
+		{
+			DialogObj->vJoyMapping();
+			break;
+		}
 
 		break;
-		
+
+
 	case REM_ALL_JACK:
 		DialogObj->CleanAudioList();
 		break;
