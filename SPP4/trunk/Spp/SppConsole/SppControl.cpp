@@ -316,6 +316,8 @@ LRESULT CALLBACK MainWindowProc(
 			DbgObj->PulseReady((PVOID)wParam, (UINT)lParam);
 			break;
 
+		case WMSPP_DLG_MAP:
+			Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam);
 
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;

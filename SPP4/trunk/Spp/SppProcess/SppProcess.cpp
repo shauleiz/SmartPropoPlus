@@ -32,6 +32,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_vJoyReady(false),
 	m_DbgPulse(FALSE),
 	ProcessChannels(NULL),
+	m_Mapping(0x01234567),
 	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2),
 	m_WaveBitsPerSample(8),
@@ -2010,6 +2011,47 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 
 	for (k=0; k<n_ch-i;k++)
 		writeOk =  SetBtn(ch[i+k]>511, rID,k+1); // Replace 511 with some constant definition
+}
+
+// Change the mapping scheme
+// The number of axes currently supported is 1 to 8
+// The number of channels currently supported is 1 to 15
+// Each map nibble represents a channel to axis mapping. The nibble value is the channel index (1-based). The nibble location is the axis
+// Nibbles are set from the upper nibble (X axis) to lower nibble (SL1 axis)
+// Special cases:
+// - nAxes = 0: Reset mapping to defualt
+// - nAxes < 8: map only the nAxes starting from X axis, set the rest to default
+// - Map nibble = 0, don't change mapping for this axis.
+bool CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
+{
+
+	DWORD dwMap;
+	UCHAR Nibble, PrevNibble, DefNibble;
+
+	if (nAxes>8)
+		return false;
+
+	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
+	for (UINT i=0; i<8; i++)
+	{
+		Nibble =		((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF;
+		PrevNibble =	((m_Mapping & (0xF<<(4*(7-i)))) >>(4*(7-i)))&0xF;
+		DefNibble	 =	((0x01234567 & (0xF<<(4*(7-i)))) >>(4*(7-i)))&0xF;
+
+		if (i<nAxes)
+		{
+			if (Nibble)
+				dwMap = (dwMap<<4) | (Nibble-1);
+			else 
+				dwMap = (dwMap<<4) | PrevNibble ;
+		}
+		else
+			dwMap = (dwMap<<4) | DefNibble ;
+
+	}
+
+	m_Mapping = dwMap;
+	return true;
 }
 
 /* Run Joystick post processor filter */
