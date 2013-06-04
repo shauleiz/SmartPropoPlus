@@ -29,6 +29,7 @@ public: // Called from window procedure
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void UpdateFilter(void);
 	void vJoyMapping(void);
+	void SetAxesMappingData(DWORD Map, UINT nAxes);
 
 
 private:

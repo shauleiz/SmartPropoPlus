@@ -413,6 +413,27 @@ void SppDlg::UpdateFilter(void)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)iFilter, 0);
 }
 
+// Fill-in the actual mapping data
+void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
+{
+
+	UINT id = IDC_SRC_SL1;
+	HWND hEdtBox;
+	UINT channel;
+	TCHAR buffer[4];
+
+	// Go through the map and read nibble by nibble
+	// Every nibble read goes to the corresponding edit box
+	for (UINT i=0; i<nAxes; i++)
+	{
+		hEdtBox = GetDlgItem(m_hDlg,  id-i);
+		channel = ((Map>>(i*4))&0xF) + 1;
+		_itot_s(channel, buffer, 2, 10);
+		Edit_SetText(hEdtBox, buffer);
+	};
+
+}
+
 void SppDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
 {
 	LPNMLISTVIEW change;
@@ -609,9 +630,14 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case FILTER_ADDA:
 		DialogObj->AddLine2FilterListA((int)wParam, (const char *)lParam);
+		break;
 
 	case WMSPP_JMON_AXIS:
 		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
+		break;
+
+	case WMSPP_MAP_UPDT:
+		DialogObj->SetAxesMappingData((DWORD)wParam, (UINT)lParam);
 
 
 	}

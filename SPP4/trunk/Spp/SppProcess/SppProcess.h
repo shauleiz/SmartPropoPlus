@@ -99,7 +99,7 @@ public:
 	SPPMAIN_API void StartDbgPulse(void);
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
-	SPPMAIN_API bool MappingChanged(DWORD Map, UINT nAxes);
+	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes);
 
 
 
