@@ -40,6 +40,8 @@ using std::placeholders::_2;
 
 #define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
 #define  PP function<void (int, BOOL)>
+#define Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
+
 
 struct MOD_STRUCT {
 	BOOL isPpm;
