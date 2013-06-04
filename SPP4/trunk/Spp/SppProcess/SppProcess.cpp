@@ -2006,8 +2006,13 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	// Create a public duplication of processed data for monitoring
 	memcpy(m_PrcChannel, ch, MAX_JS_CH*sizeof(int));	
 
+	
+	UINT iMapped;
 	for (i=0; i<=n_ch && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
-		writeOk =  SetAxis(32*ch[i],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+	{
+		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
+		writeOk =  SetAxis(32*ch[iMapped],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+	}
 
 	for (k=0; k<n_ch-i;k++)
 		writeOk =  SetBtn(ch[i+k]>511, rID,k+1); // Replace 511 with some constant definition
@@ -2025,7 +2030,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 bool CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 {
 
-	DWORD dwMap;
+	DWORD dwMap; // Intermediary map
 	UCHAR Nibble, PrevNibble, DefNibble;
 
 	if (nAxes>8)
@@ -2034,9 +2039,9 @@ bool CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
 	for (UINT i=0; i<8; i++)
 	{
-		Nibble =		((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF;
-		PrevNibble =	((m_Mapping & (0xF<<(4*(7-i)))) >>(4*(7-i)))&0xF;
-		DefNibble	 =	((0x01234567 & (0xF<<(4*(7-i)))) >>(4*(7-i)))&0xF;
+		Nibble		= Map2Nibble(Map,i);			// Nibble from map
+		PrevNibble	= Map2Nibble(m_Mapping, i);		// Nibble previously used
+		DefNibble	= Map2Nibble(0x01234567, i);	// Default nibble
 
 		if (i<nAxes)
 		{
