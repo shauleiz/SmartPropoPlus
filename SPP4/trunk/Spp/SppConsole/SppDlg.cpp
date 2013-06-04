@@ -319,7 +319,7 @@ void  SppDlg::vJoyMapping(void)
 	} while (id <= IDC_SRC_SL1);
 
 	// Send message: wParam: Mapping, lParam: Number of axes
-	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, AxesMap, id-1);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, AxesMap, 8);
 }
 
 // Tell the parent window (Main application)

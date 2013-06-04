@@ -97,6 +97,8 @@ public:
 	SPPMAIN_API void StartDbgPulse(void);
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
+	SPPMAIN_API bool MappingChanged(DWORD Map, UINT nAxes);
+
 
 
 private:
@@ -174,6 +176,7 @@ private:
 	BOOL m_vJoyReady;
 	BOOL m_DbgPulse;
 	BOOL m_ChangeCapture;
+	DWORD m_Mapping;
 };
 
 
