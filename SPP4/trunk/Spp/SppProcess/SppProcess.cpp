@@ -2027,14 +2027,16 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 // - nAxes = 0: Reset mapping to defualt
 // - nAxes < 8: map only the nAxes starting from X axis, set the rest to default
 // - Map nibble = 0, don't change mapping for this axis.
-bool CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
+// Return: New mapping
+
+DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 {
 
 	DWORD dwMap; // Intermediary map
 	UCHAR Nibble, PrevNibble, DefNibble;
 
 	if (nAxes>8)
-		return false;
+		return m_Mapping;
 
 	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
 	for (UINT i=0; i<8; i++)
@@ -2056,7 +2058,7 @@ bool CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 	}
 
 	m_Mapping = dwMap;
-	return true;
+	return m_Mapping;
 }
 
 /* Run Joystick post processor filter */

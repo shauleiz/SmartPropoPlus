@@ -205,7 +205,10 @@ LRESULT CALLBACK MainWindowProc(
   _In_  UINT uMsg,
   _In_  WPARAM wParam,
   _In_  LPARAM lParam
-  ) {    switch (uMsg) 
+  ) { 
+	  DWORD Map;
+
+	  switch (uMsg) 
     { 
         case WM_CREATE: 
             // Initialize the window. 
@@ -317,7 +320,10 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_DLG_MAP:
-			Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam);
+			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam);
+			if (Map !=  (DWORD)wParam)
+				SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
+			break;
 
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
