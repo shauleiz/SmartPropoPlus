@@ -325,6 +325,20 @@ LRESULT CALLBACK MainWindowProc(
 				SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
 			break;
 
+		case WMSPP_DLG_CHNL:
+			if ((UCHAR)wParam !=  Audio->GetwBitsPerSample())
+			{
+				Audio->SetwBitsPerSample((UCHAR)wParam);
+				Spp->AudioChanged();
+			};
+
+			// Set L/R to Spp
+			if ((TCHAR)lParam == TEXT('L'))
+				Spp->SetAudioChannel(true);
+			else
+				Spp->SetAudioChannel(false);
+
+			break;
 		//case WMSPP_PRCS_GETLR:
 		//	return Audio->Get;
  

@@ -154,6 +154,7 @@ public:
 	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
 	SPPINTERFACE_API COLORREF	GetJackColor(PVOID Id);
 	SPPINTERFACE_API bool		IsDisconnected(PVOID Id);
+	SPPINTERFACE_API bool		AudioChannelParamsChanged(UCHAR bits, TCHAR Channel);
 
 	SPPINTERFACE_API bool		RegisterLog(LPVOID,LPVOID=NULL);
 	SPPINTERFACE_API bool		RegisterAudioLog(LPVOID,LPVOID=NULL);
@@ -162,8 +163,10 @@ public:
 
 	SPPINTERFACE_API DWORD		GetnSamplesPerSec(void);
 	SPPINTERFACE_API WORD		GetwBitsPerSample(void);
+	SPPINTERFACE_API void		SetwBitsPerSample(UCHAR nBits=8);
 	SPPINTERFACE_API void		StartDbgInputSignal(void);
 	SPPINTERFACE_API void		StopDbgInputSignal(void);
+
 
 
 

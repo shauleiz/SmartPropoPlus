@@ -316,6 +316,12 @@ void CSppProcess::AudioChanged(void)
 	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::CHANGE_REQ);
 }
 
+void CSppProcess::SetAudioChannel(bool Left)
+{
+	Left ? m_WaveInputChannel=0 : m_WaveInputChannel=1;
+}
+
+
 /*
 	Start/Stop sperate thread that monitors the channel (Position[]) values
 	The thread polls the channels and sends periodic updates to the parent window
@@ -2060,6 +2066,7 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 	m_Mapping = dwMap;
 	return m_Mapping;
 }
+
 
 /* Run Joystick post processor filter */
 int CSppProcess::RunJsFilter(int * ch, int nChannels)
