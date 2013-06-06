@@ -30,6 +30,7 @@ public: // Called from window procedure
 	void UpdateFilter(void);
 	void vJoyMapping(void);
 	void SetAxesMappingData(DWORD Map, UINT nAxes);
+	void AudioChannelParams(void);
 
 
 private:

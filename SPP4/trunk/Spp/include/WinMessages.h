@@ -47,6 +47,7 @@ UINT const WMSPP_DLG_PULSE	=			BASE_SUB+21;			// The payload is boolean Start re
 UINT const WMSPP_JMON_AXIS	=			BASE_SUB+22;			// Inform of new value in an axis of a vJoy device
 UINT const WMSPP_DLG_MAP	=			BASE_SUB+23;			// The payload is DWORD that describe mapping of channels to axes
 UINT const WMSPP_MAP_UPDT	=			BASE_SUB+24;			// The payload is DWORD that describe mapping of channels to axes
+UINT const WMSPP_DLG_CHNL	=			BASE_SUB+25;			// Change in audio channel params - The payload is wParam: Number of bits, lParam: channel L/R/M
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

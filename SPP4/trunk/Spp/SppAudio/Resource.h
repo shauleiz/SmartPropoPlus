@@ -24,7 +24,6 @@
 #define IDC_PROGRESS_R							1008
 #define IDC_STATIC_L							1009
 #define IDC_STATIC_R							1010
-#define IDC_MONO								1011
 #define IDC_LOGPULSE							1012
 #define IDC_DECPPM								1013
 

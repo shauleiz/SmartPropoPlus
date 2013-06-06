@@ -100,6 +100,7 @@ public:
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
 	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes);
+	SPPMAIN_API void SetAudioChannel(bool Left=true);
 
 
 

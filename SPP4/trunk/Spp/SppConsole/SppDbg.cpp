@@ -141,7 +141,7 @@ void SppDbg::InputSignalReady(PBYTE buffer, PVOID info)
 			if (!row)
 				fprintf(m_FileDbgInSig,  ">> %3d,  ", line++);
 			row++;
-			fprintf(m_FileDbgInSig,  "%04x%c%04x",(((signed short *)buffer)[i]), sep, (((signed short *)buffer)[i+1]));
+			fprintf(m_FileDbgInSig,  "%06d%c%06d",(((signed short *)buffer)[i]), sep, (((signed short *)buffer)[i+1]));
 			if (row == 32)
 			{
 				fprintf(m_FileDbgInSig,"\n");

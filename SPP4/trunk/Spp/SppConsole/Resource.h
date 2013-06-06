@@ -19,7 +19,6 @@
 #define IDC_CHPP6                               1006
 #define IDC_CHPP7                               1007
 #define IDC_CHPP8                               1008
-#define IDC_SRC_RZZ                             1009
 #define IDC_CH_INSIG                            1010
 #define IDC_TXT_CHPP1                           1011
 #define IDC_TXT_CHPP2                           1012
@@ -30,6 +29,7 @@
 #define IDC_TXT_CHPP7                           1017
 #define IDC_TXT_CHPP8                           1018
 #define IDC_CH_PULSE                            1019
+#define IDC_AUD_8                               1020
 #define IDC_LIST_FILTERS                        1080
 #define IDC_CH_LOG                              1081
 #define IDS_APP_TITLE                           40000
@@ -171,3 +171,7 @@
 #define IDC_SRC_SL0                             40115
 #define IDC_SRC_SL1                             40116
 #define IDC_BTN_MAP                             40124
+#define IDC_AUD_16                              40126
+#define IDC_LEFT                                40128
+#define IDC_MONO                                40130
+#define IDC_RIGHT                               40132

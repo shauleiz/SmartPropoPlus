@@ -322,6 +322,26 @@ void  SppDlg::vJoyMapping(void)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, AxesMap, 8);
 }
 
+// Get the parameters of the audio (8/16 bits Left/Right/Mono)
+// Send them over to the application
+// Default will be 8bit/Left channel
+void SppDlg::AudioChannelParams(void)
+{
+	UCHAR bits = 8;
+	TCHAR Channel = TEXT('L');
+
+	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_AUD_16))
+		bits = 16;
+
+	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_RIGHT))
+		Channel = TEXT('R');
+	else if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_MONO))
+		Channel = TEXT('M');
+
+	// Send message: wParam: Number of bits, lParam: channel L/R/M
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_CHNL, bits, Channel);
+
+}
 // Tell the parent window (Main application)
 // to stop/start monitoring the raw channel data
 void  SppDlg::MonitorRawCh(WORD cb)
@@ -605,7 +625,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
-		break;
+		if  (LOWORD(wParam)  == IDC_AUD_8 || LOWORD(wParam)  == IDC_AUD_16 ||  LOWORD(wParam)  == IDC_LEFT || LOWORD(wParam)  == IDC_RIGHT || LOWORD(wParam)  == IDC_MONO) 
+		{
+			DialogObj->AudioChannelParams();
+			break;
+		}
 
 
 	case REM_ALL_JACK:

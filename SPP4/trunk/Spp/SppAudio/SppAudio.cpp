@@ -242,7 +242,7 @@ bool CSppAudio::Create(void)
 	m_CurrentWaveFormat.nBlockAlign = 0;
 	m_CurrentWaveFormat.nChannels = 0;
 	m_CurrentWaveFormat.nSamplesPerSec = 0;
-	m_CurrentWaveFormat.wBitsPerSample = 0;
+	m_CurrentWaveFormat.wBitsPerSample = 8;
 	m_CurrentWaveFormat.wFormatTag = 0;
 	m_CurrentChannelIsRight = false;
 	m_pPulseDataObj = NULL;
@@ -767,6 +767,17 @@ SPPINTERFACE_API void CSppAudio::StopDbgInputSignal(void)
 	m_DbgInputSignal = FALSE;
 }
 
+// Changes the capture parameters and manipulation of the audio
+// Arguments:
+//  bits: 8/16
+//  Channel: 'L'(Left)/'R'(Right)/'M'(Mono)
+// Returns true if arguments valid and if change succeeded
+SPPINTERFACE_API bool CSppAudio::AudioChannelParamsChanged(UCHAR bits, TCHAR Channel)
+{
+	return true;
+}
+
+
 SPPINTERFACE_API DWORD CSppAudio::GetnSamplesPerSec(void)
 {
 	return m_CurrentWaveFormat.nSamplesPerSec;
@@ -775,6 +786,11 @@ SPPINTERFACE_API DWORD CSppAudio::GetnSamplesPerSec(void)
 SPPINTERFACE_API WORD CSppAudio::GetwBitsPerSample(void)
 {
 	return m_CurrentWaveFormat.wBitsPerSample;
+}
+
+SPPINTERFACE_API void CSppAudio::SetwBitsPerSample(UCHAR nBits)
+{
+	m_CurrentWaveFormat.wBitsPerSample = nBits;
 }
 
 SPPINTERFACE_API int CSppAudio::GetNumberChannels(void)
@@ -1382,7 +1398,6 @@ SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
 {
 	HRESULT hr = S_OK;
 	m_CurrentChannelIsRight = RightChannel;
-	static int _deb=0;
 
 	// Stop streaming current endpoint
 	hr = StopCurrentStream();
@@ -1399,20 +1414,15 @@ SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
 	if (FAILED(hr))
 	{
 		LogMessageWithId(WARN, IDS_W_START_SET,Id);
-		//LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
-		//LogStatus(GEN_STATUS,WARN,STRSTRM2,m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 #endif
 
 	// Initialize endpoint
-	_deb++;
 	hr = InitEndPoint(Id);
 	if (FAILED(hr))
 	{
 		LogMessageWithId(WARN, IDS_W_START_INITEP,Id);
-		//LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
-		//LogStatus(GEN_STATUS,WARN,STRSTRM3,m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1421,8 +1431,6 @@ SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
 	if (FAILED(hr))
 	{
 		LogMessageWithId(WARN, IDS_W_START_STREAM,Id);
-		//LogStatus(GEN_STATUS,WARN,Id,m_LogParam);
-		//LogStatus(GEN_STATUS,WARN,STRSTRM4,m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1484,7 +1492,7 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 
 	// Try to improve the current format
 	pwfx->wFormatTag = WAVE_FORMAT_PCM;
-	pwfx->wBitsPerSample = 8;
+	pwfx->wBitsPerSample = m_CurrentWaveFormat.wBitsPerSample; // Usually 8
 	pwfx->nBlockAlign = pwfx->wBitsPerSample / 8 * pwfx->nChannels;
 	pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
 	pwfx->cbSize = 0;
@@ -1495,7 +1503,7 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 
 
 	// If 8-bit failed, try 16-bit samples
-	if (FAILED(hr))
+	if (FAILED(hr) &&  m_CurrentWaveFormat.wBitsPerSample == 8)
 	{
 		LogMessage(WARN, IDS_W_INITEP_FRMT);
 		LogMessageWithId(WARN, IDS_W_INITEP_FRMT,Id, GetWasapiText(hr));
@@ -1771,7 +1779,10 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 	LogAudio(ALOG_PACK, packetLength*m_CurrentWaveFormat.nChannels, pDataIn, m_LogAudioParam);
 
 	// Export buffer to caller
-	memcpy_s(pBuffer, bMax, pDataIn, packetLength*m_CurrentWaveFormat.wBitsPerSample*m_CurrentWaveFormat.nChannels/8); // TODO: Test for all combinations (Mono/16 bits)
+	rsize_t size = packetLength*m_CurrentWaveFormat.wBitsPerSample*m_CurrentWaveFormat.nChannels/8;
+	if (bMax<size)
+		return AUDCLNT_E_BUFFER_SIZE_ERROR;
+	memcpy_s(pBuffer, bMax, pDataIn, size); // TODO: Test for all combinations (Mono/16 bits)
 	*pBufLength = packetLength;
 
 
