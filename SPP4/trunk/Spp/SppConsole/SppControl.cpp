@@ -8,6 +8,7 @@
 #include "SmartPropoPlus.h"
 #include "..\SppAudio\SppAudio.h"
 #include "..\SppProcess\SppProcess.h"
+#include "SppConfig.h"
 #include "SppControl.h"
 #include "SppDlg.h"
 #include "SppLog.h"
@@ -135,6 +136,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	DWORD err = GetLastError();
 	if (!hwnd)
 		return false;
+
+	// Get Configuration file
+	CSppConfig * conf = new CSppConfig();
 
 	// Start the audio 
 	Audio = new CSppAudio(hwnd);

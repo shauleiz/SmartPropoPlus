@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SppProcess", "SppProcess\Sp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vJoyMonitor", "vJoyMonitor\vJoyMonitor.vcxproj", "{9ADDD735-0F87-4CAB-8100-B7153BE97DAC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxmlSTL", "TinyXml\tinyxmlSTL.vcxproj", "{A3A84737-5017-4577-B8A2-79429A25B8B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -66,6 +68,14 @@ Global
 		{9ADDD735-0F87-4CAB-8100-B7153BE97DAC}.Release|Win32.Build.0 = Release|Win32
 		{9ADDD735-0F87-4CAB-8100-B7153BE97DAC}.Release|Win32.Deploy.0 = Release|Win32
 		{9ADDD735-0F87-4CAB-8100-B7153BE97DAC}.Release|x64.ActiveCfg = Release|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Debug|Win32.Build.0 = Debug|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Debug|Win32.Deploy.0 = Debug|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Debug|x64.ActiveCfg = Debug|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Release|Win32.ActiveCfg = Release|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Release|Win32.Build.0 = Release|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Release|Win32.Deploy.0 = Release|Win32
+		{A3A84737-5017-4577-B8A2-79429A25B8B6}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -87,6 +87,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +130,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\SmartPropoPlus.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SppConfig.h" />
     <ClInclude Include="SppControl.h" />
     <ClInclude Include="SppDbg.h" />
     <ClInclude Include="SppDlg.h" />
@@ -169,9 +172,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\SppProcess\GlobalMemory.cpp" />
+    <ClCompile Include="..\SppProcess\GlobalMemory.cpp">
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
     <ClCompile Include="..\SppProcess\SmartPropoPlus.cpp" />
     <ClCompile Include="..\SppProcess\SppRegistry.cpp" />
+    <ClCompile Include="SppConfig.cpp" />
     <ClCompile Include="SppControl.cpp" />
     <ClCompile Include="SppDbg.cpp" />
     <ClCompile Include="SppDlg.cpp" />
