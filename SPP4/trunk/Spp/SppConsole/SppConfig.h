@@ -24,18 +24,27 @@
 #define SPP_TARGETS "Targets"
 #define SPP_VJOYDEV "vJoy_Device"
 #define SPP_VJOYID  "Id"
+#define SPP_SELECT  "Selected"
+
+
 class CSppConfig
 {
 public:
-	CSppConfig(void);
-	CSppConfig(LPTSTR FileName);
+	//CSppConfig(void);
+	CSppConfig(LPTSTR FileName = DEF_CONF_FILE);
 	virtual ~CSppConfig(void);
+	bool SelectvJoyDevice(UINT id);
+	UINT SelectedvJoyDevice(void);
+
+	void Test(void);
 
 private:
 	TiXmlDocument * CreateDefaultConfig(TiXmlDocument *  doc = NULL);
+	TiXmlHandle		CreatevJoyDevice(UINT id, bool selected = false);
+
 
 private:
-	TiXmlDocument * m_doc;
+	TiXmlDocument m_doc;
 
 };
 
