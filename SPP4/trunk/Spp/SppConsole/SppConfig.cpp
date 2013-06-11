@@ -207,11 +207,60 @@ UINT CSppConfig::SelectedvJoyDevice(void)
 		return id;
 }
 
+// MapAxis - Register the channel-to-axis mapping of a given vJoy device
+// If device does not exist then create it first
+// Device accessed by Id
+//
+// The number of axes currently supported is 1 to 8
+// The number of channels currently supported is 1 to 15
+// Each map nibble represents a channel to axis mapping. The nibble value is the channel index (1-based). The nibble location is the axis
+// Nibbles are set from the upper nibble (X axis) to lower nibble (SL1 axis)
+// Special case: Map nibble = 0, don't change mapping for this axis.
+void CSppConfig::MapAxis(UINT id, DWORD map)
+{
+	// Create a vjoy device (if it does not exist)
+	TiXmlHandle  DeviceHandle = CreatevJoyDevice(id);
+
+	// Create a Device_Map/Axes element (if it does not exist) - there's only one
+	TiXmlElement * Device_Map = DeviceHandle.FirstChildElement(SPP_DEVMAP).ToElement();
+	if (!Device_Map)
+	{
+		Device_Map = new TiXmlElement(SPP_DEVMAP);
+		DeviceHandle.ToElement()->LinkEndChild(Device_Map);
+	};
+	TiXmlHandle MapHandle(Device_Map);
+	TiXmlElement * Axis_Map = MapHandle.FirstChildElement(SPP_MAPAX).ToElement();
+	if (!Axis_Map)
+	{
+		Axis_Map = new TiXmlElement(SPP_MAPAX);
+		MapHandle.ToElement()->LinkEndChild(Axis_Map);
+	};
+	TiXmlHandle AxisHandle(Axis_Map);
+
+	// For every nibble in map (that is not 0) Create/Replace value
+	if (map & 0xF)
+		UniqueTextLeaf(AxisHandle, std::string("SL1"), std::to_string(map & 0xF), true);
+	if ((map & 0xF0)>>4)
+		UniqueTextLeaf(AxisHandle, std::string("SL0"), std::to_string ((map & 0xF0)>>4), true);
+	if ((map & 0xF00)>>8)
+		UniqueTextLeaf(AxisHandle, std::string("RZ"), std::to_string ((map & 0xF00)>>8), true);
+	if ((map & 0xF000)>>12)
+		UniqueTextLeaf(AxisHandle, std::string("RY"), std::to_string ((map & 0xF000)>>12), true);
+	if ((map & 0xF0000)>>16)
+		UniqueTextLeaf(AxisHandle, std::string("RX"), std::to_string ((map & 0xF0000)>>16), true);
+	if ((map & 0xF00000)>>20)
+		UniqueTextLeaf(AxisHandle, std::string("Z"), std::to_string ((map & 0xF00000)>>20), true);
+	if ((map & 0xF000000)>>24)
+		UniqueTextLeaf(AxisHandle, std::string("Y"), std::to_string ((map & 0xF000000)>>24), true);
+	if ((map & 0xF0000000)>>28)
+		UniqueTextLeaf(AxisHandle, std::string("X"), std::to_string ((map & 0xF0000000)>>28), true);
+}
+
 void CSppConfig::Test(void)
 {
 	//CreatevJoyDevice(5);
 	CreatevJoyDevice(0);
-
+	MapAxis(1, 0x89A00000);
 	 //SelectvJoyDevice(5);
 	 SelectvJoyDevice(22);
 
@@ -235,4 +284,36 @@ std::wstring utf8_decode(const std::string &str)
     std::wstring wstrTo( size_needed, 0 );
     MultiByteToWideChar                  (CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
     return wstrTo;
+}
+
+// Create/Replace a UNIQUE leaf element with its text
+// Parameters:
+//	Parent:		Handle of the parent element
+//	LeafName:	The name of the leaf to create (if does not exist)
+//	LeafText:	The text to insert in the leaf element
+//	Replace:	If the leaf element exist - should the text be replaced
+// Returns: Handle to leaf element if successful - NULL otherwize
+TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  std::string &LeafName, std::string &LeafText, bool Replace)
+{
+	// Does the leaf exist and unique
+	TiXmlElement * Leaf[2];
+	Leaf[0] = Parent.ChildElement(LeafName, 0).ToElement();
+	Leaf[1] = Parent.ChildElement(LeafName, 1).ToElement();
+	if (Leaf[0] && Leaf[1]) // Leaf not unique
+		return 0;
+
+	if (!Replace && Leaf[0]) // Leaf already exists and not to be replaced
+		return 0;
+
+	if (!Leaf[0]) // Leaf does not exist - Create it
+	{
+		Leaf[0] = new TiXmlElement(LeafName);
+		Parent.ToElement()->LinkEndChild(Leaf[0]);
+	}
+
+	// Replace
+	Leaf[0]->Clear();
+	Leaf[0]->LinkEndChild(new  TiXmlText(LeafText));
+	TiXmlHandle LeafHandle(Leaf[0]);
+	return LeafHandle;
 }
