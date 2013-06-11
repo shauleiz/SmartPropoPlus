@@ -25,6 +25,9 @@
 #define SPP_VJOYDEV "vJoy_Device"
 #define SPP_VJOYID  "Id"
 #define SPP_SELECT  "Selected"
+#define SPP_DEVMAP  "Device_Map"
+#define SPP_MAPAX   "Axes"
+#define SPP_MAPBTN  "Buttons"
 
 
 class CSppConfig
@@ -35,6 +38,7 @@ public:
 	virtual ~CSppConfig(void);
 	bool SelectvJoyDevice(UINT id);
 	UINT SelectedvJoyDevice(void);
+	void MapAxis(UINT id, DWORD map);
 
 	void Test(void);
 
@@ -51,4 +55,5 @@ private:
 
 std::string utf8_encode(const std::wstring &wstr);
 std::wstring utf8_decode(const std::string &str);
+TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  std::string &LeafName, std::string &LeafText, bool Replace);
 
