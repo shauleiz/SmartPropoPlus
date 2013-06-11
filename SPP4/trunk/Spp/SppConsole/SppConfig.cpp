@@ -4,20 +4,19 @@
 #include "Shlobj.h"
 
 
-CSppConfig::CSppConfig(void)
-{
-	CSppConfig(DEF_CONF_FILE);
-}
+//CSppConfig::CSppConfig(void)
+//{
+//	CSppConfig(DEF_CONF_FILE);
+//}
 
-CSppConfig::CSppConfig(LPTSTR FileName) :
-	m_doc(NULL)
+CSppConfig::CSppConfig(LPTSTR FileName) 
 {
 	HRESULT hr = S_OK;
 	PWSTR path;
 	std::wstring w_full_path;
 	std::string full_path;
 	bool loaded, saved;
-	const char *ErrorTxt;
+	//const char *ErrorTxt;
 
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
@@ -26,23 +25,24 @@ CSppConfig::CSppConfig(LPTSTR FileName) :
 	full_path = utf8_encode(w_full_path);
 
 	// Create a document and try to load the config file
-	TiXmlDocument * doc = new TiXmlDocument(full_path);
-	loaded = doc->LoadFile();
+	//m_doc = new TiXmlDocument(full_path);
+	loaded = m_doc.LoadFile(full_path);
 
 	// If not loaded then create a default config file (And sub-folder)
-	if (!loaded && doc->ErrorId()/* == TiXmlBase::TIXML_ERROR_OPENING_FILE*/)
+	if (!loaded && m_doc.ErrorId()/* == TiXmlBase::TIXML_ERROR_OPENING_FILE*/)
 	{
-		doc->ClearError();
-		doc = CreateDefaultConfig(doc);
+		m_doc.ClearError();
+		CreateDefaultConfig(&m_doc);
 		w_full_path = path;
 		w_full_path = w_full_path + TEXT("\\") + DEF_CONF_DIR;
 		CreateDirectory(w_full_path.c_str(), 0);
 	};
 	// TODO: Log operation
 
-	saved = doc->SaveFile();
-	if (saved)
-		m_doc = doc;
+
+	saved = m_doc.SaveFile();
+	if (!saved)
+		m_doc = NULL;
 }
 
 CSppConfig::~CSppConfig(void)
@@ -85,6 +85,137 @@ TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 	vJoyDevice->LinkEndChild(vJoyDevId);
 
 	return i_doc;
+}
+
+// Target Section - vJoy device related info
+// Only assumption is: Document (m_doc) exists
+// If Section does not exist then create it
+// If vJoy device does not exist then create it
+
+// CreatevJoyDevice - Create by ID if does not exist (Optionally set as selected)
+// Opens if exists (Change 'select' value if needed)
+// Returns handle to the vJoy_Device Element
+TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
+{
+	// Sanity check - document exists, id is valid
+	if ( id<1 || id>16)
+		return NULL;
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return NULL;
+	TiXmlHandle RootHandle( root );
+
+	// If Section 'Targets' does not exist - create it
+	TiXmlElement* Targets = RootHandle.FirstChild( SPP_TARGETS ).ToElement();
+	if (!Targets)
+	{
+		Targets = new TiXmlElement(SPP_TARGETS);
+		root->LinkEndChild(Targets);
+	};
+	
+	// If selected==true - assign id to the attribute 'selected'
+	if (selected)
+			Targets->SetAttribute(SPP_SELECT, id);
+
+	// if vJoy_Device(Id=id) does not exist - create it
+	TiXmlElement* Device = RootHandle.FirstChild( SPP_TARGETS ).FirstChild(SPP_VJOYDEV).ToElement();
+
+	// Now we know that there's at least one device - look for the one with the requested id
+	for (Device; Device; Device = Device->NextSiblingElement())
+	{
+		TiXmlHandle DeviceHandle( Device );
+		TiXmlElement* IdElement = DeviceHandle.FirstChild(SPP_VJOYID).ToElement();
+		if (!IdElement)
+			continue;
+		const char * idStr = IdElement->GetText();
+		if (!idStr)
+			continue;
+		if (id == atoi(idStr))
+			break;
+	};
+
+	std::string idString = std::to_string(id);
+	if (!Device)
+	{
+		// No devices exist - create one
+		Device =  new TiXmlElement(SPP_VJOYDEV);
+		Targets->LinkEndChild(Device);
+		TiXmlElement * Id = new TiXmlElement(SPP_VJOYID);
+		Device->LinkEndChild(Id);
+		TiXmlText * idTxt = new TiXmlText(idString );
+		Id->LinkEndChild(idTxt);
+	};
+
+	// Obtain handle to the opened/created vJoy_Device Element
+	TiXmlHandle out( Device );
+	return out;
+}
+
+// SelectvJoyDevice - Set a device to be marked as selected
+// If does not exist then create it first
+bool CSppConfig::SelectvJoyDevice(UINT id)
+{
+	TiXmlHandle h = CreatevJoyDevice(id, true);
+	if (h.ToElement())
+		return true;
+	return false;
+}
+
+// SelectedvJoyDevice - Get the Id of the selected vJoy device
+// Returns the Id of the selected device.
+// If There's only one device - it returns it's Id
+// If Unable to determine return 0
+UINT CSppConfig::SelectedvJoyDevice(void)
+{
+	int id =0;
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return id;
+	TiXmlHandle RootHandle( root );
+
+	// Get 'Targets' and get its 'selected' attribute
+	TiXmlElement* Targets = RootHandle.FirstChild( SPP_TARGETS ).ToElement();
+	if (!Targets)
+		return id;
+	const char * selected = Targets->Attribute(SPP_SELECT);
+	if (selected)
+		return atoi(selected);
+
+	// If no 'selected' attribute then:
+	/// If there are no children then return 0
+	if (Targets->NoChildren())
+		return id;
+
+	// Get the ID of the first child
+	TiXmlElement *  Device = Targets->FirstChildElement(SPP_VJOYDEV);
+	TiXmlHandle DeviceHandle( Device );
+	TiXmlElement* IdElement = DeviceHandle.FirstChild(SPP_VJOYID).ToElement();
+	if (!IdElement)
+		return 0;
+	const char * idStr = IdElement->GetText();
+	if (!idStr)
+		return 0;
+	id = atoi(idStr);
+
+	// If only one return its ID - else return 0
+	if (Device->NextSiblingElement(SPP_VJOYDEV))
+		return 0;
+	else
+		return id;
+}
+
+void CSppConfig::Test(void)
+{
+	//CreatevJoyDevice(5);
+	CreatevJoyDevice(0);
+
+	 //SelectvJoyDevice(5);
+	 SelectvJoyDevice(22);
+
+	m_doc.SaveFile();
 }
 
 /////////// Helper functions

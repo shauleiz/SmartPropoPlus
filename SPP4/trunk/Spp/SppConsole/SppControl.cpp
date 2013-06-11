@@ -139,6 +139,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Get Configuration file
 	CSppConfig * conf = new CSppConfig();
+	conf->Test();
+	UINT sel = conf->SelectedvJoyDevice();
 
 	// Start the audio 
 	Audio = new CSppAudio(hwnd);
