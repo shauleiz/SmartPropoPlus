@@ -256,13 +256,55 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 		UniqueTextLeaf(AxisHandle, std::string("X"), std::to_string ((map & 0xF0000000)>>28), true);
 }
 
+// MApAxis - Get the channel-to-axis mapping of a given vJoy device
+// If device does not exist then return 0
+// Device accessed by Id
+//
+// The number of axes currently supported is 1 to 8
+// The number of channels currently supported is 1 to 15
+// Each map nibble represents a channel to axis mapping. The nibble value is the channel index (1-based). The nibble location is the axis
+// Nibbles are set from the upper nibble (X axis) to lower nibble (SL1 axis)
+// Special case: Map nibble = 0 - no info for this axis
+DWORD CSppConfig::MapAxis(UINT id)
+{
+
+	// Get handle to vJoy Device
+	TiXmlHandle DeviceHandle = CreatevJoyDevice(id);
+	 
+	int x_val =  GetSingleAxisMap(DeviceHandle, "X");
+	int y_val =  GetSingleAxisMap(DeviceHandle, "Y");
+	int z_val =  GetSingleAxisMap(DeviceHandle, "Z");
+	int rx_val =  GetSingleAxisMap(DeviceHandle, "RX");
+	int ry_val =  GetSingleAxisMap(DeviceHandle, "RY");
+	int rz_val =  GetSingleAxisMap(DeviceHandle, "RZ");
+	int sl0_val =  GetSingleAxisMap(DeviceHandle, "SL0");
+	int sl1_val =  GetSingleAxisMap(DeviceHandle, "SL1");
+
+	DWORD out = (sl1_val<<0) | (sl0_val<<4) | (rz_val<<8) | (ry_val<<12) | (rx_val<<16) | (z_val<<20) | (y_val<<24) | (x_val<<28);
+
+	return out;
+
+}
+
+UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
+{
+	TiXmlText * Text = DeviceHandle.FirstChildElement(SPP_DEVMAP).FirstChildElement(SPP_MAPAX).FirstChildElement(axis).FirstChild().ToText();
+	if (Text)
+		return  std::stoi (Text->ValueStr());
+	else
+		return 0;
+}
+
+
 void CSppConfig::Test(void)
 {
 	//CreatevJoyDevice(5);
 	CreatevJoyDevice(0);
+	 MapAxis(4);
 	MapAxis(1, 0x89A00000);
 	 //SelectvJoyDevice(5);
 	 SelectvJoyDevice(22);
+
 
 	m_doc.SaveFile();
 }

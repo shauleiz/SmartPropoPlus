@@ -39,12 +39,14 @@ public:
 	bool SelectvJoyDevice(UINT id);
 	UINT SelectedvJoyDevice(void);
 	void MapAxis(UINT id, DWORD map);
+	DWORD CSppConfig::MapAxis(UINT id);
 
 	void Test(void);
 
 private:
 	TiXmlDocument * CreateDefaultConfig(TiXmlDocument *  doc = NULL);
 	TiXmlHandle		CreatevJoyDevice(UINT id, bool selected = false);
+	UINT			GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis);
 
 
 private:
