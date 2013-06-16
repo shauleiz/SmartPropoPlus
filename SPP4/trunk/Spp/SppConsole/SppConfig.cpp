@@ -286,6 +286,73 @@ DWORD CSppConfig::MapAxis(UINT id)
 
 }
 
+// AddModulation - Create/Replace a modulation entry (Optionally mark it as the selected modulation)
+//
+// Parameters:
+//	Type: Short name (PPM, WAL, AIR1)
+//	Subtype: (PPM or PCM)
+//	Name: Friendly name such as “Sanwa/Air (PCM1)”
+//	select: If true, mark this modulation as the selected
+bool  CSppConfig::AddModulation(std::string Type, std::string SubType, std::wstring Name, bool select)
+{
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return false;
+	TiXmlHandle RootHandle( root );
+
+	// If Section 'Modulations' does not exist - create it
+	TiXmlElement* Modulations = RootHandle.FirstChild( SPP_MODS ).ToElement();
+	if (!Modulations)
+	{
+		Modulations = new TiXmlElement(SPP_MODS);
+		root->LinkEndChild(Modulations);
+	};
+	
+	// If selected==true - assign id to the attribute 'selected'
+	if (select)
+			Modulations->SetAttribute(SPP_SELECT, Type);
+
+	// Get/Create modulation entry of type 'Type'
+	TiXmlElement* Mod = RootHandle.FirstChild( SPP_MODS ).FirstChild(SPP_MOD).ToElement();
+
+	// Look for the Modulation element with the requested Type
+	TiXmlElement* TypeElement;
+	for (Mod; Mod; Mod = Mod->NextSiblingElement())
+	{
+		TiXmlHandle ModHandle( Mod );
+		TypeElement = ModHandle.FirstChild(SPP_MODTYPE).ToElement();
+		if (!TypeElement)
+			continue;
+		const char * TypeStr = TypeElement->GetText();
+		if (!TypeStr)
+			continue;
+		if (!Type.compare(TypeStr))
+			break;
+	};
+
+	// If Modulation element with the requested Type does not exist - create it
+	if (!Mod)
+	{
+		// No devices exist - create one
+		Mod =  new TiXmlElement(SPP_MOD);
+		Modulations->LinkEndChild(Mod);
+	};
+	TiXmlHandle ModHandle( Mod );
+
+	// Enter type
+	UniqueTextLeaf(ModHandle, std::string(SPP_MODTYPE), Type, true);
+
+	// Enter subtype
+	UniqueTextLeaf(ModHandle, std::string(SPP_MODSUBT), SubType, true);
+
+	// Convert & Enter name
+	UniqueTextLeaf(ModHandle, std::string(SPP_MODNAME), utf8_encode(Name), true);
+
+	return true;
+
+}
+
 UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
 {
 	TiXmlText * Text = DeviceHandle.FirstChildElement(SPP_DEVMAP).FirstChildElement(SPP_MAPAX).FirstChildElement(axis).FirstChild().ToText();
@@ -304,6 +371,9 @@ void CSppConfig::Test(void)
 	MapAxis(1, 0x89A00000);
 	 //SelectvJoyDevice(5);
 	 SelectvJoyDevice(22);
+
+	 AddModulation("PPM", "PPM", L"Generic PPM", true);
+	 AddModulation("PPMW", "PPM", L"Walkera PPM");
 
 
 	m_doc.SaveFile();
