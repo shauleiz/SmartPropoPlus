@@ -28,6 +28,11 @@
 #define SPP_DEVMAP  "Device_Map"
 #define SPP_MAPAX   "Axes"
 #define SPP_MAPBTN  "Buttons"
+#define SPP_MODS	"Modulations"
+#define SPP_MOD		"Modulation"
+#define SPP_MODTYPE	"Type"
+#define SPP_MODSUBT	"SubType"
+#define SPP_MODNAME	"Name"
 
 
 class CSppConfig
@@ -39,7 +44,9 @@ public:
 	bool SelectvJoyDevice(UINT id);
 	UINT SelectedvJoyDevice(void);
 	void MapAxis(UINT id, DWORD map);
-	DWORD CSppConfig::MapAxis(UINT id);
+	DWORD MapAxis(UINT id);
+	bool AddModulation(std::string Type, std::string SubType, std::wstring Name, bool select=false);
+	std::string  GetSelectedModulation(void);
 
 	void Test(void);
 
@@ -47,7 +54,6 @@ private:
 	TiXmlDocument * CreateDefaultConfig(TiXmlDocument *  doc = NULL);
 	TiXmlHandle		CreatevJoyDevice(UINT id, bool selected = false);
 	UINT			GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis);
-
 
 private:
 	TiXmlDocument m_doc;
