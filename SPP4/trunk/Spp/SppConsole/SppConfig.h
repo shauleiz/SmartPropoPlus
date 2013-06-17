@@ -89,7 +89,8 @@ private:
 	string			GetNameModulation(string Type);
 	TiXmlHandle		GetModulationHandle(string Type);
 	TiXmlHandle		GetAudioHandle(LPTSTR Id);
-	wstring			GetFilterName(UINT Id);
+	TiXmlHandle		GetFilterHandle(LPTSTR Id);
+	wstring			GetFilterName(LPTSTR Id);
 
 private:
 	TiXmlDocument m_doc;

@@ -99,12 +99,12 @@ TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
 {
 	// Sanity check - document exists, id is valid
 	if ( id<1 || id>16)
-		return NULL;
+		return TiXmlHandle(0);
 
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
-		return NULL;
+		return  TiXmlHandle(0);
 	TiXmlHandle RootHandle( root );
 
 	// If Section 'Targets' does not exist - create it
@@ -323,35 +323,11 @@ bool CSppConfig::AddModulation(string Type, string SubType, wstring Name, bool s
 	if (select)
 			Modulations->SetAttribute(SPP_SELECT, Type);
 
-	// Get/Create modulation entry of type 'Type'
-	TiXmlElement* Mod = RootHandle.FirstChild( SPP_MODS ).FirstChild(SPP_MOD).ToElement();
-
-	// Look for the Modulation element with the requested Type
-	TiXmlElement* TypeElement;
-	for (Mod; Mod; Mod = Mod->NextSiblingElement())
-	{
-		TiXmlHandle ModHandle( Mod );
-		TypeElement = ModHandle.FirstChild(SPP_MODTYPE).ToElement();
-		if (!TypeElement)
-			continue;
-		const char * TypeStr = TypeElement->GetText();
-		if (!TypeStr)
-			continue;
-		if (!Type.compare(TypeStr))
-			break;
-	};
-
-	// If Modulation element with the requested Type does not exist - create it
-	if (!Mod)
-	{
-		// No devices exist - create one
-		Mod =  new TiXmlElement(SPP_MOD);
-		Modulations->LinkEndChild(Mod);
-	};
-	TiXmlHandle ModHandle( Mod );
-
-	// Enter type
-	UniqueTextLeaf(ModHandle, string(SPP_MODTYPE), Type, true);
+	// Create/Replace 'Modulation' element (By Id)
+	TiXmlHandle ModulationsHandle( Modulations );
+	TiXmlHandle	 ModHandle = GetByKey(ModulationsHandle, SPP_MOD, SPP_MODTYPE, Type);
+	if (!ModHandle.ToElement())
+		return false;
 
 	// Enter subtype
 	UniqueTextLeaf(ModHandle, string(SPP_MODSUBT), SubType, true);
@@ -405,34 +381,20 @@ TiXmlHandle	 CSppConfig::GetModulationHandle(string Type)
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
-		return NULL;
+		return  TiXmlHandle(0);
 	TiXmlHandle RootHandle( root );
 
 	// Get Section 'Modulations'
 	TiXmlElement* Modulations = RootHandle.FirstChild( SPP_MODS ).ToElement();
 	if (!Modulations)
-		return NULL;
+		return  TiXmlHandle(0);
 	
-	// Look for the Modulation element with the requested Type
-	TiXmlElement* Mod = RootHandle.FirstChild( SPP_MODS ).FirstChild(SPP_MOD).ToElement();
-	TiXmlElement* TypeElement;
-	for (Mod; Mod; Mod = Mod->NextSiblingElement())
-	{
-		TiXmlHandle ModHandle( Mod );
-		TypeElement = ModHandle.FirstChild(SPP_MODTYPE).ToElement();
-		if (!TypeElement)
-			continue;
-		const char * TypeStr = TypeElement->GetText();
-		if (!TypeStr)
-			continue;
-		if (!Type.compare(TypeStr))
-			break;
-	};
-	if (!Mod)
-		return NULL;
+	// Create/Replace 'Modulation' element (By Type)
+	TiXmlHandle ModsHandle( Modulations );
+	TiXmlHandle	ModHandle = GetByKey(ModsHandle, SPP_MOD, SPP_MODTYPE, Type);
+	if (!ModHandle.ToElement())
+		return TiXmlHandle(0);
 
-	// Found
-	TiXmlHandle ModHandle( Mod );
 	return ModHandle;
 }
 
@@ -503,9 +465,18 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 		root->LinkEndChild(Audio);
 	};
 	
-	// Get/Create Audio device element of type 'ID'
-	TiXmlElement* Dev = RootHandle.FirstChild( SPP_AUDIO ).FirstChild(SPP_AUDDEV).ToElement();
+	//// Get/Create Audio device element of type 'ID'
+	//TiXmlElement* Dev = RootHandle.FirstChild( SPP_AUDIO ).FirstChild(SPP_AUDDEV).ToElement();
+	//if (!Dev)
+	//	return false;
 
+	// Create/Replace 'Device' element (By Id)
+	TiXmlHandle AudioHandle( Audio );
+	TiXmlHandle	DevHandle = GetByKey(AudioHandle, SPP_AUDDEV, SPP_AUDID, str_Id);
+	if (!DevHandle.ToElement())
+		return false;
+
+#if 0
 	// Look for the audio device element with the requested ID
 	TiXmlElement* IdElement;
 	for (Dev; Dev; Dev = Dev->NextSiblingElement())
@@ -532,6 +503,7 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 
 	// Id: Convert & Enter
 	UniqueTextLeaf(DevHandle, string(SPP_AUDID), utf8_encode(Id), true);
+#endif
 
 	// Name: Convert & Enter
 	UniqueTextLeaf(DevHandle, string(SPP_AUDNAME), utf8_encode(Name), true);
@@ -548,19 +520,26 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 
 TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 {
-		string str_Id = utf8_encode(wstring(Id));
+	string str_Id = utf8_encode(wstring(Id));
 
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
-		return NULL;
+		return  TiXmlHandle(0);
 	TiXmlHandle RootHandle( root );
 
 	// Get Section 'Audio'
 	TiXmlElement* Audio = RootHandle.FirstChild( SPP_AUDIO ).ToElement();
 	if (!Audio)
-		return NULL;
+		return  TiXmlHandle(0);
 
+	// Create/Replace 'Audio_Device' element (By ID)
+	TiXmlHandle AudioHandle( Audio );
+	TiXmlHandle	DevHandle = GetByKey(AudioHandle, SPP_AUDDEV, SPP_AUDID, str_Id);
+	if (!DevHandle.ToElement())
+		return TiXmlHandle(0);
+
+#if 0
 	// Get Audio device element of type 'ID'
 	TiXmlElement* Dev = RootHandle.FirstChild( SPP_AUDIO ).FirstChild(SPP_AUDDEV).ToElement();
 
@@ -579,10 +558,12 @@ TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 			break;
 	};
 	if (!Dev)
-		return NULL;
+		return  TiXmlHandle(0);
 
 	// Found
 	TiXmlHandle DevHandle( Dev );
+
+#endif
 	return DevHandle;
 
 }
@@ -673,7 +654,8 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 			Filters->SetAttribute(SPP_SELECT, Id);
 
 	// Create/Replace 'filter' element (By Id)
-	TiXmlHandle	FilterHandle = GetByKey(Filters, SPP_FILTER, SPP_FLTID, to_string(Id));
+	TiXmlHandle FiltersHandle( Filters );
+	TiXmlHandle	FilterHandle = GetByKey(FiltersHandle, SPP_FILTER, SPP_FLTID, to_string(Id));
 	if (!FilterHandle.ToElement())
 		return false;
 
@@ -682,6 +664,72 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , str_Name , true);
 	return true;
 }
+
+UINT CSppConfig::GetSelectedFilter(void)
+{
+	UINT selected = 0;
+
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return selected;
+
+	TiXmlHandle RootHandle( root );
+
+	// Get 'Filters' and get its 'selected' attribute
+	TiXmlElement* Filters = RootHandle.FirstChild( SPP_FILTERS ).ToElement();
+	if (!Filters)
+		return selected;
+
+	const char * attr = Filters->Attribute(SPP_SELECT);
+	if (attr)
+		selected = stoi(string(attr));
+
+	return selected;
+}
+
+TiXmlHandle CSppConfig::GetFilterHandle(LPTSTR Id)
+{
+	string str_Id = utf8_encode(wstring(Id));
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return  TiXmlHandle(0);
+	TiXmlHandle RootHandle( root );
+
+	// Get Section 'Filters'
+	TiXmlElement* Filters = RootHandle.FirstChild( SPP_FILTERS ).ToElement();
+	if (!Filters)
+		return  TiXmlHandle(0);
+
+	// Create/Replace 'Audio_Device' element (By ID)
+	TiXmlHandle FiltersHandle( Filters );
+	TiXmlHandle	FilterHandle = GetByKey(FiltersHandle, SPP_FILTER, SPP_FLTID, str_Id);
+	if (!FilterHandle.ToElement())
+		return TiXmlHandle(0);
+	else
+		return FilterHandle;
+}
+
+wstring CSppConfig::GetFilterName(LPTSTR Id)
+{
+	string Value = "";
+	TiXmlHandle h = GetFilterHandle(Id);
+	TiXmlText * Text = h.FirstChildElement(SPP_FLTNAME).FirstChild().ToText();
+	if (Text)
+		Value =  Text->ValueStr();
+	return utf8_decode(Value);
+}
+
+wstring CSppConfig::GetSelectedFilterName(void)
+{
+	UINT Id = GetSelectedFilter();
+	wstring w_id = to_wstring(Id);
+	const WCHAR * pw_id = w_id.data();
+	wstring w = GetFilterName((LPTSTR)pw_id);
+	return w;
+}
+
 
 void CSppConfig::Test(void)
 {
@@ -708,6 +756,8 @@ void CSppConfig::Test(void)
 	FilterFile(L"C:\\TEMP\\My Filter.dll", L"3.3.9");
 	AddFilter(308, L"Filter 0308");
 	AddFilter(309, L"Filter 0309",true);
+	UINT sf = GetSelectedFilter();
+	Name = GetSelectedFilterName();
 
 	m_doc.SaveFile();
 }
@@ -755,10 +805,10 @@ TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, string &LeafTe
 	Leaf[0] = Parent.ChildElement(LeafName, 0).ToElement();
 	Leaf[1] = Parent.ChildElement(LeafName, 1).ToElement();
 	if (Leaf[0] && Leaf[1]) // Leaf not unique
-		return 0;
+		return  TiXmlHandle(0);
 
 	if (!Replace && Leaf[0]) // Leaf already exists and not to be replaced
-		return 0;
+		return  TiXmlHandle(0);
 
 	if (!Leaf[0]) // Leaf does not exist - Create it
 	{
@@ -783,7 +833,7 @@ TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, string Value
 {
 	// Test handle
 	if (!hParent.ToElement())
-		return NULL;
+		return  TiXmlHandle(0);
 
 	// Get pointerto child entry
 	TiXmlElement* ChildElement = hParent.FirstChild( Child ).ToElement();
