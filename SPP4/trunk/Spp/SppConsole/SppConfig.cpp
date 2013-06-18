@@ -2,6 +2,7 @@
 #include "SppConfig.h"
 #include "Knownfolders.h"
 #include "Shlobj.h"
+#include "../SppProcess/SppProcess.h"
 
 
 //CSppConfig::CSppConfig(void)
@@ -47,6 +48,8 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 
 CSppConfig::~CSppConfig(void)
 {
+	m_doc.SaveFile();
+	m_doc.Clear();
 }
 
 // Given a pointer to an already created document this function creates
@@ -83,6 +86,8 @@ TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 	TiXmlElement * vJoyDevId = new TiXmlElement(SPP_VJOYID);
 	vJoyDevId->LinkEndChild(new TiXmlText( "1" ));
 	vJoyDevice->LinkEndChild(vJoyDevId);
+
+	m_doc.SaveFile();
 
 	return i_doc;
 }
@@ -149,6 +154,7 @@ TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
 	};
 
 	// Obtain handle to the opened/created vJoy_Device Element
+	m_doc.SaveFile();
 	TiXmlHandle out( Device );
 	return out;
 }
@@ -254,6 +260,8 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 		UniqueTextLeaf(AxisHandle, string("Y"), to_string ((map & 0xF000000)>>24), true);
 	if ((map & 0xF0000000)>>28)
 		UniqueTextLeaf(AxisHandle, string("X"), to_string ((map & 0xF0000000)>>28), true);
+
+	m_doc.SaveFile();
 }
 
 // MApAxis - Get the channel-to-axis mapping of a given vJoy device
@@ -296,6 +304,30 @@ UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
 		return 0;
 }
 
+// SelectModulation - Set the selected modulation (by Type)
+// Change the 'selected' attribute of 'Modulations'
+// No testing if this type exists
+bool CSppConfig::SelectModulation(LPTSTR Type)
+{
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return false;
+	TiXmlHandle RootHandle( root );
+
+	// If Section 'Modulations' does not exist - create it
+	TiXmlElement* Modulations = RootHandle.FirstChild( SPP_MODS ).ToElement();
+	if (!Modulations)
+	{
+		Modulations = new TiXmlElement(SPP_MODS);
+		root->LinkEndChild(Modulations);
+	};
+	
+	// If selected==true - assign id to the attribute 'selected'
+	Modulations->SetAttribute(SPP_SELECT, utf8_encode(wstring(Type)));
+	m_doc.SaveFile();
+	return true;
+}
 // AddModulation - Create/Replace a modulation entry (Optionally mark it as the selected modulation)
 //
 // Parameters:
@@ -335,6 +367,7 @@ bool CSppConfig::AddModulation(string Type, string SubType, wstring Name, bool s
 	// Convert & Enter name
 	UniqueTextLeaf(ModHandle, string(SPP_MODNAME), utf8_encode(Name), true);
 
+	m_doc.SaveFile();
 	return true;
 
 }
@@ -348,6 +381,18 @@ bool CSppConfig::AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool se
 	// 
 
 	return AddModulation(utf8_encode(wstr_Type), utf8_encode(wstr_SubType), wstr_Name, select);
+}
+bool CSppConfig::AddModulation(PVOID data)
+{
+	string SubType = "PPM";
+	BOOL isPPM = ((MOD_STRUCT *)data)->isPpm;
+	if (!isPPM)
+		SubType = "PCM";
+	string Type = utf8_encode(wstring(((MOD_STRUCT *)data)->ModType));
+	wstring Name = wstring(((MOD_STRUCT *)data)->ModName);
+	BOOL select = ((MOD_STRUCT *)data)->ModSelect;
+
+	return AddModulation( Type,  SubType,  Name,  (bool)select);
 }
 
 // GetSelectedModulation - Get the selected modulation type
@@ -514,6 +559,7 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 	// Bit Rate
 	UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_string(BitRate), true);
 
+	m_doc.SaveFile();
 	return true;
 
 }
@@ -632,7 +678,7 @@ bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 
 	// Add Filter DLL file version
 	UniqueTextLeaf(FiltersHandle, string(SPP_DLLVER), utf8_encode(Version), true);
-
+	m_doc.SaveFile();
 	return true;
 }
 

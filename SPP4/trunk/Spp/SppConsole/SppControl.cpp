@@ -18,6 +18,7 @@
 
 // Globals
 HWND hDialog;
+class CSppConfig * Conf = NULL;
 class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
@@ -138,9 +139,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return false;
 
 	// Get Configuration file
-	CSppConfig * conf = new CSppConfig();
-	conf->Test();
-	UINT sel = conf->SelectedvJoyDevice();
+	Conf = new CSppConfig();
 
 	// Start the audio 
 	Audio = new CSppAudio(hwnd);
@@ -172,14 +171,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	LogMessage(INFO, IDS_I_STARTSPPPRS);
 
-	Dialog->Show(); // If not asked to be iconified
 
 	FilterPopulate(hDialog);
 	Spp->AudioChanged(); // TODO: Remove later
+	Dialog->Show(); // If not asked to be iconified
 
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
 	tMonitor = new thread(thMonitor, &Monitor);
+
 	if (!tMonitor)
 			goto ExitApp;
 
@@ -251,9 +251,11 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_PRCS_SETMOD:
 			SendMessage(hDialog, WMSPP_PRCS_SETMOD, wParam, lParam);
+			Conf->AddModulation((PVOID)wParam);
 			break;
 
 		case WMSPP_DLG_MOD:
+			Conf->SelectModulation((LPTSTR)wParam);
 			if (Spp)
 				Spp->SelectMod((LPCTSTR)wParam);
 			break;

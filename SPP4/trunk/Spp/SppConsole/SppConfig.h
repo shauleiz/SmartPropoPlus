@@ -61,7 +61,8 @@ public:
 	DWORD 			MapAxis(UINT id);
 
 	// Modulations
-	bool			AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool select=false);
+	bool			AddModulation(PVOID data);
+	bool			SelectModulation(LPTSTR Type);
 	string			GetSelectedModulation(void);
 	string			GetSubTypeModulationSelected();
 	string			GetNameModulationSelected();
@@ -85,6 +86,7 @@ private:
 	TiXmlHandle		CreatevJoyDevice(UINT id, bool selected = false);
 	UINT			GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis);
 	bool			AddModulation(string Type, string SubType, wstring Name, bool select=false);
+	bool			AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool select=false);
 	string			GetSubTypeModulation(string Type);
 	string			GetNameModulation(string Type);
 	TiXmlHandle		GetModulationHandle(string Type);
