@@ -46,8 +46,10 @@ SPPMAIN_API CSppProcess::~CSppProcess() {}
 
 SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 {
+	// TODO: Change SetActiveMode() interact with config.xml
 	SetActiveMode(ModType); // Set the active mode in memory and in registry
 	m_Modulation->Active = GetModulation(FALSE)->Active; // Get the index of the new active modulation
+	// TODO: Get modulation type from control and convert it to index
 	LoadProcessPulseFunctions();
 }
 
