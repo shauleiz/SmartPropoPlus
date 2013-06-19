@@ -48,6 +48,7 @@ UINT const WMSPP_JMON_AXIS	=			BASE_SUB+22;			// Inform of new value in an axis 
 UINT const WMSPP_DLG_MAP	=			BASE_SUB+23;			// The payload is DWORD that describe mapping of channels to axes
 UINT const WMSPP_MAP_UPDT	=			BASE_SUB+24;			// The payload is DWORD that describe mapping of channels to axes
 UINT const WMSPP_DLG_CHNL	=			BASE_SUB+25;			// Change in audio channel params - The payload is wParam: Number of bits, lParam: channel L/R/M
+UINT const WMSPP_PRCS_GETMOD=			BASE_SUB+26;			// Get the selected modulation
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

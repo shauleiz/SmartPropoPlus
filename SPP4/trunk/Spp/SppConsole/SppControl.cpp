@@ -254,6 +254,14 @@ LRESULT CALLBACK MainWindowProc(
 			Conf->AddModulation((PVOID)wParam);
 			break;
 
+		case WMSPP_PRCS_GETMOD:
+			{
+				wstring modtype = Conf->GetSelectedModulation();
+				LPCTSTR mod = _wcsdup(modtype.c_str());
+				return (LRESULT)(mod);
+			};
+			break;
+
 		case WMSPP_DLG_MOD:
 			Conf->SelectModulation((LPTSTR)wParam);
 			if (Spp)

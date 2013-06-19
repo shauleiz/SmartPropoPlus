@@ -37,7 +37,9 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_WaveNChannels(2),
 	m_WaveBitsPerSample(8),
 	m_WaveRate(192000), 
-	m_WaveInputChannel(0)// TODO: Get real data from user
+	m_SelectedMod(TEXT("PPM")),
+	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
+	m_WaveInputChannel(0) // TODO: Get real data from user
 {
 	m_ListProcessPulseFunc.clear();
 }
@@ -104,7 +106,11 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 
 	// Get list of modulation types: PPM/PCM(JR) ....
 	// Mark the selected modulation type
-	m_Modulation = GetModulation(1);
+	m_Modulation = GetModulation(1); // TODO: Remove
+
+	// Initialize the database (map) of all modilation types along with the associated functions
+	int n = InitModulationMap();
+	InitModulationSelect();
 
 
 	//// Audio system from registry
@@ -123,7 +129,7 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	if (!m_pSharedBlock)
 		return false;
 
-	// Create a list of ProcessPulse functions
+	// TODO: Remove - Create a list of ProcessPulse functions
 	int nActiveModulations = LoadProcessPulseFunctions();
 
 	// Pass to the parent window the list modulations
@@ -511,6 +517,104 @@ Exit:
 //    }
 //}
 
+// Request the type of selected modulation from CU
+// Assign PP function accordingly
+bool  CSppProcess::InitModulationSelect(void)
+{
+	LPTSTR Type = (LPTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETMOD, 0 , 0);
+	if (!Type)
+		return false;
+
+	 MOD tmp = m_ModulationMap[Type];
+	m_CurrentPP =  [=] (int width, BOOL input) {tmp;};
+}
+
+// InitModulationMap - Initialize the modulation data base (which is implemented as a map)
+// For each modulation supported by SPP, insert an entry and a search key:
+//	Search Key is the modulation type (unique)
+//	Entry includes:
+//	- func: Modulation function
+//	- Name: Friendly name of the modulation type (To be displayed)
+//	- Type: Modulation type (unique)
+//	- Subtype: PPM/PCM
+int CSppProcess::InitModulationMap(void)
+{
+	MOD tmp;
+	m_ModulationMap.clear();
+
+	// Generic PPM
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
+	tmp.Name = MOD_NAME_PPM;
+	tmp.Subtype =  _T("PPM");
+	tmp.Type = MOD_TYPE_PPM;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// PPM (Positive)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseJrPpm(width, input);};
+	tmp.Name = MOD_NAME_PPMP;
+	tmp.Subtype =  _T("PPM");
+	tmp.Type = MOD_TYPE_PPMP;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// PPM (Negative)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseFutabaPpm(width, input);};
+	tmp.Name = MOD_NAME_PPMN;
+	tmp.Subtype =  _T("PPM");
+	tmp.Type = MOD_TYPE_PPMN;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// PPM (Walkera)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseWK2401Ppm(width, input);};
+	tmp.Name = MOD_NAME_PPMW;
+	tmp.Subtype =  _T("PPM");
+	tmp.Type = MOD_TYPE_PPMW;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// JR (PCM)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseJrPcm(width, input);};
+	tmp.Name = MOD_NAME_JR;
+	tmp.Subtype =  _T("PCM");
+	tmp.Type = MOD_TYPE_JR;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// Futaba (PCM)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseFutabaPcm(width, input);};
+	tmp.Name = MOD_NAME_FUT;
+	tmp.Subtype =  _T("PCM");
+	tmp.Type = MOD_TYPE_FUT;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// Futaba (PCM)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseFutabaPcm(width, input);};
+	tmp.Name = MOD_NAME_FUT;
+	tmp.Subtype =  _T("PCM");
+	tmp.Type = MOD_TYPE_FUT;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// Sanwa/Air (PCM1)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseAirPcm1(width, input);};
+	tmp.Name = MOD_NAME_AIR1;
+	tmp.Subtype =  _T("PCM");
+	tmp.Type = MOD_TYPE_AIR1;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	// Sanwa/Air (PCM2)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseAirPcm2(width, input);};
+	tmp.Name = MOD_NAME_AIR2;
+	tmp.Subtype =  _T("PCM");
+	tmp.Type = MOD_TYPE_AIR2;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+
+	// Walkera (PCM)
+	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseWalPcm(width, input);};
+	tmp.Name = MOD_NAME_WAL;
+	tmp.Subtype =  _T("PCM");
+	tmp.Type = MOD_TYPE_WAL;
+	m_ModulationMap.emplace(tmp.Type, tmp);
+
+	return m_ModulationMap.size();
+}
 
 
 	/*
