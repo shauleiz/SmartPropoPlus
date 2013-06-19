@@ -12,6 +12,7 @@
 
 
 #include <vector>
+#include <map>
 #include <functional>
 #include <thread>
 
@@ -42,6 +43,13 @@ using std::placeholders::_2;
 #define  PP function<void (int, BOOL)>
 #define Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
 
+struct MOD {
+	LPCTSTR Type;		// Unique identifier of the modulation. Examples are PPMW, AIR1 …
+	LPCTSTR Subtype;	// PPM/PCM
+	LPCTSTR Name;		// User friendly name of the modulation to be desplayd.
+	PP func;			// This is the function of type PP that implements the modulation. Called by ProcessWave().
+};
+
 
 struct MOD_STRUCT {
 	BOOL isPpm;
@@ -51,9 +59,18 @@ struct MOD_STRUCT {
 	PP func;   
 };
 
+struct StrCompare : public std::binary_function<LPCTSTR, LPCTSTR, bool> {
+public:
+    bool operator() (LPCTSTR str1, LPCTSTR str2) const
+    { return wcscmp(str1, str2) < 0; }
+};
+
+
+
 typedef  std::vector<PP> vPP;
 typedef  std::vector<MOD_STRUCT> vMOD;
 typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
+typedef  std::map<LPCTSTR, MOD, StrCompare> MODMAP;
 
 typedef struct _JS_CHANNELS	// Joystick channel data
 {
@@ -137,6 +154,9 @@ private:
 	inline UINT NormalizePulse(UINT Length);
 	PJS_CHANNELS (WINAPI *ProcessChannels)(PJS_CHANNELS, int max, int min);
 	void SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength, UINT PulseLength);
+	int InitModulationMap(void);
+	bool InitModulationSelect(void);
+
 
 
 
@@ -180,6 +200,9 @@ private:
 	BOOL m_DbgPulse;
 	BOOL m_ChangeCapture;
 	DWORD m_Mapping;
+	MODMAP m_ModulationMap;
+	LPTSTR	m_SelectedMod;
+	PP m_CurrentPP;
 };
 
 

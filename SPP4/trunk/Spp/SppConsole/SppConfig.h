@@ -63,9 +63,9 @@ public:
 	// Modulations
 	bool			AddModulation(PVOID data);
 	bool			SelectModulation(LPTSTR Type);
-	string			GetSelectedModulation(void);
+	wstring			GetSelectedModulation(void);
 	string			GetSubTypeModulationSelected();
-	string			GetNameModulationSelected();
+	wstring			GetNameModulationSelected();
 
 	// Audio
 	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=8, LPTSTR Channel=L"Left");
@@ -85,11 +85,11 @@ private:
 	TiXmlDocument * CreateDefaultConfig(TiXmlDocument *  doc = NULL);
 	TiXmlHandle		CreatevJoyDevice(UINT id, bool selected = false);
 	UINT			GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis);
-	bool			AddModulation(string Type, string SubType, wstring Name, bool select=false);
+	bool			AddModulation(wstring Type, wstring SubType, wstring Name, bool select=false);
 	bool			AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool select=false);
-	string			GetSubTypeModulation(string Type);
-	string			GetNameModulation(string Type);
-	TiXmlHandle		GetModulationHandle(string Type);
+	string			GetSubTypeModulation(wstring Type);
+	wstring			GetNameModulation(wstring Type);
+	TiXmlHandle		GetModulationHandle(wstring Type);
 	TiXmlHandle		GetAudioHandle(LPTSTR Id);
 	TiXmlHandle		GetFilterHandle(LPTSTR Id);
 	wstring			GetFilterName(LPTSTR Id);
@@ -103,5 +103,5 @@ private:
 string utf8_encode(const wstring &wstr);
 wstring utf8_decode(const string &str);
 LPCTSTR utf8_decode(const char * str);
-TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, string &LeafText, bool Replace);
-TiXmlHandle		GetByKey(TiXmlHandle hParent, string Child, string Key, string Value);
+TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, wstring &LeafText, bool Replace);
+TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, wstring Value);

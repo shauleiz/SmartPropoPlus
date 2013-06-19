@@ -245,21 +245,21 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 
 	// For every nibble in map (that is not 0) Create/Replace value
 	if (map & 0xF)
-		UniqueTextLeaf(AxisHandle, string("SL1"), to_string(map & 0xF), true);
+		UniqueTextLeaf(AxisHandle, string("SL1"), to_wstring(map & 0xF), true);
 	if ((map & 0xF0)>>4)
-		UniqueTextLeaf(AxisHandle, string("SL0"), to_string ((map & 0xF0)>>4), true);
+		UniqueTextLeaf(AxisHandle, string("SL0"), to_wstring ((map & 0xF0)>>4), true);
 	if ((map & 0xF00)>>8)
-		UniqueTextLeaf(AxisHandle, string("RZ"), to_string ((map & 0xF00)>>8), true);
+		UniqueTextLeaf(AxisHandle, string("RZ"), to_wstring ((map & 0xF00)>>8), true);
 	if ((map & 0xF000)>>12)
-		UniqueTextLeaf(AxisHandle, string("RY"), to_string ((map & 0xF000)>>12), true);
+		UniqueTextLeaf(AxisHandle, string("RY"), to_wstring ((map & 0xF000)>>12), true);
 	if ((map & 0xF0000)>>16)
-		UniqueTextLeaf(AxisHandle, string("RX"), to_string ((map & 0xF0000)>>16), true);
+		UniqueTextLeaf(AxisHandle, string("RX"), to_wstring ((map & 0xF0000)>>16), true);
 	if ((map & 0xF00000)>>20)
-		UniqueTextLeaf(AxisHandle, string("Z"), to_string ((map & 0xF00000)>>20), true);
+		UniqueTextLeaf(AxisHandle, string("Z"), to_wstring ((map & 0xF00000)>>20), true);
 	if ((map & 0xF000000)>>24)
-		UniqueTextLeaf(AxisHandle, string("Y"), to_string ((map & 0xF000000)>>24), true);
+		UniqueTextLeaf(AxisHandle, string("Y"), to_wstring ((map & 0xF000000)>>24), true);
 	if ((map & 0xF0000000)>>28)
-		UniqueTextLeaf(AxisHandle, string("X"), to_string ((map & 0xF0000000)>>28), true);
+		UniqueTextLeaf(AxisHandle, string("X"), to_wstring ((map & 0xF0000000)>>28), true);
 
 	m_doc.SaveFile();
 }
@@ -335,7 +335,7 @@ bool CSppConfig::SelectModulation(LPTSTR Type)
 //	Subtype: (PPM or PCM)
 //	Name: Friendly name such as “Sanwa/Air (PCM1)”
 //	select: If true, mark this modulation as the selected
-bool CSppConfig::AddModulation(string Type, string SubType, wstring Name, bool select)
+bool CSppConfig::AddModulation(wstring Type, wstring SubType, wstring Name, bool select)
 {
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -353,7 +353,7 @@ bool CSppConfig::AddModulation(string Type, string SubType, wstring Name, bool s
 	
 	// If selected==true - assign id to the attribute 'selected'
 	if (select)
-			Modulations->SetAttribute(SPP_SELECT, Type);
+			Modulations->SetAttribute(SPP_SELECT, utf8_encode(Type));
 
 	// Create/Replace 'Modulation' element (By Id)
 	TiXmlHandle ModulationsHandle( Modulations );
@@ -365,7 +365,7 @@ bool CSppConfig::AddModulation(string Type, string SubType, wstring Name, bool s
 	UniqueTextLeaf(ModHandle, string(SPP_MODSUBT), SubType, true);
 
 	// Convert & Enter name
-	UniqueTextLeaf(ModHandle, string(SPP_MODNAME), utf8_encode(Name), true);
+	UniqueTextLeaf(ModHandle, string(SPP_MODNAME), Name, true);
 
 	m_doc.SaveFile();
 	return true;
@@ -380,15 +380,15 @@ bool CSppConfig::AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool se
 
 	// 
 
-	return AddModulation(utf8_encode(wstr_Type), utf8_encode(wstr_SubType), wstr_Name, select);
+	return AddModulation(wstr_Type, wstr_SubType, wstr_Name, select);
 }
 bool CSppConfig::AddModulation(PVOID data)
 {
-	string SubType = "PPM";
+	wstring SubType = L"PPM";
 	BOOL isPPM = ((MOD_STRUCT *)data)->isPpm;
 	if (!isPPM)
-		SubType = "PCM";
-	string Type = utf8_encode(wstring(((MOD_STRUCT *)data)->ModType));
+		SubType = L"PCM";
+	wstring Type = wstring(((MOD_STRUCT *)data)->ModType);
 	wstring Name = wstring(((MOD_STRUCT *)data)->ModName);
 	BOOL select = ((MOD_STRUCT *)data)->ModSelect;
 
@@ -398,10 +398,10 @@ bool CSppConfig::AddModulation(PVOID data)
 // GetSelectedModulation - Get the selected modulation type
 // Return the Type (PPMW, AIR1 ...) according to the 'selected' attribute
 // If absent - return an empty string
-string  CSppConfig::GetSelectedModulation(void)
+wstring  CSppConfig::GetSelectedModulation(void)
 {
 
-	string selected =  string("");
+	wstring selected =  wstring(L"");
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -415,13 +415,13 @@ string  CSppConfig::GetSelectedModulation(void)
 		return selected;
 	const char * attr = Modulations->Attribute(SPP_SELECT);
 	if (attr)
-		selected = string(attr);
+		selected = wstring(utf8_decode(string(attr)));
 	return selected;
 }
 
 // GetModulationHandle - find a modulation element by 'Type'
 // Return handle of the element
-TiXmlHandle	 CSppConfig::GetModulationHandle(string Type)
+TiXmlHandle	 CSppConfig::GetModulationHandle(wstring Type)
 {
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -446,7 +446,7 @@ TiXmlHandle	 CSppConfig::GetModulationHandle(string Type)
 
 // GetSubTypeModulation - find a modulation element by 'Type'
 // Return its subtype if exists - otherwise return empty string
-string		CSppConfig::GetSubTypeModulation(string Type)
+string		CSppConfig::GetSubTypeModulation(wstring Type)
 {
 	string SubType;
 	SubType.clear();
@@ -460,15 +460,15 @@ string		CSppConfig::GetSubTypeModulation(string Type)
 
 // GetSubTypeModulation - find a modulation element by 'Type'
 // Return its Name if exists - otherwise return empty string
-string CSppConfig::GetNameModulation(string Type)
+wstring CSppConfig::GetNameModulation(wstring Type)
 {
-	string Name;
+	wstring Name;
 	Name.clear();
 
 	TiXmlHandle	 MofHandle = GetModulationHandle(Type);
 	TiXmlText * Text = MofHandle.FirstChildElement(SPP_MODNAME).FirstChild().ToText();
 	if (Text)
-		Name =  Text->ValueStr();
+		Name =  utf8_decode(Text->ValueStr());
 	return Name;
 
 }
@@ -478,7 +478,7 @@ string CSppConfig::GetSubTypeModulationSelected()
 	return GetSubTypeModulation(GetSelectedModulation());
 }
 
-string CSppConfig::GetNameModulationSelected()
+wstring CSppConfig::GetNameModulationSelected()
 {
 	return GetNameModulation(GetSelectedModulation());
 }
@@ -493,7 +493,7 @@ string CSppConfig::GetNameModulationSelected()
 bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Channel)
 {
 
-	string str_Id = utf8_encode(wstring(Id));
+	wstring str_Id = (wstring(Id));
 
 
 	// Get handle of the root
@@ -551,13 +551,13 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 #endif
 
 	// Name: Convert & Enter
-	UniqueTextLeaf(DevHandle, string(SPP_AUDNAME), utf8_encode(Name), true);
+	UniqueTextLeaf(DevHandle, string(SPP_AUDNAME), wstring(Name), true);
 
 	// Channel Convert & Enter
-	UniqueTextLeaf(DevHandle, string(SPP_AUDCH), utf8_encode(Channel), true);
+	UniqueTextLeaf(DevHandle, string(SPP_AUDCH), wstring(Channel), true);
 
 	// Bit Rate
-	UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_string(BitRate), true);
+	UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_wstring(BitRate), true);
 
 	m_doc.SaveFile();
 	return true;
@@ -566,7 +566,7 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 
 TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 {
-	string str_Id = utf8_encode(wstring(Id));
+	wstring str_Id = wstring(Id);
 
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -674,10 +674,10 @@ bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 	TiXmlHandle FiltersHandle(Filters);
 
 	// Add Filter DLL file name
-	UniqueTextLeaf(FiltersHandle, string(SPP_DLLNAME), utf8_encode(FilePath), true);
+	UniqueTextLeaf(FiltersHandle, string(SPP_DLLNAME), wstring(FilePath), true);
 
 	// Add Filter DLL file version
-	UniqueTextLeaf(FiltersHandle, string(SPP_DLLVER), utf8_encode(Version), true);
+	UniqueTextLeaf(FiltersHandle, string(SPP_DLLVER), wstring(Version), true);
 	m_doc.SaveFile();
 	return true;
 }
@@ -701,13 +701,13 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 
 	// Create/Replace 'filter' element (By Id)
 	TiXmlHandle FiltersHandle( Filters );
-	TiXmlHandle	FilterHandle = GetByKey(FiltersHandle, SPP_FILTER, SPP_FLTID, to_string(Id));
+	TiXmlHandle	FilterHandle = GetByKey(FiltersHandle, SPP_FILTER, SPP_FLTID, to_wstring(Id));
 	if (!FilterHandle.ToElement())
 		return false;
 
 	// Set filter's Name
-	string str_Name = utf8_encode(wstring(Name));
-	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , str_Name , true);
+	wstring wstr_Name = (wstring(Name));
+	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , wstr_Name , true);
 	return true;
 }
 
@@ -735,7 +735,7 @@ UINT CSppConfig::GetSelectedFilter(void)
 
 TiXmlHandle CSppConfig::GetFilterHandle(LPTSTR Id)
 {
-	string str_Id = utf8_encode(wstring(Id));
+	wstring wstr_Id = (wstring(Id));
 
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -750,7 +750,7 @@ TiXmlHandle CSppConfig::GetFilterHandle(LPTSTR Id)
 
 	// Create/Replace 'Audio_Device' element (By ID)
 	TiXmlHandle FiltersHandle( Filters );
-	TiXmlHandle	FilterHandle = GetByKey(FiltersHandle, SPP_FILTER, SPP_FLTID, str_Id);
+	TiXmlHandle	FilterHandle = GetByKey(FiltersHandle, SPP_FILTER, SPP_FLTID, wstr_Id);
 	if (!FilterHandle.ToElement())
 		return TiXmlHandle(0);
 	else
@@ -786,11 +786,11 @@ void CSppConfig::Test(void)
 	 //SelectvJoyDevice(5);
 	 SelectvJoyDevice(22);
 
-	 AddModulation("PPM", "PPM", L"Generic PPM", true);
-	 AddModulation("PPMW", "PPM", L"Walkera PPM");
-	 string sel = GetSelectedModulation();
-	 string st = GetSubTypeModulation(string("PPMW"));
-	 string name = GetNameModulation(string("PPMW"));
+	 AddModulation(L"PPM", L"PPM", L"Generic PPM", true);
+	 AddModulation(L"PPMW", L"PPM", L"Walkera PPM");
+	 wstring sel = GetSelectedModulation();
+	 string st = GetSubTypeModulation(wstring(L"PPMW"));
+	 wstring name = GetNameModulation(wstring(L"PPMW"));
 	 st = GetSubTypeModulationSelected();
 	 name = GetNameModulationSelected();
 
@@ -844,7 +844,7 @@ LPCTSTR utf8_decode(const char * str)
 //	LeafText:	The text to insert in the leaf element
 //	Replace:	If the leaf element exist - should the text be replaced
 // Returns: Handle to leaf element if successful - NULL otherwize
-TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, string &LeafText, bool Replace)
+TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, wstring &LeafText, bool Replace)
 {
 	// Does the leaf exist and unique
 	TiXmlElement * Leaf[2];
@@ -864,7 +864,7 @@ TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, string &LeafTe
 
 	// Replace
 	Leaf[0]->Clear();
-	Leaf[0]->LinkEndChild(new  TiXmlText(LeafText));
+	Leaf[0]->LinkEndChild(new  TiXmlText(utf8_encode(LeafText)));
 	TiXmlHandle LeafHandle(Leaf[0]);
 	return LeafHandle;
 }
@@ -875,7 +875,7 @@ TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, string &LeafTe
 //	Child:		The elemnt to be searched (Child of Parent)
 //	Key:		The sub-elemnt of child by which to search (Grand child of Parent)
 //	Value:		Key text value to be matched
-TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, string Value)
+TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, wstring Value)
 {
 	// Test handle
 	if (!hParent.ToElement())
@@ -892,10 +892,10 @@ TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, string Value
 		KeyElement = ChildHandle.FirstChild(Key).ToElement();
 		if (!KeyElement)
 			continue;
-		const char * KeyStr = KeyElement->GetText();
-		if (!KeyStr)
+		string KeyStr = KeyElement->GetText();
+		if (KeyStr.empty())
 			continue;
-		if (!Value.compare(KeyStr))
+		if (!Value.compare(utf8_decode(KeyStr)))
 			break;
 	};
 
