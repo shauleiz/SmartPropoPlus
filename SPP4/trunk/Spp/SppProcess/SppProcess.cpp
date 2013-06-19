@@ -48,11 +48,26 @@ SPPMAIN_API CSppProcess::~CSppProcess() {}
 
 SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 {
+	if (!ModType)
+		return;
+
+	MODMAP::iterator it;
+	it = m_ModulationMap.find(ModType);
+	if (it == m_ModulationMap.end())
+		return;
+
+	MOD tmp = it->second;
+	m_CurrentPP =  tmp.func;
+
+
 	// TODO: Change SetActiveMode() interact with config.xml
 	SetActiveMode(ModType); // Set the active mode in memory and in registry
+
+
 	m_Modulation->Active = GetModulation(FALSE)->Active; // Get the index of the new active modulation
 	// TODO: Get modulation type from control and convert it to index
-	LoadProcessPulseFunctions();
+	// LoadProcessPulseFunctions();
+	return;
 }
 
 SPPMAIN_API void CSppProcess::StartDbgPulse(void)
@@ -109,8 +124,8 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	m_Modulation = GetModulation(1); // TODO: Remove
 
 	// Initialize the database (map) of all modilation types along with the associated functions
-	int n = InitModulationMap();
-	InitModulationSelect();
+	int n	 =	InitModulationMap();
+	bool ini =	InitModulationSelect();
 
 
 	//// Audio system from registry
@@ -130,7 +145,7 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 		return false;
 
 	// TODO: Remove - Create a list of ProcessPulse functions
-	int nActiveModulations = LoadProcessPulseFunctions();
+	// int nActiveModulations = LoadProcessPulseFunctions();
 
 	// Pass to the parent window the list modulations
 	SendModInfoToParent(m_hParentWnd);
@@ -454,7 +469,7 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		if (PulseLength/*>3*/)
 		{
 			// Call the correct function ProcessPulseXXX() 
-			m_ListProcessPulseFunc[m_iActiveProcessPulseFunc].func(PulseLength, negative);
+			m_CurrentPP(PulseLength, negative);
 		}
 	};
 
@@ -466,67 +481,24 @@ Exit:
 }
 
 
-///*
-//	ProcessData - process a single audio sample of unknown type (8-16 bits mono)
-//	The audio sample may be 8-bit PCM, ranging 0-255, mid-point is 128
-//	The audio sample may be 16-bit PCM, ranging from -32768 to 32767, mid-point is 0
-//	The minimal step is 1
-//*/
-//void __fastcall  CSppProcess::ProcessData(UINT i)
-//{
-//    static double min = 0;	/* Sticky minimum sample value */
-//    static double max = 0;	/* Sticky maximum sample value */
-//    static int high = 0;	/* Number of contingious above-threshold samples */
-//    static int low = 0;		/* Number of contingious below-threshold samples */
-//    double threshold;		/* calculated mid-point */
-//	static int FormerInput;
-//
-//	/* Initialization of the min/max vaues */
-//    max -= 0.1;
-//    min += 0.1;
-//    if (max < min) max = min + 1;
-//
-//    if (i> max) max = i;			/* Update max value */
-//    else if (i < min) min = i;		/* Update min value */
-//    threshold = (min + max) / 2;	/* Update mid-point value */
-//	threshold = CalcThreshold(i);	/* Version 3.3.3 */
-//
-//	/* TODO: move this to some other place - why call it every time? 
-//	SetActiveProcessPulseFunction(DataBlock);*/
-//
-//	/* Update the width of the number of the low/high samples */
-//	/* If edge, then call ProcessPulse() to process the previous high/low level */
-//    if (i > threshold) 
-//	{
-//	high++;
-//        if (low) 
-//		{
-//			low=low*192000; // TODO: Normalize number of samples
-//			ProcessPulsePpm(low, FALSE); // TODO: Replace by virtual function
-//            low = 0;
-//        }
-//    } else 
-//	{
-//        low++;
-//        if (high) 
-//		{
-//			high=high*192000; // TODO: Normalize number of sumples
-//            ProcessPulsePpm(high, TRUE);// TODO: Replace by virtual function
-//            high = 0;
-//        }
-//    }
-//}
-
 // Request the type of selected modulation from CU
 // Assign PP function accordingly
 bool  CSppProcess::InitModulationSelect(void)
 {
 	LPTSTR Type = (LPTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETMOD, 0 , 0);
-	if (!Type)
+	if (!Type || !wcslen(Type))
+		Type = L"PPM";
+
+	MODMAP::iterator it;
+	it = m_ModulationMap.find(Type);
+	if (it == m_ModulationMap.end())
 		return false;
 
-	 MOD tmp = m_ModulationMap[Type];
-	m_CurrentPP =  [=] (int width, BOOL input) {tmp;};
+	MOD tmp = it->second;
+	m_SelectedMod = Type;
+	m_CurrentPP = tmp.func;
+
+	return true;
 }
 
 // InitModulationMap - Initialize the modulation data base (which is implemented as a map)
@@ -2224,11 +2196,11 @@ DWORD WINAPI CSppProcess::PollChannelsStatic(LPVOID obj)
 
 void CSppProcess::SendModInfoToParent(HWND hParentWnd)
 {
-	if (!hParentWnd || !m_ListProcessPulseFunc.size())
+	if (!hParentWnd || !m_ModulationMap.size())
 		return;
 
-	for (iMOD i=m_ListProcessPulseFunc.begin(); i != m_ListProcessPulseFunc.end(); i++)
-		SendMessage(hParentWnd, WMSPP_PRCS_SETMOD, (WPARAM)(&(*i)) , 0);
+	for (MODMAP::iterator  i=m_ModulationMap.begin(); i != m_ModulationMap.end(); i++)
+		SendMessage(hParentWnd, WMSPP_PRCS_SETMOD, (WPARAM)(&(*i).second) , (LPARAM)m_SelectedMod);
 }
 
 void	CSppProcess::LogMessage(int Severity, int Code, LPCTSTR Msg)
