@@ -14,7 +14,7 @@ public:
 public: // Called from window procedure
 	void CleanAudioList(void);
 	void AddLine2AudioList(jack_info * jack);
-	void AddLine2ModList(MOD_STRUCT * mod);
+	void AddLine2ModList(MOD * mod, LPCTSTR SelType);
 	void SetRawChData(UINT iCh, UINT data);
 	void SetProcessedChData(UINT iCh, UINT data);
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);

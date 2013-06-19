@@ -237,25 +237,25 @@ void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 
 }
 
-void SppDlg::AddLine2ModList(MOD_STRUCT * mod)
+void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 {
 	if (!mod)
 		return;
 
-	if (mod->isPpm)
+	if (!wcscmp(L"PPM",mod->Subtype))
 	{ // PPM
 		HWND hPPMList = GetDlgItem(m_hDlg,  IDC_LIST_PPM);
-		int pos = (int)SendMessage(hPPMList, LB_ADDSTRING, 0, (LPARAM)mod->ModName);
-		SendMessage(hPPMList, LB_SETITEMDATA, pos, (LPARAM) mod->ModType); 
-		if (mod->ModSelect)
+		int pos = (int)SendMessage(hPPMList, LB_ADDSTRING, 0, (LPARAM)mod->Name);
+		SendMessage(hPPMList, LB_SETITEMDATA, pos, (LPARAM) mod->Type); 
+		if (!wcscmp(SelType,mod->Type))
 			SendMessage(hPPMList, LB_SETCURSEL , pos, 0); 
 	}
 	else
 	{ // PCM
 		HWND hPCMList = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
-		int pos = (int)SendMessage(hPCMList, LB_ADDSTRING, 0, (LPARAM)mod->ModName); 
-		SendMessage(hPCMList, LB_SETITEMDATA, pos, (LPARAM) mod->ModType); 
-		if (mod->ModSelect)
+		int pos = (int)SendMessage(hPCMList, LB_ADDSTRING, 0, (LPARAM)mod->Name); 
+		SendMessage(hPCMList, LB_SETITEMDATA, pos, (LPARAM) mod->Type); 
+		if (!wcscmp(SelType,mod->Type))
 			SendMessage(hPCMList, LB_SETCURSEL , pos, 0); 
 	};
 }
@@ -641,7 +641,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_PRCS_SETMOD:
-		DialogObj->AddLine2ModList((MOD_STRUCT *)(wParam));
+		DialogObj->AddLine2ModList((MOD *)(wParam), (LPCTSTR)(lParam));
 		break;
 
 	case WMSPP_PRCS_RCHMNT:

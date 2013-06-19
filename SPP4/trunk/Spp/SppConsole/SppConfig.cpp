@@ -384,15 +384,12 @@ bool CSppConfig::AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool se
 }
 bool CSppConfig::AddModulation(PVOID data)
 {
-	wstring SubType = L"PPM";
-	BOOL isPPM = ((MOD_STRUCT *)data)->isPpm;
-	if (!isPPM)
-		SubType = L"PCM";
-	wstring Type = wstring(((MOD_STRUCT *)data)->ModType);
-	wstring Name = wstring(((MOD_STRUCT *)data)->ModName);
-	BOOL select = ((MOD_STRUCT *)data)->ModSelect;
+	wstring SubType = L"PPM";	
+	SubType = wstring( ((MOD *)data)->Subtype);
+	wstring Type = wstring(((MOD *)data)->Type);
+	wstring Name = wstring(((MOD *)data)->Name);
 
-	return AddModulation( Type,  SubType,  Name,  (bool)select);
+	return AddModulation( Type,  SubType,  Name);
 }
 
 // GetSelectedModulation - Get the selected modulation type
