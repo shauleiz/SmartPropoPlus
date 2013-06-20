@@ -41,7 +41,6 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
 	m_WaveInputChannel(0) // TODO: Get real data from user
 {
-	m_ListProcessPulseFunc.clear();
 }
 
 SPPMAIN_API CSppProcess::~CSppProcess() {}
@@ -59,14 +58,6 @@ SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 	MOD tmp = it->second;
 	m_CurrentPP =  tmp.func;
 
-
-	// TODO: Change SetActiveMode() interact with config.xml
-	SetActiveMode(ModType); // Set the active mode in memory and in registry
-
-
-	m_Modulation->Active = GetModulation(FALSE)->Active; // Get the index of the new active modulation
-	// TODO: Get modulation type from control and convert it to index
-	// LoadProcessPulseFunctions();
 	return;
 }
 
@@ -121,8 +112,6 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 
 	// Get list of modulation types: PPM/PCM(JR) ....
 	// Mark the selected modulation type
-	m_Modulation = GetModulation(1); // TODO: Remove
-
 	// Initialize the database (map) of all modilation types along with the associated functions
 	int n	 =	InitModulationMap();
 	bool ini =	InitModulationSelect();
@@ -140,12 +129,9 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	// Create shared memory block and fill it with:
 	// - List of modulations as acquired above
 	// - Other default values
-	m_pSharedBlock = CreateSharedDataStruct(m_Modulation);
+	m_pSharedBlock = CreateSharedDataStruct(NULL);
 	if (!m_pSharedBlock)
 		return false;
-
-	// TODO: Remove - Create a list of ProcessPulse functions
-	// int nActiveModulations = LoadProcessPulseFunctions();
 
 	// Pass to the parent window the list modulations
 	SendModInfoToParent(m_hParentWnd);
@@ -586,153 +572,6 @@ int CSppProcess::InitModulationMap(void)
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	return m_ModulationMap.size();
-}
-
-
-	/*
-		Create a list of structures
-		Each structure represents a modulatin type.
-		Structure Contains:
-		- Pointer to function (ProcessPulseXXX): func
-		- Modulation type: ModType
-		- Modulation friendly name: ModName
-		- Modulation category (PPM or not): isPpm
-		- Is this modulation selected: ModSelect
-	*/
-int CSppProcess::LoadProcessPulseFunctions()
-{
-	int index=0;
-	int nMod=0;
-
-
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPM;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPM;
-	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulsePpm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMP;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMP;
-	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseJrPpm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMN;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMN;
-	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseFutabaPpm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_PPMW;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_PPMW;
-	m_ListProcessPulseFunc[nMod-1].isPpm = TRUE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseWK2401Ppm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_JR;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_JR;
-	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseJrPcm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_FUT;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_FUT;
-	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseFutabaPcm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_AIR1;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_AIR1;
-	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseAirPcm1(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_AIR2;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_AIR2;
-	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
-	m_ListProcessPulseFunc[nMod-1].func =  [=] (int width, BOOL input) {this->ProcessPulseAirPcm2(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	m_ListProcessPulseFunc.resize(++nMod);
-	m_ListProcessPulseFunc[nMod-1].ModName = MOD_NAME_WAL;
-	m_ListProcessPulseFunc[nMod-1].ModType = MOD_TYPE_WAL;
-	m_ListProcessPulseFunc[nMod-1].isPpm = FALSE;
-	m_ListProcessPulseFunc[nMod-1].func = [=] (int width, BOOL input) {this->ProcessPulseWalPcm(width, input);};
-	if (m_Modulation && m_Modulation->ModulationList && m_Modulation->Active>=0 && 
-		(!_tcscmp((m_Modulation->ModulationList[m_Modulation->Active])->ModTypeInternal,m_ListProcessPulseFunc[nMod-1].ModType)))
-	{
-		m_ListProcessPulseFunc[nMod-1].ModSelect = TRUE;
-		m_iActiveProcessPulseFunc = nMod-1;
-	}
-	else
-		m_ListProcessPulseFunc[nMod-1].ModSelect = FALSE;
-
-	return nMod;
 }
 
 inline UINT CSppProcess::Sample2Pulse(short sample, bool * negative)

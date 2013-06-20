@@ -51,25 +51,19 @@ struct MOD {
 };
 
 
-struct MOD_STRUCT {
-	BOOL isPpm;
-	LPCTSTR ModType;
-	LPCTSTR ModName;
-	BOOL ModSelect;
-	PP func;   
-};
+//struct MOD_STRUCT {
+//	BOOL isPpm;
+//	LPCTSTR ModType;
+//	LPCTSTR ModName;
+//	BOOL ModSelect;
+//	PP func;   
+//};
 
 struct StrCompare : public std::binary_function<LPCTSTR, LPCTSTR, bool> {
 public:
     bool operator() (LPCTSTR str1, LPCTSTR str2) const
     { return wcscmp(str1, str2) < 0; }
 };
-
-
-
-typedef  std::vector<PP> vPP;
-typedef  std::vector<MOD_STRUCT> vMOD;
-typedef	 std::vector<MOD_STRUCT>::iterator iMOD;
 typedef  std::map<LPCTSTR, MOD, StrCompare> MODMAP;
 
 typedef struct _JS_CHANNELS	// Joystick channel data
@@ -122,7 +116,7 @@ public:
 
 
 private:
-	int LoadProcessPulseFunctions();
+//	int LoadProcessPulseFunctions();
 	void ProcessPulsePpm(int width, BOOL input);
 	void ProcessPulseWalPcm(int width, BOOL input);
 	void ProcessPulseAirPcm1(int width, BOOL input);
@@ -180,13 +174,13 @@ private:
 	int		m_JsChPostProc_selected;
 	int		m_Position[MAX_JS_CH];
 	int		m_PrcChannel[MAX_JS_CH];
-	vMOD	m_ListProcessPulseFunc;
+	//vMOD	m_ListProcessPulseFunc;
 	UINT	m_iActiveProcessPulseFunc;
 	HANDLE	m_hMutexStartStop;
 	//HANDLE	m_hCaptureAudioThread;
 	volatile BOOL m_closeRequest;
 	volatile BOOL m_waveRecording;
-	struct Modulations *  m_Modulation;
+	//struct Modulations *  m_Modulation;
 	class CSppAudio * m_Audio;
 	thread * m_tCapture;
 	bool	m_tCaptureActive;
