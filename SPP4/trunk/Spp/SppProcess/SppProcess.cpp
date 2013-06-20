@@ -571,7 +571,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Type = MOD_TYPE_WAL;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
-	return m_ModulationMap.size();
+	return (int)m_ModulationMap.size();
 }
 
 inline UINT CSppProcess::Sample2Pulse(short sample, bool * negative)
