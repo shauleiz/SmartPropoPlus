@@ -631,6 +631,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
+		break; // No match for WM_COMMAND
+
 
 	case REM_ALL_JACK:
 		DialogObj->CleanAudioList();
