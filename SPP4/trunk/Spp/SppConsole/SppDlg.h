@@ -31,6 +31,7 @@ public: // Called from window procedure
 	void vJoyMapping(void);
 	void SetAxesMappingData(DWORD Map, UINT nAxes);
 	void AudioChannelParams(void);
+	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
 
 
 private:

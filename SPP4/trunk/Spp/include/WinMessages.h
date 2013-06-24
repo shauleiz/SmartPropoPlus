@@ -49,6 +49,8 @@ UINT const WMSPP_DLG_MAP	=			BASE_SUB+23;			// The payload is DWORD that describ
 UINT const WMSPP_MAP_UPDT	=			BASE_SUB+24;			// The payload is DWORD that describe mapping of channels to axes
 UINT const WMSPP_DLG_CHNL	=			BASE_SUB+25;			// Change in audio channel params - The payload is wParam: Number of bits, lParam: channel L/R/M
 UINT const WMSPP_PRCS_GETMOD=			BASE_SUB+26;			// Get the selected modulation
+UINT const WMSPP_AUDIO_GETSU=			BASE_SUB+27;			// Get the selected audio setup: Payload is Audio Id. Bit rate and Channel. Return value: 8/16 + channel bit (0 if left, 1 if right) 
+UINT const SET_AUDIO_PARAMS	=			BASE_SUB+28;			// The payload is Bitrate in WPARAMS, Channel ('L'/'R') in LPARAMS
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

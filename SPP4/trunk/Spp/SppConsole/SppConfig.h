@@ -68,7 +68,12 @@ public:
 	wstring			GetNameModulationSelected();
 
 	// Audio
-	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=8, LPTSTR Channel=L"Left");
+	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, bool select=false);
+	bool			SetAudioDeviceBitRate(LPTSTR Id, UINT BitRate);
+	bool			SetAudioDeviceChannel(LPTSTR Id, LPTSTR Channel);
+	bool			SetDefaultBitRate(UINT BitRate);
+	bool			SetDefaultChannel(LPTSTR Channel);
+	bool			IsDefaultChannelRight();
 	wstring			GetAudioDeviceName(LPTSTR Id);
 	UINT			GetAudioDeviceBitRate(LPTSTR Id);
 	wstring			GetAudioDeviceChannel(LPTSTR Id);
@@ -91,6 +96,8 @@ private:
 	wstring			GetNameModulation(wstring Type);
 	TiXmlHandle		GetModulationHandle(wstring Type);
 	TiXmlHandle		GetAudioHandle(LPTSTR Id);
+	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=8, LPTSTR Channel=L"Left", bool select=false);
+	wstring			GetCurrentAudio(void);
 	TiXmlHandle		GetFilterHandle(LPTSTR Id);
 	wstring			GetFilterName(LPTSTR Id);
 

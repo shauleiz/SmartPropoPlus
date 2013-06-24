@@ -39,7 +39,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_WaveRate(192000), 
 	m_SelectedMod(TEXT("PPM")),
 	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
-	m_WaveInputChannel(0) // TODO: Get real data from user
+	m_WaveInputChannel(0)
 {
 }
 
@@ -197,6 +197,7 @@ void CSppProcess::MonitorCapture(void)
 		{
 			LogMessage(INFO, IDS_I_STARTSTREAM);
 			LPCTSTR Id = (LPCTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETID, 0, 0);
+			m_WaveInputChannel = (int)SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0, 0);
 			m_waveRecording = TRUE;
 			m_ChangeCapture = FALSE;
 			if (!Id || !m_Audio->StartStreaming((PVOID)Id))
@@ -227,7 +228,7 @@ void CSppProcess::CaptureAudio(void)
 	m_WaveRate			=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETSPR, 0, 0);
 	m_WaveBitsPerSample	=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETBPS, 0,0);
 	m_WaveNChannels		=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETNCH, 0,0);
-	//m_WaveInputChannel	=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0,0);
+	m_WaveInputChannel	=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0,0);
 
 	LogMessage(INFO, IDS_I_CAPTURESTART);
 	while (m_waveRecording)

@@ -322,6 +322,24 @@ void  SppDlg::vJoyMapping(void)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, AxesMap, 8);
 }
 
+// Set the parameters of the audio (8/16 bits Left/Right/Mono)
+// If Bitrate = 0 then don't change
+// If Channel="" or Channel=NULL then don't change
+void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
+{
+	if (Bitrate == 8)
+		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_8);
+	else if (Bitrate == 16)
+		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_16);
+
+	if (Channel == TEXT('L'))
+		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_LEFT);
+	else if (Channel == TEXT('R'))
+		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_RIGHT);
+	else if (Channel == TEXT('M'))
+		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_MONO);
+}
+
 // Get the parameters of the audio (8/16 bits Left/Right/Mono)
 // Send them over to the application
 // Default will be 8bit/Left channel
@@ -640,6 +658,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case POPULATE_JACKS:
 		DialogObj->AddLine2AudioList((jack_info *)(wParam));
+		break;
+
+	case SET_AUDIO_PARAMS:
+		DialogObj->AudioChannelParams((UINT)wParam, (WCHAR)lParam);
 		break;
 
 	case WMSPP_PRCS_SETMOD:

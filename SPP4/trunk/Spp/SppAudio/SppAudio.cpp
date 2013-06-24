@@ -249,7 +249,6 @@ bool CSppAudio::Create(void)
 	ProcessPulse = DefProcPulse;
 	m_ProcPulseParam = NULL;
 
-
 	/* Create a device enumarator then a collection of endpoints and finally get the number of endpoints */
 	hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, CLSID_IMMDeviceEnumerator, (void**)&m_pEnumerator);
 	if (FAILED(hr))
@@ -382,6 +381,30 @@ Exit:
 	return hr;
 
 };
+
+// Get data form the control unit:
+// Bit rate: 8 or 16 bits
+// Channel: Left or right
+void CSppAudio::GetDefaultSetUp(PVOID Id)
+{
+
+	// value:
+	// 16 or higher - 16 bits. Else - 8 bits
+	// LSBit = 0 - Left Channel. Else - Right channel
+	UINT value = (UINT)SendMessage(m_hPrntWnd, WMSPP_AUDIO_GETSU, (WPARAM)Id, 0);
+
+	if (value >= 16)
+		m_CurrentWaveFormat.wBitsPerSample = 16;
+	else
+		m_CurrentWaveFormat.wBitsPerSample = 8;
+
+	if (value & 1)
+		m_CurrentChannelIsRight = true;
+	else
+		m_CurrentChannelIsRight = false;
+	
+}
+
 
 HRESULT CSppAudio::SetDefaultAudioDevice(PVOID devID)
 {	
@@ -1387,7 +1410,7 @@ SPPINTERFACE_API double CSppAudio::GetLoudestDevice(PVOID * Id)
 	When signaled from main thread to exit (g_CaptureAudioThreadRunnig=false)
 	it signals the main thread that is exiting by signaling event g_hEventStopCaptureAudioThread;
 */
-SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
+SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id/*, bool RightChannel*/)
 /*
 	Given capture endpoint id this function starts streaming the data
 	1. Stop streaming current endpoint
@@ -1397,7 +1420,7 @@ SPPINTERFACE_API bool CSppAudio::StartStreaming(PVOID Id, bool RightChannel)
 */
 {
 	HRESULT hr = S_OK;
-	m_CurrentChannelIsRight = RightChannel;
+	//m_CurrentChannelIsRight = RightChannel;
 
 	// Stop streaming current endpoint
 	hr = StopCurrentStream();
@@ -1489,6 +1512,10 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 		//LogStatus(INITEP_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
 		EXIT_ON_ERROR(hr);
 	};
+
+	// Get defaults (R/L channel, 8/16 bits) from CU
+	GetDefaultSetUp(Id);
+
 
 	// Try to improve the current format
 	pwfx->wFormatTag = WAVE_FORMAT_PCM;

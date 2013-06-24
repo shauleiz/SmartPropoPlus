@@ -242,6 +242,16 @@ LRESULT CALLBACK MainWindowProc(
 			Spp->AudioChanged();
 			break;
 
+		case WMSPP_AUDIO_GETSU:
+			{
+				UINT br = Conf->GetAudioDeviceBitRate((LPTSTR)wParam);
+				wstring ch = Conf->GetAudioDeviceChannel((LPTSTR)wParam);
+				if (ch[0] == L'R' || ch[0] == L'r')
+					br++;
+				return br;
+			};
+			break;
+
 		case WMSPP_AUDIO_PROP:
 			Spp->AudioChanged();
 			break;
@@ -347,16 +357,28 @@ LRESULT CALLBACK MainWindowProc(
 				Audio->SetwBitsPerSample((UCHAR)wParam);
 				Spp->AudioChanged();
 			};
+			Conf->SetDefaultBitRate((UINT)wParam);
 
 			// Set L/R to Spp
 			if ((TCHAR)lParam == TEXT('L'))
+			{
+				Conf->SetDefaultChannel(TEXT("Left"));
 				Spp->SetAudioChannel(true);
-			else
+			}
+			else if ((TCHAR)lParam == TEXT('R'))
+			{
+				Conf->SetDefaultChannel(TEXT("Right"));
 				Spp->SetAudioChannel(false);
+			}
 
 			break;
-		//case WMSPP_PRCS_GETLR:
-		//	return Audio->Get;
+
+		case WMSPP_PRCS_GETLR:
+			if (Conf->IsDefaultChannelRight())
+				return 1;
+			else
+				return 0;
+			break;
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
@@ -409,7 +431,29 @@ void CaptureDevicesPopulate(HWND hDlg)
 		if (jack.Default)
 			AudioId = jack.id;
 
+		// Send data to GUI
 		SendMessage(hDlg, POPULATE_JACKS, (WPARAM)&jack, 0);
+
+		// Record data in configuration file
+		Conf->AddAudioDevice(jack.id, jack.FriendlyName, jack.Default);
+
+		// For default device, get Bitrate and channel data from configuration file
+		// If absent get default
+		// Send data to GUI and update  configuration file
+		// Update Audio
+		if (jack.Default)
+		{
+			UINT BitRate = Conf->GetAudioDeviceBitRate(jack.id);
+			WCHAR * Channel =  _wcsdup(Conf->GetAudioDeviceChannel(jack.id).c_str());
+			if (!BitRate)
+				BitRate = DEF_BITRATE;
+			if (!wcslen(Channel))
+				Channel = DEF_CHANNEL;
+			SendMessage(hDlg, SET_AUDIO_PARAMS, (WPARAM)BitRate, (LPARAM)(Channel[0]));
+
+			if (Audio)
+				Audio->SetwBitsPerSample(BitRate);
+		};
 	};
 
 }
