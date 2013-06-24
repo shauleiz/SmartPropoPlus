@@ -484,10 +484,42 @@ wstring CSppConfig::GetNameModulationSelected()
 // Parameters:
 //	Id: Unique identifier (e.g. {0.0.1.00000000}.{8512fa69-b703-45b9-b105-c35f74a51950})
 //	Name: Friendly name (e.g. “Mic In at front panel (Pink) (Realtek High Definition Audio)”)
-//	BitRate: 8/16
-//	Channel: Left/Right
+//	select: If true then mark this audio device as currently selected
 //
-bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Channel)
+// Notes:
+//  1. If 'Id' already exists then override 'Name'
+//  2. If 'Id' already exists and 'select'==false then only override 'Name'
+//  3. If 'Id' already exists and 'select'==true then override 'Name' AND override selected attribute
+bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, bool select)
+{
+	return AddAudioDevice(Id,  Name, 0, NULL, select);
+}
+
+// Set the bit rate of an existing audio device
+// If device element does not exist then  create it
+// BitRate=0 is ignored
+bool CSppConfig::SetAudioDeviceBitRate(LPTSTR Id, UINT BitRate)
+{
+	return AddAudioDevice(Id,  NULL, BitRate, NULL);
+}
+
+
+// Set the selected channel ('Left'/'Right') of an existing audio device
+// If device element does not exist then  create it
+// Channel=NULL is ignored
+bool CSppConfig::SetAudioDeviceChannel(LPTSTR Id, LPTSTR Channel)
+{
+	return AddAudioDevice(Id,  NULL, 0, Channel);
+}
+
+// AddAudioDevice - Add reference to an audio device
+// Parameters:
+//	Id: Unique identifier (e.g. {0.0.1.00000000}.{8512fa69-b703-45b9-b105-c35f74a51950})
+//	Name: Friendly name (e.g. “Mic In at front panel (Pink) (Realtek High Definition Audio)”) - If NULL then do not change Name
+//	BitRate: 8/16 (zero - do not change BitRate)
+//	Channel: Left/Right (NULL - do not change Channel)
+//
+bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Channel, bool select)
 {
 
 	wstring str_Id = (wstring(Id));
@@ -507,10 +539,9 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 		root->LinkEndChild(Audio);
 	};
 	
-	//// Get/Create Audio device element of type 'ID'
-	//TiXmlElement* Dev = RootHandle.FirstChild( SPP_AUDIO ).FirstChild(SPP_AUDDEV).ToElement();
-	//if (!Dev)
-	//	return false;
+		// If selected==true - assign id to the attribute 'selected'
+	if (select)
+			Audio->SetAttribute(SPP_SELECT, utf8_encode(Id));
 
 	// Create/Replace 'Device' element (By Id)
 	TiXmlHandle AudioHandle( Audio );
@@ -518,48 +549,85 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 	if (!DevHandle.ToElement())
 		return false;
 
-#if 0
-	// Look for the audio device element with the requested ID
-	TiXmlElement* IdElement;
-	for (Dev; Dev; Dev = Dev->NextSiblingElement())
-	{
-		TiXmlHandle DevHandle( Dev );
-		IdElement = DevHandle.FirstChild(SPP_AUDID).ToElement();
-		if (!IdElement)
-			continue;
-		const char * IdStr = IdElement->GetText();
-		if (!IdStr)
-			continue;
-		if (!str_Id.compare(IdStr))
-			break;
-	};
-
-	// If Audio device element with the requested ID does not exist - create it
-	if (!Dev)
-	{
-		// No devices exist - create one
-		Dev =  new TiXmlElement(SPP_AUDDEV);
-		Audio->LinkEndChild(Dev);
-	};
-	TiXmlHandle DevHandle( Dev );
-
-	// Id: Convert & Enter
-	UniqueTextLeaf(DevHandle, string(SPP_AUDID), utf8_encode(Id), true);
-#endif
-
 	// Name: Convert & Enter
-	UniqueTextLeaf(DevHandle, string(SPP_AUDNAME), wstring(Name), true);
+	if (Name)
+		UniqueTextLeaf(DevHandle, string(SPP_AUDNAME), wstring(Name), true);
 
 	// Channel Convert & Enter
-	UniqueTextLeaf(DevHandle, string(SPP_AUDCH), wstring(Channel), true);
+	if (Channel)
+		UniqueTextLeaf(DevHandle, string(SPP_AUDCH), wstring(Channel), true);
 
 	// Bit Rate
-	UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_wstring(BitRate), true);
+	if (BitRate)
+		UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_wstring(BitRate), true);
 
 	m_doc.SaveFile();
 	return true;
 
 }
+
+wstring CSppConfig::GetCurrentAudio(void)
+{
+	wstring str_Id = L"";
+
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return str_Id;
+
+	TiXmlHandle RootHandle( root );
+
+	// Get 'Filters' and get its 'selected' attribute
+	TiXmlElement* Audio = RootHandle.FirstChild( SPP_AUDIO ).ToElement();
+	if (!Audio)
+		return str_Id;
+
+	string attr = Audio->Attribute(SPP_SELECT);
+
+	str_Id = utf8_decode(attr);
+
+	return str_Id;
+}
+
+// Set the Bit Rate of the Default (=selected) audio device
+// Expected value are 8 and 16
+// If BitRate=0 then ignore
+bool CSppConfig::SetDefaultBitRate(UINT BitRate)
+{
+	if (!BitRate)
+		return true;
+
+	wstring Id = GetCurrentAudio();
+	if (!Id.length())
+		return false;
+	return SetAudioDeviceBitRate((LPTSTR)(Id.c_str()),  BitRate);
+}
+
+// Set the channel of the Default (=selected) audio device
+// Expected value are "Left", "Right" and "Mono"
+bool CSppConfig::SetDefaultChannel(LPTSTR Channel)
+{
+	if (Channel[0] != L'L'  && Channel[0] != L'R' && Channel[0] != L'M')
+		return false;
+
+	wstring Id = GetCurrentAudio();
+	if (!Id.length())
+		return false;
+	return SetAudioDeviceChannel((LPTSTR)(Id.c_str()),  Channel);
+}
+
+bool CSppConfig::IsDefaultChannelRight()
+{
+	wstring Id = GetCurrentAudio();
+	if (!Id.length())
+		return false;
+
+	wstring Channel = GetAudioDeviceChannel((LPTSTR)(Id.c_str()));
+	if (Channel[0] == L'R')
+		return true;
+	else
+		return false;
+}
+
 
 TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 {
@@ -707,6 +775,7 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , wstr_Name , true);
 	return true;
 }
+
 
 UINT CSppConfig::GetSelectedFilter(void)
 {

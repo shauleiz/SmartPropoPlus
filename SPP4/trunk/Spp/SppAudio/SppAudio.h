@@ -125,6 +125,7 @@ protected:
 	void	LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 	void	LogMessageWithId(int Severity, int Code, LPVOID Id, LPCTSTR Msg=NULL);
 	inline void SendDbgInputSignal(PBYTE buffer, UINT bSize, WORD nChannels, WORD wBitsPerSample);
+	void 	GetDefaultSetUp(PVOID Id);
 
 
 	LOGFUNC	LogStatus;
@@ -149,7 +150,7 @@ public:
 	SPPINTERFACE_API bool		IsCaptureDevice(PVOID Id);
 	SPPINTERFACE_API bool		IsExternal(PVOID Id);
 	SPPINTERFACE_API double		GetLoudestDevice(PVOID * Id);
-	SPPINTERFACE_API bool		StartStreaming(PVOID Id, bool RightChannel=false);
+	SPPINTERFACE_API bool		StartStreaming(PVOID Id/*, bool RightChannel=false*/);
 	SPPINTERFACE_API HRESULT	ProcessAudioPacket(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
 	SPPINTERFACE_API COLORREF	GetJackColor(PVOID Id);
