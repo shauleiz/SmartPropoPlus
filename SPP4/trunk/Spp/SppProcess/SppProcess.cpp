@@ -32,7 +32,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_vJoyReady(false),
 	m_DbgPulse(FALSE),
 	ProcessChannels(NULL),
-	m_Mapping(0x01234567),
+	m_Mapping(0x12345678),
 	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2),
 	m_WaveBitsPerSample(8),
@@ -1935,7 +1935,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	for (i=0; i<=n_ch && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
 	{
 		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
-		writeOk =  SetAxis(32*ch[iMapped],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+		writeOk =  SetAxis(32*ch[iMapped-1],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
 	}
 
 	for (k=0; k<n_ch-i;k++)
@@ -1956,7 +1956,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 {
 
-	DWORD dwMap; // Intermediary map
+	DWORD dwMap=0; // Intermediary map
 	UCHAR Nibble, PrevNibble, DefNibble;
 
 	if (nAxes>8)
@@ -1967,12 +1967,12 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
 	{
 		Nibble		= Map2Nibble(Map,i);			// Nibble from map
 		PrevNibble	= Map2Nibble(m_Mapping, i);		// Nibble previously used
-		DefNibble	= Map2Nibble(0x01234567, i);	// Default nibble
+		DefNibble	= Map2Nibble(0x12345678, i);	// Default nibble
 
 		if (i<nAxes)
 		{
 			if (Nibble)
-				dwMap = (dwMap<<4) | (Nibble-1);
+				dwMap = (dwMap<<4) | (Nibble);
 			else 
 				dwMap = (dwMap<<4) | PrevNibble ;
 		}
