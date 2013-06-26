@@ -160,6 +160,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	
 	// Start reading audio data
 	Spp		= new CSppProcess();
+	DWORD Map = Conf->MapAxis(1); // vJoy Device 1 (TODO: Make it configurable)
+	Map = Spp->MappingChanged(Map,8); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
+	Conf->MapAxis(1, Map); // vJoy Device 1 (TODO: Make it configurable)
+	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
 	Spp->SetAudioObj(Audio);
 
 	if (!Spp->Start(hwnd))
@@ -347,8 +351,8 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_MAP:
 			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam);
-			if (Map !=  (DWORD)wParam)
-				SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
+			Conf->MapAxis(1, Map); // vJoy Device 1 (TODO: Make it configurable)
+			SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
 			break;
 
 		case WMSPP_DLG_CHNL:
@@ -398,6 +402,8 @@ void CaptureDevicesPopulate(HWND hDlg)
 	// Send message: Clear list of capture devices
 	SendMessage(hDlg, REM_ALL_JACK,0, 0);
 	AudioId = NULL;
+	if (!Audio)
+		return;
 
 	for (int i=1; i<=Audio->CountCaptureDevices(); i++)
 	{

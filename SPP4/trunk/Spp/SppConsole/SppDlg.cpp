@@ -465,7 +465,7 @@ void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
 	for (UINT i=0; i<nAxes; i++)
 	{
 		hEdtBox = GetDlgItem(m_hDlg,  id-i);
-		channel = ((Map>>(i*4))&0xF) + 1;
+		channel = ((Map>>(i*4))&0xF);
 		_itot_s(channel, buffer, 2, 10);
 		Edit_SetText(hEdtBox, buffer);
 	};
