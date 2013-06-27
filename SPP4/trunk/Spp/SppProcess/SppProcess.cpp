@@ -41,6 +41,9 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
 	m_WaveInputChannel(0)
 {
+	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
+	for (UINT i=0; i<nCh; i++)
+		m_Position[i] = 0;
 }
 
 SPPMAIN_API CSppProcess::~CSppProcess() {}
@@ -285,6 +288,7 @@ void CSppProcess::PollChannels(void)
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	static std::vector<int> vRawChannels (nCh, 0);
 	static std::vector<int> vPrcChannels (nCh, 0);
+	static UINT StaleCount=0;
 
 	
 	// Poll the channel values and send them over to the parent window
@@ -294,11 +298,11 @@ void CSppProcess::PollChannels(void)
 		 //If changed, POST message at the parent
 		for (UINT i=0; i<nCh; i++)
 		{
-			if (vRawChannels[i] != m_Position[i])
+			if ((vRawChannels[i] != m_Position[i]))
 			{
 				vRawChannels[i] = m_Position[i];
 				PostMessage(m_hParentWnd, WMSPP_PRCS_RCHMNT, i,vRawChannels[i]);
-			};
+			}
 		}; // For loop (Raw)
 
 		 //For every Processed channel, check if changed

@@ -45,6 +45,10 @@
 #define SPP_FILTER	"Filter"
 #define SPP_FLTID	"Id"
 #define SPP_FLTNAME	"Name"
+#define SPP_GENERAL	"General"
+#define SPP_MONCHNL	"Monitor_CH"
+#define SPP_SHOWLOG	"Show_Log"
+#define SPP_CHECKED	"Checked"
 
 
 class CSppConfig
@@ -83,6 +87,12 @@ public:
 	bool			AddFilter(UINT Id, LPTSTR Name, bool select=false);
 	UINT			GetSelectedFilter(void);
 	wstring			GetSelectedFilterName(void);
+
+	// General
+	int			MonitorChannels();
+	bool		MonitorChannels(bool Monitor);
+	int			ShowLog();
+	bool		ShowLog(bool Monitor);
 
 	void Test(void);
 
