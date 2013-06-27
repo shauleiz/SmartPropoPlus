@@ -41,6 +41,7 @@ void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
+void		SetMonitoring(void);
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -186,6 +187,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	if (!tMonitor)
 			goto ExitApp;
+
+	// Start monitoring channels according to config file
+	SetMonitoring();
 
 	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hwnd);
@@ -462,6 +466,22 @@ void CaptureDevicesPopulate(HWND hDlg)
 		};
 	};
 
+}
+
+// Channel monitoring setup from config file and send it to SppProcess
+// If data not available then use default value
+void SetMonitoring(void)
+{
+	int monitor = 1; // Default value
+	if (Conf)
+		monitor = Conf->MonitorChannels();
+
+	BOOL bMonitor = 1;
+	if (!monitor)
+		bMonitor = 0;
+
+	if (Spp)
+		Spp->MonitorChannels(bMonitor);
 }
 
 HINSTANCE FilterPopulate(HWND hDlg)
