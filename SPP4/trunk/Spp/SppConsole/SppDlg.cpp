@@ -360,27 +360,69 @@ void SppDlg::AudioChannelParams(void)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_CHNL, bits, Channel);
 
 }
+
+// Clear channel display
+void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
+{
+	HWND hCh;
+	UINT ch= FirstChBar;
+	do 
+	{
+		hCh = GetDlgItem(m_hDlg,  ch);
+		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);
+		ch++;
+	} while (ch<=LastChBar);
+
+};
+
+// Start/Stop monitoring Eaw & processed channels
+void  SppDlg::MonitorCh(bool cb)
+{
+	
+	// Set checkbox
+	HWND hChkBox = GetDlgItem(m_hDlg,  IDC_CH_MONITOR);
+	if (!hChkBox)
+		return;
+
+	if (cb)
+		Button_SetCheck(hChkBox, BST_CHECKED);
+	else
+		Button_SetCheck(hChkBox, BST_UNCHECKED);
+
+	ClearChDisplay(IDC_CHPP1, IDC_CHPP8, RGB(0,0,0xFF));
+	ClearChDisplay(IDC_CH1, IDC_CH8, RGB(0,0xFF,0));
+
+}
+
+// Tell the parent window (Main application)
+// to stop/start monitoring the processed channel data
+void  SppDlg::MonitorPrcCh(WORD cb)
+{
+	// Get data
+	HWND hMonitorChCB = GetDlgItem(m_hDlg,  cb);
+
+	// Clear display
+	ClearChDisplay(IDC_CHPP1, IDC_CHPP8, RGB(0,0,0xFF));
+
+	// Pass request
+	int start = Button_GetCheck(hMonitorChCB);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
+}
+
 // Tell the parent window (Main application)
 // to stop/start monitoring the raw channel data
 void  SppDlg::MonitorRawCh(WORD cb)
 {
 	// Get data
 	HWND hMonitorChCB = GetDlgItem(m_hDlg,  cb);
-	int start = Button_GetCheck(hMonitorChCB);
 
 	// Clear display
-	UINT ch= IDC_CH1;
-	HWND hCh;
-	do 
-	{
-		hCh = GetDlgItem(m_hDlg,  ch);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
-		SendMessage(hCh, PBM_SETPOS, 0, 0);
-		SendMessage(hCh, PBM_SETBARCOLOR , 0, RGB(0,0xFF,0));
-		ch++;
-	} while (ch<=IDC_CH8);
+	ClearChDisplay(IDC_CH1, IDC_CH8, RGB(0,0xFF,0));
 
 	// Pass request
+	int start = Button_GetCheck(hMonitorChCB);
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
 }
 
@@ -400,29 +442,6 @@ void SppDlg::CfgJoyMonitor(HWND hDlg)
 		ch++;
 	} while (ch<=IDC_SL1);
 
-}
-
-// Tell the parent window (Main application)
-// to stop/start monitoring the processed channel data
-void  SppDlg::MonitorPrcCh(WORD cb)
-{
-	// Get data
-	HWND hMonitorChCB = GetDlgItem(m_hDlg,  cb);
-	int start = Button_GetCheck(hMonitorChCB);
-
-	// Clear display
-	UINT ch= IDC_CHPP1;
-	HWND hCh;
-	do 
-	{
-		hCh = GetDlgItem(m_hDlg,  ch);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
-		SendMessage(hCh, PBM_SETPOS, 0, 0);
-		ch++;
-	} while (ch<=IDC_CHPP8);
-
-	// Pass request
-	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
 }
 
 // Get selected filter fro GUI (if any) and send its filter index to parent window
@@ -614,8 +633,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 		if (LOWORD(wParam) == IDC_CH_MONITOR)
 		{
-			DialogObj->MonitorRawCh(LOWORD(wParam));
 			DialogObj->MonitorPrcCh(LOWORD(wParam));
+			DialogObj->MonitorRawCh(LOWORD(wParam));
 			break;
 		};
 
@@ -686,6 +705,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_MAP_UPDT:
 		DialogObj->SetAxesMappingData((DWORD)wParam, (UINT)lParam);
+		break;
+
+	case MONITOR_CH:
+		DialogObj->MonitorCh((bool)wParam);
+		break;
 
 
 	}
