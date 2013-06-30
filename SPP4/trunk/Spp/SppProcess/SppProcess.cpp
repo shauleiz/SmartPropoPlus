@@ -290,7 +290,6 @@ void CSppProcess::PollChannels(void)
 	static std::vector<int> vPrcChannels (nCh, 0);
 	static UINT StaleCount=0;
 
-	
 	// Poll the channel values and send them over to the parent window
 	while(m_chMonitor)
 	{
@@ -318,6 +317,17 @@ void CSppProcess::PollChannels(void)
 
 		
 	sleep_for(20); // MilliSec
+
+	// Once in a while reset value of channels to ensure refresh of the GUI
+	if (StaleCount>100)
+	{
+		vRawChannels.assign(nCh,0);
+		vPrcChannels.assign(nCh,0);
+		StaleCount=0;
+	}
+	else
+		StaleCount++;
+
 
 
 	}; // While loop

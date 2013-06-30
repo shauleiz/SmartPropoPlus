@@ -51,6 +51,7 @@ UINT const WMSPP_DLG_CHNL	=			BASE_SUB+25;			// Change in audio channel params -
 UINT const WMSPP_PRCS_GETMOD=			BASE_SUB+26;			// Get the selected modulation
 UINT const WMSPP_AUDIO_GETSU=			BASE_SUB+27;			// Get the selected audio setup: Payload is Audio Id. Bit rate and Channel. Return value: 8/16 + channel bit (0 if left, 1 if right) 
 UINT const SET_AUDIO_PARAMS	=			BASE_SUB+28;			// The payload is Bitrate in WPARAMS, Channel ('L'/'R') in LPARAMS
+UINT const MONITOR_CH		=			BASE_SUB+29;			// The payload is in WPARAMS, true: Start monitoring channels
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

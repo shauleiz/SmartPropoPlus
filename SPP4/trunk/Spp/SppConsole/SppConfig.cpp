@@ -856,18 +856,18 @@ int CSppConfig::MonitorChannels()
 	TiXmlHandle RootHandle( root );
 
 	// If Section 'General' does not exist - No data
-	TiXmlElement* General = RootHandle.FirstChild( SPP_TARGETS ).ToElement();
+	TiXmlElement* General = RootHandle.FirstChild( SPP_GENERAL ).ToElement();
 	if (!General)
 		return -1;
 
 	// Get  Monitor_CH
-	TiXmlElement* Monitor_Ch = RootHandle.FirstChild( SPP_TARGETS ).FirstChild(SPP_MONCHNL).ToElement();
+	TiXmlElement* Monitor_Ch = RootHandle.FirstChild( SPP_GENERAL ).FirstChild(SPP_MONCHNL).ToElement();
 	if (!Monitor_Ch)
 		return -1;
 
 	// Get the attribute
 	int val;
-	int result = Monitor_Ch->QueryIntAttribute(SPP_MONCHNL, &val);
+	int result = Monitor_Ch->QueryIntAttribute(SPP_CHECKED, &val);
 	if (TIXML_SUCCESS != result)
 		return -1;
 	else
@@ -885,7 +885,7 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 	TiXmlHandle RootHandle( root );
 
 	// If Section 'General' does not exist - create it
-	TiXmlElement* General = RootHandle.FirstChild( SPP_TARGETS ).ToElement();
+	TiXmlElement* General = RootHandle.FirstChild( SPP_GENERAL ).ToElement();
 	if (!General)
 	{
 		General = new TiXmlElement(SPP_GENERAL);
@@ -893,7 +893,7 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 	};
 	
 	// Get or Create  Monitor_CH
-	TiXmlElement* Monitor_Ch = RootHandle.FirstChild( SPP_TARGETS ).FirstChild(SPP_MONCHNL).ToElement();
+	TiXmlElement* Monitor_Ch = RootHandle.FirstChild( SPP_GENERAL ).FirstChild(SPP_MONCHNL).ToElement();
 	if (!Monitor_Ch)
 	{
 		//  Monitor_CH does not exist - create one
@@ -907,7 +907,8 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 	else
 		Monitor_Ch->SetAttribute(SPP_CHECKED, "0");
 
-	return false;
+	m_doc.SaveFile();
+	return true;
 }
 
 void CSppConfig::Test(void)

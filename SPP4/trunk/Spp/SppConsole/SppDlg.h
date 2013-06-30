@@ -19,8 +19,9 @@ public: // Called from window procedure
 	void SetProcessedChData(UINT iCh, UINT data);
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
-	void MonitorRawCh(WORD cb);
 	void CfgJoyMonitor(HWND);
+	void MonitorCh(bool cb);
+	void MonitorRawCh(WORD cb);
 	void MonitorPrcCh(WORD cb);
 	void ShowLogWindow(WORD cb);
 	void RecordInSignal(WORD cb);
@@ -36,6 +37,8 @@ public: // Called from window procedure
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip);
+	void ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color);
+
 	//DWORD WINAPI  StartDlg(LPVOID hInstance);
 
 private:
