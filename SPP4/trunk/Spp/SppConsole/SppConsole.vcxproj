@@ -170,11 +170,6 @@
     <ClInclude Include="SppLog.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\SppProcess\GlobalMemory.cpp">
-      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MultiThreadedDebug</RuntimeLibrary>
-    </ClCompile>
-    <ClCompile Include="..\SppProcess\SmartPropoPlus.cpp" />
-    <ClCompile Include="..\SppProcess\SppRegistry.cpp" />
     <ClCompile Include="SppConfig.cpp" />
     <ClCompile Include="SppControl.cpp" />
     <ClCompile Include="SppDbg.cpp" />
