@@ -132,16 +132,15 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 	// Create shared memory block and fill it with:
 	// - List of modulations as acquired above
 	// - Other default values
-	m_pSharedBlock = CreateSharedDataStruct(NULL);
-	if (!m_pSharedBlock)
-		return false;
+	//m_pSharedBlock = CreateSharedDataStruct(NULL);
+	//if (!m_pSharedBlock)
+	//	return false;
 
 	// Pass to the parent window the list modulations
 	SendModInfoToParent(m_hParentWnd);
 
 	// Get Debug level from the registry (if exists) and start debugging 
-	gDebugLevel = GetDebugLevel();
-	//_DebugWelcomePopUp(Modulation);
+	// TODO: Implement later - gDebugLevel = GetDebugLevel();
 
 
 	//// Initialize the mutex than prevents simultaneous Start/Stop streaming
