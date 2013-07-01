@@ -42,6 +42,7 @@ void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
 void		SetMonitoring(HWND hDlg);
+int			vJoyDevicesPopulate(HWND hDlg);
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -193,9 +194,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hwnd);
+
+	// Populate the GUI with the avaiable vJoy Devices - return the number of devices
+	int nvJoyDev = vJoyDevicesPopulate(hDialog);
+
 	// TODO: Test functions - remove later
 	if (MonitorOk)
-		StartPollingDevice(0);
+		StartPollingDevice(1); // Hardcoded to vJoy device #1
 
 	// Loop forever in the dialog box until user kills it
 	// TODO: Initialize dialog from registry
@@ -757,4 +762,51 @@ void thMonitor(bool * KeepAlive)
 
 
 	}
+}
+
+// Connect to the vJoy interface
+// Get the number of devices
+// Enumerate through all devices - for each device send message to dialog box
+// If configuration file already indicate a selected device (and this device is valid) then mark as selected in the dialog box
+// If the indicated device is in valid or none of the devices is indicated then mark the lowest-id device as selected
+int vJoyDevicesPopulate(HWND hDlg)
+{
+	int nDev = GetNumvJoyDevices();
+	UINT selected;
+	int id;
+	bool match = false;
+
+	// Get selected device from conf file
+	selected = Conf->SelectedvJoyDevice();
+
+	// Clear the GUI
+	SendMessage(hDlg, VJOYDEV_REMALL, 0, 0);
+
+	// Loop on all devices
+	for (int i=0; i< nDev; i++)
+	{
+		// Get a device Id
+		id = GetIdByIndex(i);
+
+		// If there's no selected device then select this one
+		if (!selected)
+		{
+			selected = id;
+			Conf->SelectvJoyDevice(id);
+		};
+
+		// Add device to GUI
+		match =  (id == selected);
+		SendMessage(hDlg, VJOYDEV_ADD, id, (LPARAM)match);
+	}; // For loop
+
+	// In case none was selected, select the first one
+	if (!match)
+	{
+		selected = GetIdByIndex(0);
+		Conf->SelectvJoyDevice(selected);
+		SendMessage(hDlg, VJOYDEV_SETSEL, id, 0);
+	};
+
+	return nDev;
 }

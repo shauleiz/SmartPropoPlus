@@ -551,6 +551,24 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 
 }
 
+// Add vJoy device entry to combo box 
+void  SppDlg::vJoyDevAdd(UINT id)
+{
+	wstring vjoyid = L"vJoy " + to_wstring(id);
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
+	SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
+}
+
+void  SppDlg::vJoyDevSelect(UINT id)
+{
+	wstring vjoyid = L"vJoy " + to_wstring(id);
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
+	int index = SendMessage(hCombo,(UINT) CB_FINDSTRINGEXACT ,(WPARAM) -1,(LPARAM)(vjoyid.data()) ); 
+	if (index == CB_ERR)
+		return;
+	index = SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
+}
+
 void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 {
 	// Case the message origin is one of the Modulation PPM/PCM list boxes
@@ -710,6 +728,13 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case MONITOR_CH:
 		DialogObj->MonitorCh((bool)wParam);
 		break;
+
+	case VJOYDEV_ADD:
+		DialogObj->vJoyDevAdd((UINT)wParam);
+		if (lParam)
+			DialogObj->vJoyDevSelect((UINT)wParam);
+		break;
+
 
 
 	}

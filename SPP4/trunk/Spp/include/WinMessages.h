@@ -52,6 +52,9 @@ UINT const WMSPP_PRCS_GETMOD=			BASE_SUB+26;			// Get the selected modulation
 UINT const WMSPP_AUDIO_GETSU=			BASE_SUB+27;			// Get the selected audio setup: Payload is Audio Id. Bit rate and Channel. Return value: 8/16 + channel bit (0 if left, 1 if right) 
 UINT const SET_AUDIO_PARAMS	=			BASE_SUB+28;			// The payload is Bitrate in WPARAMS, Channel ('L'/'R') in LPARAMS
 UINT const MONITOR_CH		=			BASE_SUB+29;			// The payload is in WPARAMS, true: Start monitoring channels
+UINT const VJOYDEV_REMALL	=			BASE_SUB+30;			// Remove all vJoy devices from GUI
+UINT const VJOYDEV_ADD		=			BASE_SUB+31;			// Add vJoy device to GUI: The payload in WPARAMS = id, in LPARAMS = selected
+UINT const VJOYDEV_SETSEL	=			BASE_SUB+32;			// Set vJoy device in GUI as selected
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
