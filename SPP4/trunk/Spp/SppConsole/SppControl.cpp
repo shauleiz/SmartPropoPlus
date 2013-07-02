@@ -320,6 +320,8 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_VJOYSEL:
 			vJoyDevice = wParam;
+			StopPollingDevices();
+			StartPollingDevice(vJoyDevice);
 			Conf->SelectvJoyDevice(wParam);
 			SetvJoyMapping(wParam);
 			break;

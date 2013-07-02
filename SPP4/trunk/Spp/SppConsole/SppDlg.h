@@ -18,6 +18,7 @@ public: // Called from window procedure
 	void SetRawChData(UINT iCh, UINT data);
 	void SetProcessedChData(UINT iCh, UINT data);
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);
+	void SetJoystickDevFrame(UCHAR iDev);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
 	void CfgJoyMonitor(HWND);
 	void MonitorCh(bool cb);
