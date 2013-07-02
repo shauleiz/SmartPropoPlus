@@ -163,6 +163,21 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 
 }
 
+// Update the frame text of the vJoy device vJoy axes
+void SppDlg::SetJoystickDevFrame(UCHAR iDev)
+{
+	static UINT id=0;
+	if (id == iDev)
+		return;
+	
+	id = iDev;
+	HWND hFrame = GetDlgItem(m_hDlg,  IDC_VJOY_AXES);
+	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axes data";
+
+	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+
+}
+
 // Update the position of the  progress bar that corresponds to the vJoy axis
 void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
@@ -201,7 +216,6 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 
 	HWND hCh = GetDlgItem(m_hDlg, IdItem);
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
-
 }
 
 void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
@@ -754,6 +768,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_JMON_AXIS:
 		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
+		DialogObj->SetJoystickDevFrame((UCHAR)(wParam&0xFF));
 		break;
 
 	case WMSPP_MAP_UPDT:
