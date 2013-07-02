@@ -551,14 +551,43 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 
 }
 
-// Add vJoy device entry to combo box 
+// Get the selected vJoy device
+// Extract the device id from the item's data
+// Send device id to CU
+void  SppDlg::vJoySelected(HWND hCb)
+{
+	// Get the index of the selected vJoy device
+	int index = SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
+	if (index == CB_ERR)
+		return;
+
+	// Extract the device id from the item's data
+	int id = SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
+	if (id == CB_ERR)
+		return;
+
+	// Send device id to CU
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_VJOYSEL, (WPARAM)id, 0);
+}
+
+// Remove all vJoy Entries
+void  SppDlg::vJoyRemoveAll()
+{
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
+	SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
+}
+
+// Add vJoy device entry to combo box
+// Set the id as item data
 void  SppDlg::vJoyDevAdd(UINT id)
 {
 	wstring vjoyid = L"vJoy " + to_wstring(id);
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
-	SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
+	int index = SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
+	SendMessage(hCombo,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)id ); 
 }
 
+// Set the selected vJoy device
 void  SppDlg::vJoyDevSelect(UINT id)
 {
 	wstring vjoyid = L"vJoy " + to_wstring(id);
@@ -686,6 +715,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
+		if (LOWORD(wParam)  == IDC_VJOY_DEVICE && HIWORD(wParam) == CBN_SELENDOK  )
+		{
+			DialogObj->vJoySelected((HWND)lParam);
+			break;
+		}
+
 		break; // No match for WM_COMMAND
 
 
@@ -733,6 +768,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->vJoyDevAdd((UINT)wParam);
 		if (lParam)
 			DialogObj->vJoyDevSelect((UINT)wParam);
+		break;
+
+	case VJOYDEV_REMALL:
+		DialogObj->vJoyRemoveAll();
 		break;
 
 

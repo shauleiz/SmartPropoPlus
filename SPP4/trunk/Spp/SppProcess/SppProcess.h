@@ -110,6 +110,7 @@ public:
 	SPPMAIN_API void StartDbgPulse(void);
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
+	SPPMAIN_API void vJoyDeviceId(UINT rID);
 	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes);
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
 
@@ -191,6 +192,7 @@ private:
 	HWND m_hParentWnd;
 	BOOL m_chMonitor;
 	BOOL m_vJoyReady;
+	UINT m_vJoyDeviceId;
 	BOOL m_DbgPulse;
 	BOOL m_ChangeCapture;
 	DWORD m_Mapping;
