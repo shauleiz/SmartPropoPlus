@@ -29,6 +29,7 @@ HINSTANCE hDllFilters = 0;
 HINSTANCE g_hInstance = 0;
 HWND hLog;
 bool Monitor = true;
+int vJoyDevice = 1;
 
 
 // Declarations
@@ -43,6 +44,7 @@ void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
 void		SetMonitoring(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
+void		SetvJoyMapping(UINT id);
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -162,10 +164,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	
 	// Start reading audio data
 	Spp		= new CSppProcess();
-	DWORD Map = Conf->MapAxis(1); // vJoy Device 1 (TODO: Make it configurable)
-	Map = Spp->MappingChanged(Map,8); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
-	Conf->MapAxis(1, Map); // vJoy Device 1 (TODO: Make it configurable)
-	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
+	vJoyDevice = Conf->SelectedvJoyDevice();
+	SetvJoyMapping(vJoyDevice);
 	Spp->SetAudioObj(Audio);
 
 	if (!Spp->Start(hwnd))
@@ -200,10 +200,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// TODO: Test functions - remove later
 	if (MonitorOk)
-		StartPollingDevice(1); // Hardcoded to vJoy device #1
+		StartPollingDevice(vJoyDevice); 
 
 	// Loop forever in the dialog box until user kills it
-	// TODO: Initialize dialog from registry
+	// TODO: Initialize dialog from config file
 	Dialog->MsgLoop();
 
  
@@ -318,6 +318,12 @@ LRESULT CALLBACK MainWindowProc(
 				DbgPulse(false);
 			break;
 
+		case WMSPP_DLG_VJOYSEL:
+			vJoyDevice = wParam;
+			Conf->SelectvJoyDevice(wParam);
+			SetvJoyMapping(wParam);
+			break;
+
 		case WMSPP_JMON_AXIS:
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_PCHMNT:
@@ -361,7 +367,7 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_MAP:
 			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam);
-			Conf->MapAxis(1, Map); // vJoy Device 1 (TODO: Make it configurable)
+			Conf->MapAxis(Conf->SelectedvJoyDevice(), Map); // vJoy Device 1 (TODO: Make it configurable)
 			SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
 			break;
 
@@ -746,14 +752,22 @@ void		DbgPulse(bool start)
 void thMonitor(bool * KeepAlive)
 {
 	bool stopped = false;
+	int rID=1;
 
 	while (*KeepAlive)
 	{
 
 		sleep_for( 100 );// Sleep for 100 milliseconds
 
-		// Monitor vJoy (device #1)
-		int rID = 1; // TODO: Make the device ID programable
+		// Monitor vJoy
+		if (rID != vJoyDevice)
+		{
+			RelinquishVJD(rID);
+			rID = vJoyDevice; 
+			Spp->vJoyDeviceId(rID);
+		};
+
+		
 		VjdStat stat = GetVJDStatus(rID);
 		if (stat == VJD_STAT_OWN)
 			Spp->vJoyReady(true);
@@ -809,4 +823,12 @@ int vJoyDevicesPopulate(HWND hDlg)
 	};
 
 	return nDev;
+}
+
+void SetvJoyMapping(UINT id)
+{
+	DWORD Map = Conf->MapAxis(id); // vJoy Device
+	Map = Spp->MappingChanged(Map,8); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
+	Conf->MapAxis(id, Map);
+	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
 }

@@ -30,6 +30,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_ChangeCapture(FALSE),
 	m_hParentWnd(NULL),
 	m_vJoyReady(false),
+	m_vJoyDeviceId(1),
 	m_DbgPulse(FALSE),
 	ProcessChannels(NULL),
 	m_Mapping(0x12345678),
@@ -79,6 +80,10 @@ SPPMAIN_API void CSppProcess::vJoyReady(bool ready)
 	m_vJoyReady = ready;
 }
 
+SPPMAIN_API void CSppProcess::vJoyDeviceId(UINT rID)
+{
+	m_vJoyDeviceId=rID;
+}
 
 // Called to inform SPP that a filter has been selected or diselected
 // iFilter is the filter index
@@ -1921,7 +1926,7 @@ _inline double  CSppProcess::CalcThreshold(int value)
 void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 {
 	BOOL writeOk;
-	UINT rID = 1; // TODO: Device 1 is hardcoded
+	UINT rID = m_vJoyDeviceId;
 	int i, k;
 	int ch[MAX_JS_CH];
 	int n_ch = 0;

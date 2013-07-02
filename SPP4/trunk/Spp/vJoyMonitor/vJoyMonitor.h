@@ -72,6 +72,7 @@ SPPINTERFACE_API bool ExistAxisSL2(UINT iDevice);
 SPPINTERFACE_API int  GetNumButtons(UINT iDevice);
 SPPINTERFACE_API int  GetNumvJoyDevices(void);
 SPPINTERFACE_API void StartPollingDevice(UINT iDevice);
+SPPINTERFACE_API void StopPollingDevices(void);
 
 struct DI_ENUM_CONTEXT
 {
@@ -99,6 +100,7 @@ public:
 	bool ExistAxisSL2(UINT iDevice);
 	virtual int  GetNumDevices(void);
 	virtual void StartPollingDevice(UINT iDevice);
+	virtual void StopPollingDevices(void);
 
 protected:
 	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);

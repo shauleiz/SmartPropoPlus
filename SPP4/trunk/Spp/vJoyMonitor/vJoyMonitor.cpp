@@ -110,6 +110,12 @@ SPPINTERFACE_API void StartPollingDevice(UINT iDevice)
 	if (g_MainObj)
 		return g_MainObj->StartPollingDevice(iDevice);
 }
+SPPINTERFACE_API void StopPollingDevices(void)
+{
+	if (g_MainObj)
+		return g_MainObj->StopPollingDevices();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////// Class CvJoyMonitor /////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +156,7 @@ bool CvJoyMonitor::ExistAxis(UINT iDevice, UINT Axis)
 int  CvJoyMonitor::GetNumButtons(UINT iDevice) {return -1;}
 int   CvJoyMonitor::GetNumDevices(void) {return -1;}
 void CvJoyMonitor::StartPollingDevice(UINT iDevice) {}
+void CvJoyMonitor::StopPollingDevices(void) {}
 
 void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
