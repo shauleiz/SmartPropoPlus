@@ -1969,16 +1969,22 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 // - nAxes = 0: Reset mapping to defualt
 // - nAxes < 8: map only the nAxes starting from X axis, set the rest to default
 // - Map nibble = 0, don't change mapping for this axis.
+// - vJoy device changed: Default mapping is reset
 // Return: New mapping
 
-DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes)
+DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes, UINT vJoyId)
 {
 
 	DWORD dwMap=0; // Intermediary map
 	UCHAR Nibble, PrevNibble, DefNibble;
+	static UINT id = 0;
 
 	if (nAxes>8)
 		return m_Mapping;
+
+	if (vJoyId != id)
+		m_Mapping = 0x12345678;
+
 
 	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
 	for (UINT i=0; i<8; i++)

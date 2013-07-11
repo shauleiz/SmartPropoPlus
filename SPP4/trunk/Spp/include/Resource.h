@@ -175,3 +175,5 @@
 #define IDC_LEFT                                40128
 #define IDC_MONO                                40130
 #define IDC_RIGHT                               40132
+#define IDC_VJOY_DEVICE                         40134
+#define IDC_VJOY_AXES                           40135

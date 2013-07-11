@@ -45,6 +45,12 @@ SPPINTERFACE_API bool vJoyMonitorInit(HINSTANCE hInstance, HWND	ParentWnd)
 	if (!ParentWnd || !hInstance)
 		return false;
 
+	if (g_MainObj)
+	{
+		delete g_MainObj;
+		g_MainObj = NULL;
+	};
+
 	// // /// //// Test if DirectInput supported.
 	// Register with the DirectInput subsystem and get a pointer
 	// to a IDirectInput interface we can use.

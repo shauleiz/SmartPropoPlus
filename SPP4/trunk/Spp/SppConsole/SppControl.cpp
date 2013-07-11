@@ -182,13 +182,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Spp->AudioChanged(); // TODO: Remove later
 	Dialog->Show(); // If not asked to be iconified
 
-	// Start monitoring thread
-	static thread * tMonitor = NULL;
-	tMonitor = new thread(thMonitor, &Monitor);
-
-	if (!tMonitor)
-			goto ExitApp;
-
 	// Start monitoring channels according to config file
 	SetMonitoring(hDialog);
 
@@ -199,8 +192,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int nvJoyDev = vJoyDevicesPopulate(hDialog);
 
 	// TODO: Test functions - remove later
-	if (MonitorOk)
-		StartPollingDevice(vJoyDevice); 
+	//if (MonitorOk)
+	//	StartPollingDevice(vJoyDevice); 
+
+	// Start monitoring thread
+	static thread * tMonitor = NULL;
+	tMonitor = new thread(thMonitor, &Monitor);
+
+	if (!tMonitor)
+			goto ExitApp;
 
 	// Loop forever in the dialog box until user kills it
 	// TODO: Initialize dialog from config file
@@ -321,7 +321,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_VJOYSEL:
 			vJoyDevice = wParam;
 			StopPollingDevices();
-			StartPollingDevice(vJoyDevice);
+			// StartPollingDevice(vJoyDevice);
 			Conf->SelectvJoyDevice(wParam);
 			SetvJoyMapping(wParam);
 			break;
@@ -368,7 +368,7 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_DLG_MAP:
-			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam);
+			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam, Conf->SelectedvJoyDevice());
 			Conf->MapAxis(Conf->SelectedvJoyDevice(), Map); // vJoy Device 1 (TODO: Make it configurable)
 			SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
 			break;
@@ -754,30 +754,58 @@ void		DbgPulse(bool start)
 void thMonitor(bool * KeepAlive)
 {
 	bool stopped = false;
-	int rID=1;
+	int rID=0;
 
 	while (*KeepAlive)
 	{
 
 		sleep_for( 100 );// Sleep for 100 milliseconds
 
-		// Monitor vJoy
-		if (rID != vJoyDevice)
+		// Test state of vJoy device - only for legal vJoy device Id
+		if (vJoyDevice)
 		{
-			RelinquishVJD(rID);
-			rID = vJoyDevice; 
-			Spp->vJoyDeviceId(rID);
+			// vJoy changed - relinquish previous and update config file
+			if (rID != vJoyDevice)
+			{
+				if (!rID)
+				{
+					if (vJoyEnabled())
+					{
+						vJoyDevice = Conf->SelectedvJoyDevice();
+						vJoyDevicesPopulate(hDialog);
+						SetvJoyMapping(vJoyDevice);
+						//DEBUG StartPollingDevice(vJoyDevice);
+					}
+					else
+						continue;
+				}
+				else
+					RelinquishVJD(rID);
+
+				rID = vJoyDevice; 
+				Spp->vJoyDeviceId(rID);
+			};
+
+			// Check status of vJoy device - if not owened try to acquire
+			// Inform SppProcess
+			VjdStat stat = GetVJDStatus(rID);
+			if (stat == VJD_STAT_OWN)
+				Spp->vJoyReady(true);
+			else
+				AcquireVJD(rID) ? Spp->vJoyReady(true) :  Spp->vJoyReady(false);
+
+			// If vJoy device is missing then inform the GUI and select another one
+			stat = GetVJDStatus(rID);
+			if (stat == VJD_STAT_MISS)
+			{
+				StopPollingDevices();
+				Spp->vJoyReady(false);
+				RelinquishVJD(rID);
+				rID=0;
+				continue;
+			};
 		};
-
-		
-		VjdStat stat = GetVJDStatus(rID);
-		if (stat == VJD_STAT_OWN)
-			Spp->vJoyReady(true);
-		else
-			AcquireVJD(rID) ? Spp->vJoyReady(true) :  Spp->vJoyReady(false);
-
-
-	}
+	}; // while (*KeepAlive) 
 }
 
 // Connect to the vJoy interface
@@ -787,10 +815,12 @@ void thMonitor(bool * KeepAlive)
 // If the indicated device is in valid or none of the devices is indicated then mark the lowest-id device as selected
 int vJoyDevicesPopulate(HWND hDlg)
 {
-	int nDev = GetNumvJoyDevices();
+	int nDev=0;
 	UINT selected;
 	int id;
 	bool match = false;
+	VjdStat stat;
+	int DefId = 0;
 
 	// Get selected device from conf file
 	selected = Conf->SelectedvJoyDevice();
@@ -799,10 +829,12 @@ int vJoyDevicesPopulate(HWND hDlg)
 	SendMessage(hDlg, VJOYDEV_REMALL, 0, 0);
 
 	// Loop on all devices
-	for (int i=0; i< nDev; i++)
+	for (id=1; id< 16; id++)
 	{
-		// Get a device Id
-		id = GetIdByIndex(i);
+		// Make sure this vJoy device is usable
+		stat = GetVJDStatus(id);
+		if (stat == VJD_STAT_BUSY || stat == VJD_STAT_MISS || stat == VJD_STAT_UNKN)
+			continue;
 
 		// If there's no selected device then select this one
 		if (!selected)
@@ -811,17 +843,22 @@ int vJoyDevicesPopulate(HWND hDlg)
 			Conf->SelectvJoyDevice(id);
 		};
 
+		// Temporary default id
+		if (!DefId)
+			DefId = id;
+
 		// Add device to GUI
 		match =  (id == selected);
 		SendMessage(hDlg, VJOYDEV_ADD, id, (LPARAM)match);
+		nDev++;
 	}; // For loop
 
 	// In case none was selected, select the first one
 	if (!match)
 	{
-		selected = GetIdByIndex(0);
+		selected = DefId;
 		Conf->SelectvJoyDevice(selected);
-		SendMessage(hDlg, VJOYDEV_SETSEL, id, 0);
+		SendMessage(hDlg, VJOYDEV_SETSEL, selected, 0);
 	};
 
 	return nDev;
@@ -830,7 +867,7 @@ int vJoyDevicesPopulate(HWND hDlg)
 void SetvJoyMapping(UINT id)
 {
 	DWORD Map = Conf->MapAxis(id); // vJoy Device
-	Map = Spp->MappingChanged(Map,8); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
+	Map = Spp->MappingChanged(Map,8, id); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
 	Conf->MapAxis(id, Map);
 	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
 }

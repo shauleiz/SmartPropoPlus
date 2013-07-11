@@ -117,11 +117,20 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>Copy /Y Resource.h ..\Include\.</Command>
+      <Command>Copy /Y Resource.h ..\Include\.
+copy /y "D:\Users\Shaul\Documents\SmartPropoPlus\HEAD\SPP4\trunk\Spp\x64\Win7 Debug\vJoyInterface.*"  $(OutDir).</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Copy files</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
