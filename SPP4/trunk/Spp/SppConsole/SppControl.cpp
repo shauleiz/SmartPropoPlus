@@ -192,8 +192,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int nvJoyDev = vJoyDevicesPopulate(hDialog);
 
 	// TODO: Test functions - remove later
-	//if (MonitorOk)
-	//	StartPollingDevice(vJoyDevice); 
+	if (MonitorOk)
+		StartPollingDevice(vJoyDevice); 
 
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
@@ -244,6 +244,10 @@ LRESULT CALLBACK MainWindowProc(
         case WM_DESTROY: 
             // Clean up window-specific data objects. 
             return 0; 
+
+		case WM_DEVICECHANGE:
+			 return TRUE;
+
  
         // 
         // Process other messages. 
@@ -321,7 +325,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_VJOYSEL:
 			vJoyDevice = wParam;
 			StopPollingDevices();
-			// StartPollingDevice(vJoyDevice);
+			StartPollingDevice(vJoyDevice);
 			Conf->SelectvJoyDevice(wParam);
 			SetvJoyMapping(wParam);
 			break;
@@ -774,7 +778,7 @@ void thMonitor(bool * KeepAlive)
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
 						SetvJoyMapping(vJoyDevice);
-						//DEBUG StartPollingDevice(vJoyDevice);
+						StartPollingDevice(vJoyDevice);
 					}
 					else
 						continue;
