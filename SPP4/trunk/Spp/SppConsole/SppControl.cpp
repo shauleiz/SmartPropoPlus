@@ -298,7 +298,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_MONITOR:
 			if (Spp)
 				Spp->MonitorChannels((BOOL)wParam);
-			Conf->MonitorChannels((BOOL)wParam);
+			Conf->MonitorChannels(wParam !=0); // Silly cast to bool to evoid warning
 			break;
 
 		case WMSPP_DLG_LOG:
@@ -324,7 +324,6 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_VJOYSEL:
 			vJoyDevice = wParam;
-			StopPollingDevices();
 			StartPollingDevice(vJoyDevice);
 			Conf->SelectvJoyDevice(wParam);
 			SetvJoyMapping(wParam);
@@ -778,7 +777,7 @@ void thMonitor(bool * KeepAlive)
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
 						SetvJoyMapping(vJoyDevice);
-						StartPollingDevice(vJoyDevice);
+						// StartPollingDevice(vJoyDevice);
 					}
 					else
 						continue;

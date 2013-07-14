@@ -71,8 +71,8 @@
     <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug_STL\</OutDir>
-    <IntDir>.\Debug_STL\</IntDir>
+    <OutDir>$(ProjectDir)\Debug_STL\</OutDir>
+    <IntDir>$(ProjectDir)\Debug_STL\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)$(Platform)\Debug_STL\</OutDir>
@@ -117,11 +117,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;_DEBUG;_LIB;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <PrecompiledHeaderOutputFile>.\Debug_STL/tinyxmlSTL.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug_STL/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug_STL/</ObjectFileName>
+      <AssemblerListingLocation>$(ProjectDir)$(Platform)Debug_STL</AssemblerListingLocation>
       <ProgramDataBaseFileName>.\Debug_STL/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
@@ -176,10 +174,6 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\Release_STL/tinyxmlSTL.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release_STL/</AssemblerListingLocation>
-      <ObjectFileName>.\Release_STL/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release_STL/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
