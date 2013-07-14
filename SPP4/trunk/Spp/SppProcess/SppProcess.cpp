@@ -235,7 +235,7 @@ void CSppProcess::CaptureAudio(void)
 	m_WaveRate			=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETSPR, 0, 0);
 	m_WaveBitsPerSample	=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETBPS, 0,0);
 	m_WaveNChannels		=	(UINT)SendMessage(m_hParentWnd, WMSPP_PRCS_GETNCH, 0,0);
-	m_WaveInputChannel	=	SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0,0);
+	m_WaveInputChannel	=	(int)SendMessage(m_hParentWnd, WMSPP_PRCS_GETLR, 0,0);
 
 	LogMessage(INFO, IDS_I_CAPTURESTART);
 	while (m_waveRecording)
