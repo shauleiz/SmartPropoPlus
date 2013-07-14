@@ -571,12 +571,12 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 void  SppDlg::vJoySelected(HWND hCb)
 {
 	// Get the index of the selected vJoy device
-	int index = SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
+	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
 	if (index == CB_ERR)
 		return;
 
 	// Extract the device id from the item's data
-	int id = SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
+	int id = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
 	if (id == CB_ERR)
 		return;
 
@@ -597,7 +597,7 @@ void  SppDlg::vJoyDevAdd(UINT id)
 {
 	wstring vjoyid = L"vJoy " + to_wstring(id);
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
-	int index = SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
+	int index = (int)SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
 	SendMessage(hCombo,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)id ); 
 }
 
@@ -606,10 +606,10 @@ void  SppDlg::vJoyDevSelect(UINT id)
 {
 	wstring vjoyid = L"vJoy " + to_wstring(id);
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
-	int index = SendMessage(hCombo,(UINT) CB_FINDSTRINGEXACT ,(WPARAM) -1,(LPARAM)(vjoyid.data()) ); 
+	int index = (int)SendMessage(hCombo,(UINT) CB_FINDSTRINGEXACT ,(WPARAM) -1,(LPARAM)(vjoyid.data()) ); 
 	if (index == CB_ERR)
 		return;
-	index = SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
+	index =  (int)SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
 }
 
 void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)

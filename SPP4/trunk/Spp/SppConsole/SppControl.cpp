@@ -323,10 +323,10 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_DLG_VJOYSEL:
-			vJoyDevice = wParam;
+			vJoyDevice = (int)wParam;
 			StartPollingDevice(vJoyDevice);
-			Conf->SelectvJoyDevice(wParam);
-			SetvJoyMapping(wParam);
+			Conf->SelectvJoyDevice((UINT)wParam);
+			SetvJoyMapping((UINT)wParam);
 			break;
 
 		case WMSPP_JMON_AXIS:
@@ -777,7 +777,7 @@ void thMonitor(bool * KeepAlive)
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
 						SetvJoyMapping(vJoyDevice);
-						// StartPollingDevice(vJoyDevice);
+						StartPollingDevice(vJoyDevice);
 					}
 					else
 						continue;
