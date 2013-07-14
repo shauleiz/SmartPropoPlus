@@ -776,7 +776,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case MONITOR_CH:
-		DialogObj->MonitorCh((bool)wParam);
+		DialogObj->MonitorCh(wParam != 0); // Silly way to cast to bool
 		break;
 
 	case VJOYDEV_ADD:
