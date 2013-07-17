@@ -112,7 +112,7 @@ protected:
 	HWND					m_ParentWnd;
 	int						m_nvJoyDevices;
 	std::vector<char>		m_Id;
-
+	std::vector<bool>		m_vJoySelected;
 };
 
 
