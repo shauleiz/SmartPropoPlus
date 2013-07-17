@@ -4,5 +4,10 @@
 //
 
 #pragma once
+using namespace std;
 
 #include "targetver.h"
+#include <mutex>
+#include <iostream>
+#include <sstream>
+#include <conio.h>
