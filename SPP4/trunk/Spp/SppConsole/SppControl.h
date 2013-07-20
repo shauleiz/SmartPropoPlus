@@ -24,6 +24,11 @@
 #endif
 #endif
 
+#ifdef _DEBUG
+#define THREAD_NAME(name) SetThreadName(name)
+#else
+#define THREAD_NAME(name)
+#endif
 
 #define MAIN_CLASS_NAME TEXT("Main_Window_Class_Name")
 #define MAIN_WND_TITLE TEXT("Main Window (Debug Mode)")
