@@ -219,14 +219,25 @@ void CvJoyMonitorDI8::CentralThread()
 		if (m_EnumerateCounter>0)
 			EnumerateDevices();
 
-		// Need to kill polling threads? - if m_quSuspend is not empty then yes
-		else if (!m_vcSuspend.empty())
-			SuspendPolling(m_vcSuspend.front());
+		else
+		{
+			// Need to kill polling threads? - if m_quSuspend is not empty then yes
+			lock_guard<recursive_mutex> lock_vcSuspend(m_mx_vcSuspend);
+			if (!m_vcSuspend.empty())
+			{
+				SuspendPolling(m_vcSuspend.front());
+				continue;
+				lock_vcSuspend;
+			};
 
-		// Need to create polling threads? - if m_mx_quPoll is not empty then yes
-		else if (!m_vcPoll.empty())
-			PollDevice(m_vcSuspend.front());
-
+			// Need to create polling threads? - if m_mx_quPoll is not empty then yes
+			lock_guard<recursive_mutex> lock_vcPoll(m_mx_vcPoll);
+			if (!m_vcPoll.empty())
+			{
+				PollDevice(m_vcPoll.front());
+				continue;
+			};
+		}
 	}; // While
 
 }
@@ -248,9 +259,11 @@ void CvJoyMonitorDI8::EnumerateDevices(void)
 	if (FAILED(m_pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, _EnumJoysticks, this, DIEDFL_ATTACHEDONLY ) ) )
 		return;
 
-	// Go over updated DB - for each element start polling if requested to
+	// Go over updated DB - for each element that request was set - add to request vector
+	lock_guard<recursive_mutex> lock(m_mx_vcPoll);
 	for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
-		PollDevice((*iMap).first);
+		if ((*iMap).second->RqPolling)
+			m_vcPoll.push_back((*iMap).first);
 
 	// Decrement counter
 	m_EnumerateCounter--;
@@ -319,6 +332,7 @@ BOOL CvJoyMonitorDI8::EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance)
 		dev->RqPolling=false;
 		dev->ThPolling=NULL;
 		dev->isPolling=false;
+		dev->vJoyID = m_CurrentID;
 		m_DeviceDB.emplace(UniqueID,dev);
 	};
 
@@ -417,8 +431,10 @@ void CvJoyMonitorDI8::PollDevice(wstring UniqueID)
 		return;
 
 	// Found
+	(*iMap).second->RqPolling = true;
+
 	// Check is exists, polling requested  and not running 
-	if  (!(*iMap).second->Exist || (*iMap).second->isPolling || !(*iMap).second->RqPolling)
+	if  (!(*iMap).second->Exist || (*iMap).second->isPolling)
 		return;
 
 		// Set cooperative level so nothing interrupts the flow
@@ -445,7 +461,6 @@ void CvJoyMonitorDI8::PollDevice(wstring UniqueID)
 	// Update device entry
 	(*iMap).second->isPolling = true;
 
-	//------------------------------------------------
 	// Find entry in Poll vector and remove
 	UINT size = (UINT)m_vcPoll.size();
 	UINT i;
@@ -526,11 +541,12 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 			sleep_for(20); // MilliSec
 		} // Look for changes and report
 
+	}; // While
+
+
 		// Release DI interface
 		if (dev->pDeviceDI8)
 			dev->pDeviceDI8->Unacquire();
-
-	}; // While
 }
 
 // Instruct object to start a polling thread for the given vJoy ID
@@ -539,7 +555,7 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 void CvJoyMonitorDI8::StartPollingDevice(UINT vJoyID)
 {
 	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(m_CurrentID);
+	wstring UniqueID = Convert2UniqueID(vJoyID);
 
 	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
 	mapDB::iterator iMap;
@@ -557,7 +573,7 @@ void CvJoyMonitorDI8::StartPollingDevice(UINT vJoyID)
 void CvJoyMonitorDI8::StopPollingDevice(UINT vJoyID)
 {
 	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(m_CurrentID);
+	wstring UniqueID = Convert2UniqueID(vJoyID);
 
 	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
 	mapDB::iterator iMap;
@@ -573,7 +589,7 @@ void CvJoyMonitorDI8::StopPollingDevice(UINT vJoyID)
 bool CvJoyMonitorDI8::ExistAxis(UINT vJoyID, UINT Axis)
 {
 	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(m_CurrentID);
+	wstring UniqueID = Convert2UniqueID(vJoyID);
 
 	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
 	mapDB::iterator iMap;
@@ -600,7 +616,7 @@ bool CvJoyMonitorDI8::ExistAxis(UINT vJoyID, UINT Axis)
 int  CvJoyMonitorDI8::GetNumButtons(UINT Id)
 {
 	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(m_CurrentID);
+	wstring UniqueID = Convert2UniqueID(Id);
 
 	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
 	mapDB::iterator iMap;
