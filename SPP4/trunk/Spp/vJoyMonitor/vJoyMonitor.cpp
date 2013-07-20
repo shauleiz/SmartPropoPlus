@@ -173,5 +173,5 @@ void CvJoyMonitor::StopPollingDevices(void) {}
 
 void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
-	PostMessage(m_ParentWnd, WMSPP_JMON_AXIS,  m_Id[iDev] + (Axis<<16), AxisValue);
+	PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, iDev + (Axis<<16), AxisValue);
 }
