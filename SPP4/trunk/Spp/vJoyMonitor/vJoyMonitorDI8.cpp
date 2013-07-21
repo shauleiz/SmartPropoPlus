@@ -225,7 +225,7 @@ void CvJoyMonitorDI8::CentralThread()
 			lock_guard<recursive_mutex> lock_vcSuspend(m_mx_vcSuspend);
 			if (!m_vcSuspend.empty())
 			{
-				SuspendPolling(m_vcSuspend.front());
+				SuspendPolling(*(m_vcSuspend.begin()));
 				continue;
 				lock_vcSuspend;
 			};
@@ -234,7 +234,7 @@ void CvJoyMonitorDI8::CentralThread()
 			lock_guard<recursive_mutex> lock_vcPoll(m_mx_vcPoll);
 			if (!m_vcPoll.empty())
 			{
-				PollDevice(m_vcPoll.front());
+				PollDevice(*(m_vcPoll.begin()));
 				continue;
 			};
 		}
@@ -263,7 +263,7 @@ void CvJoyMonitorDI8::EnumerateDevices(void)
 	lock_guard<recursive_mutex> lock(m_mx_vcPoll);
 	for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
 		if ((*iMap).second->RqPolling)
-			m_vcPoll.push_back((*iMap).first);
+			m_vcPoll.insert((*iMap).first);
 
 	// Decrement counter
 	m_EnumerateCounter--;
@@ -399,17 +399,9 @@ void CvJoyMonitorDI8::SuspendPolling(wstring UniqueID)
 	(*iMap).second->isPolling = false;
 
 	// Find entry in suspend vector and remove
-	UINT size = (UINT)m_vcSuspend.size();
-	UINT i;
-	for (i=0; i<size; i++)
-	{
-		if (m_vcSuspend[i] != UniqueID)
-			continue;
-
-		// Found
-		m_vcSuspend.erase(m_vcSuspend.begin()+i);
-		break;
-	};
+	auto iSuspend = m_vcSuspend.find(UniqueID);
+	if (iSuspend != m_vcSuspend.end())
+		m_vcSuspend.erase(iSuspend);
 }
 
 
@@ -466,17 +458,10 @@ void CvJoyMonitorDI8::PollDevice(wstring UniqueID)
 	(*iMap).second->isPolling = true;
 
 	// Find entry in Poll vector and remove
-	UINT size = (UINT)m_vcPoll.size();
-	UINT i;
-	for (i=0; i<size; i++)
-	{
-		if (m_vcPoll[i] != UniqueID)
-			continue;
+	auto iPoll = m_vcPoll.find(UniqueID);
+	if (iPoll != m_vcPoll.end())
+		m_vcPoll.erase(iPoll);
 
-		// Found
-		m_vcPoll.erase(m_vcPoll.begin()+i);
-		break;
-	};
 }
 
 // Entry point for creating a Polling Thread
@@ -572,7 +557,7 @@ void CvJoyMonitorDI8::StartPollingDevice(UINT vJoyID)
 		return;
 
 	lock_guard<recursive_mutex> lock(m_mx_vcPoll);
-	m_vcPoll.push_back(UniqueID);
+	m_vcPoll.insert(UniqueID);
 }
 
 // Instruct object to stop a polling thread for the given vJoy ID
@@ -590,7 +575,7 @@ void CvJoyMonitorDI8::StopPollingDevice(UINT vJoyID)
 		return;
 
 	lock_guard<recursive_mutex> lock(m_mx_vcSuspend);
-	m_vcSuspend.push_back(UniqueID);
+	m_vcSuspend.insert(UniqueID);
 }
 
 // Test if a given Axis esists in a given vJoy device
