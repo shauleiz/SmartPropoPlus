@@ -291,7 +291,6 @@ BOOL CvJoyMonitorDI8::EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance)
 
 	// This is a vJoy device - Create a DI device
 	hr = m_pDI->CreateDevice( pdidInstance->guidInstance, &pJoystick, NULL );
-
 	// If it failed, then we can't use this Joystick. (Maybe the user unplugged
 	// it while we were in the middle of enumerating it.)
 	if( FAILED( hr ) )
@@ -306,8 +305,10 @@ BOOL CvJoyMonitorDI8::EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance)
 			return TRUE;
 
 	// Get device objects and ID
+	m_CurrentID=0;
 	if( FAILED(pJoystick->EnumObjects( _EnumObjects, ( VOID* )this, DIDFT_AXIS|DIDFT_BUTTON|DIDFT_POV ) ) )
 			return TRUE;
+
 
 	// Convert vJoy ID to Unique ID
 	wstring UniqueID = Convert2UniqueID(m_CurrentID);
@@ -377,6 +378,7 @@ wstring  CvJoyMonitorDI8::Convert2UniqueID(UINT vJoyID)
 // 
 void CvJoyMonitorDI8::SuspendPolling(wstring UniqueID)
 {
+    // DEBUG	return;
 	// This entire function is a critical region
 	lock_guard<recursive_mutex> lock(m_mx_vcSuspend);
 
@@ -437,8 +439,9 @@ void CvJoyMonitorDI8::PollDevice(wstring UniqueID)
 	if  (!(*iMap).second->Exist || (*iMap).second->isPolling)
 		return;
 
+
 		// Set cooperative level so nothing interrupts the flow
-	hr = (*iMap).second->pDeviceDI8->SetCooperativeLevel(m_hDummyWnd, DISCL_NONEXCLUSIVE|DISCL_BACKGROUND);
+	hr = (*iMap).second->pDeviceDI8->SetCooperativeLevel(NULL/*m_hDummyWnd*/, DISCL_NONEXCLUSIVE|DISCL_BACKGROUND);
 	if (hr != DI_OK)
 		return;
 
@@ -446,6 +449,7 @@ void CvJoyMonitorDI8::PollDevice(wstring UniqueID)
 	hr = (*iMap).second->pDeviceDI8->SetDataFormat( &c_dfDIJoystick2 );
 	if (hr != DI_OK)
 		return;
+
 
 	// Acquire device
 	hr = (*iMap).second->pDeviceDI8->Acquire();
@@ -501,16 +505,20 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 		// If this fails too then go to beginning of loop
 		if (hr != DI_OK && hr != DI_NOEFFECT)
 		{
-			dev->pDeviceDI8->Unacquire();
-			sleep_for(200); // MilliSec
-			hr =dev->pDeviceDI8->Acquire();
-			if FAILED(hr)
-				continue;
+				dev->pDeviceDI8->Unacquire();
+				SAFE_RELEASE(dev->pDeviceDI8);
+				return;
 		};
 
 		// Get the state of the joystick - test what has changed and report changes
 		hr = dev->pDeviceDI8->GetDeviceState(sizeof(DIJOYSTATE2), (LPVOID)(&state));
-		if (hr == DI_OK)
+		if (hr != DI_OK)
+		{
+				dev->pDeviceDI8->Unacquire();
+				SAFE_RELEASE(dev->pDeviceDI8);
+				return;
+		}
+		else
 		{ // Look for changes and report
 			UCHAR iDevice = dev->vJoyID;
 			// Axes
@@ -723,6 +731,7 @@ LRESULT CALLBACK MainWindowProc(
   ) 
 { 
 	static CvJoyMonitorDI8 * This = NULL;
+	static LONG W,L;
 
 	  switch (uMsg) 
     { 
