@@ -76,11 +76,11 @@ private:
 private:
 	LPDIRECTINPUT8          m_pDI;	// One and only DI object 
 	int						m_EnumerateCounter; // Counts the pending request to enumerate
-	set<wstring>			m_vcSuspend; // Vector of keys - awaiting suspend
-	set<wstring>			m_vcPoll; // Vector of keys - awaiting polling
+	set<wstring>			m_ctSuspend; // Container (set) of keys - awaiting suspend
+	set<wstring>			m_ctPoll; // Container (set) of keys - awaiting polling
 	mapDB					m_DeviceDB; // One and only DB of devices
-	recursive_mutex			m_mx_vcSuspend; // Mutex - RW to quSuspend is critical region
-	recursive_mutex			m_mx_vcPoll; // Mutex - RW to quPoll is critical region
+	recursive_mutex			m_mx_ctSuspend; // Mutex - RW to ctSuspend is critical region
+	recursive_mutex			m_mx_ctPoll; // Mutex - RW to ctPoll is critical region
 	thread *				m_thCentral; // Pointer to central thread
 	HWND					m_hDummyWnd; // Handle to dummy window
 	bool					m_CentralKeepalive; // Central Thread is killed when this is false
