@@ -46,6 +46,8 @@ void		SetMonitoring(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
 void		SetvJoyMapping(UINT id);
 void		SetThreadName(char* threadName);
+bool		isAboveVistaSp1();
+
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -63,6 +65,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 
 	THREAD_NAME("Main Thread");
+
+	if (!isAboveVistaSp1())
+		return -3;
 
 	HANDLE hDlgCLosed=NULL;
 	LoadLibrary(TEXT("Msftedit.dll")); 
@@ -879,6 +884,27 @@ void SetvJoyMapping(UINT id)
 	Map = Spp->MappingChanged(Map,8, id); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
 	Conf->MapAxis(id, Map);
 	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
+}
+
+bool isAboveVistaSp1()
+{
+	OSVERSIONINFOEX OsInfo;
+	OsInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	GetVersionEx((LPOSVERSIONINFO)&OsInfo);
+
+	// Vista or higher
+	if (OsInfo.dwMajorVersion < 6)
+		return false;
+
+	// Windows7 or higher
+	if (OsInfo.dwMinorVersion > 0)
+		return true;
+
+	// Vista SP2 or higher Vista
+	if (OsInfo.wServicePackMajor > 1)
+		return true;
+	else
+		return false;
 }
 
 #ifdef _DEBUG
