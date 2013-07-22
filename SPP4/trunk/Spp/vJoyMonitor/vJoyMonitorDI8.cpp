@@ -563,10 +563,10 @@ void CvJoyMonitorDI8::StartPollingDevice(UINT vJoyID)
 	wstring UniqueID = Convert2UniqueID(vJoyID);
 
 	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap == m_DeviceDB.end() )
-		return;
+	//mapDB::iterator iMap;
+	//iMap = m_DeviceDB.find(UniqueID);
+	//if( iMap == m_DeviceDB.end() )
+	//	return;
 
 	lock_guard<recursive_mutex> lock(m_mx_ctPoll);
 	m_ctPoll.insert(UniqueID);

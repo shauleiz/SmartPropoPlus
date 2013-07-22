@@ -783,7 +783,7 @@ void thMonitor(bool * KeepAlive)
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
 						SetvJoyMapping(vJoyDevice);
-						StartPollingDevice(vJoyDevice);
+						//StartPollingDevice(vJoyDevice);
 					}
 					else
 						continue;
