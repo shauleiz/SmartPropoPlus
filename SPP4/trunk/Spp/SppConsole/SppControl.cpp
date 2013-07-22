@@ -196,8 +196,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int nvJoyDev = vJoyDevicesPopulate(hDialog);
 
 	// TODO: Test functions - remove later
-	//if (MonitorOk)
-	//	StartPollingDevice(vJoyDevice); 
+	if (MonitorOk)
+		StartPollingDevice(vJoyDevice); 
 
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
