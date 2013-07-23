@@ -66,14 +66,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	THREAD_NAME("Main Thread");
 
-	if (!isAboveVistaSp1())
-		return -3;
 
 	HANDLE hDlgCLosed=NULL;
 	LoadLibrary(TEXT("Msftedit.dll")); 
 	g_hInstance=hInstance;
 
-	// TODO: Ensure Vista SP2 or higher
+	// Ensure Vista SP2 or higher
+	if (!isAboveVistaSp1())
+		return -3;
 
 	// Read Command line
 	// TODO: This is only an example of how to parse the command line
