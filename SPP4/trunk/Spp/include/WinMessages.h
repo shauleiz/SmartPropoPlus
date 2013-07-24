@@ -57,7 +57,7 @@ UINT const VJOYDEV_ADD		=			BASE_SUB+31;			// Add vJoy device to GUI: The payloa
 UINT const VJOYDEV_SETSEL	=			BASE_SUB+32;			// Set vJoy device in GUI as selected
 UINT const WMSPP_DLG_VJOYSEL=			BASE_SUB+33;			// vJoy device selected. WPARAMS = id
 UINT const WMSPP_VJOY_MISS =			BASE_SUB+34;			// vJoy device is missing . WPARAMS = id
-
+UINT const WMSPP_DLG_FDLL  =			BASE_SUB+35;			// Set/Remove Filter DLL file
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
 UINT const WMSPP_LOG_CNTRL	=				WMSPP_LOG_BASE + 0;				// Base value for log messages comming from SppControl
