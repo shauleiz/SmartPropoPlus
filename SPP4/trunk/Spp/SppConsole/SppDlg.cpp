@@ -220,6 +220,7 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 
 void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 {
+#ifdef IDC_LIST_FILTERS
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
 	//int pos = (int)SendMessage(hFilterList, LB_ADDSTRING, 0, (LPARAM)FilterName);
 	//SendMessage(hFilterList, LB_SETITEMDATA, pos, (LPARAM) iFilter);
@@ -248,7 +249,7 @@ void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
 	///
 
 	//ListView_SetItemText(hFilterList, i, 1, TEXT("SI")); // TODO: Replace later with real stuff
-
+#endif
 }
 
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
@@ -464,6 +465,7 @@ void SppDlg::UpdateFilter(void)
 	// Loop on all entries in filter list
 	// Find the first checked entry (Assumption: Only one entry at most can be checked)
 	// Send filter index  (-1 means no filter) parent
+#ifdef IDC_LIST_FILTERS
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
 	int count = ListView_GetItemCount(hFilterList);
 	int iFilter = -1;
@@ -482,6 +484,7 @@ void SppDlg::UpdateFilter(void)
 	}; // for
 
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)iFilter, 0);
+#endif
 }
 
 // Fill-in the actual mapping data
@@ -507,6 +510,7 @@ void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
 
 void SppDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
 {
+#ifdef IDC_LIST_FILTERS
 	LPNMLISTVIEW change;
 	//BOOL checked;
 	HWND hFilterList;
@@ -536,6 +540,7 @@ void SppDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
 
 		break;
 	};
+#endif
 }
 
 void  SppDlg::AddLine2AudioList(jack_info * jack)
@@ -659,10 +664,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	{
 
 	case WM_NOTIFY:
+#ifdef IDC_LIST_FILTERS
 		if (((LPNMHDR)lParam)->idFrom  == IDC_LIST_FILTERS)
 		{
 			DialogObj->FilterListEvent(wParam, lParam);
 		}
+#endif
 
 		if (((LPNMHDR)lParam)->idFrom  == IDC_BTN_MAP)
 		{

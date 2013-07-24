@@ -15,7 +15,7 @@
 #define IDSELECT								115
 #define IDD_DIAG_VOL							117
 #define IDC_LIST1                               1001
-#define IDC_EDIT1	                            1002
+//#define IDC_EDIT1	                            1002
 #define IDC_RADIOBUTTON_L	                    1003
 #define IDC_RADIOBUTTON_R	                    1004
 #define IDC_LOGAUDIO							1005

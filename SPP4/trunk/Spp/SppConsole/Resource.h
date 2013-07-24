@@ -10,10 +10,15 @@
 #define IDD_SPPDIAG                             111
 #define IDI_SPPCONSOLE                          114
 #define IDD_LOGDLG                              117
+#define IDD_DIALOG1                             118
 #define IDC_CH_MONITOR                          1000
+#define IDC_COMBO1                              1000
 #define IDC_CHPP1                               1001
+#define IDC_EDIT1                               1001
 #define IDC_CHPP2                               1002
+#define IDC_CHECKBOX1                           1003
 #define IDC_CHPP3                               1003
+#define IDC_BUTTON1                             1004
 #define IDC_CHPP4                               1004
 #define IDC_CHPP5                               1005
 #define IDC_CHPP6                               1006
@@ -30,7 +35,6 @@
 #define IDC_TXT_CHPP8                           1018
 #define IDC_CH_PULSE                            1019
 #define IDC_AUD_8                               1020
-#define IDC_LIST_FILTERS                        1080
 #define IDC_CH_LOG                              1081
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
@@ -177,3 +181,7 @@
 #define IDC_RIGHT                               40132
 #define IDC_VJOY_DEVICE                         40134
 #define IDC_VJOY_AXES                           40135
+#define IDC_EDIT_FILTERFILE                     40140
+#define IDC_BTN_FILTERBROWSE                    40141
+#define IDC_COMBO_FILTERS                       40142
+#define IDC_CH_FILTER                           40143

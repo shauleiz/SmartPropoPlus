@@ -348,6 +348,9 @@ LRESULT CALLBACK MainWindowProc(
 			SelectFilter((int)wParam);
 			break;
 
+		case WMSPP_DLG_FDLL:
+			break;
+
 		case WMSPP_PRCS_GETSPR:
 			return Audio->GetnSamplesPerSec();
 
