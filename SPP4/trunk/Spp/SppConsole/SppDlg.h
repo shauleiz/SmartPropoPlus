@@ -27,9 +27,6 @@ public: // Called from window procedure
 	void ShowLogWindow(WORD cb);
 	void RecordInSignal(WORD cb);
 	void RecordPulse(WORD cb);
-	void FilterListEvent(WPARAM wParam, LPARAM lParam);
-	void AddLine2FilterListA(int iFilter, const char * FilterName);
-	void UpdateFilter(void);
 	void vJoyMapping(void);
 	void SetAxesMappingData(DWORD Map, UINT nAxes);
 	void AudioChannelParams(void);
@@ -38,6 +35,14 @@ public: // Called from window procedure
 	void vJoyDevSelect(UINT id);
 	void vJoyRemoveAll();
 	void vJoySelected(HWND hCb);
+
+	void FilterListEvent(WPARAM wParam, LPARAM lParam);
+	void AddLine2FilterListA(int iFilter, const char * FilterName);
+	void UpdateFilter(void);
+	void InitFilterDisplay(HWND);
+	void OnFilterFileBrowse(void);
+
+
 
 
 private:
@@ -58,3 +63,8 @@ private:
 	HWND	m_ConsoleWnd;
 };
 
+const COMDLG_FILTERSPEC c_rgSaveTypes[] =
+{
+    {L"Dynamic Libraries (*.dll)",       L"*.dll"},
+    {L"All Documents (*.*)",			 L"*.*"}
+};

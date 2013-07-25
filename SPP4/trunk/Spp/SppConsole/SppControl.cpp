@@ -37,6 +37,8 @@ void		CaptureDevicesPopulate(HWND hDlg);
 HINSTANCE	FilterPopulate(HWND hDlg);
 void		Acquire_vJoy();
 void		SelectFilter(int iFilter);
+LPVOID		SelectFilterFile(LPCTSTR FilterPath);
+DWORD		GetFilterFileVersion(LPTSTR FilterPath);
 void		LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
@@ -348,6 +350,9 @@ LRESULT CALLBACK MainWindowProc(
 			SelectFilter((int)wParam);
 			break;
 
+		case WMSPP_DLG_FLTRFILE:
+			return (LRESULT)SelectFilterFile((LPCTSTR)wParam);
+
 		case WMSPP_DLG_FDLL:
 			break;
 
@@ -531,6 +536,8 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 
 	// TODO: Recompile DLL without MFC
+
+
 	// Load the filter DLL file - If does not exist send message to GUI (Call it 4.0.0)
 	h = LoadLibraryEx(FILTERDLL_NAME, NULL, 0);
 	if (!h)
@@ -613,6 +620,38 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	return h;
 }
 
+// Get full path to filter file
+// Test the file validity
+// If valid:
+// 1. Write to config file
+// 3. Return the file name (Not path)
+LPVOID SelectFilterFile(LPCTSTR FilterPath)
+{
+
+	// Test if valid and get version
+	wchar_t * out = new TCHAR[MAX_PATH];
+	DWORD FilterVer = GetFilterFileVersion((LPTSTR)FilterPath);
+	if (FilterVer == -1)
+		return _wcsdup(TEXT("Illegal Filter File"));
+
+	// Convert version to string
+	wstring strVer = to_wstring((FilterVer>>24) & 0xFF) + L"." + to_wstring((FilterVer>>16) & 0xFF) + L"." + to_wstring((FilterVer>>8) & 0xFF) + L"." + to_wstring((FilterVer>>0) & 0xFF);
+
+	// Write to config file
+	Conf->FilterFile((LPTSTR)FilterPath, (LPTSTR)strVer.data());
+
+	// Extract file name
+	wchar_t * FileName = new TCHAR[MAX_PATH];
+	wchar_t * Ext = new TCHAR[MAX_PATH];
+	_tsplitpath_s((const wchar_t *)FilterPath, NULL, NULL, NULL, NULL, FileName, MAX_PATH, Ext, MAX_PATH);
+	wstring wout = wstring(FileName) + wstring(Ext);
+	delete FileName;
+	delete Ext;
+
+	out = _wcsdup(wout.data());
+	return (LPVOID)out;
+}
+
 void		SelectFilter(int iFilter)
 {
 	const int  (WINAPI * pSelectFilterByIndex)(const int iFilter);
@@ -640,7 +679,44 @@ void		SelectFilter(int iFilter)
 	Spp->SelectFilter(iFilter, (LPVOID)pProcessChannels);
 	LogMessage(INFO, IDS_I_FILTERSELOK);
 }
+DWORD		GetFilterFileVersion(LPTSTR FilterPath)
+{
+	HINSTANCE h;
+	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
+	LPFNDLLFUNC0 GetDllVersion;
+	//int				(CALLBACK *pGetNumberOfFilters)(void);
+	//const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
+	//const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
+	//const int		(CALLBACK *pSelectFilterByIndex)(const int iFilter);
+	//const int		(CALLBACK * pGetIndexOfSelectedFilter)(void);
 
+	// Load the filter DLL file - If does not exist send message to GUI (Call it 4.0.0)
+	h = LoadLibraryEx(FilterPath, NULL, 0);
+	if (!h)
+	{
+		DWORD err = GetLastError();
+		if (err==0xc1)
+			LogMessage(WARN, IDS_W_FILTERDLL, TEXT("x64/x86 DLL incompatibility"));
+		return -1;
+	}
+	else
+	{
+		LogMessage(INFO, IDS_I_FILTERDLL);
+	}
+
+	// Verify that the DLL version is not too old
+	GetDllVersion = (LPFNDLLFUNC0)GetProcAddress(h,"GetDllVersion");
+	if (!GetDllVersion)
+	{
+		LogMessage(ERR, IDS_E_FILTERDLLVER);
+		FreeLibrary(h);
+		return -1;
+	};
+
+	DWORD filter_ver = GetDllVersion();
+	FreeLibrary(h);
+	return filter_ver;
+}
 void	Acquire_vJoy()
 {
 	// vJoy Exists and Enabled

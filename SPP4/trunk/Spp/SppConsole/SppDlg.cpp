@@ -7,6 +7,7 @@
 #include "SmartPropoPlus.h"
 #include "Commctrl.h"
 #include "SppControl.h"
+#include "Shobjidl.h"
 #include "SppDlg.h"
 
 #define MAX_LOADSTRING 100
@@ -682,6 +683,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
+		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -739,6 +741,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (LOWORD(wParam)  == IDC_VJOY_DEVICE && HIWORD(wParam) == CBN_SELENDOK  )
 		{
 			DialogObj->vJoySelected((HWND)lParam);
+			break;
+		}
+
+		if (LOWORD(wParam)  == IDC_BTN_FILTERBROWSE && HIWORD(wParam) == BN_CLICKED )
+		{
+			DialogObj->OnFilterFileBrowse();
 			break;
 		}
 
@@ -808,3 +816,130 @@ HWND SppDlg::GetHandle(void)
 {
 	return m_hDlg;
 }
+
+
+// Initialize Filters section
+void SppDlg::InitFilterDisplay(HWND hDlg)
+{
+	// Get handles to the controls
+	HWND hFilterFile	= GetDlgItem(hDlg,  IDC_EDIT_FILTERFILE);
+	HWND hFilterCB		= GetDlgItem(hDlg,  IDC_CH_FILTER);
+	HWND hFilters		= GetDlgItem(hDlg,  IDC_COMBO_FILTERS);
+
+	// Clear Filter File, Unselect checkbox and gray-out Selected Filters
+	Edit_SetText(hFilterFile, TEXT("Select Filter File"));
+	Button_SetCheck(hFilterCB, BST_UNCHECKED);
+	ComboBox_Enable(hFilters, FALSE);
+}
+
+// Respond to Browse button
+// If file selected then sends message WMSPP_DLG_FLTRFILE with full path to selected file
+// CU tests file - if valid then file name (NOT full path) is displayed
+void SppDlg::OnFilterFileBrowse(void)
+{
+	OPENFILENAME ofn;       // common dialog box structure
+	TCHAR szFile[MAX_PATH];       // buffer for file name
+
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = m_hDlg;
+	ofn.lpstrFile = szFile;
+	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
+	// use the contents of szFile to initialize itself.
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = TEXT("DLL Files\0*.DLL\0All\0*.*\0");
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrTitle = TEXT("Open Filter File");
+
+	// Display the Open dialog box. 
+	BOOL ok = GetOpenFileName(&ofn);
+	if (!ok)
+		return;
+
+	// If file selected then send it to CU - wait to see results
+	// If FileName not NULL then use it to display
+	LRESULT info;
+	info = SendMessage(m_ConsoleWnd, WMSPP_DLG_FLTRFILE , (WPARAM)ofn.lpstrFile, 0);
+	if (!info)
+		return;
+
+	// Display File Name
+	HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
+	Edit_SetText(hFilterFile, (LPTSTR)info);
+	UpdateWindow(hFilterFile);
+	delete (LPTSTR)info;
+
+	//// Populate filter names
+	//HWND hFilters		= GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+	//UINT nFilters = ((filter_info *)info)->nFilters;
+	//SendMessage(hFilters,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
+	//for (UINT i=0; i<nFilters; i++)
+	//{
+	//	int index = (int)SendMessage(hFilters,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)((filter_info *)info)->FilterName[i] ); 
+	//	//SendMessage(hFilters,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)id ); 
+	//};
+	//if (nFilters)
+	//	ComboBox_Enable(hFilters, TRUE);
+	//UpdateWindow(hFilters);
+
+}
+
+#if 0
+// Respond to Browse button
+// Open a IFileOpenDialog to get full path of the filters DLL file
+// Based on http://msdn.microsoft.com/en-us/library/windows/desktop/bb776913(v=vs.85).aspx#api
+void SppDlg::OnFilterFileBrowse(void)
+{
+	// CoCreate the File Open Dialog object.
+    IFileDialog *pfd = NULL;
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+	if (FAILED(hr))
+		return;
+
+	// No Event handler at the moment
+	// Set the options on the dialog.
+	DWORD dwFlags;
+
+	// Before setting, always get the options first in order not to override existing options.
+	hr = pfd->GetOptions(&dwFlags);
+	if (FAILED(hr))
+		return;
+
+	// In this case, get shell items only for file system items.
+	hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM);
+	if (FAILED(hr))
+		return;
+
+	// Set the file types to display only. Notice that, this is a 1-based array.
+	hr = pfd->SetFileTypes(ARRAYSIZE(c_rgSaveTypes), c_rgSaveTypes);
+	if (FAILED(hr))
+		return;
+
+	// Set the selected file type index to dll.
+	hr = pfd->SetFileTypeIndex(1);
+	if (FAILED(hr))
+		return;
+
+	// Set the default extension to be ".dll" file.
+	hr = pfd->SetDefaultExtension(L"dll");
+	if (FAILED(hr))
+		return;
+
+	IKnownFolderManager *pkfm = NULL;
+	IKnownFolder * ppkf = NULL;
+	hr = CoCreateInstance(CLSID_KnownFolderManager, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pkfm));
+	hr = pkfm->GetFolderByName(L".", &ppkf);
+
+	// Show the dialog
+	hr = pfd->Show(NULL);
+	if (FAILED(hr))
+		return;
+
+}
+#endif
