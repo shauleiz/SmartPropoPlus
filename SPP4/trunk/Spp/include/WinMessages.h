@@ -33,7 +33,7 @@ UINT const WMSPP_DLG_MOD	=			BASE_SUB+8;				// The payload is a pointer to the i
 UINT const WMSPP_DLG_MONITOR=			BASE_SUB+9;				// The payload is boolean Start/Stop monitoring raw channel
 UINT const FILTER_DLL		=			BASE_SUB+10;			// The payload is boolean: Filter DLL exists/absent
 UINT const FILTER_VER		=			BASE_SUB+11;			// The payload is boolean + version: If false version is too low. 
-UINT const FILTER_NUM		=			BASE_SUB+12;			// The payload is the number of filters in the filter DLL 
+UINT const FILTER_NUM		=			BASE_SUB+12;			// The payload is the number of filters in the filter DLL & Filter short file name
 UINT const FILTER_ADDA		=			BASE_SUB+13;			// The payload is: Filter Index and Pointer to filter name (ASCII)
 UINT const FILTER_ADDW		=			BASE_SUB+13;			// The payload is: Filter Index and Pointer to filter name (WCHAR)
 UINT const WMSPP_DLG_FILTER	=			BASE_SUB+14;			// The payload is: Filter Index of the selected filter (if none then -1)
@@ -56,9 +56,10 @@ UINT const VJOYDEV_REMALL	=			BASE_SUB+30;			// Remove all vJoy devices from GUI
 UINT const VJOYDEV_ADD		=			BASE_SUB+31;			// Add vJoy device to GUI: The payload in WPARAMS = id, in LPARAMS = selected
 UINT const VJOYDEV_SETSEL	=			BASE_SUB+32;			// Set vJoy device in GUI as selected
 UINT const WMSPP_DLG_VJOYSEL=			BASE_SUB+33;			// vJoy device selected. WPARAMS = id
-UINT const WMSPP_VJOY_MISS =			BASE_SUB+34;			// vJoy device is missing . WPARAMS = id
-UINT const WMSPP_DLG_FDLL  =			BASE_SUB+35;			// Set/Remove Filter DLL file
+UINT const WMSPP_VJOY_MISS	=			BASE_SUB+34;			// vJoy device is missing . WPARAMS = id
+UINT const WMSPP_DLG_FDLL	=			BASE_SUB+35;			// Set/Remove Filter DLL file
 UINT const WMSPP_DLG_FLTRFILE =			BASE_SUB+36;			// Set Filter DLL file name (Full Path)
+UINT const FILTER_SELCTED	=			BASE_SUB+37;			// Set selected filter (By Filter ID)
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

@@ -777,7 +777,7 @@ bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select)
 	return AddFilter(Id, (LPTSTR)wstr.data(), select);
 }
 
-bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select) // TODO: Add ascii version
+bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select) 
 {
 	// Get the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -803,6 +803,7 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select) // TODO: Add ascii
 	// Set filter's Name
 	wstring wstr_Name = (wstring(Name));
 	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , wstr_Name , true);
+	m_doc.SaveFile();
 	return true;
 }
 

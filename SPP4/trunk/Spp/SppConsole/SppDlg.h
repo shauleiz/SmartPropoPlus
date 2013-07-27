@@ -36,11 +36,13 @@ public: // Called from window procedure
 	void vJoyRemoveAll();
 	void vJoySelected(HWND hCb);
 
-	void FilterListEvent(WPARAM wParam, LPARAM lParam);
+	//void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void UpdateFilter(void);
 	void InitFilterDisplay(HWND);
 	void OnFilterFileBrowse(void);
+	void InitFilter(int nFilters, LPTSTR FilterName);
+	void SelFilter(int FilterId);
 
 
 

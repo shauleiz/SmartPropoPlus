@@ -219,6 +219,50 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
+// Set the selected filter to be displayed in the filter Combo Box
+void SppDlg::SelFilter(int FilterId)
+{
+	// Get the index of the filter (By ID)
+	int i=0, data;
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+	while ((data = ComboBox_GetItemData(hCombo, i)) != CB_ERR)
+	{
+		if (data == FilterId)
+		{
+			int res = ComboBox_SetCurSel(hCombo, i);
+			SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)FilterId, 0);
+			break;
+		};
+		i++;
+	};
+}
+
+void SppDlg::InitFilter(int nFilters, LPTSTR FilterName)
+{
+
+	// Clear Filter display
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+	SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
+
+	// If there are filters then prepare data for selection
+	if (nFilters)
+	{
+		// Bring "-- Select Filter --" to top
+		ComboBox_SetText(hCombo, TEXT("-- Select Filter --"));
+
+		// Display File name
+		HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
+		Edit_SetText(hFilterFile, FilterName);
+		UpdateWindow(hFilterFile);
+	}
+	else
+	{
+		ComboBox_Enable(hCombo, FALSE);
+		HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
+		Button_SetCheck(hFilterCB, BST_UNCHECKED);
+	};
+}
+
 void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 {
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
@@ -232,7 +276,7 @@ void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 	mbstowcs_s(&convertedChars, FilterNameW, origsize, FilterName, _TRUNCATE); // Filter names are converted from ASCII to UNICODE
 
 	int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterNameW ); 
-	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)0 ); 
+	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
 }
 
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
@@ -445,29 +489,22 @@ void SppDlg::CfgJoyMonitor(HWND hDlg)
 // Get selected filter fro GUI (if any) and send its filter index to parent window
 void SppDlg::UpdateFilter(void)
 {
-	// Loop on all entries in filter list
-	// Find the first checked entry (Assumption: Only one entry at most can be checked)
-	// Send filter index  (-1 means no filter) parent
-#ifdef IDC_LIST_FILTERS
-	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
-	int count = ListView_GetItemCount(hFilterList);
-	int iFilter = -1;
-	LVITEM item;
-
-	for (int i = 0; i<count; i++)
+	// Send the ID (in data) of the selected item to the parent window
+	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+	int FilterId; 
+	int iCurSel = ComboBox_GetCurSel(hFilterList);
+	if (iCurSel==CB_ERR)
 	{
-		if (ListView_GetCheckState(hFilterList, i))
-		{
-			item.iItem = i;
-			item.iSubItem = 0;
-			item.mask = LVIF_PARAM;
-			if (ListView_GetItem(hFilterList,&item))
-				iFilter = (int)item.lParam;
-		}; // if
-	}; // for
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)-1, 0);
+		return;
+	}
 
-	SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)iFilter, 0);
-#endif
+	FilterId = ComboBox_GetItemData (hFilterList, iCurSel);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)FilterId, 0);
+
+	// Checks the checkbox
+	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
+	Button_SetCheck(hFilterCB, BST_CHECKED);
 }
 
 // Fill-in the actual mapping data
@@ -491,40 +528,6 @@ void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
 
 }
 
-void SppDlg::FilterListEvent(WPARAM wParam, LPARAM lParam)
-{
-#ifdef IDC_LIST_FILTERS
-	LPNMLISTVIEW change;
-	//BOOL checked;
-	HWND hFilterList;
-	// int count;
-	UINT ItemState = 0;
-
-	switch (((LPNMHDR)lParam)->code)
-	{
-	case LVN_ITEMCHANGED:
-		hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
-		change = (LPNMLISTVIEW)lParam;
-		//count = ListView_GetItemCount(hFilterList);
-
-		// If checkbox was clicked then change the select state accordingly
-		if (change->uNewState&0x1000 && change->uOldState&0x2000)
-				ListView_SetItemState(hFilterList, change->iItem, 0, LVIS_SELECTED | LVIS_FOCUSED)
-		else if (change->uNewState&0x2000 && change->uOldState&0x1000)
-			ListView_SetItemState(hFilterList, change->iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-
-		// The selected item only is checked
-		if (change->uNewState&LVIS_SELECTED)
-				ListView_SetCheckState(hFilterList, change->iItem, TRUE)
-		else if (!(change->uNewState & (LVIS_SELECTED | 0x2000)))
-				ListView_SetCheckState(hFilterList, change->iItem, FALSE);
-
-		UpdateFilter();
-
-		break;
-	};
-#endif
-}
 
 void  SppDlg::AddLine2AudioList(jack_info * jack)
 {
@@ -647,12 +650,6 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	{
 
 	case WM_NOTIFY:
-#ifdef IDC_LIST_FILTERS
-		if (((LPNMHDR)lParam)->idFrom  == IDC_LIST_FILTERS)
-		{
-			DialogObj->FilterListEvent(wParam, lParam);
-		}
-#endif
 
 		if (((LPNMHDR)lParam)->idFrom  == IDC_BTN_MAP)
 		{
@@ -732,6 +729,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
+		if  (LOWORD(wParam)  == IDC_COMBO_FILTERS && HIWORD(wParam) == CBN_SELENDOK   )
+		{
+			DialogObj->UpdateFilter();
+			break;
+		}
+
 		break; // No match for WM_COMMAND
 
 
@@ -762,6 +765,15 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case FILTER_ADDA:
 		DialogObj->AddLine2FilterListA((int)wParam, (const char *)lParam);
 		break;
+
+	case FILTER_NUM:
+		DialogObj->InitFilter((int)wParam, (LPTSTR)lParam);
+		break;
+
+	case FILTER_SELCTED:
+		DialogObj->SelFilter((int)wParam);
+		break;
+
 
 	case WMSPP_JMON_AXIS:
 		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
