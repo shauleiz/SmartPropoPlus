@@ -4,7 +4,12 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#ifdef RC_INVOKED
+#ifndef _INC_WINDOWS
+#define _INC_WINDOWS
 #include <richedit.h>
+#endif
+#endif
 #include "resource.h"
 
 

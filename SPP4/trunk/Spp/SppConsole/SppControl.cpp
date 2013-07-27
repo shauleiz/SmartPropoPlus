@@ -556,6 +556,16 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		SendMessage(hDlg, FILTER_DLL, true, 0);
 	}
 
+	// Prepare file name to send to GUI
+	wchar_t * ShortName = new TCHAR[MAX_PATH];
+	wchar_t * Ext = new TCHAR[MAX_PATH];
+	wchar_t * out = new TCHAR[MAX_PATH];
+	_tsplitpath_s((const wchar_t *)FileName, NULL, NULL, NULL, NULL, ShortName, MAX_PATH, Ext, MAX_PATH);
+	_stprintf_s(out, MAX_PATH, TEXT("%s%s"), ShortName, Ext);
+	delete ShortName;
+	delete Ext;
+
+
 	// Assign global handle to Filters' DLL
 	hDllFilters = h;
 
@@ -591,7 +601,11 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		hDllFilters = NULL;
 		return NULL;
 	};
-	SendMessage(hDlg, FILTER_NUM, nFilters, 0);
+	SendMessage(hDlg, FILTER_NUM, nFilters, (LPARAM)out);
+	delete out;
+
+	// Get selected filter
+	UINT idSel = Conf->GetSelectedFilter();
 
 	// Get interface functions
 	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
@@ -608,19 +622,9 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		FilterId = pGetFilterIdByIndex(iFilter);
 		Conf->AddFilter(FilterId, FilterName);
 		SendMessage(hDlg, FILTER_ADDA, FilterId, (LPARAM)FilterName);
+		if (FilterId == idSel)
+			SendMessage(hDlg, FILTER_SELCTED, FilterId, 0);
 	};
-
-	// 
-
-	// Update global memory block
-	//SetNumberOfFilters(nFilters);
-		
-	/* Get Selected filter from DLL */
-	//int sel = -1;
-	//if (pGetIndexOfSelectedFilter)
-	//	sel = pGetIndexOfSelectedFilter();
-	//if (sel >= 0)
-	//	SetSelectedFilterIndex(sel);
 	
 	LogMessage(INFO, IDS_I_FILTERDLLOK);
 	return h;
@@ -660,33 +664,66 @@ LPVOID SelectFilterFile(LPCTSTR FilterPath)
 return (LPVOID)out;
 }
 
-void		SelectFilter(int iFilter)
+void		SelectFilter(int FilterId)
 {
-	const int  (WINAPI * pSelectFilterByIndex)(const int iFilter);
-	PJS_CHANNELS (WINAPI * pProcessChannels)(PJS_CHANNELS, int max, int min);
-
+	// Verify that DLL file is loaded
 	if (!hDllFilters)
 	{
 		LogMessage(WARN, IDS_W_FILTERSELFAIL);
 		return;
 	}
 
-	// Update the DLL which is the selected filter
+	// Get Procedure Addresses from DLL
+	const int		(WINAPI * pSelectFilterByIndex)(const int iFilter);
+	PJS_CHANNELS	(WINAPI * pProcessChannels)(PJS_CHANNELS, int max, int min);
+	int				(CALLBACK *pGetNumberOfFilters)(void);
+	const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
+	const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
+	pGetNumberOfFilters = (int  (CALLBACK *)(void))GetProcAddress(hDllFilters,"GetNumberOfFilters");
+	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (WINAPI *)(const int iFilter))GetProcAddress(hDllFilters,"SelectFilterByIndex");
+	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
+	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(hDllFilters,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
+
+
+	int nFilters;
+	if (pGetNumberOfFilters)
+		nFilters  = pGetNumberOfFilters();
+	else
+		return;
+
+	// Get the filter index by filter ID
+	int iSel=-1;
+	for (int iFilter=0; iFilter<nFilters ; iFilter++)
+	{
+		if (FilterId == pGetFilterIdByIndex(iFilter))
+		{
+			iSel=iFilter;
+			break;
+		};
+	};
+	if (iSel<0)
+		return;
+
+	// Update the DLL which is the selected filter
 	if (pSelectFilterByIndex)
-		pSelectFilterByIndex(iFilter);
+		pSelectFilterByIndex(iSel);
 	else
 	{
 		LogMessage(ERR, IDS_E_FILTERSELFAIL);
 		return;
 	};
 
-	// Get the pointer to the filter function
-	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
+	// Mark selected filter in config file as selected
+	const char * Name = pGetFilterNameByIndexA(iSel);
+	Conf->AddFilter(FilterId, Name, true);
 
-	Spp->SelectFilter(iFilter, (LPVOID)pProcessChannels);
+
+	// Get the pointer to the filter function
+	Spp->SelectFilter(iSel, (LPVOID)pProcessChannels);
 	LogMessage(INFO, IDS_I_FILTERSELOK);
 }
+
 DWORD		GetFilterFileVersion(LPTSTR FilterPath)
 {
 	HINSTANCE h;
