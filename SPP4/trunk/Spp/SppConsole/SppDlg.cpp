@@ -219,16 +219,11 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
-void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
+void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 {
-#ifdef IDC_LIST_FILTERS
-	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_LIST_FILTERS);
-	//int pos = (int)SendMessage(hFilterList, LB_ADDSTRING, 0, (LPARAM)FilterName);
-	//SendMessage(hFilterList, LB_SETITEMDATA, pos, (LPARAM) iFilter);
+	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
 
-	DWORD exStyles = LVS_EX_CHECKBOXES;
-	ListView_SetExtendedListViewStyleEx(hFilterList, exStyles, exStyles); // TODO: Move to initialization of dialog box
-
+	ComboBox_Enable(hFilterList, TRUE);
 	// Convert to a wchar_t*
     size_t origsize = strlen(FilterName) + 1;
     const size_t newsize = 100;
@@ -236,21 +231,8 @@ void SppDlg::AddLine2FilterListA(int iFilter, const char * FilterName)
     wchar_t FilterNameW[newsize];
 	mbstowcs_s(&convertedChars, FilterNameW, origsize, FilterName, _TRUNCATE); // Filter names are converted from ASCII to UNICODE
 
-	// Insert filter name
-	LV_ITEM item;
-	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE | LVIF_PARAM;
-	item.iItem = 0;
-	item.iSubItem = 0;
-	item.pszText =  FilterNameW;
-    item.stateMask = 0;
-    item.iSubItem  = 0;
-    item.state     = 0;
-	item.lParam    = iFilter;
-	int pos = ListView_InsertItem(hFilterList, &item);
-	///
-
-	//ListView_SetItemText(hFilterList, i, 1, TEXT("SI")); // TODO: Replace later with real stuff
-#endif
+	int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterNameW ); 
+	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)0 ); 
 }
 
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
@@ -873,21 +855,7 @@ void SppDlg::OnFilterFileBrowse(void)
 	HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
 	Edit_SetText(hFilterFile, (LPTSTR)info);
 	UpdateWindow(hFilterFile);
-	delete (LPTSTR)info;
-
-	//// Populate filter names
-	//HWND hFilters		= GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
-	//UINT nFilters = ((filter_info *)info)->nFilters;
-	//SendMessage(hFilters,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
-	//for (UINT i=0; i<nFilters; i++)
-	//{
-	//	int index = (int)SendMessage(hFilters,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)((filter_info *)info)->FilterName[i] ); 
-	//	//SendMessage(hFilters,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)id ); 
-	//};
-	//if (nFilters)
-	//	ComboBox_Enable(hFilters, TRUE);
-	//UpdateWindow(hFilters);
-
+	delete[] (LPVOID)info;
 }
 
 #if 0

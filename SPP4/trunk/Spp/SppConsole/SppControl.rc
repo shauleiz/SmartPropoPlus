@@ -4,12 +4,7 @@
 
 #include <windows.h>
 #include <commctrl.h>
-#ifdef RC_INVOKED
-#ifndef _INC_WINDOWS
-#define _INC_WINDOWS
 #include <richedit.h>
-#endif
-#endif
 #include "resource.h"
 
 
@@ -178,7 +173,7 @@ FONT 8, "Ms Shell Dlg"
     GROUPBOX        "Filters", IDC_STATIC, 288, 5, 106, 92
     EDITTEXT        IDC_EDIT_FILTERFILE, 294, 40, 75, 14, ES_AUTOHSCROLL
     PUSHBUTTON      "...", IDC_BTN_FILTERBROWSE, 374, 40, 15, 14
-    COMBOBOX        IDC_COMBO_FILTERS, 294, 74, 75, 19, CBS_DROPDOWN | CBS_HASSTRINGS
+    COMBOBOX        IDC_COMBO_FILTERS, 294, 74, 75, 59, WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS
     AUTOCHECKBOX    "", IDC_CH_FILTER, 374, 70, 15, 19
 }
 
