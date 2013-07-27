@@ -747,7 +747,37 @@ bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 	return true;
 }
 
-bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
+wstring CSppConfig::FilterFile(void)
+{	
+	string Value = "";
+	TiXmlHandle FilterFileHandle = GetFilterFileHandle();
+	TiXmlText * Text = FilterFileHandle.ToText();
+	if (Text)
+		Value =  Text->ValueStr();
+	return utf8_decode(Value);
+}
+
+TiXmlHandle CSppConfig::GetFilterFileHandle(void)
+{
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return  TiXmlHandle(0);
+	TiXmlHandle RootHandle( root );
+
+	// Get Section 'Filters'
+	TiXmlHandle FilterDll = RootHandle.FirstChild( SPP_FILTERS ).FirstChildElement(SPP_DLLNAME).FirstChild();
+	return FilterDll;
+}
+bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select) 
+{
+	string str(Name);
+	wstring wstr = utf8_decode(str);
+	return AddFilter(Id, (LPTSTR)wstr.data(), select);
+}
+
+bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select) // TODO: Add ascii version
 {
 	// Get the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);

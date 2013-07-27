@@ -30,6 +30,7 @@ HINSTANCE g_hInstance = 0;
 HWND hLog;
 bool Monitor = true;
 int vJoyDevice = 1;
+bool reqPopulateFilter = false;
 
 
 // Declarations
@@ -537,9 +538,12 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 	// TODO: Recompile DLL without MFC
 
+	// Get filter file name from config file
+	wstring wsFileName(Conf->FilterFile());
+	LPCTSTR FileName = wsFileName.data();
 
 	// Load the filter DLL file - If does not exist send message to GUI (Call it 4.0.0)
-	h = LoadLibraryEx(FILTERDLL_NAME, NULL, 0);
+	h = LoadLibraryEx(FileName, NULL, 0);
 	if (!h)
 	{
 		LogMessage(WARN, IDS_W_FILTERDLL);
@@ -595,13 +599,15 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	pSelectFilterByIndex = (const int  (CALLBACK *)(const int iFilter))GetProcAddress(h,"SelectFilterByIndex");
 	pGetIndexOfSelectedFilter = (const int  (CALLBACK *)(void))GetProcAddress(h,"GetIndexOfSelectedFilter");
 
-	// For every filter send data to GUI
+	// For every filter send data to GUI and to config file
 	const char * FilterName;
 	int FilterId = -1;
 	for (int iFilter=0; iFilter<nFilters ; iFilter++)
 	{
 		FilterName = pGetFilterNameByIndexA(iFilter);
-		SendMessage(hDlg, FILTER_ADDA, iFilter, (LPARAM)FilterName);
+		FilterId = pGetFilterIdByIndex(iFilter);
+		Conf->AddFilter(FilterId, FilterName);
+		SendMessage(hDlg, FILTER_ADDA, FilterId, (LPARAM)FilterName);
 	};
 
 	// 
@@ -624,7 +630,8 @@ HINSTANCE FilterPopulate(HWND hDlg)
 // Test the file validity
 // If valid:
 // 1. Write to config file
-// 3. Return the file name (Not path)
+// 2. Return the file name (Not path)
+// 3. Request thread thMonitor to populate list of filters
 LPVOID SelectFilterFile(LPCTSTR FilterPath)
 {
 
@@ -644,12 +651,13 @@ LPVOID SelectFilterFile(LPCTSTR FilterPath)
 	wchar_t * FileName = new TCHAR[MAX_PATH];
 	wchar_t * Ext = new TCHAR[MAX_PATH];
 	_tsplitpath_s((const wchar_t *)FilterPath, NULL, NULL, NULL, NULL, FileName, MAX_PATH, Ext, MAX_PATH);
-	wstring wout = wstring(FileName) + wstring(Ext);
+	_stprintf_s(out, MAX_PATH, TEXT("%s%s"), FileName, Ext);
 	delete FileName;
 	delete Ext;
 
-	out = _wcsdup(wout.data());
-	return (LPVOID)out;
+	reqPopulateFilter = true;
+
+return (LPVOID)out;
 }
 
 void		SelectFilter(int iFilter)
@@ -853,6 +861,13 @@ void thMonitor(bool * KeepAlive)
 	{
 
 		sleep_for( 100 );// Sleep for 100 milliseconds
+
+		// Test if need to populate filter
+		if (reqPopulateFilter)
+		{
+			FilterPopulate(hDialog);
+			reqPopulateFilter=false;
+		};
 
 		// Test state of vJoy device - only for legal vJoy device Id
 		if (vJoyDevice)

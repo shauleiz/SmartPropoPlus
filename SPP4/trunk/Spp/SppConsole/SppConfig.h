@@ -85,8 +85,11 @@ public:
 	// Filters
 	bool			FilterFile(LPTSTR FilePath, LPTSTR Version);
 	bool			AddFilter(UINT Id, LPTSTR Name, bool select=false);
+	bool			AddFilter(UINT Id, const char * Name, bool select=false);
+
 	UINT			GetSelectedFilter(void);
 	wstring			GetSelectedFilterName(void);
+	wstring			FilterFile(void);
 
 	// General
 	int			MonitorChannels();
@@ -110,6 +113,7 @@ private:
 	wstring			GetCurrentAudio(void);
 	TiXmlHandle		GetFilterHandle(LPTSTR Id);
 	wstring			GetFilterName(LPTSTR Id);
+	TiXmlHandle		GetFilterFileHandle(void);
 
 private:
 	TiXmlDocument m_doc;
