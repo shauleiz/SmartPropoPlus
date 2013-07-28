@@ -772,6 +772,10 @@ TiXmlHandle CSppConfig::GetFilterFileHandle(void)
 }
 bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select) 
 {
+	// This means remove selection
+	if ((int)Id == -1)
+		return AddFilter(Id, (LPTSTR)"", select);
+
 	string str(Name);
 	wstring wstr = utf8_decode(str);
 	return AddFilter(Id, (LPTSTR)wstr.data(), select);
@@ -792,7 +796,17 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 
 	// Set 'select' attribute (if needed)
 	if (select)
+	{
+		if ((int)Id == -1)
+		{
+			Filters->RemoveAttribute(SPP_SELECT);
+			m_doc.SaveFile();
+			return true;
+		}
+		else
 			Filters->SetAttribute(SPP_SELECT, Id);
+	}
+
 
 	// Create/Replace 'filter' element (By Id)
 	TiXmlHandle FiltersHandle( Filters );

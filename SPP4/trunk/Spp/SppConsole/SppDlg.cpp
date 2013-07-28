@@ -219,18 +219,35 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
+void SppDlg::EnableFilter(BOOL cb)
+{
+	// Get check state
+	HWND hCB = GetDlgItem(m_hDlg,  cb);
+	int Enable = Button_GetCheck(hCB);
+
+	// If checked then this is equivalent to selecting the current selected
+	// If Un-Checked then send -1 as selected filter
+	if (Enable)
+		UpdateFilter();
+	else
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)-1, 0);
+}
+
 // Set the selected filter to be displayed in the filter Combo Box
 void SppDlg::SelFilter(int FilterId)
 {
 	// Get the index of the filter (By ID)
 	int i=0, data;
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
 	while ((data = ComboBox_GetItemData(hCombo, i)) != CB_ERR)
 	{
 		if (data == FilterId)
 		{
+			// Select
 			int res = ComboBox_SetCurSel(hCombo, i);
-			SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)FilterId, 0);
+			// Checks the checkbox
+			Button_SetCheck(hFilterCB, BST_CHECKED);
 			break;
 		};
 		i++;
@@ -734,6 +751,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			DialogObj->UpdateFilter();
 			break;
 		}
+
+		if (LOWORD(wParam) == IDC_CH_FILTER)
+		{
+			DialogObj->EnableFilter(LOWORD(wParam));
+			break;
+		};
 
 		break; // No match for WM_COMMAND
 

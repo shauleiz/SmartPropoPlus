@@ -97,7 +97,10 @@ SPPMAIN_API void CSppProcess::SelectFilter(int iFilter, LPVOID pProcessChannels)
 	m_JsChPostProc_selected = iFilter;
 
 	if (m_JsChPostProc_selected == -1)
+	{
 		ProcessChannels = NULL;
+		return;
+	};
 
 	ProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))pProcessChannels;
 	LogMessage(INFO, IDS_I_FILTERSELOK);

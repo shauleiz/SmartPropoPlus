@@ -623,7 +623,10 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		Conf->AddFilter(FilterId, FilterName);
 		SendMessage(hDlg, FILTER_ADDA, FilterId, (LPARAM)FilterName);
 		if (FilterId == idSel)
+		{
 			SendMessage(hDlg, FILTER_SELCTED, FilterId, 0);
+			SelectFilter(FilterId);
+		}
 	};
 	
 	LogMessage(INFO, IDS_I_FILTERDLLOK);
@@ -702,8 +705,6 @@ void		SelectFilter(int FilterId)
 			break;
 		};
 	};
-	if (iSel<0)
-		return;
 
 	// Update the DLL which is the selected filter
 	if (pSelectFilterByIndex)
@@ -717,7 +718,6 @@ void		SelectFilter(int FilterId)
 	// Mark selected filter in config file as selected
 	const char * Name = pGetFilterNameByIndexA(iSel);
 	Conf->AddFilter(FilterId, Name, true);
-
 
 	// Get the pointer to the filter function
 	Spp->SelectFilter(iSel, (LPVOID)pProcessChannels);
