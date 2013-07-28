@@ -43,6 +43,7 @@ public: // Called from window procedure
 	void OnFilterFileBrowse(void);
 	void InitFilter(int nFilters, LPTSTR FilterName);
 	void SelFilter(int FilterId);
+	void EnableFilter(BOOL enable);
 
 
 
