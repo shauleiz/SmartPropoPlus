@@ -29,6 +29,7 @@ public: // Called from window procedure
 	void RecordPulse(WORD cb);
 	void vJoyMapping(void);
 	void SetAxesMappingData(DWORD Map, UINT nAxes);
+	void InitButtonMap(HWND);
 	void AudioChannelParams(void);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
 	void vJoyDevAdd(UINT id);

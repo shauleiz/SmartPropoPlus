@@ -770,6 +770,7 @@ TiXmlHandle CSppConfig::GetFilterFileHandle(void)
 	TiXmlHandle FilterDll = RootHandle.FirstChild( SPP_FILTERS ).FirstChildElement(SPP_DLLNAME).FirstChild();
 	return FilterDll;
 }
+
 bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select) 
 {
 	// This means remove selection

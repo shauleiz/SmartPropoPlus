@@ -1960,7 +1960,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	}
 
 	for (k=0; k<n_ch-i;k++)
-		writeOk =  SetBtn(ch[i+k]>511, rID,k+1); // Replace 511 with some constant definition
+		writeOk =  SetBtn(ch[i+k]>511, rID,k+1); // TODO: Replace 511 with some constant definition
 }
 
 // Change the mapping scheme

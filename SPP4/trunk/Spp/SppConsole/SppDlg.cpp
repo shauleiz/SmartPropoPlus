@@ -173,7 +173,7 @@ void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 	
 	id = iDev;
 	HWND hFrame = GetDlgItem(m_hDlg,  IDC_VJOY_AXES);
-	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axes data";
+	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axis data";
 
 	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
 
@@ -524,6 +524,49 @@ void SppDlg::UpdateFilter(void)
 	Button_SetCheck(hFilterCB, BST_CHECKED);
 }
 
+// Initialize Button mapping section of the GUI
+void SppDlg::InitButtonMap(HWND hDlg)
+{    
+    LVCOLUMN lvc;
+
+	// Populate the first 32 buttons - later the namber might change
+	HWND hButtonMap		= GetDlgItem(hDlg,  IDC_LIST_MAPBTN);
+	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+	// Button Column
+	lvc.iSubItem = 0;
+	lvc.pszText = L"Btn.";
+	lvc.cx = 40;               // Width of column in pixels.
+	lvc.fmt = LVCFMT_LEFT;  // Left-aligned column
+	ListView_InsertColumn(hButtonMap, 0, &lvc);
+
+	// Channel Column
+	lvc.iSubItem = 1;
+	lvc.pszText = L"Ch.";
+	lvc.cx = 60;               // Width of column in pixels.
+	lvc.fmt = LVCFMT_CENTER;  // Centre-aligned column
+	ListView_InsertColumn(hButtonMap, 1, &lvc);
+
+	
+	wstring BtnNumber;
+	LVITEM info;
+	info.mask = LVIF_TEXT;
+	for(int i=0; i<32; i++)
+	{
+		// Insert Buttons
+		info.iSubItem = 0;
+		BtnNumber = to_wstring(i+1);
+		info.iItem = i;
+		info.pszText = (LPWSTR)BtnNumber.data();
+		ListView_InsertItem(hButtonMap, &info);
+
+		// Insert Channels
+		BtnNumber = to_wstring(i+9);
+		ListView_SetItemText(hButtonMap, i, 1, (LPWSTR)BtnNumber.data());
+	};
+	UpdateWindow(hButtonMap);
+}
+
 // Fill-in the actual mapping data
 void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
 {
@@ -680,6 +723,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj = (SppDlg *)lParam;
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
+		DialogObj->InitButtonMap(hDlg); // Initialize Button mapping section of the GUI
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
