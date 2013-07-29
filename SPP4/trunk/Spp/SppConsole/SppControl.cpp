@@ -390,7 +390,7 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_MAP:
 			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam, Conf->SelectedvJoyDevice());
-			Conf->MapAxis(Conf->SelectedvJoyDevice(), Map); // vJoy Device 1 (TODO: Make it configurable)
+			Conf->MapAxis(Conf->SelectedvJoyDevice(), Map);
 			SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
 			break;
 
@@ -537,6 +537,8 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 
 	// TODO: Recompile DLL without MFC
+
+	// TODO: Release former library
 
 	// Get filter file name from config file
 	wstring wsFileName(Conf->FilterFile());
