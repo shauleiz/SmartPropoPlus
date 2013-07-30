@@ -4,11 +4,13 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#ifdef RC_INVOKED
+#ifndef _INC_WINDOWS
+#define _INC_WINDOWS
 #include <richedit.h>
+#endif
+#endif
 #include "resource.h"
-
-
-
 
 //
 // Menu resources
@@ -170,7 +172,7 @@ FONT 8, "Ms Shell Dlg"
     GROUPBOX        "Bit Rate", IDC_STATIC, 237, 345, 44, 75
     GROUPBOX        "Audio source Channel", IDC_STATIC, 290, 345, 92, 75
     COMBOBOX        IDC_VJOY_DEVICE, 173, 18, 69, 86, WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS
-    GROUPBOX        "FilterS", IDC_STATIC, 288, 5, 106, 92
+    GROUPBOX        "Filters", IDC_STATIC, 288, 5, 106, 92
     EDITTEXT        IDC_EDIT_FILTERFILE, 294, 40, 75, 14, ES_AUTOHSCROLL
     PUSHBUTTON      "...", IDC_BTN_FILTERBROWSE, 374, 40, 15, 14
     COMBOBOX        IDC_COMBO_FILTERS, 294, 74, 75, 59, WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS

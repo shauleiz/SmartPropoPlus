@@ -233,7 +233,7 @@ void SetCurrentMixerDevice(LPCWSTR MixerName);
 void SetCurrentEndpointDevice(LPCWSTR MixerName);
 void SwitchMixerRequest(LPCWSTR MixerName);
 void SwitchMixerAck(LPWSTR MixerName);
-void SetSwitchMixerRequestStat(enum SharedDataBlock::MDSTAT Stat);
+//void SetSwitchMixerRequestStat(enum SharedDataBlock::MDSTAT Stat);
 void SetCurrentInputLine(LPCWSTR MixerName, unsigned int SrcID);
 far void * CreateDataBlock(struct Modulations * data);
 int isVista(void);
