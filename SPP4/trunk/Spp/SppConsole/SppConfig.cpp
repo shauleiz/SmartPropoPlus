@@ -4,7 +4,6 @@
 #include "Shlobj.h"
 #include "../SppProcess/SppProcess.h"
 
-
 //CSppConfig::CSppConfig(void)
 //{
 //	CSppConfig(DEF_CONF_FILE);
