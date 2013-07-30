@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
 #include "WinMessages.h"
 #include "Commctrl.h"
@@ -35,9 +34,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 	m_ConsoleWnd = ConsoleWnd;
 
 	// Create the dialog box (Hidden) 
-	LPWSTR ddd = MAKEINTRESOURCE(IDD_SPPDIAG);
-	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, ddd, NULL, MsgHndlDlg, (LPARAM)this);	
-	DWORD err =  GetLastError();
+	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg, (LPARAM)this);	
 
 	// Add icon to system tray
 	m_tnid.cbSize = 0;
@@ -243,7 +240,7 @@ void SppDlg::SelFilter(int FilterId)
 	int i=0, data;
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
 	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
-	while ((data = ComboBox_GetItemData(hCombo, i)) != CB_ERR)
+	while ((data = (int)ComboBox_GetItemData(hCombo, i)) != CB_ERR)
 	{
 		if (data == FilterId)
 		{
@@ -519,7 +516,7 @@ void SppDlg::UpdateFilter(void)
 		return;
 	}
 
-	FilterId = ComboBox_GetItemData (hFilterList, iCurSel);
+	FilterId = (int)ComboBox_GetItemData (hFilterList, iCurSel);
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)FilterId, 0);
 
 	// Checks the checkbox
