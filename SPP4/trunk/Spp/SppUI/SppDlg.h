@@ -36,6 +36,7 @@ public: // Called from window procedure
 	void vJoyDevSelect(UINT id);
 	void vJoyRemoveAll();
 	void vJoySelected(HWND hCb);
+	void CreateBtnsDlg(HWND hDlg);
 
 	//void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);

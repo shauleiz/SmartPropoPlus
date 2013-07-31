@@ -550,7 +550,7 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 
 
 		// Release DI interface
-		if (dev->pDeviceDI8)
+		if (dev && dev->pDeviceDI8)
 			dev->pDeviceDI8->Unacquire();
 }
 
@@ -670,7 +670,10 @@ void CvJoyMonitorDI8::FreeDeviceDB(void)
 	while (iMap != m_DeviceDB.end())
 	{
 		SuspendPolling((*iMap).first);
+		if (!(*iMap).second)
+			continue;
 		SAFE_RELEASE((*iMap).second->pDeviceDI8);
+#pragma warning(suppress: 6001)
 		free ((*iMap).second);
 		m_DeviceDB.erase(iMap);
 		iMap++;

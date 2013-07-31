@@ -160,10 +160,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SppBtnsDlg.h" />
     <ClInclude Include="SppDlg.h" />
     <ClInclude Include="SppLog.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SppBtnsDlg.cpp" />
     <ClCompile Include="SppDlg.cpp" />
     <ClCompile Include="SppLog.cpp" />
     <ClCompile Include="stdafx.cpp" />

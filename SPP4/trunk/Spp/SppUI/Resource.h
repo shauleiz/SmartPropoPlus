@@ -11,6 +11,7 @@
 #define IDI_SPPCONSOLE                          114
 #define IDD_LOGDLG                              117
 #define IDD_DIALOG1                             118
+#define IDD_BUTTONSDLG                          120
 #define IDC_CH_MONITOR                          1000
 #define IDC_COMBO1                              1000
 #define IDC_CHPP1                               1001
@@ -35,6 +36,7 @@
 #define IDC_TXT_CHPP8                           1018
 #define IDC_CH_PULSE                            1019
 #define IDC_AUD_8                               1020
+#define IDC_BTN_MAPBTNS                         1021
 #define IDC_CH_LOG                              1081
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
