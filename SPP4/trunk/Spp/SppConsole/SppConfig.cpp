@@ -263,6 +263,29 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 	m_doc.SaveFile();
 }
 
+// GetMapButtons- Get the channel-to-button mapping of a given vJoy device
+// The number of buttons currently supported is 1 to 128
+// The number of channels currently supported is 1 to 24
+//
+// Array of bytes is passed by reference
+// Every byte of the 128 array items represents a button.
+// Array item N represents button N+1
+// Item value is the channel mapped to the button - values are 1 to 24
+// Special case: item = 0 - no info for this button
+void CSppConfig::GetMapButtons(UINT id, array<BYTE, 128>& ButtonMap)
+{
+	// Get handle to vJoy Device
+	TiXmlHandle DeviceHandle = CreatevJoyDevice(id);
+
+	// Loop on array of buttons
+	auto nButtons = ButtonMap.size();
+	for (UINT i=0; i<nButtons; i++)
+	{
+		auto channel = GetSingleButtonMap(DeviceHandle, i+1);
+		ButtonMap[i] = channel;
+	}
+}
+
 // MApAxis - Get the channel-to-axis mapping of a given vJoy device
 // If device does not exist then return 0
 // Device accessed by Id
@@ -293,15 +316,29 @@ DWORD CSppConfig::MapAxis(UINT id)
 
 }
 
-
-UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
+// Return the channel mapped to the specified button
+// Return 0 if no mapping available
+UINT CSppConfig::GetSingleButtonMap(TiXmlHandle DeviceHandle, const UINT button)
 {
-	TiXmlText * Text = DeviceHandle.FirstChildElement(SPP_DEVMAP).FirstChildElement(SPP_MAPAX).FirstChildElement(axis).FirstChild().ToText();
+	// Convert button number to string of typr ButtonXX
+	string ButtonXX = SPP_BTNPREF + to_string(button);
+	TiXmlText * Text = DeviceHandle.FirstChildElement(SPP_DEVMAP).FirstChildElement(SPP_MAPBTN).FirstChildElement(ButtonXX.data()).FirstChild().ToText();
 	if (Text)
-		return  stoi (Text->ValueStr());
+		return  stoi(Text->ValueStr());
 	else
 		return 0;
 }
+
+UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
+{
+
+	TiXmlText * Text = DeviceHandle.FirstChildElement(SPP_DEVMAP).FirstChildElement(SPP_MAPAX).FirstChildElement(axis).FirstChild().ToText();
+	if (Text)
+		return  stoi(Text->ValueStr());
+	else
+		return 0;
+}
+
 
 // SelectModulation - Set the selected modulation (by Type)
 // Change the 'selected' attribute of 'Modulations'

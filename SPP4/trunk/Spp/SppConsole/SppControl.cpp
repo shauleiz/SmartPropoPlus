@@ -1012,8 +1012,11 @@ int vJoyDevicesPopulate(HWND hDlg)
 
 void SetvJoyMapping(UINT id)
 {
-	DWORD Map = Conf->MapAxis(id); // vJoy Device
-	Map = Spp->MappingChanged(Map,8, id); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
+	array<BYTE, 128> aButtonMap;
+
+	DWORD Map = Conf->MapAxis(id);
+	Conf->GetMapButtons(id, aButtonMap);
+	Map = Spp->MappingChanged(Map,8, aButtonMap, aButtonMap.size(), id); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
 	Conf->MapAxis(id, Map);
 	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
 }

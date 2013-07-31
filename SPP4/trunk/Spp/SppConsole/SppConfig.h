@@ -1,6 +1,7 @@
 #pragma once
 #define TIXML_USE_STL 1
 #include "../TinyXml/TinyXml.h"
+#include <array>
 
 #ifdef X64
 #ifdef _DEBUG
@@ -49,6 +50,7 @@
 #define SPP_MONCHNL	"Monitor_CH"
 #define SPP_SHOWLOG	"Show_Log"
 #define SPP_CHECKED	"Checked"
+#define SPP_BTNPREF	"Button"
 
 
 class CSppConfig
@@ -63,6 +65,7 @@ public:
 	UINT 			SelectedvJoyDevice(void);
 	void			MapAxis(UINT id, DWORD map);
 	DWORD 			MapAxis(UINT id);
+	void			GetMapButtons(UINT id, array<BYTE,128>& ButtonMap);
 
 	// Modulations
 	bool			AddModulation(PVOID data);
@@ -103,6 +106,7 @@ private:
 	TiXmlDocument * CreateDefaultConfig(TiXmlDocument *  doc = NULL);
 	TiXmlHandle		CreatevJoyDevice(UINT id, bool selected = false);
 	UINT			GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis);
+	UINT			GetSingleButtonMap(TiXmlHandle DeviceHandle, const UINT button);
 	bool			AddModulation(wstring Type, wstring SubType, wstring Name, bool select=false);
 	bool			AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool select=false);
 	string			GetSubTypeModulation(wstring Type);

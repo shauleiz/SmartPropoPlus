@@ -12,6 +12,7 @@
 
 
 #include <vector>
+#include <array>
 #include <map>
 #include <functional>
 #include <thread>
@@ -111,7 +112,7 @@ public:
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
 	SPPMAIN_API void vJoyDeviceId(UINT rID);
-	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes, UINT vJoyId);
+	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes, array<BYTE, 128>& BtnMap, UINT nBtn, UINT vJoyId);
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
 
 
@@ -151,7 +152,7 @@ private:
 	void SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength, UINT PulseLength);
 	int InitModulationMap(void);
 	bool InitModulationSelect(void);
-
+	void SetDefaultBtnMap(array <BYTE, 128>& BtnMap);
 
 
 
@@ -196,6 +197,7 @@ private:
 	BOOL m_DbgPulse;
 	BOOL m_ChangeCapture;
 	DWORD m_Mapping;
+	array <BYTE, 128> m_BtnMapping;
 	MODMAP m_ModulationMap;
 	LPTSTR	m_SelectedMod;
 	PP m_CurrentPP;
