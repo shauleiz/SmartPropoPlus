@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Windowsx.h"
 #include "WinMessages.h"
 #include "Commctrl.h"
 #include "resource.h"
@@ -47,12 +48,18 @@ SppBtnsDlg::SppBtnsDlg(HINSTANCE hInstance, HWND	ParentWnd)
 {
 	m_hInstance = hInstance;
 	m_ParentWnd = ParentWnd;
+	m_ahEdtBtn.fill(NULL);
 
 	// Create the dialog box (Hidden) 
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_BUTTONSDLG), NULL, MsgHndlBtnDlg, (LPARAM)this);	
 
 	// Populate dialog box
 	CreateControls(32);
+
+	// Test
+	array<BYTE,MAX_BUTTONS> map = {0};
+	int s = CreateBtnMap(map);
+
 	// TODO - Remove later
 	ShowWindow(m_hDlg, SW_SHOW);
 	UpdateWindow(m_hDlg);	
@@ -74,7 +81,7 @@ void SppBtnsDlg::CreateControls(UINT nButtons)
 	POINT OrigPt;
 	OrigPt.x = OrigPt.y = 10;
 
-	for (UINT i=1; i<=128; i++)
+	for (UINT i=1; i<=nButtons; i++)
 	{
 		CreateButtonLable(i);
 		CreateChannelEdit(i);
@@ -138,11 +145,12 @@ void SppBtnsDlg::CreateButtonLable(UINT iButton)
 	rc.right+=iCol*ColSpace;
 
 	wstring caption = TEXT("Button") + to_wstring(iButton);
-	CreateStatics(m_hDlg, m_hInstance, SS_SIMPLE, rc, 123456, caption.c_str());
+	CreateStatics(m_hDlg, m_hInstance, SS_SIMPLE, rc, ID_BASE_STATIC, caption.c_str());
 }
 
 
-
+// Create a edit control for channel number
+// Place control in columns of 32 to the right of the button number
 void SppBtnsDlg::CreateChannelEdit(UINT iButton)
 {
 	// Constants
@@ -164,7 +172,31 @@ void SppBtnsDlg::CreateChannelEdit(UINT iButton)
 	else
 		ch = to_wstring(9);
 
-	CreateEdit(m_hDlg, m_hInstance ,0, rc,122457+iButton,ch.c_str());
+	HWND hCh = CreateEdit(m_hDlg, m_hInstance ,0, rc,ID_BASE_CH+iButton,ch.c_str());
+	m_ahEdtBtn[iButton-1] = hCh;
 }
 
+// Go over the edit boxes and get the data
+// Create button-map out of them
+// Return the size of the array or -1 if error
+int SppBtnsDlg::CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap)
+{
+	auto size = BtnMap.size();
+	HWND hEditCh;
+	int textsize, n=0;
+	TCHAR text[5];
+
+	for (UINT i=0; i<size; i++)
+	{
+		hEditCh = m_ahEdtBtn[i];;
+		if (!hEditCh)
+			break;
+
+		n++;
+		textsize = Edit_GetText(hEditCh, (LPTSTR)&text, 5);
+		BtnMap[i] = _tstoi(text);;
+	};
+
+	return n;
+}
 

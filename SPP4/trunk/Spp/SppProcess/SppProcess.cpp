@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <array>
 #include "vJoyInterface.h"
 #include "public.h"
 #include "../SppAudio/SppAudio.h"
@@ -45,6 +46,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
 		m_Position[i] = 0;
+
+	SetDefaultBtnMap(m_BtnMapping);
 }
 
 SPPMAIN_API CSppProcess::~CSppProcess() {}
@@ -1975,7 +1978,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 // - vJoy device changed: Default mapping is reset
 // Return: New mapping
 
-DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes, UINT vJoyId)
+DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes, array<BYTE, 128> &BtnMap, UINT nBtn, UINT vJoyId)
 {
 
 	DWORD dwMap=0; // Intermediary map
@@ -1986,9 +1989,12 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes, UINT vJoyId)
 		return m_Mapping;
 
 	if (vJoyId != id)
+	{
 		m_Mapping = 0x12345678;
+		SetDefaultBtnMap(m_BtnMapping);
+	};
 
-
+	// Axes
 	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
 	for (UINT i=0; i<8; i++)
 	{
@@ -2008,10 +2014,36 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes, UINT vJoyId)
 
 	}
 
+	// Buttons
+	// Go over the input array and replace every zero with the corresponding entry in m_BtnMapping
+	auto size = BtnMap.size();
+	if (m_BtnMapping.size() == size)
+	{
+		for (UINT i=0; i<size; i++)
+		{
+			if (BtnMap[i])
+				m_BtnMapping[i] = BtnMap[i];
+		}; // for
+
+		BtnMap = m_BtnMapping;
+	}; // if (m_BtnMapping.size() >= size)
+
 	m_Mapping = dwMap;
 	return m_Mapping;
 }
 
+void CSppProcess::SetDefaultBtnMap(array <BYTE, 128>& BtnMap)
+{
+	auto size = BtnMap.size();
+	for (UINT i=0; i<size; i++)
+	{
+		if (i<24)
+			BtnMap[i] = i+9;
+		else
+			BtnMap[i] = 9;
+	}
+
+}
 
 /* Run Joystick post processor filter */
 int CSppProcess::RunJsFilter(int * ch, int nChannels)

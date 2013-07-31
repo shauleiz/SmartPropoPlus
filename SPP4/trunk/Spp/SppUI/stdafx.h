@@ -28,5 +28,6 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <array>
 
 using namespace std;
