@@ -6,6 +6,7 @@
 #include "..\vJoyMonitor\vJoyMonitor.h"
 #include "..\SppConsole\SppControl.h"
 #include "..\SppProcess\SppProcess.h"
+#include "SppBtnsDlg.h"
 #include "SppDlg.h"
 
 
@@ -680,6 +681,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj = (SppDlg *)lParam;
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
+		DialogObj->CreateBtnsDlg(hDlg);
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -832,6 +834,14 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 HWND SppDlg::GetHandle(void)
 {
 	return m_hDlg;
+}
+
+// Create Button mapping dialog box
+void SppDlg::CreateBtnsDlg(HWND hDlg)
+{
+	SppBtnsDlg * BtnsDlg = new SppBtnsDlg(m_hInstance, hDlg);
+
+
 }
 
 
