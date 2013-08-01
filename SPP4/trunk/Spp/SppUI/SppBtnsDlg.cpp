@@ -24,6 +24,7 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
 
 	case WM_INITDIALOG:
+		DialogObj = (SppBtnsDlg *)lParam;
 		break;
 
 	case WM_COMMAND:
@@ -32,7 +33,14 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 			DestroyWindow(hDlg);
 			hDlg = NULL;
 			return (INT_PTR)TRUE;
-		}
+		};
+		break;
+
+		case WMSPP_MAPBTN_UPDT:
+		DialogObj->SetButtonsMappingData((array<BYTE, 128>*)wParam, (UINT)lParam);
+		break;
+
+
 
 
 	}
@@ -69,6 +77,33 @@ SppBtnsDlg::SppBtnsDlg(HINSTANCE hInstance, HWND	ParentWnd)
 
 SppBtnsDlg::~SppBtnsDlg(void)
 {
+}
+
+HWND SppBtnsDlg::GetHandle(void)
+{
+	return m_hDlg;
+}
+
+// Fill-in the actual button-mapping data
+void SppBtnsDlg::SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
+{
+	HWND hEditCh;
+
+	for (UINT i=0; i<nButtons; i++)
+	{
+		hEditCh = m_ahEdtBtn[i];
+		if (!hEditCh)
+			break;
+
+		// if entry is zero then ignore it
+		if (!(*aButtonMap)[i])
+			continue;
+
+		// Set the new string
+		wstring ch = to_wstring((*aButtonMap)[i]);
+		Edit_SetText(m_ahEdtBtn[i], ch.c_str());
+	};
+
 }
 
 // Create controls on dialog box
@@ -188,7 +223,7 @@ int SppBtnsDlg::CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap)
 
 	for (UINT i=0; i<size; i++)
 	{
-		hEditCh = m_ahEdtBtn[i];;
+		hEditCh = m_ahEdtBtn[i];
 		if (!hEditCh)
 			break;
 

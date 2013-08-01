@@ -12,6 +12,8 @@ public:
 	SppBtnsDlg(void);
 	SppBtnsDlg(HINSTANCE hInstance, HWND	ConsoleWnd);
 	virtual ~SppBtnsDlg(void);
+	HWND GetHandle(void);
+	void SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
 
 private:
 	HWND CreateStatics(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle, const RECT& rc,const int id,const wstring& caption);

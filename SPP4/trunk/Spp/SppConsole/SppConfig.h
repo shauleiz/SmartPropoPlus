@@ -66,6 +66,7 @@ public:
 	void			MapAxis(UINT id, DWORD map);
 	DWORD 			MapAxis(UINT id);
 	void			GetMapButtons(UINT id, array<BYTE,128>& ButtonMap);
+	void			MapButtons(UINT id, array<BYTE,128> ButtonMap);
 
 	// Modulations
 	bool			AddModulation(PVOID data);

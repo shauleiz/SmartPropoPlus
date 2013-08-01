@@ -1012,13 +1012,18 @@ int vJoyDevicesPopulate(HWND hDlg)
 
 void SetvJoyMapping(UINT id)
 {
-	array<BYTE, 128> aButtonMap;
-
+	// Axes
 	DWORD Map = Conf->MapAxis(id);
-	Conf->GetMapButtons(id, aButtonMap);
-	Map = Spp->MappingChanged(Map,8, aButtonMap, aButtonMap.size(), id); // load mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
+	Map = Spp->MappingChanged(Map,8,  id); // load axis mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
 	Conf->MapAxis(id, Map);
 	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
+
+	// Buttons
+	array<BYTE, 128> aButtonMap;
+	Conf->GetMapButtons(id, aButtonMap);
+	Spp->MappingChanged(aButtonMap, aButtonMap.size(), id); // load button mapping to SppProcess object
+	Conf->MapButtons(id, aButtonMap);
+	SendMessage(hDialog, WMSPP_MAPBTN_UPDT,(WPARAM)&aButtonMap, aButtonMap.size());
 }
 
 bool isAboveVistaSp1()

@@ -212,6 +212,39 @@ UINT CSppConfig::SelectedvJoyDevice(void)
 		return id;
 }
 
+void CSppConfig::MapButtons(UINT id, array<BYTE,128> ButtonMap)
+{
+	// Create a vjoy device (if it does not exist)
+	TiXmlHandle  DeviceHandle = CreatevJoyDevice(id);
+
+	// Create a Device_Map/Buttons element (if it does not exist) - there's only one
+	TiXmlElement * Device_Map = DeviceHandle.FirstChildElement(SPP_DEVMAP).ToElement();
+	if (!Device_Map)
+	{
+		Device_Map = new TiXmlElement(SPP_DEVMAP);
+		DeviceHandle.ToElement()->LinkEndChild(Device_Map);
+	};
+	TiXmlHandle MapHandle(Device_Map);
+	TiXmlElement * Button_Map = MapHandle.FirstChildElement(SPP_MAPBTN).ToElement();
+	if (!Button_Map)
+	{
+		Button_Map = new TiXmlElement(SPP_MAPBTN);
+		MapHandle.ToElement()->LinkEndChild(Button_Map);
+	};
+
+	TiXmlHandle ButtonHandle(Button_Map);
+
+	// Loop on array of mapping data - for each non-zero entry add an entry to the config file
+	auto size = ButtonMap.size();
+	for (UINT i=0; i<size; i++)
+	{
+		if (!ButtonMap[i])
+			continue;
+		string ButtonXX = SPP_BTNPREF + to_string(i+1);
+		UniqueTextLeaf(ButtonHandle, ButtonXX, to_wstring(ButtonMap[i]), true);
+	};
+}
+
 // MapAxis - Register the channel-to-axis mapping of a given vJoy device
 // If device does not exist then create it first
 // Device accessed by Id
