@@ -525,7 +525,14 @@ void SppDlg::UpdateFilter(void)
 	Button_SetCheck(hFilterCB, BST_CHECKED);
 }
 
-// Fill-in the actual mapping data
+
+// Fill-in the actual button-mapping data - pass message to button-mapping dialog
+void SppDlg::SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
+{
+	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, nButtons);
+}
+
+// Fill-in the actual axes-mapping data
 void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
 {
 
@@ -809,6 +816,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->SetAxesMappingData((DWORD)wParam, (UINT)lParam);
 		break;
 
+	case WMSPP_MAPBTN_UPDT:
+		DialogObj->SetButtonsMappingData((array<BYTE, 128>*)wParam, (UINT)lParam);
+		break;
+
 	case MONITOR_CH:
 		DialogObj->MonitorCh(wParam != 0); // Silly way to cast to bool
 		break;
@@ -839,9 +850,7 @@ HWND SppDlg::GetHandle(void)
 // Create Button mapping dialog box
 void SppDlg::CreateBtnsDlg(HWND hDlg)
 {
-	SppBtnsDlg * BtnsDlg = new SppBtnsDlg(m_hInstance, hDlg);
-
-
+	m_BtnsDlg = new SppBtnsDlg(m_hInstance, hDlg);
 }
 
 

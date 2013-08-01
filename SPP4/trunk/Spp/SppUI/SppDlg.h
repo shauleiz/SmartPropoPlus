@@ -1,4 +1,6 @@
 #pragma once
+class SppBtnsDlg;
+
 class SppDlg
 {
 public:
@@ -29,6 +31,7 @@ public: // Called from window procedure
 	void RecordPulse(WORD cb);
 	void vJoyMapping(void);
 	void SetAxesMappingData(DWORD Map, UINT nAxes);
+	void SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
 	void InitButtonMap(HWND);
 	void AudioChannelParams(void);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
@@ -66,5 +69,6 @@ private:
 	HANDLE	m_hEndEvent;
 	HANDLE	m_hThread;
 	HWND	m_ConsoleWnd;
+	SppBtnsDlg * m_BtnsDlg;
 };
 

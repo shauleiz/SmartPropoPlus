@@ -60,6 +60,7 @@ UINT const WMSPP_VJOY_MISS	=			BASE_SUB+34;			// vJoy device is missing . WPARAM
 UINT const WMSPP_DLG_FDLL	=			BASE_SUB+35;			// Set/Remove Filter DLL file
 UINT const WMSPP_DLG_FLTRFILE =			BASE_SUB+36;			// Set Filter DLL file name (Full Path)
 UINT const FILTER_SELCTED	=			BASE_SUB+37;			// Set selected filter (By Filter ID)
+UINT const WMSPP_MAPBTN_UPDT=			BASE_SUB+38;			// The payload is Pointer to array that describe mapping of channels to buttons
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
