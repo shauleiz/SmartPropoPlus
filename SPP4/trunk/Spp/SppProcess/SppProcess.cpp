@@ -1966,19 +1966,20 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 		writeOk =  SetBtn(ch[i+k]>511, rID,k+1); // TODO: Replace 511 with some constant definition
 }
 
-void CSppProcess::MappingChanged(array<BYTE, 128> &BtnMap, UINT nBtn, UINT vJoyId)
+void CSppProcess::MappingChanged(LPVOID&  pBtnMap, UINT nBtn, UINT vJoyId)
 {
+	array<BYTE, 128> BtnMap = *(array<BYTE, 128>*&)(pBtnMap);
 	// Go over the input array and replace every zero with the corresponding entry in m_BtnMapping
 	auto size = BtnMap.size();
 	if (m_BtnMapping.size() == size)
 	{
 		for (UINT i=0; i<size; i++)
 		{
-			if (BtnMap[i])
-				m_BtnMapping[i] = BtnMap[i];
+			if ((BtnMap)[i])
+				m_BtnMapping[i] = (BtnMap)[i];
 		}; // for
 
-		BtnMap = m_BtnMapping;
+		(BtnMap) = m_BtnMapping;
 	}; // if (m_BtnMapping.size() >= size)
 
 }

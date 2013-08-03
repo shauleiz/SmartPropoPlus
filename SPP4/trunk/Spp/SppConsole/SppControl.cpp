@@ -393,6 +393,12 @@ LRESULT CALLBACK MainWindowProc(
 			SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
 			break;
 
+		case WMSPP_DLG_MAPBTN:
+			Spp->MappingChanged((LPVOID &)(wParam), (UINT)lParam, Conf->SelectedvJoyDevice());
+			Conf->MapButtons(Conf->SelectedvJoyDevice(), *(array<BYTE, 128> *)(wParam));
+			SendMessage(hDialog, WMSPP_MAPBTN_UPDT, wParam, lParam);
+			break;
+
 		case WMSPP_DLG_CHNL:
 			if ((UCHAR)wParam !=  Audio->GetwBitsPerSample())
 			{
@@ -1019,11 +1025,12 @@ void SetvJoyMapping(UINT id)
 	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
 
 	// Buttons
-	array<BYTE, 128> aButtonMap;
-	Conf->GetMapButtons(id, aButtonMap);
-	Spp->MappingChanged(aButtonMap, aButtonMap.size(), id); // load button mapping to SppProcess object
-	Conf->MapButtons(id, aButtonMap);
-	SendMessage(hDialog, WMSPP_MAPBTN_UPDT,(WPARAM)&aButtonMap, aButtonMap.size());
+	array<BYTE, 128> * aButtonMap = new array<BYTE, 128>;
+	Conf->GetMapButtons(id, *aButtonMap);
+	Spp->MappingChanged((LPVOID &)aButtonMap, (UINT)aButtonMap->size(), id); // load button mapping to SppProcess object
+	Conf->MapButtons(id, *aButtonMap);
+	SendMessage(hDialog, WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, aButtonMap->size());
+	delete aButtonMap;
 }
 
 bool isAboveVistaSp1()

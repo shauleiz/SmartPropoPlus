@@ -32,6 +32,7 @@ public: // Called from window procedure
 	void vJoyMapping(void);
 	void SetAxesMappingData(DWORD Map, UINT nAxes);
 	void SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
+	void SendButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
 	void InitButtonMap(HWND);
 	void AudioChannelParams(void);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);

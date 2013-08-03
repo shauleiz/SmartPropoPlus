@@ -532,6 +532,12 @@ void SppDlg::SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
 	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, nButtons);
 }
 
+// Relay the actual button-mapping data - pass message to parent
+void SppDlg::SendButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
+{
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAPBTN, (WPARAM)aButtonMap, nButtons);
+}
+
 // Fill-in the actual axes-mapping data
 void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
 {
@@ -834,7 +840,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->vJoyRemoveAll();
 		break;
 
-
+	case WMSPP_DLG_MAPBTN:
+		DialogObj->SendButtonsMappingData((array<BYTE, 128> *)wParam, lParam);
+		break;
 
 	}
 	return (INT_PTR)FALSE;

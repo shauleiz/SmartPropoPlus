@@ -10,16 +10,12 @@
 #define IDD_SPPDIAG                             111
 #define IDI_SPPCONSOLE                          114
 #define IDD_LOGDLG                              117
-#define IDD_DIALOG1                             118
 #define IDD_BUTTONSDLG                          120
 #define IDC_CH_MONITOR                          1000
-#define IDC_COMBO1                              1000
 #define IDC_CHPP1                               1001
-#define IDC_EDIT1                               1001
+#define ID_APPLY                                1001
 #define IDC_CHPP2                               1002
-#define IDC_CHECKBOX1                           1003
 #define IDC_CHPP3                               1003
-#define IDC_BUTTON1                             1004
 #define IDC_CHPP4                               1004
 #define IDC_CHPP5                               1005
 #define IDC_CHPP6                               1006
