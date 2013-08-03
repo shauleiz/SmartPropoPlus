@@ -112,7 +112,7 @@ public:
 	SPPMAIN_API void StopDbgPulse(void);
 	SPPMAIN_API void vJoyReady(bool ready);
 	SPPMAIN_API void vJoyDeviceId(UINT rID);
-	SPPMAIN_API void MappingChanged(array<BYTE, 128>& BtnMap, UINT nBtn, UINT vJoyId);
+	SPPMAIN_API void MappingChanged(LPVOID& BtnMap, UINT nBtn, UINT vJoyId);
 	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes,  UINT vJoyId);
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
 

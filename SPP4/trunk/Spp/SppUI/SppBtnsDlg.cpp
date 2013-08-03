@@ -30,13 +30,23 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
+			if (LOWORD(wParam) == IDOK)
+				DialogObj->SendButtonsMappingData();
+
 			DestroyWindow(hDlg);
 			hDlg = NULL;
 			return (INT_PTR)TRUE;
 		};
+
+		if (LOWORD(wParam) == ID_APPLY)
+		{
+			DialogObj->SendButtonsMappingData();
+			break;
+		}
+
 		break;
 
-		case WMSPP_MAPBTN_UPDT:
+	case WMSPP_MAPBTN_UPDT:
 		DialogObj->SetButtonsMappingData((array<BYTE, 128>*)wParam, (UINT)lParam);
 		break;
 
@@ -82,6 +92,34 @@ SppBtnsDlg::~SppBtnsDlg(void)
 HWND SppBtnsDlg::GetHandle(void)
 {
 	return m_hDlg;
+}
+
+// Create an array of button mapping data and send it to the parent window
+// Return the number of buttons in map
+void SppBtnsDlg::SendButtonsMappingData(void)
+{
+	TCHAR text[5];
+	HWND hEditCh;
+	UINT count=0;
+
+	array<BYTE, 128> aButtonMap;
+	aButtonMap.fill(0);
+
+	auto size = m_ahEdtBtn.size();
+	for (UINT i=0; i<size; i++)
+	{
+		hEditCh = m_ahEdtBtn[i];
+		if (!hEditCh)
+			break;
+				
+		// Get data from edit box
+		Edit_GetText(m_ahEdtBtn[i], text, 5);
+		aButtonMap[i] = (UINT)_ttoi(text);
+		count++;
+	};
+
+	// Send message to parent window
+	SendMessage(m_ParentWnd, WMSPP_DLG_MAPBTN, (WPARAM)&aButtonMap, count);
 }
 
 // Fill-in the actual button-mapping data
