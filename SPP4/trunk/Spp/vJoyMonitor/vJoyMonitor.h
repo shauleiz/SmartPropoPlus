@@ -40,7 +40,6 @@
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=NULL; } }
 #endif
-#define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
 
 #define PID1	0xbead
 #define PID2	0xbead1234

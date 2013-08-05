@@ -4,12 +4,21 @@
 //
 
 #pragma once
+
 using namespace std;
 
 #include "targetver.h"
-#include <mutex>
-#include <iostream>
-#include <sstream>
-#include <conio.h>
-#include <string>
 
+//#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Windows Header Files:
+#include <windows.h>
+
+// C RunTime Header Files
+#include <stdlib.h>
+#include <tchar.h>
+
+#include <sstream> 
+#include <chrono>
+#include <thread>
+#include <mutex>
+#include <array>

@@ -3,9 +3,8 @@
 #include "WinMessages.h"
 #include "Commctrl.h"
 #include "resource.h"
-#include "..\vJoyMonitor\vJoyMonitor.h"
-#include "..\SppConsole\SppControl.h"
-#include "..\SppProcess\SppProcess.h"
+#include "vJoyMonitor.h"
+#include "SppProcess.h"
 #include "SppBtnsDlg.h"
 #include "SppDlg.h"
 
@@ -354,32 +353,8 @@ void  SppDlg::RecordInSignal(WORD cb)
 // Send all mapping info to the control unit
 void  SppDlg::vJoyMapping(void)
 {
-	TCHAR Buffer[4];
-	int nTchar;
-	int out=0;
-	UINT id = IDC_SRC_X;
-	DWORD AxesMap = 0;
-
-	// Go on all entries and get value. Empty is considered as channel 0
-	// The value has to be one/two digits - is pusshed onto the DWORD to be sent
-	do {
-	((WORD *)Buffer)[0]=4;
-	out=0;
-	HWND hEdtBox = GetDlgItem(m_hDlg,  id);
-	nTchar = Edit_GetLine(hEdtBox, 1, &Buffer, 3);
-	if (nTchar == 1 || nTchar == 2)
-	{
-		Buffer[nTchar] = NULL;
-		out = _tstoi(Buffer);
-	}
- 	if (out>0xF)
-		out=0;
-	AxesMap = (AxesMap<<4 | out);
-	id++;
-	} while (id <= IDC_SRC_SL1);
-
-	// Send message: wParam: Mapping, lParam: Number of axes
-	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, AxesMap, 8);
+	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_SEND,0, 0);
+	
 }
 
 // Set the parameters of the audio (8/16 bits Left/Right/Mono)
@@ -527,36 +502,73 @@ void SppDlg::UpdateFilter(void)
 
 
 // Fill-in the actual button-mapping data - pass message to button-mapping dialog
-void SppDlg::SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
+void SppDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
 {
 	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, nButtons);
 }
 
 // Relay the actual button-mapping data - pass message to parent
-void SppDlg::SendButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
+void SppDlg::SendMappingData(BTNArr* aButtonMap, UINT nButtons)
 {
-	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAPBTN, (WPARAM)aButtonMap, nButtons);
+	// Buttons
+	Mapping m;
+	m.nButtons = nButtons;
+	m.ButtonArray = aButtonMap;
+
+
+	// Axes
+	TCHAR Buffer[4];
+	int nTchar;
+	int out=0;
+	UINT id = IDC_SRC_X;
+	DWORD AxesMap = 0;
+
+	// Go on all entries and get value. Empty is considered as channel 0
+	// The value has to be one/two digits - is pusshed onto the DWORD to be sent
+	do {
+	((WORD *)Buffer)[0]=4;
+	out=0;
+	HWND hEdtBox = GetDlgItem(m_hDlg,  id);
+	nTchar = Edit_GetLine(hEdtBox, 1, &Buffer, 3);
+	if (nTchar == 1 || nTchar == 2)
+	{
+		Buffer[nTchar] = NULL;
+		out = _tstoi(Buffer);
+	}
+ 	if (out>0xF)
+		out=0;
+	AxesMap = (AxesMap<<4 | out);
+	id++;
+	} while (id <= IDC_SRC_SL1);
+
+	m.pAxisMap = &AxesMap;
+	m.nAxes = 8;
+
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_MAP, (WPARAM)&m, NULL);
 }
 
-// Fill-in the actual axes-mapping data
-void SppDlg::SetAxesMappingData(DWORD Map, UINT nAxes)
+// Fill-in the actual mapping data
+void SppDlg::SetMappingData(Mapping * Map)
 {
 
 	UINT id = IDC_SRC_SL1;
 	HWND hEdtBox;
 	UINT channel;
 	TCHAR buffer[4];
+	UINT& nAxes = Map->nAxes;
+	DWORD& AxisMap = *Map->pAxisMap;
 
 	// Go through the map and read nibble by nibble
 	// Every nibble read goes to the corresponding edit box
 	for (UINT i=0; i<nAxes; i++)
 	{
 		hEdtBox = GetDlgItem(m_hDlg,  id-i);
-		channel = ((Map>>(i*4))&0xF);
+		channel = ((AxisMap>>(i*4))&0xF);
 		_itot_s(channel, buffer, 2, 10);
 		Edit_SetText(hEdtBox, buffer);
 	};
 
+	SetButtonsMappingData(Map->ButtonArray, Map->nButtons);
 }
 
 
@@ -819,12 +831,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_MAP_UPDT:
-		DialogObj->SetAxesMappingData((DWORD)wParam, (UINT)lParam);
+		DialogObj->SetMappingData((Mapping *)wParam);
 		break;
 
-	case WMSPP_MAPBTN_UPDT:
-		DialogObj->SetButtonsMappingData((array<BYTE, 128>*)wParam, (UINT)lParam);
-		break;
+	//case WMSPP_MAPBTN_UPDT:
+	//	DialogObj->SetButtonsMappingData((BTNArr *)wParam, (UINT)lParam);
+	//	break;
 
 	case MONITOR_CH:
 		DialogObj->MonitorCh(wParam != 0); // Silly way to cast to bool
@@ -841,7 +853,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_DLG_MAPBTN:
-		DialogObj->SendButtonsMappingData((array<BYTE, 128> *)wParam, lParam);
+		DialogObj->SendMappingData((BTNArr *)wParam, lParam);
 		break;
 
 	}

@@ -1,6 +1,6 @@
 #pragma once
 #define TIXML_USE_STL 1
-#include "../TinyXml/TinyXml.h"
+#include "TinyXml.h"
 #include <array>
 
 #ifdef X64
@@ -63,10 +63,9 @@ public:
 	// vJoy
 	bool 			SelectvJoyDevice(UINT id);
 	UINT 			SelectedvJoyDevice(void);
-	void			MapAxis(UINT id, DWORD map);
 	DWORD 			MapAxis(UINT id);
-	void			GetMapButtons(UINT id, array<BYTE,128>& ButtonMap);
-	void			MapButtons(UINT id, array<BYTE,128> ButtonMap);
+	void			GetMapButtons(UINT id, BTNArr& ButtonMap);
+	void			Map(UINT id, Mapping* GeneralMap);
 
 	// Modulations
 	bool			AddModulation(PVOID data);
@@ -119,6 +118,8 @@ private:
 	TiXmlHandle		GetFilterHandle(LPTSTR Id);
 	wstring			GetFilterName(LPTSTR Id);
 	TiXmlHandle		GetFilterFileHandle(void);
+	void			MapAxis(UINT id, DWORD map);
+	void			MapButtons(UINT id, BTNArr ButtonMap);
 
 private:
 	TiXmlDocument m_doc;
