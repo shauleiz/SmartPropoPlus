@@ -38,24 +38,3 @@
 static UINT NEAR WM_INTERSPPCONSOLE;
 static UINT NEAR WM_INTERSPPAPPS;
 
-struct jack_info
-{
-	/* Inter-unit information about jack/capture endpoint information */
-	int	struct_size;
-	WCHAR * id;
-	COLORREF color;
-	WCHAR * FriendlyName;
-	//bool	Enabled;
-	bool	Default;
-	int		nChannels;
-};
-
-struct filter_info
-{
-	/* Inter-unit information about filters */
-	int	struct_size;		// Size of struct in bytes
-	LPTSTR FilterFileName;	// Filter File Name 
-	int	iSelFilter;			// Intex of selected filter (Zero-based, -1 means none selected)
-	UINT nFilters;			// Number of filters in the following list
-	LPTSTR * FilterName;	// Array of nFilters filter names
-};

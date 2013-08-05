@@ -29,7 +29,7 @@
 #include "vJoyMonitor.h"
 #include "vJoyMonitorMM.h"
 #include "vJoyMonitorDI8.h"
-#include "../include/WinMessages.h"
+#include "WinMessages.h"
 
 
 // Global variables

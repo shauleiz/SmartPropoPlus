@@ -2,13 +2,12 @@
 //
 
 #include "stdafx.h"
-#include <array>
+#include "SmartPropoPlus.h"
 #include "vJoyInterface.h"
 #include "public.h"
-#include "../SppAudio/SppAudio.h"
+#include "SppAudio.h"
 #include "WinMessages.h"
 #include "GlobalMemory.h"
-#include "SmartPropoPlus.h"
 #include "SppProcess.h"
 
 /* Globals */
@@ -326,7 +325,7 @@ void CSppProcess::PollChannels(void)
 		}; // For loop (Processed)
 
 		
-	sleep_for(20); // MilliSec
+	Sleep_For(20); // MilliSec
 
 	// Once in a while reset value of channels to ensure refresh of the GUI
 	if (StaleCount>100)
@@ -2035,6 +2034,12 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes,  UINT vJoyId)
 
 	m_Mapping = dwMap;
 	return m_Mapping;
+}
+
+void CSppProcess::MappingChanged(Mapping*& m, UINT vJoyId)
+{
+	MappingChanged((LPVOID&)m->ButtonArray, m->nButtons, vJoyId);
+	*m->pAxisMap = MappingChanged(*m->pAxisMap, m->nAxes, vJoyId);
 }
 
 void CSppProcess::SetDefaultBtnMap(array <BYTE, 128>& BtnMap)

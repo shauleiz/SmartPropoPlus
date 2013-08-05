@@ -30,9 +30,9 @@ public: // Called from window procedure
 	void RecordInSignal(WORD cb);
 	void RecordPulse(WORD cb);
 	void vJoyMapping(void);
-	void SetAxesMappingData(DWORD Map, UINT nAxes);
-	void SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
-	void SendButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
+	void SetMappingData(Mapping * Map);
+	void SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons);
+	void SendMappingData(BTNArr* aButtonMap, UINT nButtons);
 	void InitButtonMap(HWND);
 	void AudioChannelParams(void);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);

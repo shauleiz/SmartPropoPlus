@@ -1,13 +1,10 @@
 #include "stdafx.h"
-#include "SppConfig.h"
 #include "Knownfolders.h"
 #include "Shlobj.h"
-#include "../SppProcess/SppProcess.h"
+#include "SmartPropoPlus.h"
+#include "SppProcess.h"
+#include "SppConfig.h"
 
-//CSppConfig::CSppConfig(void)
-//{
-//	CSppConfig(DEF_CONF_FILE);
-//}
 
 CSppConfig::CSppConfig(LPTSTR FileName) 
 {
@@ -212,7 +209,7 @@ UINT CSppConfig::SelectedvJoyDevice(void)
 		return id;
 }
 
-void CSppConfig::MapButtons(UINT id, array<BYTE,128> ButtonMap)
+void CSppConfig::MapButtons(UINT id, BTNArr ButtonMap)
 {
 	// Create a vjoy device (if it does not exist)
 	TiXmlHandle  DeviceHandle = CreatevJoyDevice(id);
@@ -305,7 +302,7 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 // Array item N represents button N+1
 // Item value is the channel mapped to the button - values are 1 to 24
 // Special case: item = 0 - no info for this button
-void CSppConfig::GetMapButtons(UINT id, array<BYTE, 128>& ButtonMap)
+void CSppConfig::GetMapButtons(UINT id, BTNArr& ButtonMap)
 {
 	// Get handle to vJoy Device
 	TiXmlHandle DeviceHandle = CreatevJoyDevice(id);
@@ -347,6 +344,12 @@ DWORD CSppConfig::MapAxis(UINT id)
 
 	return out;
 
+}
+
+void	CSppConfig::Map(UINT id, Mapping* GeneralMap)
+{
+	MapAxis(id, *GeneralMap->pAxisMap);
+	MapButtons(id,  *GeneralMap->ButtonArray);
 }
 
 // Return the channel mapped to the specified button

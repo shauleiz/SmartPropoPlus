@@ -128,6 +128,7 @@ set m_ctPoll:
 */
 
 #include "stdafx.h"
+#include "SmartPropoPlus.h"
 #include "vJoyMonitorDI8.h"
 
 // Forward Declarations
@@ -212,7 +213,7 @@ void CvJoyMonitorDI8::CentralThread()
 
 	while (m_CentralKeepalive)
 	{
-		sleep_for(100); // MilliSec
+		Sleep_For(100); // MilliSec
 
 		// Need enumeration? - If enumeration counter is positive then yes
 		// Kill all polling threads then start enumerating then decrement counter
@@ -543,7 +544,7 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 			// Update
 			prevState =  state;
 
-			sleep_for(20); // MilliSec
+			Sleep_For(20); // MilliSec
 		} // Look for changes and report
 
 	}; // While

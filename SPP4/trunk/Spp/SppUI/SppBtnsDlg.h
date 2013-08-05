@@ -4,7 +4,6 @@
 #define COLSPACE 130		// Space between columns
 #define ID_BASE_STATIC	123432
 #define ID_BASE_CH		133432
-#define MAX_BUTTONS		128
 
 class SppBtnsDlg
 {

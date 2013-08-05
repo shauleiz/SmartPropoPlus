@@ -17,10 +17,10 @@
 #include <functional>
 #include <thread>
 
-using std::function;
-using std::thread;
-using std::placeholders::_1;
-using std::placeholders::_2;
+//using std::function;
+//using std::thread;
+//using std::placeholders::_1;
+//using std::placeholders::_2;
 
 #ifdef X64
 #ifdef _DEBUG
@@ -39,18 +39,6 @@ using std::placeholders::_2;
 #pragma  comment(lib, "..\\Release\\vJoyInterface.lib")
 #endif
 #endif
-
-#define sleep_for(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
-#define  PP function<void (int, BOOL)>
-#define Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
-
-struct MOD {
-	LPCTSTR Type;		// Unique identifier of the modulation. Examples are PPMW, AIR1 …
-	LPCTSTR Subtype;	// PPM/PCM
-	LPCTSTR Name;		// User friendly name of the modulation to be desplayd.
-	PP func;			// This is the function of type PP that implements the modulation. Called by ProcessWave().
-};
-
 
 //struct MOD_STRUCT {
 //	BOOL isPpm;
@@ -114,6 +102,7 @@ public:
 	SPPMAIN_API void vJoyDeviceId(UINT rID);
 	SPPMAIN_API void MappingChanged(LPVOID& BtnMap, UINT nBtn, UINT vJoyId);
 	SPPMAIN_API DWORD MappingChanged(DWORD Map, UINT nAxes,  UINT vJoyId);
+	SPPMAIN_API void MappingChanged(Mapping*& m, UINT vJoyId);
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
 
 

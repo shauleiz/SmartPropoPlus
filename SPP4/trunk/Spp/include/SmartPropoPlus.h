@@ -178,6 +178,10 @@ For further details please go to the SmartPropoPlus Home using the link below."
 
 #define MSG_DPPJSTAT_DISCN	1984	// LPARAM: Intentional disconnection
 
+#define  PP function<void (int, BOOL)>
+#define  Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
+#define Sleep_For(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
+
 /** Data types and structures ***/
 struct Modulation
 {
@@ -210,47 +214,45 @@ struct DbgPulseInfo
 	bool negative;
 };
 
-/* Function Prototypes */
-int SetActiveMode(LPCWSTR selected);
-void SetShiftAutoDetect(const int sel);
-void SetPositiveShift(const int sel);
-struct Modulations * GetModulation(int Create);
-void FreeModulation(struct Modulations * modulation);
-int GetDebugLevel(void);
-LPCTSTR ModeDisplayFromInternalName(LPCTSTR internal);
-int GetDefaultVolumeValue(unsigned long SrcType);
-int SetDefaultVolumeValue(unsigned long SrcType, unsigned long  VolumeValue);
-int GetCurrentAudioState();
-void SetCurrentAudioState(int Active);
-int GetCurrentPpjoyState();
-void SetCurrentPpjoyState(int Active);
-LPWSTR GetMixerName(void);
-LPWSTR GetCurrentMixerDevice();
-LPWSTR GetCurrentEndpointDevice();
-int GetCurrentInputLine(unsigned int *SrcID);
-int GetInputLineSrcId(LPCWSTR MixerName, unsigned int *SrcID);
-void SetCurrentMixerDevice(LPCWSTR MixerName);
-void SetCurrentEndpointDevice(LPCWSTR MixerName);
-void SwitchMixerRequest(LPCWSTR MixerName);
-void SwitchMixerAck(LPWSTR MixerName);
-//void SetSwitchMixerRequestStat(enum SharedDataBlock::MDSTAT Stat);
-void SetCurrentInputLine(LPCWSTR MixerName, unsigned int SrcID);
-far void * CreateDataBlock(struct Modulations * data);
-int isVista(void);
-int isVistaSP1OrHigher(void);
+/// Channel to Button/Axis mapping
+#define MAX_BUTTONS		128
+typedef std::array<BYTE, MAX_BUTTONS> BTNArr;
+struct Mapping {
+	UINT nAxes;
+	DWORD * pAxisMap;
+	UINT nButtons;
+	BTNArr * ButtonArray;
+};
+
+struct jack_info
+{
+	/* Inter-unit information about jack/capture endpoint information */
+	int	struct_size;
+	WCHAR * id;
+	COLORREF color;
+	WCHAR * FriendlyName;
+	//bool	Enabled;
+	bool	Default;
+	int		nChannels;
+};
+
+struct filter_info
+{
+	/* Inter-unit information about filters */
+	int	struct_size;		// Size of struct in bytes
+	LPTSTR FilterFileName;	// Filter File Name 
+	int	iSelFilter;			// Intex of selected filter (Zero-based, -1 means none selected)
+	UINT nFilters;			// Number of filters in the following list
+	LPTSTR * FilterName;	// Array of nFilters filter names
+};
 
 
-int w2char(LPWSTR wIn, char * cOut, int size);
-void SetNumberOfFilters(const int n);
-int GetNumberOfFilters();
-void SetSelectedFilterIndex(const int i);
-int GetSelectedFilterIndex();
-LPTSTR GetFilterNameByIndex(const int i);
-//void SetFilterNameByIndex(const int i, const char * name);
-//char * GetFilterNameByIndex(const int i);
-void SetFilterNames(LPCTSTR* name);
-
-void SppMessageBoxWithErrorCode(void);
+struct MOD {
+	LPCTSTR Type;		// Unique identifier of the modulation. Examples are PPMW, AIR1 …
+	LPCTSTR Subtype;	// PPM/PCM
+	LPCTSTR Name;		// User friendly name of the modulation to be desplayd.
+	PP func;			// This is the function of type PP that implements the modulation. Called by ProcessWave().
+};
 
 #endif // __SMARTPROPOPLUS
 

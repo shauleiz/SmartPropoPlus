@@ -5,15 +5,15 @@
 #include <Shellapi.h>
 #include "vJoyInterface.h"
 #include "SmartPropoPlus.h"
-#include "..\SppAudio\SppAudio.h"
-#include "..\SppProcess\SppProcess.h"
+#include "SppAudio.h"
+#include "SppProcess.h"
 #include "SppConfig.h"
 #include "SppControl.h"
-#include "..\SppUI\SppDlg.h"
-#include "..\SppUI\SppLog.h"
+#include "SppDlg.h"
+#include "SppLog.h"
 #include "SppDbg.h"
 #include "WinMessages.h"
-#include "..\vJoyMonitor\vJoyMonitor.h"
+#include "vJoyMonitor.h"
 
 // Globals
 HWND hDialog;
@@ -236,7 +236,6 @@ LRESULT CALLBACK MainWindowProc(
   _In_  WPARAM wParam,
   _In_  LPARAM lParam
   ) { 
-	  DWORD Map;
 
 	  switch (uMsg) 
     { 
@@ -388,16 +387,16 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_DLG_MAP:
-			Map = Spp->MappingChanged(  (DWORD)wParam, (UINT)lParam, Conf->SelectedvJoyDevice());
-			Conf->MapAxis(Conf->SelectedvJoyDevice(), Map);
-			SendMessage(hDialog, WMSPP_MAP_UPDT, Map, lParam);
+			Spp->MappingChanged(  (Mapping*&)wParam,  Conf->SelectedvJoyDevice());
+			Conf->Map(Conf->SelectedvJoyDevice(), ((Mapping *)wParam));
+			SendMessage(hDialog, WMSPP_MAP_UPDT, wParam, lParam);
 			break;
 
-		case WMSPP_DLG_MAPBTN:
-			Spp->MappingChanged((LPVOID &)(wParam), (UINT)lParam, Conf->SelectedvJoyDevice());
-			Conf->MapButtons(Conf->SelectedvJoyDevice(), *(array<BYTE, 128> *)(wParam));
-			SendMessage(hDialog, WMSPP_MAPBTN_UPDT, wParam, lParam);
-			break;
+		//case WMSPP_DLG_MAPBTN:
+		//	Spp->MappingChanged((LPVOID &)(wParam), (UINT)lParam, Conf->SelectedvJoyDevice());
+		//	Conf->MapButtons(Conf->SelectedvJoyDevice(), *(array<BYTE, 128> *)(wParam));
+		//	SendMessage(hDialog, WMSPP_MAPBTN_UPDT, wParam, lParam);
+		//	break;
 
 		case WMSPP_DLG_CHNL:
 			if ((UCHAR)wParam !=  Audio->GetwBitsPerSample())
@@ -904,7 +903,7 @@ void thMonitor(bool * KeepAlive)
 	while (*KeepAlive)
 	{
 
-		sleep_for( 100 );// Sleep for 100 milliseconds
+		Sleep_For( 100 );// Sleep for 100 milliseconds
 
 		// Test if need to populate filter
 		if (reqPopulateFilter)
@@ -1019,18 +1018,24 @@ int vJoyDevicesPopulate(HWND hDlg)
 void SetvJoyMapping(UINT id)
 {
 	// Axes
-	DWORD Map = Conf->MapAxis(id);
-	Map = Spp->MappingChanged(Map,8,  id); // load axis mapping to SppProcess object and get new map  (TODO: Make number of axes configurable)
-	Conf->MapAxis(id, Map);
-	SendMessage(hDialog, WMSPP_MAP_UPDT, Map, 8); // TODO: Make number of axes configurable
+	const UINT nAxes = 8;
+	DWORD dAxisMap = Conf->MapAxis(id);
+	dAxisMap = Spp->MappingChanged(dAxisMap,nAxes,  id); // TODO: Remove
 
 	// Buttons
-	array<BYTE, 128> * aButtonMap = new array<BYTE, 128>;
-	Conf->GetMapButtons(id, *aButtonMap);
-	Spp->MappingChanged((LPVOID &)aButtonMap, (UINT)aButtonMap->size(), id); // load button mapping to SppProcess object
-	Conf->MapButtons(id, *aButtonMap);
-	SendMessage(hDialog, WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, aButtonMap->size());
-	delete aButtonMap;
+	BTNArr aButtonMap;
+	UINT nButtons = (UINT)aButtonMap.size();
+	Conf->GetMapButtons(id, aButtonMap);
+	Spp->MappingChanged((LPVOID &)aButtonMap, nButtons, id); // TODO: Remove
+
+	Mapping Map;
+	Map.nAxes = nAxes;
+	Map.pAxisMap = &dAxisMap;
+	Map.nButtons = nButtons;
+	Map.ButtonArray = &aButtonMap;
+	Conf->Map(id, &Map);
+
+	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
 
 bool isAboveVistaSp1()

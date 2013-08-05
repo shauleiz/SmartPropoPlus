@@ -3,6 +3,7 @@
 #include "WinMessages.h"
 #include "Commctrl.h"
 #include "resource.h"
+#include "SmartPropoPlus.h"
 #include "SppBtnsDlg.h"
 
 // Message handler for spp dialog box.
@@ -25,7 +26,7 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
 	case WM_INITDIALOG:
 		DialogObj = (SppBtnsDlg *)lParam;
-		break;
+		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
@@ -50,6 +51,9 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 		DialogObj->SetButtonsMappingData((array<BYTE, 128>*)wParam, (UINT)lParam);
 		break;
 
+	case WMSPP_MAPBTN_SEND:
+		DialogObj->SendButtonsMappingData();
+		break;
 
 
 
