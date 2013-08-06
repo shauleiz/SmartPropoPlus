@@ -1965,21 +1965,20 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 		writeOk =  SetBtn(ch[m_BtnMapping[k]-1]>511, rID,k+1); // TODO: Replace 511 with some constant definition
 }
 
-void CSppProcess::MappingChanged(LPVOID&  pBtnMap, UINT nBtn, UINT vJoyId)
+void CSppProcess::ButtonMappingChanged(BTNArr* BtnMap, UINT nBtn, UINT vJoyId)
 {
-	array<BYTE, 128> BtnMap = *(array<BYTE, 128>*&)(pBtnMap);
 	// Go over the input array and replace every zero with the corresponding entry in m_BtnMapping
-	auto size = BtnMap.size();
+	auto size = BtnMap->size();
 	if (m_BtnMapping.size() == size)
 	{
 		for (UINT i=0; i<size; i++)
 		{
-			if ((BtnMap)[i])
-				m_BtnMapping[i] = (BtnMap)[i];
+			if ((*BtnMap)[i])
+				m_BtnMapping[i] = (*BtnMap)[i];
 		}; // for
 
-		(BtnMap) = m_BtnMapping;
-	}; // if (m_BtnMapping.size() >= size)
+		(*BtnMap) = m_BtnMapping;
+	};
 
 }
 
@@ -1996,7 +1995,7 @@ void CSppProcess::MappingChanged(LPVOID&  pBtnMap, UINT nBtn, UINT vJoyId)
 // - vJoy device changed: Default mapping is reset
 // Return: New mapping
 
-DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes,  UINT vJoyId)
+void CSppProcess::AxisMappingChanged(DWORD* Map, UINT nAxes,  UINT vJoyId)
 {
 
 	DWORD dwMap=0; // Intermediary map
@@ -2004,19 +2003,19 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes,  UINT vJoyId)
 	static UINT id = 0;
 
 	if (nAxes>8)
-		return m_Mapping;
+		return;
 
 	if (vJoyId != id)
 	{
 		m_Mapping = 0x12345678;
-		SetDefaultBtnMap(m_BtnMapping);
+		//SetDefaultBtnMap(m_BtnMapping);
 	};
 
 	// Axes
 	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
 	for (UINT i=0; i<8; i++)
 	{
-		Nibble		= Map2Nibble(Map,i);			// Nibble from map
+		Nibble		= Map2Nibble(*Map,i);			// Nibble from map
 		PrevNibble	= Map2Nibble(m_Mapping, i);		// Nibble previously used
 		DefNibble	= Map2Nibble(0x12345678, i);	// Default nibble
 
@@ -2033,13 +2032,14 @@ DWORD CSppProcess::MappingChanged(DWORD Map, UINT nAxes,  UINT vJoyId)
 	}
 
 	m_Mapping = dwMap;
-	return m_Mapping;
+	*Map = m_Mapping;
+	return;
 }
 
-void CSppProcess::MappingChanged(Mapping*& m, UINT vJoyId)
+void CSppProcess::MappingChanged(Mapping* m, UINT vJoyId)
 {
-	MappingChanged((LPVOID&)m->ButtonArray, m->nButtons, vJoyId);
-	*m->pAxisMap = MappingChanged(*m->pAxisMap, m->nAxes, vJoyId);
+	ButtonMappingChanged(m->ButtonArray, m->nButtons, vJoyId);
+	AxisMappingChanged(m->pAxisMap, m->nAxes, vJoyId);
 }
 
 void CSppProcess::SetDefaultBtnMap(array <BYTE, 128>& BtnMap)

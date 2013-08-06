@@ -240,6 +240,8 @@ void CSppConfig::MapButtons(UINT id, BTNArr ButtonMap)
 		string ButtonXX = SPP_BTNPREF + to_string(i+1);
 		UniqueTextLeaf(ButtonHandle, ButtonXX, to_wstring(ButtonMap[i]), true);
 	};
+
+	m_doc.SaveFile();
 }
 
 // MapAxis - Register the channel-to-axis mapping of a given vJoy device
@@ -302,17 +304,17 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 // Array item N represents button N+1
 // Item value is the channel mapped to the button - values are 1 to 24
 // Special case: item = 0 - no info for this button
-void CSppConfig::GetMapButtons(UINT id, BTNArr& ButtonMap)
+void CSppConfig::GetMapButtons(UINT id, BTNArr* ButtonMap)
 {
 	// Get handle to vJoy Device
 	TiXmlHandle DeviceHandle = CreatevJoyDevice(id);
 
 	// Loop on array of buttons
-	auto nButtons = ButtonMap.size();
+	auto nButtons = ButtonMap->size();
 	for (UINT i=0; i<nButtons; i++)
 	{
 		auto channel = GetSingleButtonMap(DeviceHandle, i+1);
-		ButtonMap[i] = channel;
+		(*ButtonMap)[i] = channel;
 	}
 }
 
@@ -350,6 +352,17 @@ void	CSppConfig::Map(UINT id, Mapping* GeneralMap)
 {
 	MapAxis(id, *GeneralMap->pAxisMap);
 	MapButtons(id,  *GeneralMap->ButtonArray);
+}
+
+void	CSppConfig::GetMap(UINT id, Mapping* GeneralMap)
+{
+	// Axes
+	*GeneralMap->pAxisMap = MapAxis(id);
+	GeneralMap->nAxes = 8;
+
+	// Buttons
+	GetMapButtons(id, GeneralMap->ButtonArray);
+	GeneralMap->nButtons = GeneralMap->ButtonArray->size();
 }
 
 // Return the channel mapped to the specified button

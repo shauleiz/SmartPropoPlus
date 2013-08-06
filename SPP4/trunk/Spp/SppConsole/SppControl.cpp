@@ -1020,13 +1020,11 @@ void SetvJoyMapping(UINT id)
 	// Axes
 	const UINT nAxes = 8;
 	DWORD dAxisMap = Conf->MapAxis(id);
-	dAxisMap = Spp->MappingChanged(dAxisMap,nAxes,  id); // TODO: Remove
 
 	// Buttons
 	BTNArr aButtonMap;
 	UINT nButtons = (UINT)aButtonMap.size();
-	Conf->GetMapButtons(id, aButtonMap);
-	Spp->MappingChanged((LPVOID &)aButtonMap, nButtons, id); // TODO: Remove
+	Conf->GetMapButtons(id, &aButtonMap);
 
 	Mapping Map;
 	Map.nAxes = nAxes;
@@ -1035,6 +1033,7 @@ void SetvJoyMapping(UINT id)
 	Map.ButtonArray = &aButtonMap;
 	Conf->Map(id, &Map);
 
+	Spp->MappingChanged(&Map, id); 
 	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
 
