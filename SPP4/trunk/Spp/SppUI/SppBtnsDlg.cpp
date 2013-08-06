@@ -31,12 +31,15 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
+			ShowWindow(DialogObj->GetHandle(), SW_HIDE);
+
+			// If OK -> Send new button mapping to parent window for further processing
 			if (LOWORD(wParam) == IDOK)
 				DialogObj->SendButtonsMappingData();
 
-			DestroyWindow(hDlg);
-			hDlg = NULL;
-			return (INT_PTR)TRUE;
+			//DestroyWindow(hDlg);
+			//hDlg = NULL;
+			//return (INT_PTR)TRUE;
 		};
 
 		if (LOWORD(wParam) == ID_APPLY)
@@ -82,15 +85,20 @@ SppBtnsDlg::SppBtnsDlg(HINSTANCE hInstance, HWND	ParentWnd)
 	array<BYTE,MAX_BUTTONS> map = {0};
 	int s = CreateBtnMap(map);
 
-	// TODO - Remove later
-	ShowWindow(m_hDlg, SW_SHOW);
-	UpdateWindow(m_hDlg);	
+	//::ShowWindow(m_hDlg, SW_SHOW);
+	//UpdateWindow(m_hDlg);	
 
 	return;
 }
 
 SppBtnsDlg::~SppBtnsDlg(void)
 {
+}
+
+void SppBtnsDlg::Show(void)
+{
+	ShowWindow(m_hDlg, SW_SHOW);
+	UpdateWindow(m_hDlg);	
 }
 
 HWND SppBtnsDlg::GetHandle(void)
