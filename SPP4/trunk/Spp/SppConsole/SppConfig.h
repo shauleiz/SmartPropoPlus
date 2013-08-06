@@ -64,8 +64,9 @@ public:
 	bool 			SelectvJoyDevice(UINT id);
 	UINT 			SelectedvJoyDevice(void);
 	DWORD 			MapAxis(UINT id);
-	void			GetMapButtons(UINT id, BTNArr& ButtonMap);
+	void			GetMapButtons(UINT id, BTNArr* ButtonMap);
 	void			Map(UINT id, Mapping* GeneralMap);
+	void			GetMap(UINT id, Mapping* GeneralMap);
 
 	// Modulations
 	bool			AddModulation(PVOID data);

@@ -48,7 +48,7 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 		break;
 
 	case WMSPP_MAPBTN_UPDT:
-		DialogObj->SetButtonsMappingData((array<BYTE, 128>*)wParam, (UINT)lParam);
+		DialogObj->SetButtonsMappingData((BTNArr*)wParam, (UINT)lParam);
 		break;
 
 	case WMSPP_MAPBTN_SEND:
@@ -106,7 +106,7 @@ void SppBtnsDlg::SendButtonsMappingData(void)
 	HWND hEditCh;
 	UINT count=0;
 
-	array<BYTE, 128> aButtonMap;
+	BTNArr aButtonMap;
 	aButtonMap.fill(0);
 
 	auto size = m_ahEdtBtn.size();
@@ -127,7 +127,7 @@ void SppBtnsDlg::SendButtonsMappingData(void)
 }
 
 // Fill-in the actual button-mapping data
-void SppBtnsDlg::SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons)
+void SppBtnsDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
 {
 	HWND hEditCh;
 
