@@ -1967,6 +1967,15 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 
 void CSppProcess::ButtonMappingChanged(BTNArr* BtnMap, UINT nBtn, UINT vJoyId)
 {
+	static UINT id = 0;
+
+	if (nBtn>MAX_BUTTONS)
+		return;
+
+	if (vJoyId != id)
+		SetDefaultBtnMap(m_BtnMapping);
+	id = vJoyId;
+
 	// Go over the input array and replace every zero with the corresponding entry in m_BtnMapping
 	auto size = BtnMap->size();
 	if (m_BtnMapping.size() == size)
@@ -2006,10 +2015,8 @@ void CSppProcess::AxisMappingChanged(DWORD* Map, UINT nAxes,  UINT vJoyId)
 		return;
 
 	if (vJoyId != id)
-	{
 		m_Mapping = 0x12345678;
-		//SetDefaultBtnMap(m_BtnMapping);
-	};
+	id = vJoyId;
 
 	// Axes
 	// For every nibble: Normalize index (to 0-based), set mapping if was 0 or set to default if out of range
