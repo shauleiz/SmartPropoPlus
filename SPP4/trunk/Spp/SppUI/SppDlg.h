@@ -27,6 +27,7 @@ public: // Called from window procedure
 	void MonitorRawCh(WORD cb);
 	void MonitorPrcCh(WORD cb);
 	void ShowLogWindow(WORD cb);
+	void ShowButtonMapWindow(void);
 	void RecordInSignal(WORD cb);
 	void RecordPulse(WORD cb);
 	void vJoyMapping(void);

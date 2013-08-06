@@ -319,6 +319,14 @@ void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 	};
 }
 
+void SppDlg::ShowButtonMapWindow(void)
+{
+	if (!m_BtnsDlg)
+		return;
+
+	vJoySelected(GetDlgItem(m_hDlg,IDC_VJOY_DEVICE));
+	m_BtnsDlg->Show();
+}
 
 // Tell the parent window (Main application)
 // to show/hide log window
@@ -752,6 +760,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (LOWORD(wParam)  == IDC_BTN_MAP && HIWORD(wParam) == BN_CLICKED )
 		{
 			DialogObj->vJoyMapping();
+			break;
+		}
+
+		if (LOWORD(wParam)  == IDC_BTN_MAPBTNS && HIWORD(wParam) == BN_CLICKED )
+		{
+			DialogObj->ShowButtonMapWindow();
 			break;
 		}
 
