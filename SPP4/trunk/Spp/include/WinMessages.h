@@ -63,6 +63,7 @@ UINT const FILTER_SELCTED	=			BASE_SUB+37;			// Set selected filter (By Filter I
 UINT const WMSPP_MAPBTN_UPDT=			BASE_SUB+38;			// The payload is Pointer to array that describe mapping of channels to buttons
 UINT const WMSPP_DLG_MAPBTN	=			BASE_SUB+39;			// The payload is pointer that describe mapping of channels to buttons
 UINT const WMSPP_MAPBTN_SEND=			BASE_SUB+40;			// Request button Mapping dialog to send data to main GUI window
+UINT const VJOYDEV_SETAVAIL	=			BASE_SUB+41;			// Set the available controls for a given vJoy device
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

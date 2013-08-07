@@ -47,6 +47,7 @@ void		thMonitor(bool * KeepAlive);
 void		SetMonitoring(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
 void		SetvJoyMapping(UINT id);
+void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
 
@@ -177,6 +178,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Spp		= new CSppProcess();
 	vJoyDevice = Conf->SelectedvJoyDevice();
 	SetvJoyMapping(vJoyDevice);
+
+	// Instruct GUI of the available Controls (Axes/Buttons)
+	SetAvailableControls((UINT)vJoyDevice, hDialog);
+
 	Spp->SetAudioObj(Audio);
 
 	if (!Spp->Start(hwnd))
@@ -259,9 +264,14 @@ LRESULT CALLBACK MainWindowProc(
 			 return TRUE;
 
  
-        // 
+        ////////////////////////////////////////// 
         // Process other messages. 
         //
+
+        ////////////////////////////////////////// 
+		// Called by:	CSppAudio
+		// Meaning:		Audio configuation changed
+		// Action:		Enumerate new audio configuration and inform GUI and CSppProcess
 		case WMSPP_AUDIO_CHNG:
 		case WMSPP_AUDIO_ADD:
 		case WMSPP_AUDIO_REM:
@@ -269,6 +279,12 @@ LRESULT CALLBACK MainWindowProc(
 			Spp->AudioChanged();
 			break;
 
+        ////////////////////////////////////////// 
+		// Called by:	CSppAudio::GetDefaultSetUp()
+		// Meaning:		Get audio configuration from configuration file
+		// wParam:		Audio Device ID
+		// Action:		Get bitrate and audio channel from configuration file
+		// Return:		bitrate & Channel (Muxed)
 		case WMSPP_AUDIO_GETSU:
 			{
 				UINT br = Conf->GetAudioDeviceBitRate((LPTSTR)wParam);
@@ -279,6 +295,10 @@ LRESULT CALLBACK MainWindowProc(
 			};
 			break;
 
+        ////////////////////////////////////////// 
+		// Called by:	CSppAudio::PropertyValueChanged()
+		// Meaning:		Some audio property has changed
+		// Action:		Pass event to CSppProcess
 		case WMSPP_AUDIO_PROP:
 			Spp->AudioChanged();
 			break;
@@ -337,6 +357,7 @@ LRESULT CALLBACK MainWindowProc(
 			StartPollingDevice(vJoyDevice);
 			Conf->SelectvJoyDevice((UINT)wParam);
 			SetvJoyMapping((UINT)wParam);
+			SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
 			break;
 
 		case WMSPP_JMON_AXIS:
@@ -925,6 +946,7 @@ void thMonitor(bool * KeepAlive)
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
 						SetvJoyMapping(vJoyDevice);
+						SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
 						//StartPollingDevice(vJoyDevice);
 					}
 					else
@@ -1015,6 +1037,18 @@ int vJoyDevicesPopulate(HWND hDlg)
 	return nDev;
 }
 
+void SetAvailableControls(UINT id, HWND hDlg)
+{
+	controls ctrls;
+	// Get data from vJoy Interface
+	ctrls.nButtons = GetVJDButtonNumber(id);
+	for (UINT i=0; i<8; i++)
+		ctrls.axis[i] = GetVJDAxisExist(id, HID_USAGE_X+i);
+
+	// Send data to GUI
+	SendMessage(hDlg, VJOYDEV_SETAVAIL, id, (LPARAM)&ctrls);
+}
+
 void SetvJoyMapping(UINT id)
 {
 	// Axes
@@ -1036,6 +1070,8 @@ void SetvJoyMapping(UINT id)
 	Spp->MappingChanged(&Map, id); 
 	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
+
+
 
 bool isAboveVistaSp1()
 {

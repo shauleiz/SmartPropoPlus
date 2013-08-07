@@ -58,8 +58,9 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 		DialogObj->SendButtonsMappingData();
 		break;
 
-
-
+	case VJOYDEV_SETAVAIL:
+		DialogObj->EnableControls((UINT)wParam, (controls*)lParam);
+		break;
 	}
 	return (INT_PTR)FALSE;
 }
@@ -79,7 +80,7 @@ SppBtnsDlg::SppBtnsDlg(HINSTANCE hInstance, HWND	ParentWnd)
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_BUTTONSDLG), NULL, MsgHndlBtnDlg, (LPARAM)this);	
 
 	// Populate dialog box
-	CreateControls(32);
+	CreateControls(MAX_BUTTONS);
 
 	// Test
 	array<BYTE,MAX_BUTTONS> map = {0};
@@ -230,7 +231,7 @@ void SppBtnsDlg::CreateButtonLable(UINT iButton)
 	rc.right+=iCol*ColSpace;
 
 	wstring caption = TEXT("Button") + to_wstring(iButton);
-	CreateStatics(m_hDlg, m_hInstance, SS_SIMPLE, rc, ID_BASE_STATIC, caption.c_str());
+	CreateStatics(m_hDlg, m_hInstance, SS_SIMPLE, rc, ID_BASE_STATIC+iButton, caption.c_str());
 }
 
 
@@ -285,3 +286,23 @@ int SppBtnsDlg::CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap)
 	return n;
 }
 
+void SppBtnsDlg::EnableControls(UINT id, controls * ctrl)
+{
+	HWND hEdit, hLable;
+
+	for (UINT i=0; i<=MAX_BUTTONS; i++)
+	{
+		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
+		hLable = GetDlgItem(m_hDlg,ID_BASE_STATIC+i);
+		if (ctrl->nButtons < i)
+		{
+			ShowWindow(hEdit, SW_HIDE);
+			ShowWindow(hLable, SW_HIDE);
+		}
+		else
+		{
+			ShowWindow(hEdit, SW_SHOW);
+			ShowWindow(hLable, SW_SHOW);
+		};
+	}
+}
