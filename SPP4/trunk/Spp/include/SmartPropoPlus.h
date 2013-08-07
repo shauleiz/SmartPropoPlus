@@ -224,6 +224,13 @@ struct Mapping {
 	BTNArr * ButtonArray;
 };
 
+// Control (Buttons/Axes) mask (availability)
+struct controls
+{
+	UINT nButtons;	// Number of buttons
+	BOOL axis[8];	// Axis-mask: axis[0] indicates if X exists ... axis[7] refers to SL1
+};
+
 struct jack_info
 {
 	/* Inter-unit information about jack/capture endpoint information */

@@ -15,6 +15,7 @@ public:
 	void SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
 	void SendButtonsMappingData(void);
 	void Show(void);
+	void EnableControls(UINT id, controls * ctrl);
 
 private:
 	HWND CreateStatics(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle, const RECT& rc,const int id,const wstring& caption);
