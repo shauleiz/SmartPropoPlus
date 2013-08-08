@@ -50,6 +50,11 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
 		break;
 
+	//case WM_CTLCOLOREDIT:
+	//		
+	//	break;
+
+
 	case WMSPP_MAPBTN_UPDT:
 		DialogObj->SetButtonsMappingData((BTNArr*)wParam, (UINT)lParam);
 		break;
@@ -61,6 +66,12 @@ INT_PTR CALLBACK MsgHndlBtnDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 	case VJOYDEV_SETAVAIL:
 		DialogObj->EnableControls((UINT)wParam, (controls*)lParam);
 		break;
+
+
+	case WMSPP_JMON_BTN:
+		DialogObj->SetButtonValues((UINT)wParam, (BTNArr *)lParam);
+		break;
+
 	}
 	return (INT_PTR)FALSE;
 }
@@ -75,6 +86,7 @@ SppBtnsDlg::SppBtnsDlg(HINSTANCE hInstance, HWND	ParentWnd)
 	m_hInstance = hInstance;
 	m_ParentWnd = ParentWnd;
 	m_ahEdtBtn.fill(NULL);
+	m_BtlVals.fill(0);
 
 	// Create the dialog box (Hidden) 
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_BUTTONSDLG), NULL, MsgHndlBtnDlg, (LPARAM)this);	
@@ -171,6 +183,7 @@ void SppBtnsDlg::CreateControls(UINT nButtons)
 	{
 		CreateButtonLable(i);
 		CreateChannelEdit(i);
+		CreateIndicator(i);
 	};
 }
 
@@ -234,6 +247,31 @@ void SppBtnsDlg::CreateButtonLable(UINT iButton)
 	CreateStatics(m_hDlg, m_hInstance, SS_SIMPLE, rc, ID_BASE_STATIC+iButton, caption.c_str());
 }
 
+void SppBtnsDlg::CreateIndicator(UINT iButton)
+{
+		// Constants
+	UINT RowSpace = ROWSPACE;			// Space between rows
+	UINT ColSpace = COLSPACE;		// Space between columns
+	RECT rc = {0,13,9,30};	// Text rectangle
+
+	// Location
+	UINT iCol = (iButton-1)/32; // Zero-based column index
+	UINT iRow = (iButton-1)%32; // Zero-based row index
+	rc.top+=iRow*RowSpace;
+	rc.bottom+=iRow*RowSpace;
+	rc.left+=iCol*ColSpace;
+	rc.right+=iCol*ColSpace;
+
+	// Green
+	HWND hGreenImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_GREENDOT+iButton, L"");
+	HANDLE hGreenImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_GREENDOT), IMAGE_BITMAP,0, 0,  LR_DEFAULTSIZE );
+	SendMessage(hGreenImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hGreenImage1);
+
+	//Red
+	HWND hRedImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_REDDOT+iButton, L"");
+	HANDLE hRedImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_REDDOT), IMAGE_BITMAP,0, 0,  LR_DEFAULTSIZE );
+	SendMessage(hRedImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRedImage1);
+}
 
 // Create a edit control for channel number
 // Place control in columns of 32 to the right of the button number
@@ -286,23 +324,59 @@ int SppBtnsDlg::CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap)
 	return n;
 }
 
+
+void SppBtnsDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
+{
+	HWND hGreenDot, hRedDot, hEdit;
+
+	//return;
+
+	for (UINT i=0; i<MAX_BUTTONS; i++)
+	{
+		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i+1);
+		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i+1);
+		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
+		LONG StyleEdit = GetWindowLong( hEdit, GWL_STYLE);
+		if (!(StyleEdit & WS_VISIBLE))
+			continue;
+
+		if ((*BtnVals)[i])
+		{
+			ShowWindow(hGreenDot, SW_SHOW);
+			ShowWindow(hRedDot, SW_HIDE);
+		}
+		else
+		{
+			ShowWindow(hGreenDot, SW_HIDE);
+			ShowWindow(hRedDot, SW_SHOW);
+		};
+	};
+
+}
+
 void SppBtnsDlg::EnableControls(UINT id, controls * ctrl)
 {
-	HWND hEdit, hLable;
+	HWND hEdit, hLable, hGreenDot, hRedDot;
 
 	for (UINT i=0; i<=MAX_BUTTONS; i++)
 	{
 		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
 		hLable = GetDlgItem(m_hDlg,ID_BASE_STATIC+i);
+		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i);
+		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i);
 		if (ctrl->nButtons < i)
 		{
 			ShowWindow(hEdit, SW_HIDE);
 			ShowWindow(hLable, SW_HIDE);
+			ShowWindow(hGreenDot, SW_HIDE);
+			ShowWindow(hRedDot, SW_HIDE);
 		}
 		else
 		{
 			ShowWindow(hEdit, SW_SHOW);
 			ShowWindow(hLable, SW_SHOW);
+			ShowWindow(hGreenDot, SW_SHOW);
+			ShowWindow(hRedDot, SW_SHOW);
 		};
 	}
 }

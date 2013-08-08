@@ -481,6 +481,7 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 {
 	HRESULT  hr;
 	DIJOYSTATE2 state={1}, prevState={0};
+	BTNArr btnState = {1},btnPrevState = {0} ;
 
 	bool DialOnly = false;
 	if (dev->isvJoyDevice)
@@ -502,6 +503,7 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 
 		// Get the state of the joystick - test what has changed and report changes
 		hr = dev->pDeviceDI8->GetDeviceState(sizeof(DIJOYSTATE2), (LPVOID)(&state));
+
 		if (hr != DI_OK)
 		{
 				dev->pDeviceDI8->Unacquire();
@@ -537,11 +539,16 @@ void CvJoyMonitorDI8::PollingThread(Device * dev)
 			if (state.rglSlider[1] != prevState.rglSlider[1])
 				PostAxisValue(iDevice, HID_USAGE_SL1, state.rglSlider[1]);
 
+			// Copy the button values to an array
+			for (int iBtn=0; iBtn<128; iBtn++)
+				btnState[iBtn] = state.rgbButtons[iBtn];
+
 			// Buttons
 			if (state.rgbButtons != prevState.rgbButtons)
-			{// TODO: Write code
-			}
+				PostButtonValue(iDevice, btnState);
+
 			// Update
+			btnPrevState = btnState;
 			prevState =  state;
 
 			Sleep_For(20); // MilliSec

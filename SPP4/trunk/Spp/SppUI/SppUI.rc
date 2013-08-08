@@ -11,6 +11,18 @@
 
 
 //
+// Bitmap resources
+//
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDB_GREENDOT       BITMAP         "bitmap2.bmp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDB_REDDOT         BITMAP         "bitmap1.bmp"
+
+
+
+//
 // Menu resources
 //
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US

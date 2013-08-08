@@ -11,6 +11,8 @@
 #define IDI_SPPCONSOLE                          114
 #define IDD_LOGDLG                              117
 #define IDD_BUTTONSDLG                          120
+#define IDB_REDDOT                              122
+#define IDB_GREENDOT                            124
 #define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001
