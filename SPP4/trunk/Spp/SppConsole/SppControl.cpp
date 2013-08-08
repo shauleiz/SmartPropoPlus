@@ -360,6 +360,7 @@ LRESULT CALLBACK MainWindowProc(
 			SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
 			break;
 
+		case WMSPP_JMON_BTN:
 		case WMSPP_JMON_AXIS:
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_PCHMNT:

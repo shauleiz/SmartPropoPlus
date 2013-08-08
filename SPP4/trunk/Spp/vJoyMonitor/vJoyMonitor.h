@@ -105,6 +105,7 @@ public:
 
 protected:
 	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
+	void PostButtonValue(UCHAR iDev,  BTNArr btnState);
 
 protected:
 	HINSTANCE				m_hInstance;

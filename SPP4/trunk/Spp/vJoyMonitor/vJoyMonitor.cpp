@@ -26,6 +26,7 @@
 */
 
 #include "stdafx.h"
+#include "SmartPropoPlus.h"
 #include "vJoyMonitor.h"
 #include "vJoyMonitorMM.h"
 #include "vJoyMonitorDI8.h"
@@ -174,4 +175,9 @@ void CvJoyMonitor::StopPollingDevices(void) {}
 void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
 	PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, iDev + (Axis<<16), AxisValue);
+}
+
+void CvJoyMonitor::PostButtonValue(UCHAR iDev,  BTNArr btnState)
+{
+	SendMessage(m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState);
 }

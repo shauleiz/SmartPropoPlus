@@ -179,6 +179,12 @@ void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 
 }
 
+void SppDlg::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
+{
+	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_JMON_BTN, iDev, (LPARAM)BtnValue);
+}
+
+
 // Update the position of the  progress bar that corresponds to the vJoy axis
 void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
@@ -886,6 +892,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_JMON_AXIS:
 		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
 		DialogObj->SetJoystickDevFrame((UCHAR)(wParam&0xFF));
+		break;
+
+	case WMSPP_JMON_BTN:
+		DialogObj->SetJoystickBtnData((UCHAR)wParam, (BTNArr *)lParam);
 		break;
 
 	case WMSPP_MAP_UPDT:
