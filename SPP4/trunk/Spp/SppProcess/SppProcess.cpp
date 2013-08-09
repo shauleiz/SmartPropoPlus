@@ -1961,7 +1961,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 		writeOk =  SetAxis(32*ch[iMapped-1],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
 	}
 
-	for (k=0; k<=n_ch;k++)
+	for (k=0; k<MAX_BUTTONS;k++)
 		writeOk =  SetBtn(ch[m_BtnMapping[k]-1]>511, rID,k+1); // TODO: Replace 511 with some constant definition
 }
 
