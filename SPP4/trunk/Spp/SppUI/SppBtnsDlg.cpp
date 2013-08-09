@@ -263,9 +263,9 @@ void SppBtnsDlg::CreateIndicator(UINT iButton)
 	rc.right+=iCol*ColSpace;
 
 	// Green
-	HWND hGreenImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_GREENDOT+iButton, L"");
-	HANDLE hGreenImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_GREENDOT), IMAGE_BITMAP,0, 0,  LR_DEFAULTSIZE );
-	SendMessage(hGreenImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hGreenImage1);
+	//HWND hGreenImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_GREENDOT+iButton, L"");
+	//HANDLE hGreenImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_GREENDOT), IMAGE_BITMAP,0, 0,  LR_DEFAULTSIZE );
+	//SendMessage(hGreenImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hGreenImage1);
 
 	//Red
 	HWND hRedImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_REDDOT+iButton, L"");
@@ -333,22 +333,22 @@ void SppBtnsDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 
 	for (UINT i=0; i<MAX_BUTTONS; i++)
 	{
-		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i+1);
+		//hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i+1);
 		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i+1);
-		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
+		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i+1);
 		LONG StyleEdit = GetWindowLong( hEdit, GWL_STYLE);
 		if (!(StyleEdit & WS_VISIBLE))
 			continue;
 
 		if ((*BtnVals)[i])
 		{
-			ShowWindow(hGreenDot, SW_SHOW);
-			ShowWindow(hRedDot, SW_HIDE);
+			//ShowWindow(hGreenDot, SW_HIDE);
+			ShowWindow(hRedDot, SW_SHOW);
 		}
 		else
 		{
-			ShowWindow(hGreenDot, SW_HIDE);
-			ShowWindow(hRedDot, SW_SHOW);
+			//ShowWindow(hGreenDot, SW_SHOW);
+			ShowWindow(hRedDot, SW_HIDE);
 		};
 	};
 
@@ -362,20 +362,20 @@ void SppBtnsDlg::EnableControls(UINT id, controls * ctrl)
 	{
 		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
 		hLable = GetDlgItem(m_hDlg,ID_BASE_STATIC+i);
-		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i);
+		//hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i);
 		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i);
 		if (ctrl->nButtons < i)
 		{
 			ShowWindow(hEdit, SW_HIDE);
 			ShowWindow(hLable, SW_HIDE);
-			ShowWindow(hGreenDot, SW_HIDE);
+			//ShowWindow(hGreenDot, SW_HIDE);
 			ShowWindow(hRedDot, SW_HIDE);
 		}
 		else
 		{
 			ShowWindow(hEdit, SW_SHOW);
 			ShowWindow(hLable, SW_SHOW);
-			ShowWindow(hGreenDot, SW_SHOW);
+			//ShowWindow(hGreenDot, SW_SHOW);
 			ShowWindow(hRedDot, SW_SHOW);
 		};
 	}
