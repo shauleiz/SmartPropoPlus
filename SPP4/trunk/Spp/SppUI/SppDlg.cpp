@@ -152,6 +152,33 @@ void  SppDlg::SetRawChData(UINT iCh, UINT data)
 
 }
 
+// Update the number of raw channels
+void SppDlg::SetNumberRawCh(UINT nCh)
+{
+	static UINT prevVal=100;
+
+	// Prevent flicker
+	if (prevVal == nCh)
+		return;
+	prevVal = nCh;
+
+	// Update text of static frame
+	HWND hFrame = GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS);
+	wstring txt = L"Raw Channels (" + to_wstring(nCh) + L")";
+	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+
+	// Show only existing channels
+	for (UINT iCh=0; iCh<(IDC_CH8-IDC_CH1+1); iCh++)
+	{
+		HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
+		if (iCh<nCh)
+			ShowWindow(hCh, SW_SHOW);
+		else
+			ShowWindow(hCh, SW_HIDE);
+		UpdateWindow(hCh);
+	};
+}
+
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 {
@@ -870,6 +897,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_PRCS_RCHMNT:
 		DialogObj->SetRawChData((UINT)wParam, (UINT)lParam);
+		break;
+
+	case WMSPP_PRCS_NRCHMNT:
+		DialogObj->SetNumberRawCh((UINT)wParam);
 		break;
 
 	case WMSPP_PRCS_PCHMNT:
