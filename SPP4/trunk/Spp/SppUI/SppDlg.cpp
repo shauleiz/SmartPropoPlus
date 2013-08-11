@@ -952,7 +952,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_DLG_MAPBTN:
-		DialogObj->SendMappingData((BTNArr *)wParam, lParam);
+		DialogObj->SendMappingData((BTNArr *)wParam, (UINT)lParam);
 		break;
 
 	case VJOYDEV_SETAVAIL:
