@@ -327,7 +327,7 @@ int SppBtnsDlg::CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap)
 
 void SppBtnsDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 {
-	HWND hGreenDot, hRedDot, hEdit;
+	HWND  hRedDot, hEdit;
 
 	//return;
 
@@ -356,7 +356,7 @@ void SppBtnsDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 
 void SppBtnsDlg::EnableControls(UINT id, controls * ctrl)
 {
-	HWND hEdit, hLable, hGreenDot, hRedDot;
+	HWND hEdit, hLable, hRedDot;
 
 	for (UINT i=0; i<=MAX_BUTTONS; i++)
 	{

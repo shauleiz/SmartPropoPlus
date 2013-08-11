@@ -362,7 +362,7 @@ void	CSppConfig::GetMap(UINT id, Mapping* GeneralMap)
 
 	// Buttons
 	GetMapButtons(id, GeneralMap->ButtonArray);
-	GeneralMap->nButtons = GeneralMap->ButtonArray->size();
+	GeneralMap->nButtons = (UINT)GeneralMap->ButtonArray->size();
 }
 
 // Return the channel mapped to the specified button

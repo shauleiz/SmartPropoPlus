@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "SmartPropoPlus.h"
 #include "vJoyMonitorMM.h"
 
 
