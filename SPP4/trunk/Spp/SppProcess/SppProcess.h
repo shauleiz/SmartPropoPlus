@@ -191,6 +191,7 @@ private:
 	MODMAP m_ModulationMap;
 	LPTSTR	m_SelectedMod;
 	PP m_CurrentPP;
+	UINT m_nChannels;
 };
 
 

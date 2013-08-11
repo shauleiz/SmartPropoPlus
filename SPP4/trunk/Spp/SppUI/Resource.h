@@ -23,6 +23,7 @@
 #define IDC_CHPP6                               1006
 #define IDC_CHPP7                               1007
 #define IDC_CHPP8                               1008
+#define IDC_RAW_CHANNELS                        1009
 #define IDC_CH_INSIG                            1010
 #define IDC_TXT_CHPP1                           1011
 #define IDC_TXT_CHPP2                           1012

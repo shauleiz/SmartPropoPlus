@@ -40,7 +40,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_WaveRate(192000), 
 	m_SelectedMod(TEXT("PPM")),
 	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
-	m_WaveInputChannel(0)
+	m_WaveInputChannel(0),
+	m_nChannels(0)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -312,6 +313,9 @@ void CSppProcess::PollChannels(void)
 				PostMessage(m_hParentWnd, WMSPP_PRCS_RCHMNT, i,vRawChannels[i]);
 			}
 		}; // For loop (Raw)
+
+		// Send the number of actual raw channels
+		PostMessage(m_hParentWnd, WMSPP_PRCS_NRCHMNT, m_nChannels, 0);
 
 		 //For every Processed channel, check if changed
 		 //If changed, POST message at the parent
@@ -715,6 +719,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (/*sync == 0 && */width > PPM_TRIG) {
         sync = 1;
+		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
 		return;
@@ -766,7 +771,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	};
 				
-	SendPPJoy(11, m_Position);
+	SendPPJoy(m_nChannels, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
 		fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -806,6 +811,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (input &&  width > PPM_TRIG) {
         sync = 1;
+		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
 		return;
@@ -894,6 +900,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (!input && width > PPM_TRIG) {
         sync = 1;
+		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
 		return;
@@ -983,6 +990,7 @@ void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
 	/* sync is detected at the end of a very long pulse (over  4.5mSec) */
     if (width > PPMW_TRIG) {
         sync = 1;
+		m_nChannels = datacount;
         datacount = 0;
 		Polarity = input;
 		return;
@@ -1213,7 +1221,8 @@ void CSppProcess::ProcessPulseFutabaPcm(int width, BOOL input)
 			break;
         case 32: sync = 0;/* End of odd frame. Wait for sync */
 			
-		SendPPJoy(10, m_Position);
+		m_nChannels = 10;  // Fixed number of channels
+		SendPPJoy(m_nChannels, m_Position);
     };
 
 	return;
@@ -1265,8 +1274,9 @@ void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
         case 26: m_Position[4] = 1023 - ((data[24] << 5) | data[25]); break;
         case 29: m_Position[6] = 1023 - ((data[27] << 5) | data[28]); break;
         case 30: sync = 0;
-				
-		SendPPJoy(8, m_Position);
+			
+		m_nChannels = 8; // Fixed number of channels
+		SendPPJoy(m_nChannels, m_Position);
     };
 
 	 return;
@@ -1299,6 +1309,7 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 	char tbuffer [9];
 	static int i = 0;
 	const int fixed_n_channel = 8;
+	m_nChannels = 8;
 
 	if (gDebugLevel>=2 && gCtrlLogFile && i++%10 && !( _strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm1(%d)", tbuffer, width);
@@ -1322,6 +1333,7 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 				m_Position[6] = smooth(m_Position[6], Convert15bits(data[3])); // Aux1 (Ch7)
 				m_Position[7] = smooth(m_Position[7], Convert15bits(data[4])); // Aux2 (Ch8)
 
+				
 				SendPPJoy(fixed_n_channel-1, m_Position);
 			};
 			sync = 1;		// Sync bit is set for the first 10 bits of the chunk (No channel data here)
@@ -1400,7 +1412,8 @@ void CSppProcess::ProcessPulseAirPcm2(int width, BOOL input)
 				m_Position[4] = smooth(m_Position[4], Convert20bits(data[1])); // Gear		(Ch5)
 				m_Position[5] = smooth(m_Position[5], Convert20bits(data[5])); // Flaps		(Ch6)
 
-				SendPPJoy(6, m_Position);
+				m_nChannels = 6;
+				SendPPJoy(m_nChannels, m_Position);
 			};
 			sync = 1;		// Sync bit is set for the first 10 bits of the chunk (No channel data here)
 			bitstream = 0;
@@ -1463,6 +1476,7 @@ void CSppProcess::ProcessPulseWalPcm(int width, BOOL input)
 	static unsigned char cycle[50];
 	int Elevator=0, Ailerons=0,Throttle=0,Rudder=0,Gear=0, Pitch=0, Gyro=0, Ch8=0;
 	const int fixed_n_channel = 8;
+	m_nChannels = 8;
 	int vPulse;
 	int * cs;
 
@@ -1955,7 +1969,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 
 	
 	UINT iMapped;
-	for (i=0; i<=n_ch && i<=HID_USAGE_SL1-HID_USAGE_X;i++)
+	for (i=0; /*i<=n_ch &&*/ i<=HID_USAGE_SL1-HID_USAGE_X;i++)
 	{
 		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
 		writeOk =  SetAxis(32*ch[iMapped-1],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
