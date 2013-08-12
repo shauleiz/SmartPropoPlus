@@ -91,6 +91,7 @@ public:
 	SPPMAIN_API CSppProcess(void);
 	SPPMAIN_API ~CSppProcess();
 	SPPMAIN_API bool Start(HWND hParentWnd);
+	SPPMAIN_API bool Stop(void);
 	SPPMAIN_API void SelectMod(LPCTSTR ModType);
 	SPPMAIN_API void SetAudioObj(class CSppAudio * Audio);
 	SPPMAIN_API void AudioChanged(void);

@@ -110,6 +110,18 @@ SPPMAIN_API void CSppProcess::SelectFilter(int iFilter, LPVOID pProcessChannels)
 
 }
 
+SPPMAIN_API bool CSppProcess::Stop(void)
+{
+	// Nothing to kill?
+	if (!m_PropoStarted)
+		return false;
+
+	// Stop capturing
+	StopCaptureAudio();
+	PostMessage(m_hParentWnd, WMSPP_PRCS_ALIVE, FALSE ,0);
+	return true;
+}
+
 SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 {
 	LPCTSTR AudioId = NULL;
@@ -206,6 +218,7 @@ void CSppProcess::MonitorCapture(void)
 		};
 
 
+		// >> Capture audio device changed - start streaming
 		if ( !m_tCapture && m_ChangeCapture)
 		{
 			LogMessage(INFO, IDS_I_STARTSTREAM);
@@ -224,9 +237,11 @@ void CSppProcess::MonitorCapture(void)
 				//else
 					LogMessage(INFO, IDS_I_STREAMTHRDOK);
 			};
-		};
-	};
+		}; // << Capture audio device changed - start streaming
+
+	}; // While  loop
 }
+
 
 void CSppProcess::CaptureAudio(void)
 {
@@ -256,9 +271,11 @@ void CSppProcess::CaptureAudio(void)
 		}
 
 
-		// Here the processing of the audio is done
+		// Here the processing of the audio is done - report processing to upper levels
 		hr = ProcessWave(buffer, bSize);
-		if (hr != S_OK)
+		if (hr == S_OK)
+			PostMessage(m_hParentWnd, WMSPP_PRCS_ALIVE, TRUE ,0);
+		else
 			break;
 
 		// Test buffer size and adjust if needed
@@ -269,7 +286,7 @@ void CSppProcess::CaptureAudio(void)
 			bMax = currsize;
 			buffer = new BYTE[bMax];
 		}
-	};
+	}; // While loop - packet get&process 
 
 	delete [] (buffer);
 	//SetSwitchMixerRequestStat(SharedDataBlock::MDSTAT::STOPPED);

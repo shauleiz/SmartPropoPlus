@@ -45,7 +45,7 @@ public: // Called from window procedure
 	void vJoySelected(HWND hCb);
 	void CreateBtnsDlg(HWND hDlg);
 	void EnableControls(UINT id, controls * ctrl);
-
+	void SetStreamingButton(BOOL isProcessingAudio);
 	//void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void UpdateFilter(void);
@@ -54,6 +54,7 @@ public: // Called from window procedure
 	void InitFilter(int nFilters, LPTSTR FilterName);
 	void SelFilter(int FilterId);
 	void EnableFilter(BOOL enable);
+	void OnStreamStopStart(void);
 
 
 

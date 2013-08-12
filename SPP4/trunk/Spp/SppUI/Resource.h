@@ -36,6 +36,7 @@
 #define IDC_CH_PULSE                            1019
 #define IDC_AUD_8                               1020
 #define IDC_BTN_MAPBTNS                         1021
+#define IDC_STREAM                              1023
 #define IDC_CH_LOG                              1081
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
