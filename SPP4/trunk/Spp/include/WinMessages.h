@@ -21,6 +21,7 @@ UINT const WMAPP_GUI_AUDIO	=			WM_APP + 202;			// Information destination: Audio
 UINT const WMSPP_PRCS_RCHMNT=			WM_APP + 203;			// Raw Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
 UINT const WMSPP_PRCS_PCHMNT=			WM_APP + 204;			// Processed Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
 UINT const WMSPP_PRCS_NRCHMNT=			WM_APP + 205;			// Number of Raw. The payload: Wparam is number of channel.
+UINT const WMSPP_PRCS_ALIVE =			WM_APP + 206;			// Processing is/isn't alice. The payload: Wparam is true(alive)/false(not processing)
 
 UINT const BASE_SUB			=			WM_APP + 1000;			// Base value
 UINT const POPULATE_JACKS	=			BASE_SUB+1;				// The payload is a pointer to struct jack_info
@@ -66,6 +67,7 @@ UINT const WMSPP_DLG_MAPBTN	=			BASE_SUB+39;			// The payload is pointer that de
 UINT const WMSPP_MAPBTN_SEND=			BASE_SUB+40;			// Request button Mapping dialog to send data to main GUI window
 UINT const VJOYDEV_SETAVAIL	=			BASE_SUB+41;			// Set the available controls for a given vJoy device
 UINT const WMSPP_JMON_BTN	=			BASE_SUB+42;			// Inform of new button status of a vJoy device
+UINT const WMSPP_DLG_STREAM	=			BASE_SUB+43;			// Inform that Start/Stop button was pressed. WPARAMS = Start(TRUE/FALSE)
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

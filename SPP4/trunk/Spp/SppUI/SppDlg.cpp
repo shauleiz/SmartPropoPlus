@@ -266,6 +266,32 @@ void SppDlg::EnableFilter(BOOL cb)
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)-1, 0);
 }
 
+// Set the value of the "Start/Stop" streaming button
+void SppDlg::SetStreamingButton(BOOL isProcessingAudio)
+{
+	LPTSTR text;
+	HWND hStream = GetDlgItem(m_hDlg,  IDC_STREAM);
+	if (isProcessingAudio)
+		text = L"Stop";
+	else
+		text = L"Start";
+
+	SetWindowText(hStream, text);
+	UpdateWindow(hStream);
+}
+
+void SppDlg::OnStreamStopStart(void)
+{
+	HWND hStream = GetDlgItem(m_hDlg,  IDC_STREAM);
+	TCHAR buff[10];
+	BOOL Stream = TRUE;
+	GetWindowText(hStream, buff, 10);
+	if (!_tcscmp(buff, L"Stop"))
+		Stream = FALSE;
+
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_STREAM , (WPARAM)Stream, 0);
+}
+
 // Set the selected filter to be displayed in the filter Combo Box
 void SppDlg::SelFilter(int FilterId)
 {
@@ -864,6 +890,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
+		if (LOWORD(wParam)  == IDC_STREAM && HIWORD(wParam) == BN_CLICKED )
+		{
+			DialogObj->OnStreamStopStart();
+			break;
+		}
+
 		if  (LOWORD(wParam)  == IDC_COMBO_FILTERS && HIWORD(wParam) == CBN_SELENDOK   )
 		{
 			DialogObj->UpdateFilter();
@@ -902,6 +934,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_PRCS_NRCHMNT:
 		DialogObj->SetNumberRawCh((UINT)wParam);
 		break;
+
+	case WMSPP_PRCS_ALIVE:
+		DialogObj->SetStreamingButton((BOOL)wParam);
+		break;
+
 
 	case WMSPP_PRCS_PCHMNT:
 		DialogObj->SetProcessedChData((UINT)wParam, (UINT)lParam);

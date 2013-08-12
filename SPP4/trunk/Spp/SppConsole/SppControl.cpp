@@ -184,14 +184,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Spp->SetAudioObj(Audio);
 
+	// Start processing the audio
 	if (!Spp->Start(hwnd))
 	{
 		LogMessage(FATAL, IDS_F_STARTSPPPRS);
 		goto ExitApp;
 	};
-	    
 
+	// Start processing the audio - Success
 	LogMessage(INFO, IDS_I_STARTSPPPRS);
+
 
 
 	FilterPopulate(hDialog);
@@ -365,7 +367,8 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_NRCHMNT:
 		case WMSPP_PRCS_PCHMNT:
-			SendMessage(hDialog, uMsg, wParam, lParam);
+		case WMSPP_PRCS_ALIVE:
+		SendMessage(hDialog, uMsg, wParam, lParam);
 			break;
 
 		case WMSPP_DLG_FILTER:
@@ -441,6 +444,14 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->SetAudioChannel(false);
 			}
 
+			break;
+
+		// Stop/Start Streaming
+		case WMSPP_DLG_STREAM:
+			if ((BOOL)wParam)
+				Spp->Start(hwnd);
+			else
+				Spp->Stop();
 			break;
 
 		case WMSPP_PRCS_GETLR:
