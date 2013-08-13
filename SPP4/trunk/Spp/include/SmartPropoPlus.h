@@ -182,6 +182,13 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define  Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
 #define Sleep_For(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
 
+extern void SetThreadName(char* threadName);
+#ifdef _DEBUG
+#define THREAD_NAME(name) SetThreadName(name)
+#else
+#define THREAD_NAME(name)
+#endif
+
 /** Data types and structures ***/
 struct Modulation
 {

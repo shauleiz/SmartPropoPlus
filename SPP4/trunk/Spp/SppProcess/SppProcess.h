@@ -176,6 +176,7 @@ private:
 	//struct Modulations *  m_Modulation;
 	class CSppAudio * m_Audio;
 	thread * m_tCapture;
+	thread * m_tMonitorCapture;
 	bool	m_tCaptureActive;
 	UINT m_WaveNChannels;
 	UINT m_WaveBitsPerSample;

@@ -443,13 +443,15 @@ LRESULT CALLBACK MainWindowProc(
 				Conf->SetDefaultChannel(TEXT("Right"));
 				Spp->SetAudioChannel(false);
 			}
-
 			break;
 
 		// Stop/Start Streaming
 		case WMSPP_DLG_STREAM:
 			if ((BOOL)wParam)
+			{
 				Spp->Start(hwnd);
+				Spp->AudioChanged();
+			}
 			else
 				Spp->Stop();
 			break;
