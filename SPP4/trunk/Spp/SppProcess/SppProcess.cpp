@@ -116,8 +116,16 @@ SPPMAIN_API bool CSppProcess::Stop(void)
 	if (!m_PropoStarted)
 		return false;
 
-	// Stop capturing
-	StopCaptureAudio();
+	// Stop Monitoring
+	m_closeRequest = TRUE;
+
+	// Wait for thread to stop
+	if (m_tMonitorCapture->joinable())
+		m_tMonitorCapture->join();
+	delete(m_tMonitorCapture);
+	m_tMonitorCapture = NULL;
+
+	// Inform parent
 	PostMessage(m_hParentWnd, WMSPP_PRCS_ALIVE, FALSE ,0);
 	return true;
 }
@@ -173,8 +181,9 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 
 
 	// Start a thread that listens to the GUI
-	thread * tMonitorCapture = new thread(MonitorCaptureStatic, this);
-	if (!tMonitorCapture)
+	m_closeRequest = FALSE;
+	m_tMonitorCapture = new thread(MonitorCaptureStatic, this);
+	if (!m_tMonitorCapture)
 		return false;
 
 
@@ -240,6 +249,9 @@ void CSppProcess::MonitorCapture(void)
 		}; // << Capture audio device changed - start streaming
 
 	}; // While  loop
+
+	StopCaptureAudio();
+	m_PropoStarted = false;
 }
 
 
@@ -2122,6 +2134,7 @@ int CSppProcess::RunJsFilter(int * ch, int nChannels)
 
 DWORD WINAPI CSppProcess::MonitorCaptureStatic(LPVOID obj)
 {
+	THREAD_NAME(" CSppProcess::MonitorCapture");
 	if (obj)
 		((CSppProcess *)obj)->MonitorCapture();
 	return 0;
@@ -2129,6 +2142,8 @@ DWORD WINAPI CSppProcess::MonitorCaptureStatic(LPVOID obj)
 
 DWORD WINAPI CSppProcess::CaptureAudioStatic(LPVOID obj)
 {
+	THREAD_NAME(" CSppProcess::CaptureAudio");
+
 	if (obj)
 		((CSppProcess *)obj)->CaptureAudio();
 	return 0;
@@ -2155,7 +2170,7 @@ void	CSppProcess::LogMessage(int Severity, int Code, LPCTSTR Msg)
 	if (!m_hParentWnd)
 		return;
 
-	SendMessage(m_hParentWnd , WMSPP_LOG_PRSC + Severity, (WPARAM)Code, (LPARAM)Msg);
+	PostMessage(m_hParentWnd , WMSPP_LOG_PRSC + Severity, (WPARAM)Code, (LPARAM)Msg);
 }
 
 // Called with every input sample - sends data only on pulse end
@@ -2192,7 +2207,35 @@ void CSppProcess::SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength
 
 	// Put a new sample in current array (Make sure array not overrun)
 	Samples[iArray][iSample++] = sample;
-
-
-
 }
+
+#ifdef _DEBUG
+const DWORD MS_VC_EXCEPTION=0x406D1388;
+
+#pragma pack(push,8)
+typedef struct tagTHREADNAME_INFO
+{
+   DWORD dwType; // Must be 0x1000.
+   LPCSTR szName; // Pointer to name (in user addr space).
+   DWORD dwThreadID; // Thread ID (-1=caller thread).
+   DWORD dwFlags; // Reserved for future use, must be zero.
+} THREADNAME_INFO;
+#pragma pack(pop)
+
+void SetThreadName(char* threadName)
+{
+   THREADNAME_INFO info;
+   info.dwType = 0x1000;
+   info.szName = threadName;
+   info.dwThreadID = GetCurrentThreadId();
+   info.dwFlags = 0;
+
+   __try
+   {
+      RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(ULONG_PTR), (ULONG_PTR*)&info );
+   }
+   __except(EXCEPTION_EXECUTE_HANDLER)
+   {
+   }
+}
+#endif

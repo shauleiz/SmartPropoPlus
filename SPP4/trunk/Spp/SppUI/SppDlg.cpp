@@ -269,7 +269,14 @@ void SppDlg::EnableFilter(BOOL cb)
 // Set the value of the "Start/Stop" streaming button
 void SppDlg::SetStreamingButton(BOOL isProcessingAudio)
 {
+	static int state = -1;
 	LPTSTR text;
+
+	if (state == (int)isProcessingAudio)
+		return;
+	else
+		state = (int)isProcessingAudio;
+
 	HWND hStream = GetDlgItem(m_hDlg,  IDC_STREAM);
 	if (isProcessingAudio)
 		text = L"Stop";
@@ -277,7 +284,6 @@ void SppDlg::SetStreamingButton(BOOL isProcessingAudio)
 		text = L"Start";
 
 	SetWindowText(hStream, text);
-	UpdateWindow(hStream);
 }
 
 void SppDlg::OnStreamStopStart(void)
@@ -363,6 +369,9 @@ void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 	if (!wcscmp(L"PPM",mod->Subtype))
 	{ // PPM
 		HWND hPPMList = GetDlgItem(m_hDlg,  IDC_LIST_PPM);
+		if (SendMessage(hPPMList, LB_FINDSTRINGEXACT , -1, (LPARAM)mod->Name) != LB_ERR)
+			return;
+
 		int pos = (int)SendMessage(hPPMList, LB_ADDSTRING, 0, (LPARAM)mod->Name);
 		SendMessage(hPPMList, LB_SETITEMDATA, pos, (LPARAM) mod->Type); 
 		if (!wcscmp(SelType,mod->Type))
@@ -371,6 +380,9 @@ void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 	else
 	{ // PCM
 		HWND hPCMList = GetDlgItem(m_hDlg,  IDC_LIST_PCM);
+		if (SendMessage(hPCMList, LB_FINDSTRINGEXACT , -1, (LPARAM)mod->Name) != LB_ERR)
+			return;
+
 		int pos = (int)SendMessage(hPCMList, LB_ADDSTRING, 0, (LPARAM)mod->Name); 
 		SendMessage(hPCMList, LB_SETITEMDATA, pos, (LPARAM) mod->Type); 
 		if (!wcscmp(SelType,mod->Type))
