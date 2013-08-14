@@ -7,7 +7,6 @@
 #include "public.h"
 #include "SppAudio.h"
 #include "WinMessages.h"
-#include "GlobalMemory.h"
 #include "SppProcess.h"
 
 /* Globals */
@@ -203,7 +202,6 @@ SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 
 void CSppProcess::MonitorCapture(void)
 {
-	SharedDataBlock * DataBlock = (SharedDataBlock *)m_pSharedBlock;
 	HRESULT hr = S_OK;
 
 	// Loop while close request has not arrived
