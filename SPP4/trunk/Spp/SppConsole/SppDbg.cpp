@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "GlobalMemory.h"
 #include "SmartPropoPlus.h"
 #include "SppDbg.h"
 
