@@ -860,7 +860,7 @@ bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select)
 {
 	// This means remove selection
 	if ((int)Id == -1)
-		return AddFilter(Id, (LPTSTR)"", select);
+		return AddFilter(Id, TEXT(""), select);
 
 	string str(Name);
 	wstring wstr = utf8_decode(str);

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Windowsx.h"
 #include "SmartPropoPlus.h"
 #include "WinMessages.h"
 #include "Commctrl.h"

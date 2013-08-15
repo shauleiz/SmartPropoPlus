@@ -1071,7 +1071,7 @@ void SetvJoyMapping(UINT id)
 	DWORD dAxisMap = Conf->MapAxis(id);
 
 	// Buttons
-	BTNArr aButtonMap;
+	BTNArr aButtonMap = {0};
 	UINT nButtons = (UINT)aButtonMap.size();
 	Conf->GetMapButtons(id, &aButtonMap);
 
