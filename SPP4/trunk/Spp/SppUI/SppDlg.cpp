@@ -2,6 +2,7 @@
 #include "Windowsx.h"
 #include "SmartPropoPlus.h"
 #include "WinMessages.h"
+#include "public.h"
 #include "Commctrl.h"
 #include "resource.h"
 #include "vJoyMonitor.h"

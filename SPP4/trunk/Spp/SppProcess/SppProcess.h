@@ -144,7 +144,8 @@ private:
 	int InitModulationMap(void);
 	bool InitModulationSelect(void);
 	void SetDefaultBtnMap(array <BYTE, 128>& BtnMap);
-
+	BOOL SetAxisDelayed(LONG Value, UINT Axis);
+	BOOL SetBtnDelayed(BOOL Value, UCHAR nBtn);
 
 
 private:	// Walkera (PCM) helper functions
@@ -194,6 +195,7 @@ private:
 	LPTSTR	m_SelectedMod;
 	PP m_CurrentPP;
 	UINT m_nChannels;
+	JOYSTICK_POSITION m_vJoyPosition;
 };
 
 

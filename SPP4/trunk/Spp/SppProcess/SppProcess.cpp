@@ -41,12 +41,14 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
 	m_WaveInputChannel(0),
 	m_nChannels(0)
+
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
 		m_Position[i] = 0;
 
 	SetDefaultBtnMap(m_BtnMapping);
+	m_vJoyPosition.bDevice = 0;
 }
 
 SPPMAIN_API CSppProcess::~CSppProcess() {}
@@ -1995,15 +1997,19 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	memcpy(m_PrcChannel, ch, MAX_JS_CH*sizeof(int));	
 
 	
+	// Fill-in the structure to be fed to the vJoy device - Axes the Buttons
 	UINT iMapped;
 	for (i=0; /*i<=n_ch &&*/ i<=HID_USAGE_SL1-HID_USAGE_X;i++)
 	{
 		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
-		writeOk =  SetAxis(32*ch[iMapped-1],  rID, HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+		writeOk =  SetAxisDelayed(32*ch[iMapped-1], HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
 	}
 
 	for (k=0; k<MAX_BUTTONS;k++)
-		writeOk =  SetBtn(ch[m_BtnMapping[k]-1]>511, rID,k+1); // TODO: Replace 511 with some constant definition
+		writeOk =  SetBtnDelayed(ch[m_BtnMapping[k]-1]>511,k+1); // TODO: Replace 511 with some constant definition
+
+	// Feed structure to vJoy device rID
+	UpdateVJD(rID, &m_vJoyPosition);
 }
 
 void CSppProcess::ButtonMappingChanged(BTNArr* BtnMap, UINT nBtn, UINT vJoyId)
@@ -2161,6 +2167,85 @@ void CSppProcess::SendModInfoToParent(HWND hParentWnd)
 
 	for (MODMAP::iterator  i=m_ModulationMap.begin(); i != m_ModulationMap.end(); i++)
 		SendMessage(hParentWnd, WMSPP_PRCS_SETMOD, (WPARAM)(&(*i).second) , (LPARAM)m_SelectedMod);
+}
+
+BOOL CSppProcess::SetAxisDelayed(LONG Value,  UINT Axis)
+{
+		/* Write Value to a given axis defined in the specified VDJ
+		Limited to the following axes:
+		HID_USAGE_X		0x30
+		HID_USAGE_Y		0x31
+		HID_USAGE_Z		0x32
+		HID_USAGE_RX	0x33
+		HID_USAGE_RY	0x34
+		HID_USAGE_RZ	0x35
+		HID_USAGE_SL0	0x36
+		HID_USAGE_SL1	0x37
+		HID_USAGE_WHL	0x38
+
+	*/
+
+	if (Axis<HID_USAGE_X || Axis>HID_USAGE_WHL)
+		return FALSE;
+
+	switch (Axis)
+	{
+	case HID_USAGE_X:
+		m_vJoyPosition.wAxisX = Value;
+		break;
+	case HID_USAGE_Y:
+		m_vJoyPosition.wAxisY = Value;
+		break;
+	case HID_USAGE_Z:
+		m_vJoyPosition.wAxisZ = Value;
+		break;
+	case HID_USAGE_RX:
+		m_vJoyPosition.wAxisXRot = Value;
+		break;
+	case HID_USAGE_RY:
+		m_vJoyPosition.wAxisYRot = Value;
+		break;
+	case HID_USAGE_RZ:
+		m_vJoyPosition.wAxisZRot = Value;
+		break;
+	case HID_USAGE_SL0:
+		m_vJoyPosition.wSlider = Value;
+		break;
+	case HID_USAGE_SL1:
+		m_vJoyPosition.wDial = Value;
+		break;
+	case HID_USAGE_WHL:
+		m_vJoyPosition.wWheel = Value;
+		break;
+	default:
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CSppProcess::SetBtnDelayed(BOOL Value, UCHAR nBtn)
+{
+	LONG Mask=0x00000001;
+
+	// Write Value to a given button defined in the specified VDJ
+	if (nBtn<1 || nBtn>32)
+		return FALSE;
+
+	// If Value=TRUE the the given button is set to 1
+	if (Value)
+	{
+		Mask = Mask<<(nBtn-1);
+		m_vJoyPosition.lButtons |= Mask;
+	}
+	else
+	{
+		Mask = Mask<<(nBtn-1);
+		Mask = ~Mask;
+		m_vJoyPosition.lButtons &= Mask;
+	};
+
+	return TRUE;
 }
 
 void	CSppProcess::LogMessage(int Severity, int Code, LPCTSTR Msg)
