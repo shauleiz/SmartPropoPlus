@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <Shellapi.h>
+#include "public.h"
 #include "vJoyInterface.h"
 #include "SmartPropoPlus.h"
 #include "SppAudio.h"

@@ -2,6 +2,7 @@
 #include "Knownfolders.h"
 #include "Shlobj.h"
 #include "SmartPropoPlus.h"
+#include "public.h"
 #include "SppProcess.h"
 #include "SppConfig.h"
 
