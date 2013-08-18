@@ -51,7 +51,12 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_vJoyPosition.bDevice = 0;
 }
 
-SPPMAIN_API CSppProcess::~CSppProcess() {}
+SPPMAIN_API CSppProcess::~CSppProcess()
+{
+	Stop();
+	StopCaptureAudio();
+	m_ModulationMap.clear();
+}
 
 SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 {

@@ -303,9 +303,14 @@ CSppAudio::~CSppAudio(void)
 {
 	if (m_pEnumerator && m_pNotifyChange)
 		m_pEnumerator->UnregisterEndpointNotificationCallback(m_pNotifyChange);
+	RegisterProcessPulse(NULL);
+	RegisterLog(NULL);
+	RegisterAudioLog(NULL);
 	SAFE_RELEASE(m_pEnumerator);
 	SAFE_RELEASE(m_pNotifyChange);
 	SAFE_RELEASE(m_pCaptureDeviceCollect);
+	SAFE_RELEASE(m_pCaptureClient);
+	SAFE_RELEASE(m_pAudioClient);
 }
 
 
