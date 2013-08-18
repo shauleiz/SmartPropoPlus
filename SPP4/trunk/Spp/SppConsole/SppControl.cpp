@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include <Shellapi.h>
 #include "public.h"
+//#include "vld.h"
 #include "vJoyInterface.h"
 #include "SmartPropoPlus.h"
 #include "SppAudio.h"
@@ -22,7 +23,6 @@ class CSppConfig * Conf = NULL;
 class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
-class CvJoyMonitor * vJoyMon = NULL;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
@@ -233,6 +233,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	ExitApp:
 	delete(Dialog);
+	delete(Conf);
+	delete(Spp);
+	delete(Audio);
 
 	return 0;
 }
