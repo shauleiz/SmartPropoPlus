@@ -141,7 +141,7 @@ void SetThreadName(char* threadName);
 
 // Constractor
 CvJoyMonitor::CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd) :
-	m_ParentWnd(ParentWnd), m_hInstance(hInstance),  m_nvJoyDevices(0)
+	m_ParentWnd(ParentWnd), m_hInstance(hInstance),  m_nvJoyDevices(0), m_thCentral(NULL)
 {
 	if (!m_ParentWnd || !m_hInstance)
 		return;
@@ -186,10 +186,22 @@ CvJoyMonitor::CvJoyMonitor(void)
 // Kill dummy window
 CvJoyMonitor::~CvJoyMonitor(void)
 {
-	m_CentralKeepalive = false;
+	StopCentralThread();
 	FreeDeviceDB();
 	SAFE_RELEASE(m_pDI);
 	DestroyWindow(m_hDummyWnd);
+}
+
+void CvJoyMonitor::StopCentralThread(void)
+{
+	if (!m_thCentral)
+		return;
+
+	m_CentralKeepalive = false;
+	if (m_thCentral->joinable())
+		m_thCentral->join();
+	delete(m_thCentral);
+	m_thCentral = NULL;
 }
 
 // Entry point for creating the Central Thread
@@ -212,7 +224,7 @@ After each responce - Continue & Wait.
 */
 void CvJoyMonitor::CentralThread()
 {
-	THREAD_NAME("CvJoyMonitor Central thread (Loop)");
+	//THREAD_NAME("CvJoyMonitor Central thread (Loop)");
 
 	while (m_CentralKeepalive)
 	{
@@ -676,20 +688,18 @@ int   CvJoyMonitor::GetNumDevices(void)
 void CvJoyMonitor::FreeDeviceDB(void)
 {
 	// Go over DB 
-	auto iMap = m_DeviceDB.begin();
+	
 
-	while (iMap != m_DeviceDB.end())
+	for (auto iMap = m_DeviceDB.begin() ;iMap != m_DeviceDB.end(); iMap++)
 	{
 		SuspendPolling((*iMap).first);
 		if (!(*iMap).second)
 			continue;
 		SAFE_RELEASE((*iMap).second->pDeviceDI8);
 #pragma warning(suppress: 6001)
-		free ((*iMap).second);
-		m_DeviceDB.erase(iMap);
-		iMap++;
+		free ((*iMap).second);	
 	}; // While loop
-
+	m_DeviceDB.clear();
 }
 
 HWND CvJoyMonitor::CreateDummyWindow(void)
@@ -796,7 +806,7 @@ void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 
 void CvJoyMonitor::PostButtonValue(UCHAR iDev,  BTNArr btnState)
 {
-	SendMessage(m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState);
+	PostMessage(m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState);
 }
 
 #ifdef _DEBUG
@@ -916,10 +926,16 @@ SPPINTERFACE_API void StopPollingDevice(UINT iDevice)
 	if (g_MainObj)
 		return g_MainObj->StopPollingDevice(iDevice);
 }
-
 SPPINTERFACE_API void StopPollingDevices(void)
 {
 	if (g_MainObj)
 		return g_MainObj->StopPollingDevices();
 }
+SPPINTERFACE_API void vJoyMonitorClose(void)
+{
+	if (!g_MainObj)
+		return;
 
+	//StopPollingDevices();
+	delete g_MainObj;
+}

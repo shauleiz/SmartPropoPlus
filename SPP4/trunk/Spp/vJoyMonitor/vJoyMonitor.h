@@ -66,6 +66,7 @@ SPPINTERFACE_API int  GetNumvJoyDevices(void);
 SPPINTERFACE_API void StartPollingDevice(UINT iDevice);
 SPPINTERFACE_API void StopPollingDevice(UINT iDevice);
 SPPINTERFACE_API void StopPollingDevices(void);
+SPPINTERFACE_API void vJoyMonitorClose(void);
 
 
 #define VJOY_MONITOR_CLASS		L"Dummy Class"
@@ -131,6 +132,7 @@ private:
 	HWND CreateDummyWindow(void);
 	void EnumerateDevices(void);
 	void FreeDeviceDB(void);
+	void StopCentralThread(void);
 
 // These functions are callback functions that call functions within the object
 private:

@@ -226,12 +226,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Dialog->MsgLoop();
 
  
+ExitApp:
 	// Stop monitoring
 	Monitor = false;
 	if (tMonitor && tMonitor->joinable())
 		tMonitor->join();
 
-	ExitApp:
+	vJoyMonitorClose();
 	delete(Dialog);
 	delete(Conf);
 	delete(Spp);
