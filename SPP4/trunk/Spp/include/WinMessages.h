@@ -68,6 +68,7 @@ UINT const WMSPP_MAPBTN_SEND=			BASE_SUB+40;			// Request button Mapping dialog 
 UINT const VJOYDEV_SETAVAIL	=			BASE_SUB+41;			// Set the available controls for a given vJoy device
 UINT const WMSPP_JMON_BTN	=			BASE_SUB+42;			// Inform of new button status of a vJoy device
 UINT const WMSPP_DLG_STREAM	=			BASE_SUB+43;			// Inform that Start/Stop button was pressed. WPARAMS = Start(TRUE/FALSE)
+UINT const WMSPP_DLG_OK		=			BASE_SUB+44;			// Inform CU that OK (wParam!=0) or Cancel (wParam==0) was pressed
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
