@@ -222,7 +222,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			goto ExitApp;
 
 	// Loop forever in the dialog box until user kills it
-	// TODO: Initialize dialog from config file
 	Dialog->MsgLoop();
 
  
@@ -459,6 +458,12 @@ LRESULT CALLBACK MainWindowProc(
 			}
 			else
 				Spp->Stop();
+			break;
+
+		// User pressed OK (or Cancel) button
+		case WMSPP_DLG_OK:
+			if (wParam)
+				Conf->Save();
 			break;
 
 		case WMSPP_PRCS_GETLR:

@@ -96,10 +96,12 @@ public:
 	wstring			FilterFile(void);
 
 	// General
-	int			MonitorChannels();
-	bool		MonitorChannels(bool Monitor);
-	int			ShowLog();
-	bool		ShowLog(bool Monitor);
+	int				MonitorChannels();
+	bool			MonitorChannels(bool Monitor);
+	int				ShowLog();
+	bool			ShowLog(bool Monitor);
+	bool			Save(void);
+
 
 	void Test(void);
 

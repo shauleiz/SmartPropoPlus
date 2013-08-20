@@ -55,6 +55,7 @@ public: // Called from window procedure
 	void SelFilter(int FilterId);
 	void EnableFilter(BOOL enable);
 	void OnStreamStopStart(void);
+	void ExitWithOK(bool);
 
 
 

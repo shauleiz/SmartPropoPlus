@@ -771,6 +771,12 @@ void  SppDlg::vJoyDevSelect(UINT id)
 	index =  (int)SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
 }
 
+// Informs Parent window (CU) that the user pressed OK or Cancel button
+void SppDlg::ExitWithOK(bool OkSelected)
+{
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_OK, (WPARAM)OkSelected, 0);
+}
+
 void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 {
 	// Case the message origin is one of the Modulation PPM/PCM list boxes
@@ -837,6 +843,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
+			DialogObj->ExitWithOK(LOWORD(wParam) == IDOK);
 			DestroyWindow(hDlg);
 			hDlg = NULL;
 			PostQuitMessage(0);
