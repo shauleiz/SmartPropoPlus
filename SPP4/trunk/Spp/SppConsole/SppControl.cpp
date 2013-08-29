@@ -31,6 +31,8 @@ HWND hLog;
 bool Monitor = true;
 int vJoyDevice = 1;
 bool reqPopulateFilter = false;
+UINT AudioLevel[2] = {0, 0};
+
 
 
 // Declarations
@@ -935,7 +937,6 @@ void		DbgPulse(bool start)
 		DbgObj->StopDbgPulse();
 	}
 }
-
 // Monitor Thread
 // Polls activity of the different modules
 // Reports health of the modules and attemps recovery when possible
@@ -950,6 +951,12 @@ void thMonitor(bool * KeepAlive)
 	{
 
 		Sleep_For( 100 );// Sleep for 100 milliseconds
+
+		// Get the audio levels of the selected audio device
+
+		AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
+		AudioLevel[1] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 1));
+		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
 
 		// Test if need to populate filter
 		if (reqPopulateFilter)

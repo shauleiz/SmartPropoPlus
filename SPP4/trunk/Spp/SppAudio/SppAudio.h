@@ -114,7 +114,6 @@ protected:
 	bool RemoveCaptureDevice(PVOID Id);
 	bool AddCaptureDevice(PVOID Id);
 	bool ChangeStateCaptureDevice(PVOID Id, DWORD state);
-	float GetChannelPeak(PVOID Id, int iChannel);
 	HRESULT	RegisterNotification(void);
 	HRESULT StopCurrentStream(void);
 	HRESULT StartCurrentStream(void);
@@ -167,6 +166,7 @@ public:
 	SPPINTERFACE_API void		SetwBitsPerSample(UCHAR nBits=8);
 	SPPINTERFACE_API void		StartDbgInputSignal(void);
 	SPPINTERFACE_API void		StopDbgInputSignal(void);
+	SPPINTERFACE_API float		GetChannelPeak(PVOID Id, int iChannel);
 
 
 
