@@ -142,6 +142,74 @@ void  SppDlg::CleanAudioList(void)
 	ListView_DeleteAllItems(hAudioList);
 }
 
+void SppDlg::InitAudioDisplay(HWND hDlg)
+{
+	CleanAudioList();
+
+	// Change style
+	HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
+	ListView_SetExtendedListViewStyle(hAudioList, LVS_EX_FULLROWSELECT);
+
+	// Set columns
+	LVCOLUMN lvc;
+	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+	// Add Device colum (0)
+	lvc.iSubItem = 0;
+    lvc.pszText = TEXT("Device");
+    lvc.cx = 250;               // Width of column in pixels.
+	lvc.fmt = LVCFMT_LEFT;  // Left-aligned column.
+	ListView_InsertColumn(hAudioList, 0, &lvc);
+
+	// Add audio level colum (1)
+	lvc.iSubItem = 1;
+    lvc.pszText = TEXT("L/R Levels");
+    lvc.cx = 80;               // Width of column in pixels.
+	lvc.fmt = LVCFMT_CENTER;  // Left-aligned column.
+	ListView_InsertColumn(hAudioList, 1, &lvc);
+}
+
+// Display the audio levels of channels (Left/Right)
+// Levels are in the range 0-100
+void SppDlg::DisplayAudioLevels(HWND hDlg, PVOID Id, UINT Left, UINT Right)
+{
+	HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
+
+	// Get item index of by Id
+	wstring str = to_wstring(Left) + L"/" +  to_wstring(Right);
+	int i = FindItemById(hAudioList, (LPCTSTR)Id);
+	if (i<0)
+		return;
+
+	// Set text in the format L/R (e.g. 98/3)
+	ListView_SetItemText(hAudioList, i , 1, (LPTSTR)str.c_str());
+
+}
+
+// Find audio item in list view by its id
+// Returns index to item if found or -1 if not found
+int SppDlg::FindItemById(HWND hListView, LPCTSTR Id)
+{
+	// Get number of items
+	int ItemCount = ListView_GetItemCount(hListView);
+	if (ItemCount<1)
+		return -1;
+
+	LVITEM lvi;
+	lvi.iSubItem=0;
+	lvi.mask=LVIF_PARAM;
+	for (int i=0; i<ItemCount;i++)
+	{
+		lvi.iItem = i;
+		ListView_GetItem(hListView, &lvi);
+		if (!lstrcmpi((LPCTSTR)lvi.lParam, Id))
+			return i;
+	}; // For loop
+
+	// Not found
+	return -1;
+}
+
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetRawChData(UINT iCh, UINT data)
 {
@@ -706,16 +774,17 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 
 	// Insert audio jack name
 	LV_ITEM item;
-	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE;
+	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE |LVIF_PARAM;
 	item.iItem = 0;
 	item.iSubItem = 0;
 	item.pszText = jack->FriendlyName;
     item.stateMask = 0;
     item.iSubItem  = 0;
     item.state     = 0;
+	item.lParam = (LPARAM)jack->id;
 	int i = ListView_InsertItem(hAudioList, &item);
 
-	ListView_SetItemText(hAudioList, i, 1, TEXT("SI")); // TODO: Replace later with real stuff
+	ListView_SetItemText(hAudioList, i, 1, TEXT("0/0")); // TODO: Replace later with real stuff
 
 	// Set the default jack as focused (and selected)
 	if (jack->Default)
@@ -837,7 +906,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj = (SppDlg *)lParam;
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
-		DialogObj->CreateBtnsDlg(hDlg);
+		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
+		DialogObj->InitAudioDisplay(hDlg); // Initialize audio source display
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -1015,6 +1085,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case VJOYDEV_SETAVAIL:
 		DialogObj->EnableControls((UINT)wParam, (controls*)lParam);
+		break;
+
+	case VJOYDEV_CH_LEVEL:
+		DialogObj->DisplayAudioLevels(hDlg, (PVOID)wParam, LOWORD(lParam), HIWORD(lParam));
 		break;
 
 	}

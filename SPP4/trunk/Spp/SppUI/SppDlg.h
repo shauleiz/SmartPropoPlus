@@ -14,7 +14,9 @@ public:
 	HWND GetHandle(void);
 
 public: // Called from window procedure
+	void DisplayAudioLevels(HWND hDlg, PVOID Id, UINT Left, UINT Right);
 	void CleanAudioList(void);
+	void InitAudioDisplay(HWND hDlg);
 	void AddLine2AudioList(jack_info * jack);
 	void AddLine2ModList(MOD * mod, LPCTSTR SelType);
 	void SetRawChData(UINT iCh, UINT data);
@@ -63,6 +65,7 @@ public: // Called from window procedure
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip);
 	void ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color);
+	int FindItemById(HWND hListView, LPCTSTR Id);
 
 	//DWORD WINAPI  StartDlg(LPVOID hInstance);
 
