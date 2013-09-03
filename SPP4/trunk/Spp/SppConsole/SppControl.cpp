@@ -53,6 +53,7 @@ void		SetvJoyMapping(UINT id);
 void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
+void		AudioLevelWatch();
 
 
 
@@ -479,6 +480,24 @@ LRESULT CALLBACK MainWindowProc(
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
     } 
     return 0; 
+}
+
+// AudioLevelWatch - Analyse audio level data
+// Gets Audio Levels
+// Updates GUI
+// If the selected channel is much weaker than the other channel then inform GUI
+// If the selected channel is weak (under 95 TODO: Make Configurable) then inform GUI
+void AudioLevelWatch()
+{
+	// Get the audio levels of the selected audio device
+	AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
+	AudioLevel[1] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 1));
+
+	// Inform GUI
+	SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
+
+	// Wrong Channel?
+
 }
 
 // Get all audio capture devices 
@@ -951,12 +970,9 @@ void thMonitor(bool * KeepAlive)
 	{
 
 		Sleep_For( 100 );// Sleep for 100 milliseconds
+		
+		AudioLevelWatch();
 
-		// Get the audio levels of the selected audio device
-
-		AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
-		AudioLevel[1] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 1));
-		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
 
 		// Test if need to populate filter
 		if (reqPopulateFilter)

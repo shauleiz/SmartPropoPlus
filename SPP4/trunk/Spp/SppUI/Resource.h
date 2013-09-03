@@ -37,6 +37,7 @@
 #define IDC_AUD_8                               1020
 #define IDC_BTN_MAPBTNS                         1021
 #define IDC_STREAM                              1023
+#define IDC_AUD_AUTO                            1024
 #define IDC_CH_LOG                              1081
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
@@ -187,3 +188,5 @@
 #define IDC_BTN_FILTERBROWSE                    40141
 #define IDC_COMBO_FILTERS                       40142
 #define IDC_CH_FILTER                           40143
+#define IDC_CH_AUTO                             40145
+#define IDC_MOD_AUTO                            40147
