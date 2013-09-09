@@ -42,6 +42,7 @@ public: // Called from window procedure
 	void AudioChannelParams(void);
 	void AutoParams(WORD ctrl);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
+	void AudioAutoParams(WORD, WORD);
 	void vJoyDevAdd(UINT id);
 	void vJoyDevSelect(UINT id);
 	void vJoyRemoveAll();

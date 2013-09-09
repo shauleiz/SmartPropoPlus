@@ -88,7 +88,9 @@ public:
 	UINT			GetAudioDeviceBitRate(LPTSTR Id);
 	wstring			GetAudioDeviceChannel(LPTSTR Id);
 	bool			SetAutoChannel(bool);
-	bool			SetAutoBitRate(bool);// TODO: Implement
+	bool			SetAutoBitRate(bool);
+	bool			IsDefaultChannelAuto(void);
+	bool			IsDefaultBitRateAuto(void);
 
 	// Filters
 	bool			FilterFile(LPTSTR FilePath, LPTSTR Version);

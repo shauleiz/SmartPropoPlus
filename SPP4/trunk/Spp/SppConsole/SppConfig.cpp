@@ -779,6 +779,26 @@ bool CSppConfig::SetAutoBitRate(bool AutoMode )
 	return true;
 }
 
+// Return true if the channel is set to 'auto' for the default audio device
+bool CSppConfig::IsDefaultChannelAuto(void)
+{
+	wstring Id = GetCurrentAudio();
+	wstring ch;
+
+	// Get attribute "Manual" (If does not exist or too short - return)
+	ch = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDCH), TEXT(SPP_BACKUP));
+	if (!ch.length())
+		return false;
+	else
+		return true;
+}
+
+bool CSppConfig::IsDefaultBitRateAuto(void)
+{
+		return false;
+}
+
+
 bool CSppConfig::IsDefaultChannelRight()
 {
 	wstring Id = GetCurrentAudio();
@@ -881,12 +901,18 @@ bool CSppConfig::SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR
 // Get a value (e.g. "Left") of a given audio attribute (e.g. "Manual") for a given element (e.g. "Channel")
 wstring CSppConfig::GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
 {
+	string sValue;
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
 	if (!peChannel)
 		return false;
 
-	string sValue = peChannel->Attribute(utf8_encode(wstring(Attrib)).c_str());
+	const char * cValue = peChannel->Attribute(utf8_encode(wstring(Attrib)).c_str());
+	if (cValue)
+		sValue = cValue;
+	else
+		sValue = "";
+
 	return utf8_decode(sValue);
 }
 
