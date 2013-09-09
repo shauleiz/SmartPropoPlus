@@ -32,6 +32,8 @@ bool Monitor = true;
 int vJoyDevice = 1;
 bool reqPopulateFilter = false;
 UINT AudioLevel[2] = {0, 0};
+bool AutoBitRate;
+bool AutoChannel;
 
 
 
@@ -451,6 +453,21 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->SetAudioChannel(false);
 			}
 			break;
+
+		case WMSPP_DLG_AUTO:
+			if ((WORD)wParam & AUTOCHANNEL)
+			{
+				Conf->SetAutoChannel(((WORD)lParam & AUTOCHANNEL)!=0);
+				AutoChannel = (((WORD)lParam & AUTOCHANNEL)!=0);
+			};
+
+			if ((WORD)wParam & AUTOBITRATE)
+			{
+				Conf->SetAutoBitRate(((WORD)lParam & AUTOBITRATE)!=0);
+				AutoBitRate = (((WORD)lParam & AUTOBITRATE)!=0);
+			}
+			break;
+
 
 		// Stop/Start Streaming
 		case WMSPP_DLG_STREAM:

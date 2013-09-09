@@ -51,6 +51,8 @@
 #define SPP_SHOWLOG	"Show_Log"
 #define SPP_CHECKED	"Checked"
 #define SPP_BTNPREF	"Button"
+#define SPP_BACKUP	"Manual"
+
 
 
 class CSppConfig
@@ -85,6 +87,8 @@ public:
 	wstring			GetAudioDeviceName(LPTSTR Id);
 	UINT			GetAudioDeviceBitRate(LPTSTR Id);
 	wstring			GetAudioDeviceChannel(LPTSTR Id);
+	bool			SetAutoChannel(bool);
+	bool			SetAutoBitRate(bool);// TODO: Implement
 
 	// Filters
 	bool			FilterFile(LPTSTR FilePath, LPTSTR Version);
@@ -117,6 +121,9 @@ private:
 	TiXmlHandle		GetModulationHandle(wstring Type);
 	TiXmlHandle		GetAudioHandle(LPTSTR Id);
 	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=8, LPTSTR Channel=L"Left", bool select=false);
+	bool			SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR Value);
+	wstring			GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib);
+	void			RemoveAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib);
 	wstring			GetCurrentAudio(void);
 	TiXmlHandle		GetFilterHandle(LPTSTR Id);
 	wstring			GetFilterName(LPTSTR Id);

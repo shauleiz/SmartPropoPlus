@@ -40,6 +40,7 @@ public: // Called from window procedure
 	void SendMappingData(BTNArr* aButtonMap, UINT nButtons);
 	void InitButtonMap(HWND);
 	void AudioChannelParams(void);
+	void AutoParams(WORD ctrl);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
 	void vJoyDevAdd(UINT id);
 	void vJoyDevSelect(UINT id);

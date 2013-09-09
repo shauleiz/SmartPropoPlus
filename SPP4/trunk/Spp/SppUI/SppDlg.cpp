@@ -545,6 +545,29 @@ void SppDlg::AudioChannelParams(void)
 
 }
 
+// Called when on of the 'Auto' checkboxs are changed
+// ctrl is the ID of the checkbox
+// Updates CU of the current audio setup
+// Gets the new value of the checkbox and sends it to the CU
+void SppDlg::AutoParams(WORD ctrl)
+{
+	WORD mask=0;
+	if (ctrl == IDC_CH_AUTO)
+		mask=AUTOCHANNEL;
+	else if  (ctrl == IDC_AUD_AUTO)
+		mask=AUTOBITRATE;
+	else 
+		return;
+
+	AudioChannelParams();
+
+	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   ctrl))
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, mask, AUTOBITRATE|AUTOCHANNEL);
+	else
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, mask, 0);
+}
+
+
 // Clear channel display
 void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 {
@@ -966,6 +989,18 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if  (LOWORD(wParam)  == IDC_AUD_8 || LOWORD(wParam)  == IDC_AUD_16 ||  LOWORD(wParam)  == IDC_LEFT || LOWORD(wParam)  == IDC_RIGHT || LOWORD(wParam)  == IDC_MONO) 
 		{
 			DialogObj->AudioChannelParams();
+			break;
+		}
+
+		if  (LOWORD(wParam)  == IDC_CH_AUTO) 
+		{
+			DialogObj->AutoParams(IDC_CH_AUTO);
+			break;
+		}
+
+		if  (LOWORD(wParam)  == IDC_AUD_AUTO) 
+		{
+			DialogObj->AutoParams(IDC_AUD_AUTO);
 			break;
 		}
 
