@@ -524,6 +524,30 @@ void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_MONO);
 }
 
+void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
+{
+	if (Mask&AUTOCHANNEL)
+	{
+		HWND hLeft = GetDlgItem(m_hDlg,  IDC_LEFT);
+		HWND hMono = GetDlgItem(m_hDlg,  IDC_MONO);
+		HWND hRight = GetDlgItem(m_hDlg,  IDC_RIGHT);
+		if (Flags&AUTOCHANNEL)
+		{
+			EnableWindow(hLeft, FALSE);
+			EnableWindow(hMono, FALSE);
+			EnableWindow(hRight, FALSE);
+			CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_CHECKED);
+		}
+		else
+		{
+			EnableWindow(hLeft, TRUE);
+			EnableWindow(hMono, TRUE);
+			EnableWindow(hRight, TRUE);
+			CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_UNCHECKED);
+		}
+	}
+}
+
 // Get the parameters of the audio (8/16 bits Left/Right/Mono)
 // Send them over to the application
 // Default will be 8bit/Left channel
@@ -1047,6 +1071,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case SET_AUDIO_PARAMS:
 		DialogObj->AudioChannelParams((UINT)wParam, (WCHAR)lParam);
+		break;
+		
+	case SET_AUDIO_AUTO:
+		DialogObj->AudioAutoParams((UINT)wParam, (WCHAR)lParam);
 		break;
 
 	case WMSPP_PRCS_SETMOD:

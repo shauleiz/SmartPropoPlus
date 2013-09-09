@@ -506,6 +506,21 @@ LRESULT CALLBACK MainWindowProc(
 // If the selected channel is weak (under 95 TODO: Make Configurable) then inform GUI
 void AudioLevelWatch()
 {
+	static int isRight=-1; // -1: Uninitialized
+	static bool WentAuto=true;
+
+	// Initializing channel state
+	if (isRight==-1)
+	{
+		wstring ch = Conf->GetAudioDeviceChannel(const_cast<LPTSTR>(AudioId));
+		if (ch[0] == L'R' || ch[0] == L'r')
+			isRight=1;
+		else
+			isRight=0;
+	};
+
+
+
 	// Get the audio levels of the selected audio device
 	AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
 	AudioLevel[1] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 1));
@@ -514,6 +529,47 @@ void AudioLevelWatch()
 	SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
 
 	// Wrong Channel?
+
+	// If channel selection is automatic - test if the correct channel is selected
+	if (AutoChannel)
+	{	
+		if (isRight && AudioLevel[0]>=95)
+		{// Right channel selected and the left channel gives a good signal then switch to Left signal
+			Conf->SetDefaultChannel(TEXT("Left"));
+			Spp->SetAudioChannel(true);
+			Spp->AudioChanged();
+			isRight=0;
+			WentAuto=true;
+			SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
+		}
+		else if (!isRight && AudioLevel[1]>=95)
+		{// Left channel selected and the right channel gives a good signal then switch to Left signal
+			Conf->SetDefaultChannel(TEXT("Right"));
+			Spp->SetAudioChannel(false);
+			Spp->AudioChanged();
+			isRight=1;
+			SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'R');
+		};
+
+		SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,  (WPARAM)AUTOCHANNEL);
+		WentAuto=true;
+	} // AutoChannel
+	else
+	{
+		if (WentAuto) // Just unchecked auto?
+		{
+			bool right = Conf->IsDefaultChannelRight();
+			Spp->SetAudioChannel(!right);
+			isRight=-1;
+			WentAuto=false;
+			if (right)
+				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'R');
+			else
+				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
+			SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,0);
+			Spp->AudioChanged();
+		};
+	};
 
 }
 
@@ -583,6 +639,13 @@ void CaptureDevicesPopulate(HWND hDlg)
 			if (!wcslen(Channel))
 				Channel = DEF_CHANNEL;
 			SendMessage(hDlg, SET_AUDIO_PARAMS, (WPARAM)BitRate, (LPARAM)(Channel[0]));
+
+			if (Conf->IsDefaultChannelAuto())
+			{
+				AutoChannel=true;
+				SendMessage(hDlg, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL, (LPARAM)AUTOCHANNEL);
+			};
+
 
 			if (Audio)
 				Audio->SetwBitsPerSample(BitRate);
