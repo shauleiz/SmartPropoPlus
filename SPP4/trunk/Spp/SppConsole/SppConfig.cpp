@@ -704,6 +704,7 @@ bool CSppConfig::SetDefaultBitRate(UINT BitRate)
 	return SetAudioDeviceBitRate((LPTSTR)(Id.c_str()),  BitRate);
 }
 
+
 // Set the channel of the Default (=selected) audio device
 // Expected value are "Left", "Right" and "Mono"
 bool CSppConfig::SetDefaultChannel(LPTSTR Channel)
@@ -715,6 +716,67 @@ bool CSppConfig::SetDefaultChannel(LPTSTR Channel)
 	if (!Id.length())
 		return false;
 	return SetAudioDeviceChannel((LPTSTR)(Id.c_str()),  Channel);
+}
+
+// If AutoMode is true -> channel in auto mode:  Backup value as attribute "Manual"
+// If AutoMode is false -> channel in manual mode:  Restore value from attribute "Manual" and delete attribute
+bool CSppConfig::SetAutoChannel(bool AutoMode )
+{
+	wstring Id = GetCurrentAudio();
+	wstring ch;
+
+	if (AutoMode)
+	{
+		//// Auto mode
+		// Get Channel value
+		ch = GetAudioDeviceChannel((LPTSTR)(Id.c_str()));
+		// Set value as attribute "Manual"
+		SetAudioAttrib((LPTSTR)(Id.c_str()), TEXT(SPP_AUDCH), TEXT(SPP_BACKUP), (LPTSTR)(ch.c_str()));
+	}
+	else
+	{
+		//// Manual mode
+		// Get attribute "Manual" (If does not exist - return)
+		ch = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDCH), TEXT(SPP_BACKUP));
+		// Set channel value
+		SetDefaultChannel( (LPTSTR)(ch.c_str()));
+		// Remove attribute "Manual"
+		RemoveAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDCH), TEXT(SPP_BACKUP));
+	};
+
+	return true;
+}
+
+
+// If AutoMode is true -> Bitrate in auto mode:  Backup value as attribute "Manual"
+// If AutoMode is false -> Bitrate in manual mode:  Restore value from attribute "Manual" and delete attribute
+bool CSppConfig::SetAutoBitRate(bool AutoMode )
+{
+	wstring Id = GetCurrentAudio();
+	wstring Br;
+	UINT uiBr;
+
+	if (AutoMode)
+	{
+		//// Auto mode
+		// Get Channel value
+		uiBr = GetAudioDeviceBitRate((LPTSTR)(Id.c_str()));
+		Br = to_wstring(uiBr);
+		// Set value as attribute "Manual"
+		SetAudioAttrib((LPTSTR)(Id.c_str()), TEXT(SPP_AUDBR), TEXT(SPP_BACKUP), (LPTSTR)(Br.c_str()));
+	}
+	else
+	{
+		//// Manual mode
+		// Get attribute "Manual" (If does not exist - return)
+		Br = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDBR), TEXT(SPP_BACKUP));
+		// Set channel value
+		uiBr = std::stoi(Br);
+		SetDefaultBitRate(uiBr);
+		// Remove attribute "Manual"
+		RemoveAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDBR), TEXT(SPP_BACKUP));
+	};
+	return true;
 }
 
 bool CSppConfig::IsDefaultChannelRight()
@@ -805,6 +867,40 @@ wstring CSppConfig::GetAudioDeviceChannel(LPTSTR Id)
 	return  utf8_decode(Name);
 }
 
+// Set an audio attribute (e.g. "Manual") to a given value (e.g. "Left") for a given element (e.g. "Channel")
+bool CSppConfig::SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR Value)
+{
+	TiXmlHandle h = GetAudioHandle(Id);
+	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
+	if (!peChannel)
+		return false;
+	peChannel->SetAttribute( utf8_encode(wstring(Attrib)), utf8_encode(wstring(Value)));
+	return true;
+}
+
+// Get a value (e.g. "Left") of a given audio attribute (e.g. "Manual") for a given element (e.g. "Channel")
+wstring CSppConfig::GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
+{
+	TiXmlHandle h = GetAudioHandle(Id);
+	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
+	if (!peChannel)
+		return false;
+
+	string sValue = peChannel->Attribute(utf8_encode(wstring(Attrib)).c_str());
+	return utf8_decode(sValue);
+}
+
+// Remove a given audio attribute (e.g. "Manual") for a given element (e.g. "Channel")
+void CSppConfig::RemoveAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
+{
+	TiXmlHandle h = GetAudioHandle(Id);
+	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
+	if (!peChannel)
+		return;
+	peChannel->RemoveAttribute(utf8_encode(wstring(Attrib)).c_str());
+}
+
+
 UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 {
 	string Value = "0";
@@ -813,7 +909,7 @@ UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 	if (Text)
 		Value =  Text->ValueStr();
 
-	return  stoi(Value);
+	return  std::stoi(Value,0,10);
 }
 
 // FilterFile - Create/Replace the 'Filters' subtree
