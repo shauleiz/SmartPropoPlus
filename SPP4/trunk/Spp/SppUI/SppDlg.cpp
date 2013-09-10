@@ -526,6 +526,7 @@ void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 
 void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 {
+	// Auto channel selection
 	if (Mask&AUTOCHANNEL)
 	{
 		HWND hLeft = GetDlgItem(m_hDlg,  IDC_LEFT);
@@ -544,6 +545,25 @@ void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 			EnableWindow(hMono, TRUE);
 			EnableWindow(hRight, TRUE);
 			CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_UNCHECKED);
+		}
+	}
+
+	// Auto bit rate selection
+	if (Mask&AUTOBITRATE)
+	{
+		HWND h8 = GetDlgItem(m_hDlg,  IDC_AUD_8);
+		HWND h16 = GetDlgItem(m_hDlg,  IDC_AUD_16);
+		if (Flags&AUTOBITRATE)
+		{
+			EnableWindow(h8, FALSE);
+			EnableWindow(h16, FALSE);
+			CheckDlgButton(m_hDlg,  IDC_AUD_AUTO, BST_CHECKED);
+		}
+		else
+		{
+			EnableWindow(h8, TRUE);
+			EnableWindow(h16, TRUE);
+			CheckDlgButton(m_hDlg,  IDC_AUD_AUTO, BST_UNCHECKED);
 		}
 	}
 }
@@ -569,7 +589,7 @@ void SppDlg::AudioChannelParams(void)
 
 }
 
-// Called when on of the 'Auto' checkboxs are changed
+// Called when one of the 'Auto' checkboxs are changed
 // ctrl is the ID of the checkbox
 // Updates CU of the current audio setup
 // Gets the new value of the checkbox and sends it to the CU

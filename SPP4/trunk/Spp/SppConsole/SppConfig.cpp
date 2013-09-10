@@ -795,7 +795,15 @@ bool CSppConfig::IsDefaultChannelAuto(void)
 
 bool CSppConfig::IsDefaultBitRateAuto(void)
 {
+	wstring Id = GetCurrentAudio();
+	wstring ch;
+
+	// Get attribute "Manual" (If does not exist or too short - return)
+	ch = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDBR), TEXT(SPP_BACKUP));
+	if (!ch.length())
 		return false;
+	else
+		return true;
 }
 
 
@@ -901,17 +909,15 @@ bool CSppConfig::SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR
 // Get a value (e.g. "Left") of a given audio attribute (e.g. "Manual") for a given element (e.g. "Channel")
 wstring CSppConfig::GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
 {
-	string sValue;
+	string sValue = "";
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
 	if (!peChannel)
-		return false;
+		return utf8_decode(sValue);
 
 	const char * cValue = peChannel->Attribute(utf8_encode(wstring(Attrib)).c_str());
 	if (cValue)
 		sValue = cValue;
-	else
-		sValue = "";
 
 	return utf8_decode(sValue);
 }
