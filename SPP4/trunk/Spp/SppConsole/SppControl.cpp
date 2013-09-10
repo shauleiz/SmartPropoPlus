@@ -507,7 +507,9 @@ LRESULT CALLBACK MainWindowProc(
 void AudioLevelWatch()
 {
 	static int isRight=-1; // -1: Uninitialized
-	static bool WentAuto=true;
+	static int BitRate=-1; // -1: Uninitialized
+	static bool WentAutoCh=true;
+	static bool WentAutoBr=true;
 
 	// Initializing channel state
 	if (isRight==-1)
@@ -519,6 +521,10 @@ void AudioLevelWatch()
 			isRight=0;
 	};
 
+	// Initialize bit rate
+	if (BitRate==-1)
+		BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
+
 
 
 	// Get the audio levels of the selected audio device
@@ -529,20 +535,24 @@ void AudioLevelWatch()
 	SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
 
 	// Wrong Channel?
+	// Change channel to the other channel if the other channel is much louder:
+	// 1. Auto channel was selected by the user
+	// 2. The other channel level is very high (>95)
+	// 3. The current channel is low (<50)
 
 	// If channel selection is automatic - test if the correct channel is selected
 	if (AutoChannel)
 	{	
-		if (isRight && AudioLevel[0]>=95)
+		if (isRight && AudioLevel[0]>=95 && AudioLevel[1]<50)
 		{// Right channel selected and the left channel gives a good signal then switch to Left signal
 			Conf->SetDefaultChannel(TEXT("Left"));
 			Spp->SetAudioChannel(true);
 			Spp->AudioChanged();
 			isRight=0;
-			WentAuto=true;
+			WentAutoCh=true;
 			SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
 		}
-		else if (!isRight && AudioLevel[1]>=95)
+		else if (!isRight && AudioLevel[1]>=95 && AudioLevel[0]<50)
 		{// Left channel selected and the right channel gives a good signal then switch to Left signal
 			Conf->SetDefaultChannel(TEXT("Right"));
 			Spp->SetAudioChannel(false);
@@ -550,23 +560,75 @@ void AudioLevelWatch()
 			isRight=1;
 			SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'R');
 		};
-
 		SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,  (WPARAM)AUTOCHANNEL);
-		WentAuto=true;
+		WentAutoCh=true;
 	} // AutoChannel
 	else
 	{
-		if (WentAuto) // Just unchecked auto?
+		// Manual mode
+		if (WentAutoCh) // Just unchecked auto?
 		{
 			bool right = Conf->IsDefaultChannelRight();
 			Spp->SetAudioChannel(!right);
 			isRight=-1;
-			WentAuto=false;
+			WentAutoCh=false;
 			if (right)
 				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'R');
 			else
 				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
 			SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,0);
+			Spp->AudioChanged();
+		};
+	};
+
+	// Wrong bit rate?
+	// Weak signal (<80) requires a high bitrate (16)
+	// Very strong signal (>95) can settle for low bit rate (8)
+
+	// If bit rate is automatic - set it according to the quality of the audio
+	if (AutoBitRate)
+	{
+		UINT Level;
+		if (isRight)
+			Level = AudioLevel[1];
+		else
+			Level = AudioLevel[0];
+
+		// Too weak? change to 16 bits
+		if (Level <80 && BitRate==8)
+		{
+			Conf->SetDefaultBitRate(16);
+			Audio->SetwBitsPerSample(16);
+			Spp->AudioChanged();
+			BitRate=16;
+			WentAutoBr=true;
+			SendMessage(hDialog, SET_AUDIO_PARAMS,16, NULL);
+		}
+
+		// Very strong? change to 8 bits
+		else if (Level >95 && BitRate==16)
+		{
+			Conf->SetDefaultBitRate(8);
+			Audio->SetwBitsPerSample(8);
+			Spp->AudioChanged();
+			BitRate=8;
+			WentAutoBr=true;
+			SendMessage(hDialog, SET_AUDIO_PARAMS,8, NULL);
+		}
+		SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE,  (WPARAM)AUTOBITRATE);
+		WentAutoBr=true;
+	}
+	else
+	{
+		// Manual mode
+		if (WentAutoBr) // Just unchecked auto?
+		{
+			BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
+			Audio->SetwBitsPerSample(BitRate);
+			SendMessage(hDialog, SET_AUDIO_PARAMS,BitRate, NULL);
+			BitRate=-1;
+			WentAutoBr=false;
+			SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE,0);
 			Spp->AudioChanged();
 		};
 	};
@@ -640,10 +702,28 @@ void CaptureDevicesPopulate(HWND hDlg)
 				Channel = DEF_CHANNEL;
 			SendMessage(hDlg, SET_AUDIO_PARAMS, (WPARAM)BitRate, (LPARAM)(Channel[0]));
 
+			// Auto/Manual channel selection
 			if (Conf->IsDefaultChannelAuto())
 			{
 				AutoChannel=true;
 				SendMessage(hDlg, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL, (LPARAM)AUTOCHANNEL);
+			}
+			else
+			{
+				AutoChannel=false;
+				SendMessage(hDlg, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL, 0);
+			};
+
+			// Auto/Manual bit rate selection
+			if (Conf->IsDefaultBitRateAuto())
+			{
+				AutoBitRate = true;
+				SendMessage(hDlg, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE, (LPARAM)AUTOBITRATE);
+			}
+			else
+			{
+				AutoBitRate = false;
+				SendMessage(hDlg, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE, 0);
 			};
 
 
