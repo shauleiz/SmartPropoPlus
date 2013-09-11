@@ -23,6 +23,7 @@ class CSppConfig * Conf = NULL;
 class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
+class CPulseScope * PulseScopeObj = NULL;
 LPCTSTR AudioId = NULL;
 class CSppProcess * Spp = NULL;
 HINSTANCE hDllFilters = 0;
@@ -56,6 +57,7 @@ void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
 void		AudioLevelWatch();
+void		PulseScope(BOOL start);
 
 
 
@@ -342,6 +344,11 @@ LRESULT CALLBACK MainWindowProc(
 			Conf->MonitorChannels(wParam !=0); // Silly cast to bool to evoid warning
 			break;
 
+		case WMSPP_DLG_PLSSCOP:
+			PulseScope((BOOL)wParam);
+			//Conf->MonitorChannels(wParam !=0); // Silly cast to bool to evoid warning
+			break;
+
 		case WMSPP_DLG_LOG:
 			if (wParam)
 				LogWin->Show();
@@ -498,6 +505,16 @@ LRESULT CALLBACK MainWindowProc(
     } 
     return 0; 
 }
+
+// Start/Stop monitoring the pulse data using Pulse Scope
+void PulseScope(BOOL start)
+{
+	// Set CONF file
+
+	// Start/Stop
+	Spp->RegisterPulseMonitor(1, start ? true : false);
+}
+
 
 // AudioLevelWatch - Analyse audio level data
 // Gets Audio Levels

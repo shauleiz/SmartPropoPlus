@@ -30,6 +30,7 @@ public: // Called from window procedure
 	void MonitorCh(bool cb);
 	void MonitorRawCh(WORD cb);
 	void MonitorPrcCh(WORD cb);
+	void PulseScope(WORD cb);
 	void ShowLogWindow(WORD cb);
 	void ShowButtonMapWindow(void);
 	void RecordInSignal(WORD cb);

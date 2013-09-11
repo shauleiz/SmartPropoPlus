@@ -2,10 +2,17 @@
 //
 
 #include "stdafx.h"
+#include <StrSafe.h>
+#include <d2d1.h>
+#include <d2d1helper.h>
+#include <dwrite.h>
+#include <wincodec.h>
+#include <Windowsx.h>
 #include "SmartPropoPlus.h"
 #include "vJoyInterface.h"
 #include "public.h"
 #include "SppAudio.h"
+#include "PulseScope.h"
 #include "WinMessages.h"
 #include "SppProcess.h"
 
@@ -39,9 +46,11 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_WaveRate(192000), 
 	m_SelectedMod(TEXT("PPM")),
 	m_CurrentPP( [=] (int width, BOOL input) {NULL;}),
+	m_fPulseMonitor( [=] (int index, int length, bool low, LPVOID timestamp, LPVOID Param) {NULL;}),
 	m_WaveInputChannel(0),
-	m_nChannels(0)
-
+	m_nChannels(0),
+	m_PulseMonitor(NULL),
+	m_PulseScopeObj(NULL)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -57,6 +66,28 @@ SPPMAIN_API CSppProcess::~CSppProcess()
 	StopCaptureAudio();
 	m_ModulationMap.clear();
 }
+
+
+SPPMAIN_API bool CSppProcess::RegisterPulseMonitor(int index, bool Register)
+{
+/* Registration of callback function that dispays the pulse data on the monitor*/
+	if (Register)
+	{
+		m_PulseScopeObj = InitPulseScope(m_hParentWnd);
+		m_fPulseMonitor = (SCP)Pulse2Scope; // cast to SCP
+		m_PulseMonitor = m_PulseScopeObj;
+		m_iPulseMonitor = index;
+	}
+	else if (m_iPulseMonitor == index)
+	{
+		m_fPulseMonitor = [=] (int index, int length, bool low, LPVOID timestamp, LPVOID Param){NULL;}; // cast to SCP
+		m_PulseMonitor =  NULL;
+		DeletePulseScope(m_PulseScopeObj);
+	};
+
+	return true;
+}
+
 
 SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 {
@@ -519,6 +550,9 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 			// Call the correct function ProcessPulseXXX() 
 			m_CurrentPP(PulseLength, negative);
 		}
+
+		if (m_fPulseMonitor && PulseLength>3)
+			m_fPulseMonitor(m_iPulseMonitor, PulseLength, negative, 0, m_PulseMonitor);
 	};
 
 
@@ -786,24 +820,24 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     else data[datacount] = (data[datacount] + newdata) / 2;
 
 	
-	if (input|| m_JsChPostProc_selected!=-1)
+	//if (input|| m_JsChPostProc_selected!=-1)
 		m_Position[datacount] = data[datacount];	/* JR - Assign data to joystick channels */
-	else
-		switch (datacount)
-	{ // Futaba
-	case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
-	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
-	};
+	//else
+	//	switch (datacount)
+	//{ // Futaba
+	//case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
+	//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
+	//};
 				
 	SendPPJoy(m_nChannels, m_Position);
 
@@ -877,24 +911,24 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     else data[datacount] = (data[datacount] + newdata) / 2;
 
 	
-	if (input|| m_JsChPostProc_selected!=-1)
+	//if (input|| m_JsChPostProc_selected!=-1)
 		m_Position[datacount] = data[datacount];	/* JR - Assign data to joystick channels */
-	else
-		switch (datacount)
-	{ // Futaba
-	case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
-	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
-	};
+	//else
+	//	switch (datacount)
+	//{ // Futaba
+	//case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
+	//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
+	//};
 			
 	SendPPJoy(11, m_Position);
 
@@ -966,24 +1000,24 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     else data[datacount] = (data[datacount] + newdata) / 2;
 
 	
-	if (input|| m_JsChPostProc_selected!=-1)
+	//if (input|| m_JsChPostProc_selected!=-1)
 		m_Position[datacount] = data[datacount];	/* JR - Assign data to joystick channels */
-	else
-		switch (datacount)
-	{ // Futaba
-	case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
-	case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
-	case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
-	};
+	//else
+	//	switch (datacount)
+	//{ // Futaba
+	//case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
+	//case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
+	//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
+	//};
 				
 	SendPPJoy(11, m_Position);
 
@@ -2252,6 +2286,7 @@ BOOL CSppProcess::SetBtnDelayed(BOOL Value, UCHAR nBtn)
 
 	return TRUE;
 }
+
 
 void	CSppProcess::LogMessage(int Severity, int Code, LPCTSTR Msg)
 {

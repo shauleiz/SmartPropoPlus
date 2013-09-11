@@ -34,6 +34,7 @@
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\Debug\\AudioLib.lib")
 #pragma  comment(lib, "..\\Debug\\vJoyInterface.lib")
+#pragma  comment(lib, "..\\Debug\\PulseScope.lib")
 #else
 #pragma  comment(lib, "..\\Release\\AudioLib.lib")
 #pragma  comment(lib, "..\\Release\\vJoyInterface.lib")
@@ -105,6 +106,7 @@ public:
 	SPPMAIN_API void AxisMappingChanged(DWORD* Map, UINT nAxes,  UINT vJoyId);
 	SPPMAIN_API void MappingChanged(Mapping* m, UINT vJoyId);
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
+	SPPMAIN_API bool RegisterPulseMonitor(int index, bool Register);
 
 
 
@@ -194,6 +196,10 @@ private:
 	MODMAP m_ModulationMap;
 	LPTSTR	m_SelectedMod;
 	PP m_CurrentPP;
+	SCP m_fPulseMonitor;
+	LPVOID m_PulseMonitor;
+	int m_iPulseMonitor;
+	class CPulseScope * m_PulseScopeObj;
 	UINT m_nChannels;
 	JOYSTICK_POSITION m_vJoyPosition;
 };
