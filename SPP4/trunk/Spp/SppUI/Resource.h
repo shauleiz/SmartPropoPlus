@@ -190,3 +190,4 @@
 #define IDC_CH_FILTER                           40143
 #define IDC_CH_AUTO                             40145
 #define IDC_MOD_AUTO                            40147
+#define IDC_PLS_SCOPE                           40148

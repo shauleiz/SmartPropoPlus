@@ -26,6 +26,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vJoyInterface", "..\..\..\.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SppUI", "SppUI\SppUI.vcxproj", "{41599EDC-07F9-4C48-8B8F-44B946BD4898}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PulseScope", "PulseScope\PulseScope.vcxproj", "{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -280,6 +282,30 @@ Global
 		{41599EDC-07F9-4C48-8B8F-44B946BD4898}.Win8 Release|Win32.ActiveCfg = Release|Win32
 		{41599EDC-07F9-4C48-8B8F-44B946BD4898}.Win8 Release|Win32.Build.0 = Release|Win32
 		{41599EDC-07F9-4C48-8B8F-44B946BD4898}.Win8 Release|x64.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Debug|Win32.Build.0 = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Debug|x64.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Release|Win32.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Release|Win32.Build.0 = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Release|x64.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Vista Debug|Win32.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Vista Debug|Win32.Build.0 = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Vista Debug|x64.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Vista Release|Win32.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Vista Release|Win32.Build.0 = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Vista Release|x64.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win7 Debug|Win32.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win7 Debug|Win32.Build.0 = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win7 Debug|x64.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win7 Release|Win32.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win7 Release|Win32.Build.0 = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win7 Release|x64.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win8 Debug|Win32.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win8 Debug|Win32.Build.0 = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win8 Debug|x64.ActiveCfg = Debug|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win8 Release|Win32.ActiveCfg = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win8 Release|Win32.Build.0 = Release|Win32
+		{CBBAA668-150D-4185-8F60-AFC0FAA4ABAD}.Win8 Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

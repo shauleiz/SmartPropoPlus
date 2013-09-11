@@ -72,6 +72,7 @@ UINT const WMSPP_DLG_OK		=			BASE_SUB+44;			// Inform CU that OK (wParam!=0) or 
 UINT const VJOYDEV_CH_LEVEL	=			BASE_SUB+45;			// Send the audio levels in range 0-100 (wParam: Device ID; lParam: Left channel+ Right<<16)
 UINT const WMSPP_DLG_AUTO	=			BASE_SUB+46;			// Change in audio channel auto params - The payload is wParam: mask , lParam: flags
 UINT const SET_AUDIO_AUTO	=			BASE_SUB+47;			// Change in audio channel auto params - The payload is wParam: mask , lParam: flags
+UINT const WMSPP_DLG_PLSSCOP=			BASE_SUB+48;			// The payload is boolean Start/Stop Pulse Scope
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

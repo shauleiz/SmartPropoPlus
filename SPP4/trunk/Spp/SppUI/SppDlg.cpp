@@ -628,7 +628,7 @@ void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 
 };
 
-// Start/Stop monitoring Eaw & processed channels
+// Start/Stop monitoring Raw & processed channels
 void  SppDlg::MonitorCh(bool cb)
 {
 	
@@ -660,6 +660,19 @@ void  SppDlg::MonitorPrcCh(WORD cb)
 	// Pass request
 	int start = Button_GetCheck(hMonitorChCB);
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_MONITOR , start, 0);
+}
+
+
+// Tell the parent window (Main application)
+// to stop/start displaying pulse scope
+void  SppDlg::PulseScope(WORD cb)
+{
+	// Get data
+	HWND hMonitorChCB = GetDlgItem(m_hDlg,  cb);
+
+	// Pass request
+	int start = Button_GetCheck(hMonitorChCB);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_PLSSCOP , start, 0);
 }
 
 // Tell the parent window (Main application)
@@ -997,6 +1010,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			DialogObj->MonitorPrcCh(LOWORD(wParam));
 			DialogObj->MonitorRawCh(LOWORD(wParam));
+			break;
+		};
+
+		if (LOWORD(wParam) == IDC_PLS_SCOPE)
+		{
+			DialogObj->PulseScope(LOWORD(wParam));
 			break;
 		};
 

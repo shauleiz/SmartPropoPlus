@@ -181,6 +181,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define AUTOCHANNEL	0x0001
 #define AUTOBITRATE	0x0002
 
+#define  SCP function<void (int index, int length, bool low, LPVOID timestamp, LPVOID Param)>
 #define  PP function<void (int, BOOL)>
 #define  Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
 #define Sleep_For(_X) std::this_thread::sleep_for( std::chrono::milliseconds(_X));
