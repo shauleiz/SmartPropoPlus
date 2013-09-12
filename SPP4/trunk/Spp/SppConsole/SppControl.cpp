@@ -51,6 +51,7 @@ void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
 void		SetMonitoring(HWND hDlg);
+void		SetPulseScope(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
 void		SetvJoyMapping(UINT id);
 void		SetAvailableControls(UINT id, HWND hDlg);
@@ -210,6 +211,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Start monitoring channels according to config file
 	SetMonitoring(hDialog);
+	// Start Pulse Scope according to config file
+	SetPulseScope(hDialog);
 
 	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hwnd);
@@ -346,7 +349,7 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_PLSSCOP:
 			PulseScope((BOOL)wParam);
-			//Conf->MonitorChannels(wParam !=0); // Silly cast to bool to evoid warning
+			Conf->PulseScope(wParam !=0); // Silly cast to bool to evoid warning
 			break;
 
 		case WMSPP_DLG_LOG:
@@ -749,6 +752,24 @@ void CaptureDevicesPopulate(HWND hDlg)
 		};
 	};
 
+}
+
+// Pulse Scope setup from config file and send it to SppProcess
+// If data not available then use default value
+void SetPulseScope(HWND hDlg)
+{
+	int monitor = 1; // Default value
+	if (Conf)
+		monitor = Conf->PulseScope();
+
+	BOOL bMonitor = 1;
+	if (!monitor)
+		bMonitor = 0;
+
+	if (Spp)
+		Spp->RegisterPulseMonitor(1, monitor ? true : false);
+
+	SendMessage(hDlg, PULSE_SCOPE, (WPARAM)bMonitor, 0);
 }
 
 // Channel monitoring setup from config file and send it to SppProcess

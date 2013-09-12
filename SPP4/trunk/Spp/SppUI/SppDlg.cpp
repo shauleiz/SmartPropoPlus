@@ -628,6 +628,22 @@ void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 
 };
 
+// Start/Stop Pulse Scope
+void  SppDlg::SetPulseScope(bool cb)
+{
+	
+	// Set checkbox
+	HWND hChkBox = GetDlgItem(m_hDlg,  IDC_PLS_SCOPE);
+	if (!hChkBox)
+		return;
+
+	if (cb)
+		Button_SetCheck(hChkBox, BST_CHECKED);
+	else
+		Button_SetCheck(hChkBox, BST_UNCHECKED);
+}
+
+
 // Start/Stop monitoring Raw & processed channels
 void  SppDlg::MonitorCh(bool cb)
 {
@@ -1169,6 +1185,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case MONITOR_CH:
 		DialogObj->MonitorCh(wParam != 0); // Silly way to cast to bool
+		break;
+
+	case PULSE_SCOPE:
+		DialogObj->SetPulseScope(wParam != 0); // Silly way to cast to bool
 		break;
 
 	case VJOYDEV_ADD:
