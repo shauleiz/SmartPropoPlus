@@ -48,6 +48,7 @@
 #define SPP_FLTNAME	"Name"
 #define SPP_GENERAL	"General"
 #define SPP_MONCHNL	"Monitor_CH"
+#define SPP_PLSSCP	"Pulse_SCP"
 #define SPP_SHOWLOG	"Show_Log"
 #define SPP_CHECKED	"Checked"
 #define SPP_BTNPREF	"Button"
@@ -104,6 +105,8 @@ public:
 	// General
 	int				MonitorChannels();
 	bool			MonitorChannels(bool Monitor);
+	int				PulseScope();
+	bool			PulseScope(bool Monitor);
 	int				ShowLog();
 	bool			ShowLog(bool Monitor);
 	bool			Save(void);
