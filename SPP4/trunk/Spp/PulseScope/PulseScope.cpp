@@ -871,15 +871,22 @@ void CPulseScope::DisplayLeftScrollButton(void)
 PULSESCOPE_API CPulseScope * InitPulseScope(HWND hWndParent)
 // Initialize Pulse Scope object and return pointer to object
 {
-	CPulseScope * PulseScopeObj = new  CPulseScope;
-	PulseScopeObj->Initialize(hWndParent);
+	static CPulseScope * PulseScopeObj = NULL;
+
+	if (PulseScopeObj)
+		ShowWindow(PulseScopeObj->m_hwnd,SW_SHOW);
+	else
+	{
+		PulseScopeObj = new  CPulseScope;
+		PulseScopeObj->Initialize(hWndParent);
+	}
 	return PulseScopeObj;
 }
 
 PULSESCOPE_API void DeletePulseScope(CPulseScope * obj)
 {
-	DestroyWindow(obj->m_hwnd);
-	delete obj;
+	ShowWindow(obj->m_hwnd,SW_HIDE);
+	//delete obj;
 }
 
 void	WINAPI WinThread(void)
