@@ -26,9 +26,11 @@
 #ifdef _DEBUG
 #pragma  comment(lib, "..\\x64\\Debug\\AudioLib.lib")
 #pragma  comment(lib, "..\\x64\\Debug\\vJoyInterface.lib")
+#pragma  comment(lib, "..\\x64\\Debug\\PulseScope.lib")
 #else
 #pragma  comment(lib, "..\\x64\\Release\\AudioLib.lib")
 #pragma  comment(lib, "..\\x64\\Release\\vJoyInterface.lib")
+#pragma  comment(lib, "..\\x64\\Release\\PulseScope.lib")
 #endif
 #else
 #ifdef _DEBUG
@@ -38,6 +40,7 @@
 #else
 #pragma  comment(lib, "..\\Release\\AudioLib.lib")
 #pragma  comment(lib, "..\\Release\\vJoyInterface.lib")
+#pragma  comment(lib, "..\\Release\\PulseScope.lib")
 #endif
 #endif
 
