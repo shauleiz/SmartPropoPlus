@@ -17,6 +17,23 @@
 #include "WinMessages.h"
 #include "vJoyMonitor.h"
 
+// Enums
+
+// Operational state machine
+enum OperatState {
+	STOPPED = 0,
+	STARTED,
+	LISTENING,
+	WORK
+};
+
+// Start mode
+enum StartState {
+	START_N = 0,	// Normal
+	START_S,		// Stopped
+	START_W			// Wizard
+};
+
 // Globals
 HWND hDialog;
 class CSppConfig * Conf = NULL;
@@ -35,8 +52,8 @@ bool reqPopulateFilter = false;
 UINT AudioLevel[2] = {0, 0};
 bool AutoBitRate;
 bool AutoChannel;
-
-
+OperatState OperatStateMachine = STOPPED;
+StartState	StartMode = START_N;
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
@@ -59,6 +76,7 @@ void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
 void		AudioLevelWatch();
 void		PulseScope(BOOL start);
+StartState	GetStartMode(LPTSTR lpCmdLine);
 
 
 
@@ -88,12 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -3;
 
 	// Read Command line
-	// TODO: This is only an example of how to parse the command line
-	int argc = 0;
-	LPWSTR* argv = NULL;
-	argv = CommandLineToArgvW(lpCmdLine, &argc);
-	LocalFree(argv);
-	// Read Command line (End)
+	StartMode = GetStartMode(lpCmdLine);
 
 	//Registers a system-wide messages:
 	// WM_INTERSPPCONSOLE - to ensure that it is a singleton.
@@ -1317,6 +1330,36 @@ void SetvJoyMapping(UINT id)
 	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
 
+// Get the start mode out of the command line
+// Options are:
+// -n|-N	Normal mode (default)
+// -w|-W	Wizard mode
+// -s|-S	Stopped mode
+StartState	GetStartMode(LPTSTR lpCmdLine)
+{
+	StartState out = START_N;
+
+	// Read Command line
+	int argc = 0;
+	LPWSTR* argv = NULL;
+	argv = CommandLineToArgvW(lpCmdLine, &argc);
+	for (int i=0; i<argc; i++)
+	{
+		if (!_tcsncicmp(argv[i], TEXT("-w"),2))
+		{
+			out = START_W;
+			break;
+		}
+		else if (!_tcsncicmp(argv[i], TEXT("-s"),2))
+		{
+			out = START_S;
+			break;
+		};
+	};
+
+	LocalFree(argv);
+	return out;
+}
 
 
 bool isAboveVistaSp1()
