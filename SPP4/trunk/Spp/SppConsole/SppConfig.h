@@ -53,6 +53,8 @@
 #define SPP_CHECKED	"Checked"
 #define SPP_BTNPREF	"Button"
 #define SPP_BACKUP	"Manual"
+#define SPP_WIZARD	"Wizard_GUI"
+#define SPP_STOPPED	"Stopped"
 
 
 
@@ -109,6 +111,11 @@ public:
 	bool			PulseScope(bool Monitor);
 	int				ShowLog();
 	bool			ShowLog(bool Monitor);
+	bool			Wizard();
+	bool			Wizard(bool active);
+	bool			Stopped();
+	bool			Stopped(bool active);
+
 	bool			Save(void);
 
 
@@ -135,6 +142,10 @@ private:
 	TiXmlHandle		GetFilterFileHandle(void);
 	void			MapAxis(UINT id, DWORD map);
 	void			MapButtons(UINT id, BTNArr ButtonMap);
+
+	int				GetGeneralElemetsBool(const char * Element);
+	bool			SetGeneralElemetsBool(const char * Element, bool Val);
+
 
 private:
 	TiXmlDocument m_doc;
