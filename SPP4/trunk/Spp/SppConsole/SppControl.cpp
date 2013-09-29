@@ -179,6 +179,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Get Configuration file
 	Conf = new CSppConfig();
 
+	// If Start mode is 'Normal' - get set up from configulation file
+	// Calculate the status of the GUI (Wizard/Iconified)
+	if (StartMode == START_N && Conf->Wizard())
+		StartMode = START_W;
+
+	// Get the desired operational target state (Stopped/Work)
+	if (!Conf->Stopped())
+		OperatStateMachine = STARTED;
+
 	// Start the audio 
 	Audio = new CSppAudio(hwnd);
 	if (!Audio)

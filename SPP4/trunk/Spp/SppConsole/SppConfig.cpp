@@ -1272,6 +1272,115 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 	return true;
 }
 
+// Set the state of Wizard_GUI to 1/0
+// Return true on success
+bool CSppConfig::Wizard(bool Active)
+{
+	return SetGeneralElemetsBool(SPP_WIZARD, Active);
+}
+
+// Get the state of Wizard_GUI
+// Returns true by default
+// Returns false if explicitly set to false
+bool CSppConfig::Wizard()
+{
+	if (!GetGeneralElemetsBool(SPP_WIZARD))
+		return false;
+	else
+		return true;
+}
+
+// Set the state of Stopped to 1/0
+// Return true on success
+bool CSppConfig::Stopped(bool Active)
+{
+	return SetGeneralElemetsBool(SPP_STOPPED, Active);
+}
+
+// Get the state of Stopped
+// Returns false by default
+// Returns true if explicitly set to true
+bool CSppConfig::Stopped()
+{
+	if (GetGeneralElemetsBool(SPP_STOPPED) == 1)
+		return true;
+	else
+		return false;
+}
+
+
+// Generic function to set "Checked" value of elements under <General> to 1/0
+bool CSppConfig::SetGeneralElemetsBool(const char * Element, bool Val)
+{
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return  false;
+	TiXmlHandle RootHandle( root );
+
+	// If Section 'General' does not exist - create it
+	TiXmlElement* General = RootHandle.FirstChild( SPP_GENERAL ).ToElement();
+	if (!General)
+	{
+		General = new TiXmlElement(SPP_GENERAL);
+		root->LinkEndChild(General);
+	};
+	
+	// Get or Create  Monitor_CH
+	TiXmlElement* Ch = RootHandle.FirstChild( SPP_GENERAL ).FirstChild(Element).ToElement();
+	if (!Ch)
+	{
+		//  Monitor_CH does not exist - create one
+		Ch =  new TiXmlElement(Element);
+		General->LinkEndChild(Ch);
+	};
+
+	// Set attribute SPP_CHECKED to Element
+	if (Val)
+		Ch->SetAttribute(SPP_CHECKED, "1");
+	else
+		Ch->SetAttribute(SPP_CHECKED, "0");
+
+#ifdef _DEBUG
+	m_doc.SaveFile();
+#endif
+	return true;
+}
+
+
+// Generic function to get value of elements under <General> to 1/0
+// Return:
+//   1: Active
+//   0: Inactive
+//  -1: No data
+int	CSppConfig::GetGeneralElemetsBool(const char * Element)
+{
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return  -1;
+	TiXmlHandle RootHandle( root );
+
+	// If Section 'General' does not exist - No data
+	TiXmlElement* General = RootHandle.FirstChild( SPP_GENERAL ).ToElement();
+	if (!General)
+		return -1;
+
+	// Get  Element
+	TiXmlElement* Ch = RootHandle.FirstChild( SPP_GENERAL ).FirstChild(Element).ToElement();
+	if (!Ch)
+		return -1;
+
+	// Get the attribute
+	int val;
+	int result = Ch->QueryIntAttribute(SPP_CHECKED, &val);
+	if (TIXML_SUCCESS != result)
+		return -1;
+	else
+		return val;
+}
+
+
 void CSppConfig::Test(void)
 {
 	//CreatevJoyDevice(5);
