@@ -143,23 +143,21 @@ void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
 {
 	WORD event = LOWORD(lParam);
 
-	// Left Click
-	if (event == WM_LBUTTONDOWN)
+	// (Double) Left Click - Open Wizard
+	if ((event == WM_LBUTTONDOWN) | (event == WM_LBUTTONDBLCLK))
 	{
 		Show();
 		Iconified(false);
 	}
-	// Right Click
+	// Right Click - context menu
 	if (event == WM_RBUTTONDOWN)
 	{
-		Show();
-		Iconified(false);
-	}
-	// Double Left click
-	if (event == WM_LBUTTONDBLCLK)
-	{
-		Show();
-		Iconified(false);
+		HMENU hIconMenu = LoadMenu(m_hInstance, MAKEINTRESOURCE(IDM_ICON));
+		HMENU hPopupMenu = GetSubMenu(hIconMenu, 0); 
+		POINT pt;
+		GetCursorPos(&pt);
+		TrackPopupMenu(hPopupMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON, pt.x, pt.y, 0, m_hDlg, NULL);
+		DestroyMenu(hIconMenu);
 	}
 }
 
@@ -1057,6 +1055,13 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
+		if (LOWORD(wParam) == IDM_DISPLAY_WIZARD)
+		{
+			DialogObj->Show();
+			DialogObj->Iconified(false);
+			break;
+		}
+
 		if (HIWORD(wParam) == LBN_SELCHANGE )
 		{
 			DialogObj->SelChanged(LOWORD(wParam), (HWND)lParam);
@@ -1257,6 +1262,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMAPP_NOTIFYCALLBACK:
 		DialogObj->OnNotificationIcon(wParam,  lParam);
 		break;
+
 
 	}
 	return (INT_PTR)FALSE;
