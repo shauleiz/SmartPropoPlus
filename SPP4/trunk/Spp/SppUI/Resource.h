@@ -191,3 +191,4 @@
 #define IDC_CH_AUTO                             40145
 #define IDC_MOD_AUTO                            40147
 #define IDC_PLS_SCOPE                           40148
+#define IDC_HIDE                                40149

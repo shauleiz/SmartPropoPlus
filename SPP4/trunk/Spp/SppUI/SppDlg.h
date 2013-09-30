@@ -62,6 +62,8 @@ public: // Called from window procedure
 	void EnableFilter(BOOL enable);
 	void OnStreamStopStart(void);
 	void ExitWithOK(bool);
+	void Iconified(bool);
+	void OnNotificationIcon( WPARAM wParam, LPARAM lParam);
 
 
 

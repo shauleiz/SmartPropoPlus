@@ -229,7 +229,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	FilterPopulate(hDialog);
 	Spp->AudioChanged(); // TODO: Remove later
-	Dialog->Show(); // If not asked to be iconified
+	if (StartMode == START_W) 
+		Dialog->Show();
 
 	// Start monitoring channels according to config file
 	SetMonitoring(hDialog);
@@ -516,6 +517,14 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_OK:
 			if (wParam)
 				Conf->Save();
+			break;
+
+		// GUI became iconified or switched to wizard mode
+		case WMSPP_DLG_ICONFD:
+			if (wParam)
+				Conf->Wizard(false);
+			else
+				Conf->Wizard(true);
 			break;
 
 		case WMSPP_PRCS_GETLR:
