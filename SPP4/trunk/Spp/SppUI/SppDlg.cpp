@@ -116,8 +116,9 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip)
     tnid.hWnd = m_hDlg; 
     tnid.uID = uID; 
     tnid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP; 
-    tnid.uCallbackMessage = NULL /*MYWM_NOTIFYICON*/; 
+    tnid.uCallbackMessage = WMAPP_NOTIFYCALLBACK; 
     tnid.hIcon =	m_hIcon;// Load system tray icon
+	tnid.uVersion = NOTIFYICON_VERSION_4;
 
     if (lpszTip) 
         hr = StringCbCopyN(tnid.szTip, sizeof(tnid.szTip), lpszTip, 
@@ -135,6 +136,33 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip)
  
     return res; 
 }
+
+
+// Handle messages from notification icon
+void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
+{
+	WORD event = LOWORD(lParam);
+
+	// Left Click
+	if (event == WM_LBUTTONDOWN)
+	{
+		Show();
+		Iconified(false);
+	}
+	// Right Click
+	if (event == WM_RBUTTONDOWN)
+	{
+		Show();
+		Iconified(false);
+	}
+	// Double Left click
+	if (event == WM_LBUTTONDBLCLK)
+	{
+		Show();
+		Iconified(false);
+	}
+}
+
 
 void  SppDlg::CleanAudioList(void)
 {
@@ -942,6 +970,12 @@ void SppDlg::ExitWithOK(bool OkSelected)
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_OK, (WPARAM)OkSelected, 0);
 }
 
+// Informs Parent window (CU) that the user went to/from iconified dispaly mode
+void SppDlg::Iconified(bool icon)
+{
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_ICONFD, (WPARAM)icon, 0);
+}
+
 void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 {
 	// Case the message origin is one of the Modulation PPM/PCM list boxes
@@ -1014,6 +1048,13 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			hDlg = NULL;
 			PostQuitMessage(0);
 			return (INT_PTR)TRUE;
+		}
+
+		if (LOWORD(wParam) == IDC_HIDE)
+		{
+			DialogObj->Hide();
+			DialogObj->Iconified(true);
+			break;
 		}
 
 		if (HIWORD(wParam) == LBN_SELCHANGE )
@@ -1211,6 +1252,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case VJOYDEV_CH_LEVEL:
 		DialogObj->DisplayAudioLevels(hDlg, (PVOID)wParam, LOWORD(lParam), HIWORD(lParam));
+		break;
+
+	case WMAPP_NOTIFYCALLBACK:
+		DialogObj->OnNotificationIcon(wParam,  lParam);
 		break;
 
 	}

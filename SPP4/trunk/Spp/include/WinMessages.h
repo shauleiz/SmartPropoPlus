@@ -74,6 +74,7 @@ UINT const WMSPP_DLG_AUTO	=			BASE_SUB+46;			// Change in audio channel auto par
 UINT const SET_AUDIO_AUTO	=			BASE_SUB+47;			// Change in audio channel auto params - The payload is wParam: mask , lParam: flags
 UINT const WMSPP_DLG_PLSSCOP=			BASE_SUB+48;			// The payload is boolean Start/Stop Pulse Scope
 UINT const PULSE_SCOPE		=			BASE_SUB+49;			// The payload is in WPARAMS, true: Start Pulse Scope
+UINT const WMSPP_DLG_ICONFD	=			BASE_SUB+50;			// Inform CU that GUI became iconified (wParam!=0) or not (wParam==0)
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
