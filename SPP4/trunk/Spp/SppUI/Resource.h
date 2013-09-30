@@ -13,6 +13,7 @@
 #define IDD_BUTTONSDLG                          120
 #define IDB_REDDOT                              122
 #define IDB_GREENDOT                            124
+#define IDM_ICON                                127
 #define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001
@@ -39,6 +40,7 @@
 #define IDC_STREAM                              1023
 #define IDC_AUD_AUTO                            1024
 #define IDC_CH_LOG                              1081
+#define IDM_DISPLAY_WIZARD                      40000
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
 #define IDS_I_STARTSPPPRS                       40002

@@ -40,6 +40,19 @@ IDC_SPPCONSOLE MENU
 
 
 
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDM_ICON MENUEX
+{
+    POPUP "", 0, 0, 0
+    {
+        MENUITEM "Display Wizard", IDM_DISPLAY_WIZARD, 0, MFS_DEFAULT
+        MENUITEM "", 0, MFT_SEPARATOR, 0
+        MENUITEM "Exit", IDOK, 0, 0
+    }
+}
+
+
+
 //
 // Dialog resources
 //
