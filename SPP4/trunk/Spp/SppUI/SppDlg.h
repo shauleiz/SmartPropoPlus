@@ -64,12 +64,13 @@ public: // Called from window procedure
 	void ExitWithOK(bool);
 	void Iconified(bool);
 	void OnNotificationIcon( WPARAM wParam, LPARAM lParam);
+	void SppStatusChanged( WPARAM wParam, LPARAM lParam);
 
 
 
 
 private:
-	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip);
+	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
 	void ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color);
 	int FindItemById(HWND hListView, LPCTSTR Id);
 

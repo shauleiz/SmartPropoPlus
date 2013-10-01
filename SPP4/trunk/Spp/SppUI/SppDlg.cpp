@@ -40,7 +40,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 
 	// Add icon to system tray
 	m_tnid.cbSize = 0;
-	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL);
+	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL, NULL);
 	return;
 }
 
@@ -105,29 +105,47 @@ bool SppDlg::MsgLoop(void)
 // uID - identifier of the icon 
 // hicon - handle to the icon to add 
 // lpszTip - tooltip text 
-bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip)
+bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
 {
 	bool res; 
     NOTIFYICONDATA tnid;
 	HRESULT hr;
+	int cmd = NIM_ADD;
  
+	if (m_tnid.cbSize)
+		cmd = NIM_MODIFY ;
+
+
  	m_hIcon = LoadIcon(m_hInstance, MAKEINTRESOURCE(uID));
     tnid.cbSize = sizeof(NOTIFYICONDATA); 
     tnid.hWnd = m_hDlg; 
-    tnid.uID = uID; 
-    tnid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP; 
+    tnid.uID = IDI_SPPCONSOLE; 
+    tnid.uFlags = NIF_MESSAGE | NIF_ICON; 
     tnid.uCallbackMessage = WMAPP_NOTIFYCALLBACK; 
     tnid.hIcon =	m_hIcon;// Load system tray icon
 	tnid.uVersion = NOTIFYICON_VERSION_4;
 
-    if (lpszTip) 
-        hr = StringCbCopyN(tnid.szTip, sizeof(tnid.szTip), lpszTip, 
-                           sizeof(tnid.szTip));
-        // TODO: Add error handling for the HRESULT.
+	// Tool Tip
+    if (lpszTip)
+	{
+        hr = StringCbCopyN(tnid.szTip, sizeof(tnid.szTip), lpszTip, sizeof(tnid.szTip));
+		tnid.uFlags |= NIF_TIP;
+	}
     else 
-        tnid.szTip[0] = (TCHAR)'\0'; 
+        tnid.szTip[0] = (TCHAR)'\0';
+
+	// Info text
+	if (lpszInfo)
+	{
+        hr = StringCbCopyN(tnid.szInfo, sizeof(tnid.szInfo), lpszInfo, sizeof(tnid.szInfo));
+        hr = StringCbCopyN(tnid.szInfoTitle, sizeof(tnid.szInfoTitle), TEXT("SmartPropoPlus Message"), sizeof(tnid.szInfoTitle));
+		tnid.dwInfoFlags = NIIF_NONE;
+		tnid.uFlags |= NIF_INFO;
+	}
+    else 
+        tnid.szInfo[0] = (TCHAR)'\0';
  
-    res = (TRUE == Shell_NotifyIcon(NIM_ADD, &tnid));
+    res = (TRUE == Shell_NotifyIcon(cmd, &tnid));
 	if (res)
 		m_tnid = tnid;
  
@@ -137,6 +155,16 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip)
     return res; 
 }
 
+
+// CU informed GUI that status changed - Update notification icon
+void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
+{
+	// Change Icon
+	if (wParam == STOPPED)
+		TaskBarAddIcon(IDI_STOPPED, CONSOLE_BALOON_STP, (LPTSTR)lParam);
+	else
+		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL, (LPTSTR)lParam);
+}
 
 // Handle messages from notification icon
 void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
@@ -1223,6 +1251,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_MAP_UPDT:
 		DialogObj->SetMappingData((Mapping *)wParam);
+		break;
+
+	case WMSPP_STAT_UPDT:
+		 DialogObj->SppStatusChanged(  wParam,  lParam);
 		break;
 
 	//case WMSPP_MAPBTN_UPDT:

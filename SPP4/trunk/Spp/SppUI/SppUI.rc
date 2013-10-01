@@ -319,6 +319,10 @@ IDC_SPPCONSOLE ACCELERATORS
 //
 // Icon resources
 //
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_STOPPED        ICON           "SppStopped.ico"
+
+
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_SMALL          ICON           "small.ico"
 
