@@ -17,22 +17,6 @@
 #include "WinMessages.h"
 #include "vJoyMonitor.h"
 
-// Enums
-
-// Operational state machine
-enum OperatState {
-	STOPPED = 0,
-	STARTED,
-	LISTENING,
-	WORK
-};
-
-// Start mode
-enum StartState {
-	START_N = 0,	// Normal
-	START_S,		// Stopped
-	START_W			// Wizard
-};
 
 // Globals
 HWND hDialog;
@@ -77,6 +61,7 @@ bool		isAboveVistaSp1();
 void		AudioLevelWatch();
 void		PulseScope(BOOL start);
 StartState	GetStartMode(LPTSTR lpCmdLine);
+void		SetNotificationIcon(LPCTSTR);
 
 
 
@@ -200,6 +185,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SppDlg *	Dialog	= new SppDlg(hInstance, hwnd);
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
+
+	// Send notification icon status data
+	SetNotificationIcon(NULL);
 
 	// Create Log window
 	LogWin = new SppLog(hInstance, hwnd);
@@ -1347,6 +1335,16 @@ void SetvJoyMapping(UINT id)
 	Spp->MappingChanged(&Map, id); 
 	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
+
+// Send the status to the notification icon 
+void SetNotificationIcon(LPCTSTR Message)
+{
+	if (!hDialog)
+		return;
+
+	SendMessage(hDialog, WMSPP_STAT_UPDT, (WPARAM)OperatStateMachine, (LPARAM)Message);
+}
+
 
 // Get the start mode out of the command line
 // Options are:

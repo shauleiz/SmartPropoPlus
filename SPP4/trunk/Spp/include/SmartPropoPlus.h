@@ -98,6 +98,7 @@ extern "C"
 #define CONSOLE_TT_OFF		"SmartPropoPlus is OFF"
 #define CONSOLE_TT_ON		"SmartPropoPlus is ON"
 #define CONSOLE_BALOON_TTL	_T("SmartPropoPlus Console")
+#define CONSOLE_BALOON_STP	_T("SmartPropoPlus Console (Stopped)")
 #define CONSOLE_BALOON_TXT	"Use this application to control:\n- Modulation Type\n- Modulation Shift\n\nChanges are effective Immediately!"
 #define BALOON_DLL_STOPPED	"SmartPropoPlus stopped"
 #define BALOON_DLL_STARTING	"SmartPropoPlus is starting"
@@ -270,6 +271,24 @@ struct MOD {
 	LPCTSTR Subtype;	// PPM/PCM
 	LPCTSTR Name;		// User friendly name of the modulation to be desplayd.
 	PP func;			// This is the function of type PP that implements the modulation. Called by ProcessWave().
+};
+
+
+// Enums
+
+// Operational state machine
+enum OperatState {
+	STOPPED = 0,
+	STARTED,
+	LISTENING,
+	WORK
+};
+
+// Start mode
+enum StartState {
+	START_N = 0,	// Normal
+	START_S,		// Stopped
+	START_W			// Wizard
 };
 
 #endif // __SMARTPROPOPLUS
