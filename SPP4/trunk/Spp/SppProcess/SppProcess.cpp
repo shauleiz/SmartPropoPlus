@@ -167,7 +167,13 @@ SPPMAIN_API bool CSppProcess::Stop(void)
 	return true;
 }
 
-SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
+SPPMAIN_API bool CSppProcess::Init(HWND hParentWnd)
+{
+	m_hParentWnd = hParentWnd;
+	return (m_hParentWnd != NULL);
+}
+
+SPPMAIN_API bool CSppProcess::Start(void)
 {
 	LPCTSTR AudioId = NULL;
 
@@ -176,10 +182,9 @@ SPPMAIN_API bool CSppProcess::Start(HWND hParentWnd)
 		return false;
 	m_PropoStarted = true;
 
-	if (!hParentWnd)
+	if (!m_hParentWnd)
 		return false;
 
-	m_hParentWnd = hParentWnd;
 
 	// Get list of modulation types: PPM/PCM(JR) ....
 	// Mark the selected modulation type
@@ -234,7 +239,7 @@ SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 }
 
 /*
-	Tests status of the global data block 4 times a second
+	Tests status of the global data block 10 times a second
 	If changed the make the required change in the operation of this unit
 */
 

@@ -37,7 +37,8 @@ UINT AudioLevel[2] = {0, 0};
 bool AutoBitRate;
 bool AutoChannel;
 OperatState OperatStateMachine = STOPPED;
-StartState	StartMode = START_N;
+//StartState	StartMode = START_N;
+WORD Flags = FLG_NONE;
 
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
@@ -60,7 +61,7 @@ void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
 void		AudioLevelWatch();
 void		PulseScope(BOOL start);
-StartState	GetStartMode(LPTSTR lpCmdLine);
+WORD		GetStartMode(LPTSTR lpCmdLine);
 void		SetNotificationIcon(LPCTSTR);
 
 
@@ -91,7 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -3;
 
 	// Read Command line
-	StartMode = GetStartMode(lpCmdLine);
+	Flags = GetStartMode(lpCmdLine);
 
 	//Registers a system-wide messages:
 	// WM_INTERSPPCONSOLE - to ensure that it is a singleton.
@@ -166,12 +167,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// If Start mode is 'Normal' - get set up from configulation file
 	// Calculate the status of the GUI (Wizard/Iconified)
-	if (StartMode == START_N && Conf->Wizard())
-		StartMode = START_W;
+	if ((Flags & FLG_WIZRD) || Conf->Wizard())
+		Flags |= FLG_WIZRD;
 
 	// Get the desired operational target state (Stopped/Work)
-	if (!Conf->Stopped())
-		OperatStateMachine = STARTED;
+	if ((Flags & FLG_STPD) || Conf->Stopped())
+		Flags |= FLG_STPD;
 
 	// Start the audio 
 	Audio = new CSppAudio(hwnd);
@@ -186,15 +187,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
 
-	// Send notification icon status data
-	SetNotificationIcon(NULL);
-
 	// Create Log window
 	LogWin = new SppLog(hInstance, hwnd);
 	hLog = LogWin->GetWndHandle();
 	
 	// Start reading audio data
 	Spp		= new CSppProcess();
+	Spp->Init(hwnd);
 	vJoyDevice = Conf->SelectedvJoyDevice();
 	SetvJoyMapping(vJoyDevice);
 
@@ -203,22 +202,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Spp->SetAudioObj(Audio);
 
-	// Start processing the audio
-	if (!Spp->Start(hwnd))
+	if (!(Flags & FLG_STPD))
 	{
-		LogMessage(FATAL, IDS_F_STARTSPPPRS);
-		goto ExitApp;
+		// Start processing the audio
+		if (!Spp->Start())
+		{
+			LogMessage(FATAL, IDS_F_STARTSPPPRS);
+			goto ExitApp;
+		};
+
+		// Start processing the audio - Success
+		LogMessage(INFO, IDS_I_STARTSPPPRS);
+
+		FilterPopulate(hDialog);
+		Spp->AudioChanged(); // TODO: Remove later
+
+		OperatStateMachine = STARTED; // TODO: Refine
 	};
-
-	// Start processing the audio - Success
-	LogMessage(INFO, IDS_I_STARTSPPPRS);
-
-
-
-	FilterPopulate(hDialog);
-	Spp->AudioChanged(); // TODO: Remove later
-	if (StartMode == START_W) 
-		Dialog->Show();
 
 	// Start monitoring channels according to config file
 	SetMonitoring(hDialog);
@@ -238,9 +238,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Start monitoring thread
 	static thread * tMonitor = NULL;
 	tMonitor = new thread(thMonitor, &Monitor);
-
 	if (!tMonitor)
 			goto ExitApp;
+
+	// Send notification icon status data
+	if (Flags & FLG_WIZRD) 
+		Dialog->Show();
 
 	// Loop forever in the dialog box until user kills it
 	Dialog->MsgLoop();
@@ -494,11 +497,18 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_STREAM:
 			if ((BOOL)wParam)
 			{
-				Spp->Start(hwnd);
+				Spp->Start();
 				Spp->AudioChanged();
+				OperatStateMachine = STARTED;
+				Conf->Stopped(false);
 			}
 			else
+			{
 				Spp->Stop();
+				OperatStateMachine = STOPPED;
+				Conf->Stopped(true);
+			};
+
 			break;
 
 		// User pressed OK (or Cancel) button
@@ -543,6 +553,8 @@ void PulseScope(BOOL start)
 // Updates GUI
 // If the selected channel is much weaker than the other channel then inform GUI
 // If the selected channel is weak (under 95 TODO: Make Configurable) then inform GUI
+// If wrong channel then select the right channel (if in auto mode)
+// If bitrate is not optimal then change it (if in auto mode)
 void AudioLevelWatch()
 {
 	static int isRight=-1; // -1: Uninitialized
@@ -1180,6 +1192,7 @@ void thMonitor(bool * KeepAlive)
 {
 	bool stopped = false;
 	int rID=0;
+	OperatState oState = UNKNOWN;
 
 	THREAD_NAME("SppControl Monitor Thread");
 
@@ -1188,8 +1201,15 @@ void thMonitor(bool * KeepAlive)
 
 		Sleep_For( 100 );// Sleep for 100 milliseconds
 		
+		// Gets Audio Levels - oprimizes and Updates GUI
 		AudioLevelWatch();
 
+		// Inform GUI of changes in the Start/Stop conditions
+		if (OperatStateMachine != oState)
+		{
+			oState = OperatStateMachine;
+			SetNotificationIcon(NULL);
+		};
 
 		// Test if need to populate filter
 		if (reqPopulateFilter)
@@ -1197,6 +1217,7 @@ void thMonitor(bool * KeepAlive)
 			FilterPopulate(hDialog);
 			reqPopulateFilter=false;
 		};
+
 
 		// Test state of vJoy device - only for legal vJoy device Id
 		if (vJoyDevice)
@@ -1242,7 +1263,8 @@ void thMonitor(bool * KeepAlive)
 				rID=0;
 				continue;
 			};
-		};
+		}; // if (vJoyDevice)
+
 	}; // while (*KeepAlive) 
 }
 
@@ -1351,9 +1373,9 @@ void SetNotificationIcon(LPCTSTR Message)
 // -n|-N	Normal mode (default)
 // -w|-W	Wizard mode
 // -s|-S	Stopped mode
-StartState	GetStartMode(LPTSTR lpCmdLine)
+WORD	GetStartMode(LPTSTR lpCmdLine)
 {
-	StartState out = START_N;
+	WORD out = FLG_NONE;
 
 	// Read Command line
 	int argc = 0;
@@ -1361,14 +1383,17 @@ StartState	GetStartMode(LPTSTR lpCmdLine)
 	argv = CommandLineToArgvW(lpCmdLine, &argc);
 	for (int i=0; i<argc; i++)
 	{
+		// Wizard 
 		if (!_tcsncicmp(argv[i], TEXT("-w"),2))
 		{
-			out = START_W;
+			out |= FLG_WIZRD;
 			break;
-		}
-		else if (!_tcsncicmp(argv[i], TEXT("-s"),2))
+		};
+
+		// Stopped
+		if (!_tcsncicmp(argv[i], TEXT("-s"),2))
 		{
-			out = START_S;
+			out |= FLG_STPD;
 			break;
 		};
 	};

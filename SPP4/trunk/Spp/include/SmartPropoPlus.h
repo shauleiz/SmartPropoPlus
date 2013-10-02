@@ -182,6 +182,11 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define AUTOCHANNEL	0x0001
 #define AUTOBITRATE	0x0002
 
+// Command line flags
+#define FLG_NONE	0x0000
+#define FLG_WIZRD	0x0001
+#define FLG_STPD	0x0002
+
 #define  SCP function<void (int index, int length, bool low, LPVOID timestamp, LPVOID Param)>
 #define  PP function<void (int, BOOL)>
 #define  Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
@@ -278,7 +283,8 @@ struct MOD {
 
 // Operational state machine
 enum OperatState {
-	STOPPED = 0,
+	UNKNOWN = 0,
+	STOPPED,
 	STARTED,
 	LISTENING,
 	WORK
