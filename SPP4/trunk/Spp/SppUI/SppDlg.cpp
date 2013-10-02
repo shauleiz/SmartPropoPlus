@@ -161,9 +161,15 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 {
 	// Change Icon
 	if (wParam == STOPPED)
+	{
 		TaskBarAddIcon(IDI_STOPPED, CONSOLE_BALOON_STP, (LPTSTR)lParam);
+		SetStreamingButton(false);
+	}
 	else
+	{
 		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL, (LPTSTR)lParam);
+		SetStreamingButton(true);
+	};
 }
 
 // Handle messages from notification icon
