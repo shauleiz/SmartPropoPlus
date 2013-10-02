@@ -46,6 +46,7 @@ IDM_ICON MENUEX
     POPUP "", 0, 0, 0
     {
         MENUITEM "Display Wizard", IDM_DISPLAY_WIZARD, 0, MFS_DEFAULT
+        MENUITEM "Start/Stop", IDC_STREAM, 0, 0
         MENUITEM "", 0, MFT_SEPARATOR, 0
         MENUITEM "Exit", IDOK, 0, 0
     }
@@ -319,13 +320,13 @@ IDC_SPPCONSOLE ACCELERATORS
 //
 // Icon resources
 //
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_STOPPED        ICON           "SppStopped.ico"
-
-
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_SMALL          ICON           "small.ico"
 
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_SPPCONSOLE     ICON           "SppControl.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_STOPPED        ICON           "SppStopped.ico"
