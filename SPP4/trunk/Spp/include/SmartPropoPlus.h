@@ -187,6 +187,10 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define FLG_WIZRD	0x0001
 #define FLG_STPD	0x0002
 
+// Audio levels
+#define LEVEL_VHI	95
+#define LEVEL_LO	50
+
 #define  SCP function<void (int index, int length, bool low, LPVOID timestamp, LPVOID Param)>
 #define  PP function<void (int, BOOL)>
 #define  Map2Nibble(Map,i) 	((Map & (0xF<<(4*(7-i))))>>(4*(7-i)))&0xF
@@ -296,6 +300,16 @@ enum StartState {
 	START_S,		// Stopped
 	START_W			// Wizard
 };
+
+// Quality of position values - From 0 (rubish) to 4 (excellent)
+enum PositionQuality {
+	RUBISH = 0,
+	LOW_QUAL = 1,
+	HI_QUAL = 2,
+	VHI_QUAL = 3,
+	EXCL_QUAL = 4
+};
+
 
 #endif // __SMARTPROPOPLUS
 

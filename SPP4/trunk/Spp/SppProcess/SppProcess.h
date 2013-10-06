@@ -111,6 +111,7 @@ public:
 	SPPMAIN_API void MappingChanged(Mapping* m, UINT vJoyId);
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
 	SPPMAIN_API bool RegisterPulseMonitor(int index, bool Register);
+	SPPMAIN_API int  GetPositionDataQuality(void);
 
 
 
@@ -206,6 +207,7 @@ private:
 	class CPulseScope * m_PulseScopeObj;
 	UINT m_nChannels;
 	JOYSTICK_POSITION m_vJoyPosition;
+	UINT m_PosQual;
 };
 
 
