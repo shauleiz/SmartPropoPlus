@@ -34,10 +34,11 @@ bool Monitor = true;
 int vJoyDevice = 1;
 bool reqPopulateFilter = false;
 UINT AudioLevel[2] = {0, 0};
+int isRight=-1; // -1: Uninitialized
+int BitRate=-1; // -1: Uninitialized
 bool AutoBitRate;
 bool AutoChannel;
 OperatState OperatStateMachine = STOPPED;
-//StartState	StartMode = START_N;
 WORD Flags = FLG_NONE;
 
 // Declarations
@@ -222,6 +223,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Start monitoring channels according to config file
 	SetMonitoring(hDialog);
+
 	// Start Pulse Scope according to config file
 	SetPulseScope(hDialog);
 
@@ -552,13 +554,11 @@ void PulseScope(BOOL start)
 // Gets Audio Levels
 // Updates GUI
 // If the selected channel is much weaker than the other channel then inform GUI
-// If the selected channel is weak (under 95 TODO: Make Configurable) then inform GUI
+// If the selected channel is weak (under 95 = LEVEL_VHI) then inform GUI
 // If wrong channel then select the right channel (if in auto mode)
 // If bitrate is not optimal then change it (if in auto mode)
 void AudioLevelWatch()
 {
-	static int isRight=-1; // -1: Uninitialized
-	static int BitRate=-1; // -1: Uninitialized
 	static bool WentAutoCh=true;
 	static bool WentAutoBr=true;
 
@@ -594,7 +594,7 @@ void AudioLevelWatch()
 	// If channel selection is automatic - test if the correct channel is selected
 	if (AutoChannel)
 	{	
-		if (isRight && AudioLevel[0]>=95 && AudioLevel[1]<50)
+		if (isRight && AudioLevel[0]>=LEVEL_VHI && AudioLevel[1]<LEVEL_LO)
 		{// Right channel selected and the left channel gives a good signal then switch to Left signal
 			Conf->SetDefaultChannel(TEXT("Left"));
 			Spp->SetAudioChannel(true);
@@ -603,7 +603,7 @@ void AudioLevelWatch()
 			WentAutoCh=true;
 			SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
 		}
-		else if (!isRight && AudioLevel[1]>=95 && AudioLevel[0]<50)
+		else if (!isRight && AudioLevel[1]>=LEVEL_VHI && AudioLevel[0]<LEVEL_LO)
 		{// Left channel selected and the right channel gives a good signal then switch to Left signal
 			Conf->SetDefaultChannel(TEXT("Right"));
 			Spp->SetAudioChannel(false);
@@ -657,7 +657,7 @@ void AudioLevelWatch()
 		}
 
 		// Very strong? change to 8 bits
-		else if (Level >95 && BitRate==16)
+		else if (Level >LEVEL_VHI && BitRate==16)
 		{
 			Conf->SetDefaultBitRate(8);
 			Audio->SetwBitsPerSample(8);
@@ -1193,6 +1193,7 @@ void thMonitor(bool * KeepAlive)
 	bool stopped = false;
 	int rID=0;
 	OperatState oState = UNKNOWN;
+	UINT PosQual=0;
 
 	THREAD_NAME("SppControl Monitor Thread");
 
@@ -1201,8 +1202,12 @@ void thMonitor(bool * KeepAlive)
 
 		Sleep_For( 100 );// Sleep for 100 milliseconds
 		
-		// Gets Audio Levels - oprimizes and Updates GUI
+		// Gets Audio Levels - optimizes and Updates GUI
 		AudioLevelWatch();
+
+		// Get the qulity of the Position data - Higher than 90 is good quality
+		if (OperatStateMachine != STOPPED)
+			PosQual = Spp->GetPositionDataQuality();
 
 		// Inform GUI of changes in the Start/Stop conditions
 		if (OperatStateMachine != oState)

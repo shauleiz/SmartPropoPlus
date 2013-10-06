@@ -171,8 +171,8 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico" />
     <Image Include="SppControl.ico" />
+    <Image Include="SppStopped.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SppUI.rc" />

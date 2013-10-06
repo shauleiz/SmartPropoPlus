@@ -43,10 +43,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico">
+    <Image Include="SppControl.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="SppControl.ico">
+    <Image Include="SppStopped.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

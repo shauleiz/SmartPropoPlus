@@ -50,7 +50,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_WaveInputChannel(0),
 	m_nChannels(0),
 	m_PulseMonitor(NULL),
-	m_PulseScopeObj(NULL)
+	m_PulseScopeObj(NULL),
+	m_PosQual(0)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -236,6 +237,14 @@ SPPMAIN_API bool CSppProcess::Start(void)
 SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 {
 	m_Audio = Audio;
+}
+
+// Return the calculated value of the Quality of Position data
+// 0 means that the data is worthless
+// 100  means that the data is excellent
+SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
+{
+	return m_PosQual;
 }
 
 /*
@@ -552,6 +561,11 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
 		{
+			// Gradual degradation in the quality of Position data
+			// If the quality is good it is repared inside m_CurrentPP
+			if (m_PosQual)
+				m_PosQual--;
+
 			// Call the correct function ProcessPulseXXX() 
 			m_CurrentPP(PulseLength, negative);
 		}
@@ -844,6 +858,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	//};
 				
+	// Send Position and number of channels to the virtual joystick
 	SendPPJoy(m_nChannels, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
@@ -935,6 +950,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	//};
 			
+	// Send Position and number of channels to the virtual joystick
 	SendPPJoy(11, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
@@ -1024,6 +1040,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
 	//};
 				
+	// Send Position and number of channels to the virtual joystick
 	SendPPJoy(11, m_Position);
 
 	if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
@@ -1099,6 +1116,7 @@ void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
 	
 	m_Position[datacount] = data[datacount];	/* Assign data to joystick channels */
 
+	// Send Position and number of channels to the virtual joystick
 	SendPPJoy(11, m_Position);
 
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
@@ -2022,6 +2040,9 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	int i, k;
 	int ch[MAX_JS_CH];
 	int n_ch = 0;
+
+	// Mark quality of Position data as excellent
+	m_PosQual = 100;
 
 	if (!m_vJoyReady)
 		return;
