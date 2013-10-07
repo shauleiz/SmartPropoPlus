@@ -15,6 +15,8 @@
 #define IDB_GREENDOT                            124
 #define IDM_ICON                                127
 #define IDI_STOPPED                             129
+#define IDI_WORK                                131
+#define IDI_LISTEN                              133
 #define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001

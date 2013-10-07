@@ -320,6 +320,14 @@ IDC_SPPCONSOLE ACCELERATORS
 //
 // Icon resources
 //
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_LISTEN         ICON           ".\\SppListen.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_WORK           ICON           ".\\SppWorking.ico"
+
+
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_SMALL          ICON           "SppControl.ico"
 

@@ -165,6 +165,16 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 		TaskBarAddIcon(IDI_STOPPED, CONSOLE_BALOON_STP, (LPTSTR)lParam);
 		SetStreamingButton(false);
 	}
+	else if (wParam == WORK)
+	{
+		TaskBarAddIcon(IDI_WORK, CONSOLE_BALOON_WRK, (LPTSTR)lParam);
+		SetStreamingButton(false);
+	}
+	else if (wParam == LISTENING)
+	{
+		TaskBarAddIcon(IDI_LISTEN, CONSOLE_BALOON_LSN, (LPTSTR)lParam);
+		SetStreamingButton(false);
+	}
 	else
 	{
 		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL, (LPTSTR)lParam);
