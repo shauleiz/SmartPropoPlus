@@ -99,6 +99,8 @@ extern "C"
 #define CONSOLE_TT_ON		"SmartPropoPlus is ON"
 #define CONSOLE_BALOON_TTL	_T("SmartPropoPlus Console")
 #define CONSOLE_BALOON_STP	_T("SmartPropoPlus Console (Stopped)")
+#define CONSOLE_BALOON_WRK	_T("SmartPropoPlus Console (Working)")
+#define CONSOLE_BALOON_LSN	_T("SmartPropoPlus Console (Listening)")
 #define CONSOLE_BALOON_TXT	"Use this application to control:\n- Modulation Type\n- Modulation Shift\n\nChanges are effective Immediately!"
 #define BALOON_DLL_STOPPED	"SmartPropoPlus stopped"
 #define BALOON_DLL_STARTING	"SmartPropoPlus is starting"

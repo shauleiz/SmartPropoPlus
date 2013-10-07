@@ -61,10 +61,11 @@ void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
 void		AudioLevelWatch();
+UINT		GetAudioQuality(bool);
 void		PulseScope(BOOL start);
 WORD		GetStartMode(LPTSTR lpCmdLine);
 void		SetNotificationIcon(LPCTSTR);
-
+void		ComputeOperatState(void);
 
 
 LRESULT CALLBACK MainWindowProc(
@@ -549,6 +550,109 @@ void PulseScope(BOOL start)
 	Spp->RegisterPulseMonitor(1, start ? true : false);
 }
 
+// Compute the state of the Operation state machine
+// When state computed, OperatStateMachine is updated
+// When state seems to be stable an appropreate message is sent to GUI
+void ComputeOperatState(void)
+{
+	UINT PosQual=0;
+	UINT AudioQualitySel, AudioQualityOther;
+	static UINT StabilityCount=0;
+
+	// Nothing to compute is user chose to be in stopped mode
+	if (OperatStateMachine == STOPPED)
+		return;
+
+	// Get audio quality of Selecter audio channel and of Other audio channel
+	AudioQualitySel = GetAudioQuality(true);
+	AudioQualityOther = GetAudioQuality(false);
+
+	// Get the qulity of the Position data - Higher than 75 is good quality
+	PosQual = Spp->GetPositionDataQuality();
+	if (PosQual >= 75)
+	{
+		if (OperatStateMachine == WORK)
+			StabilityCount++;
+		else
+			StabilityCount=0;
+
+		// State is WORK but we will inform GUI only after 5 consecutive
+		// high quality Position data reports
+		OperatStateMachine = WORK;
+		if (StabilityCount!=5)
+			return;
+
+		// State is stable
+		if ( (AudioQualitySel<AudioQualityOther) && AudioQualitySel<LEVEL_LO)
+			SetNotificationIcon(L"Problem? Try selecting other audio channel"); // TODO: Repalce with good string
+		else
+			SetNotificationIcon(L"Working fine"); // TODO: Repalce with good string
+		return;
+	}
+
+	// Position Quality is not good so let's deal with audio quality
+	else if (AudioQualitySel>LEVEL_LO)
+	{
+		if (OperatStateMachine == LISTENING)
+			StabilityCount++;
+		else
+			StabilityCount=0;
+
+		// State is LISTENING but we will inform GUI only after 5 consecutive
+		// high quality audio reports
+		OperatStateMachine = LISTENING;
+		if (StabilityCount!=5)
+			return;
+
+		// State is stable - let's try to guess what's wrong
+		if (AudioQualitySel<AudioQualityOther)
+			SetNotificationIcon(L"Good Audio - Maybe wrong audio channel"); // TODO: Repalce with good string
+		else if (AudioQualitySel>=LEVEL_VHI)
+			SetNotificationIcon(L"Very Good Audio - Maybe wrong Modulation"); // TODO: Repalce with good string
+		else if (BitRate == 8)
+			SetNotificationIcon(L"Good Audio - Maybe Low bit-rate or wrong Modulation"); // TODO: Repalce with good string
+		else
+			SetNotificationIcon(L"Good Audio - Maybe wrong Modulation"); // TODO: Repalce with good string
+	}
+
+	else // Default
+	{
+		if (OperatStateMachine == STARTED)
+			StabilityCount++;
+		else
+			StabilityCount=0;
+
+		// Default
+		OperatStateMachine = STARTED;
+		if (StabilityCount!=5)
+			return;
+
+		// State is stable
+		SetNotificationIcon(L"No signal - Waiting ..."); // TODO: Repalce with good string
+		return;
+	}
+
+}
+
+// Return value in the range 0-100 indicating the audio quality of a channel
+// To get info for the currently selected channel - ActiveChannel=true
+// To get info for the other channel - ActiveChannel=false
+UINT GetAudioQuality(bool ActiveChannel)
+{
+	if (isRight==-1)
+		return 0;
+
+	UINT CurAudioLevel;
+	if ((isRight && ActiveChannel) ||  (!isRight && !ActiveChannel))
+		CurAudioLevel = AudioLevel[1];
+	else
+		CurAudioLevel = AudioLevel[0];
+
+	if ( (CurAudioLevel<LEVEL_LO) && (BitRate<16))
+		return 0;
+	else
+		return CurAudioLevel;
+}
 
 // AudioLevelWatch - Analyse audio level data
 // Gets Audio Levels
@@ -1205,9 +1309,8 @@ void thMonitor(bool * KeepAlive)
 		// Gets Audio Levels - optimizes and Updates GUI
 		AudioLevelWatch();
 
-		// Get the qulity of the Position data - Higher than 90 is good quality
-		if (OperatStateMachine != STOPPED)
-			PosQual = Spp->GetPositionDataQuality();
+		//  Compute the state of the Operation state machine and inform GUI
+		ComputeOperatState(); // TODO: Much tweeking
 
 		// Inform GUI of changes in the Start/Stop conditions
 		if (OperatStateMachine != oState)
