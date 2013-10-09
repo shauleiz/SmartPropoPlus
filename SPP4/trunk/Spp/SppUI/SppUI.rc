@@ -321,11 +321,7 @@ IDC_SPPCONSOLE ACCELERATORS
 // Icon resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_LISTEN         ICON           ".\\SppListen.ico"
-
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_WORK           ICON           ".\\SppWorking.ico"
+IDI_W8             ICON           "SppControlW8.ico"
 
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -337,4 +333,8 @@ IDI_SPPCONSOLE     ICON           "SppControl.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_STOPPED        ICON           "SppStopped.ico"
+IDI_S0             ICON           "SppControlS0.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_W10            ICON           "SppControlW10.ico"

@@ -112,6 +112,7 @@ public:
 	SPPMAIN_API void SetAudioChannel(bool Left=true);
 	SPPMAIN_API bool RegisterPulseMonitor(int index, bool Register);
 	SPPMAIN_API int  GetPositionDataQuality(void);
+	SPPMAIN_API int  GetJoystickCommQuality(void);
 
 
 
@@ -208,6 +209,7 @@ private:
 	UINT m_nChannels;
 	JOYSTICK_POSITION m_vJoyPosition;
 	UINT m_PosQual;
+	UINT m_JoyQual;
 };
 
 

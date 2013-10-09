@@ -38,7 +38,7 @@ int isRight=-1; // -1: Uninitialized
 int BitRate=-1; // -1: Uninitialized
 bool AutoBitRate;
 bool AutoChannel;
-OperatState OperatStateMachine = STOPPED;
+OperatState OperatStateMachine = S0;
 WORD Flags = FLG_NONE;
 
 // Declarations
@@ -219,7 +219,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		FilterPopulate(hDialog);
 		Spp->AudioChanged(); // TODO: Remove later
 
-		OperatStateMachine = STARTED; // TODO: Refine
+		OperatStateMachine = W7;
 	};
 
 	// Start monitoring channels according to config file
@@ -502,13 +502,13 @@ LRESULT CALLBACK MainWindowProc(
 			{
 				Spp->Start();
 				Spp->AudioChanged();
-				OperatStateMachine = STARTED;
+				OperatStateMachine = W7;
 				Conf->Stopped(false);
 			}
 			else
 			{
 				Spp->Stop();
-				OperatStateMachine = STOPPED;
+				OperatStateMachine = S0;
 				Conf->Stopped(true);
 			};
 
@@ -556,79 +556,166 @@ void PulseScope(BOOL start)
 void ComputeOperatState(void)
 {
 	UINT PosQual=0;
+	UINT JoyQual=0;
 	UINT AudioQualitySel, AudioQualityOther;
 	static UINT StabilityCount=0;
+	OperatState NewState=S0;
 
 	// Nothing to compute is user chose to be in stopped mode
-	if (OperatStateMachine == STOPPED)
+	if (OperatStateMachine == S0)
 		return;
 
-	// Get audio quality of Selecter audio channel and of Other audio channel
+	// Get audio quality of Selected audio channel and of Other audio channel
 	AudioQualitySel = GetAudioQuality(true);
 	AudioQualityOther = GetAudioQuality(false);
 
 	// Get the qulity of the Position data - Higher than 75 is good quality
 	PosQual = Spp->GetPositionDataQuality();
-	if (PosQual >= 75)
+
+	// Get the qulity of the joystick communication - Higher than 90 is good quality
+	JoyQual = Spp->GetJoystickCommQuality();
+
+	// State Feed (W10)
+	// Perfect conditions, all is functioning
+	// Joystick communication is very good (JoyQual>=75)
+	if (JoyQual>=75)
 	{
-		if (OperatStateMachine == WORK)
+		if ((AudioQualitySel<LEVEL_LO) && (AudioQualitySel<AudioQualityOther))
+			NewState = W101;
+		else
+			NewState = W10;
+
+		// Wait for State to stabilize
+		if (OperatStateMachine == NewState)
 			StabilityCount++;
 		else
 			StabilityCount=0;
 
-		// State is WORK but we will inform GUI only after 5 consecutive
-		// high quality Position data reports
-		OperatStateMachine = WORK;
+		// State is W10 but we will inform GUI only when state is stable
+		// - After exactly 5 times the state is stable
+		OperatStateMachine = NewState;
 		if (StabilityCount!=5)
 			return;
 
 		// State is stable
-		if ( (AudioQualitySel<AudioQualityOther) && AudioQualitySel<LEVEL_LO)
-			SetNotificationIcon(L"Problem? Try selecting other audio channel"); // TODO: Repalce with good string
+		if (NewState == W101)
+			SetNotificationIcon(CONSOLE_BLN_W101);
 		else
-			SetNotificationIcon(L"Working fine"); // TODO: Repalce with good string
+			SetNotificationIcon(CONSOLE_BLN_W10);
 		return;
-	}
+	} // W10
 
-	// Position Quality is not good so let's deal with audio quality
-	else if (AudioQualitySel>LEVEL_LO)
+	// State Process (W9)
+	// Joystick communication is not good (JoyQual<90)
+	// Quality of Position data is good (PosQual >= 75)
+	if (PosQual >= 75)
 	{
-		if (OperatStateMachine == LISTENING)
+		NewState = W9;
+
+		// Wait for State to stabilize
+		if (OperatStateMachine == NewState)
 			StabilityCount++;
 		else
 			StabilityCount=0;
 
-		// State is LISTENING but we will inform GUI only after 5 consecutive
-		// high quality audio reports
-		OperatStateMachine = LISTENING;
+		// State is W9 but we will inform GUI only when state is stable
+		// - After exactly 5 times the state is stable
+		OperatStateMachine = NewState;
+		if (StabilityCount!=5)
+			return;
+
+		// State is stable
+		SetNotificationIcon(CONSOLE_BLN_W9);
+		return;
+	} // W9
+
+	// State NoProcess (W8)
+	// Joystick communication is not good (JoyQual<90)
+	// Quality of Position data is not good (PosQual < 75)
+	// Audio level of selected channel is not bad
+	if (AudioQualitySel>=LEVEL_LO)
+	{
+		if (AudioQualityOther>=LEVEL_LO)
+			NewState = W81;
+		else if (AudioQualityOther>AudioQualitySel)
+			NewState = W82;
+		else
+			NewState = W8;
+
+		// Wait for State to stabilize
+		if (OperatStateMachine == NewState)
+			StabilityCount++;
+		else
+			StabilityCount=0;
+
+		// State is W8 but we will inform GUI only when state is stable
+		// - After exactly 5 times the state is stable
+		OperatStateMachine = NewState;
 		if (StabilityCount!=5)
 			return;
 
 		// State is stable - let's try to guess what's wrong
-		if (AudioQualitySel<AudioQualityOther)
-			SetNotificationIcon(L"Good Audio - Maybe wrong audio channel"); // TODO: Repalce with good string
-		else if (AudioQualitySel>=LEVEL_VHI)
-			SetNotificationIcon(L"Very Good Audio - Maybe wrong Modulation"); // TODO: Repalce with good string
-		else if (BitRate == 8)
-			SetNotificationIcon(L"Good Audio - Maybe Low bit-rate or wrong Modulation"); // TODO: Repalce with good string
+		if (OperatStateMachine==W81)
+			SetNotificationIcon(CONSOLE_BLN_W81);
+		else if (OperatStateMachine==W82)
+			SetNotificationIcon(CONSOLE_BLN_W82);
 		else
-			SetNotificationIcon(L"Good Audio - Maybe wrong Modulation"); // TODO: Repalce with good string
+			SetNotificationIcon(CONSOLE_BLN_W8);
+		return;
 	}
 
-	else // Default
+	//
+	// State NoSignal (W7)
+	// Joystick communication is not good (JoyQual<90)
+	// Quality of Position data is not good (PosQual < 75)
+	// Audio level of selected channel is very bad
+	if (AudioQualitySel<=LEVEL_LO)
 	{
-		if (OperatStateMachine == STARTED)
+		if (AudioQualityOther>AudioQualitySel)
+			NewState = W71;
+		else if (AudioQualitySel>LEVEL_VLO)
+			NewState = W72;
+		else
+			NewState = W7;
+
+		// Wait for State to stabilize
+		if (OperatStateMachine == NewState)
+			StabilityCount++;
+		else
+			StabilityCount=0;
+
+		// State is W7 but we will inform GUI only when state is stable
+		// - After exactly 5 times the state is stable
+		OperatStateMachine = NewState;
+		if (StabilityCount!=5)
+			return;
+
+		// State is stable - let's try to guess what's wrong
+		if (OperatStateMachine==W71)
+			SetNotificationIcon(CONSOLE_BLN_W71);
+		else if (OperatStateMachine==W72)
+			SetNotificationIcon(CONSOLE_BLN_W72);
+		else
+			SetNotificationIcon(CONSOLE_BLN_W7);
+		return;
+	}
+
+	// Default
+	{
+		NewState = UNKNOWN;
+
+		if (OperatStateMachine == NewState)
 			StabilityCount++;
 		else
 			StabilityCount=0;
 
 		// Default
-		OperatStateMachine = STARTED;
+		OperatStateMachine = NewState;
 		if (StabilityCount!=5)
 			return;
 
 		// State is stable
-		SetNotificationIcon(L"No signal - Waiting ..."); // TODO: Repalce with good string
+		SetNotificationIcon(L"Unknown Error"); // TODO: Repalce with good string
 		return;
 	}
 
@@ -667,14 +754,14 @@ void AudioLevelWatch()
 	static bool WentAutoBr=true;
 
 	// Initializing channel state
-	if (isRight==-1)
-	{
+	//if (isRight==-1)
+	//{
 		wstring ch = Conf->GetAudioDeviceChannel(const_cast<LPTSTR>(AudioId));
 		if (ch[0] == L'R' || ch[0] == L'r')
 			isRight=1;
 		else
 			isRight=0;
-	};
+	//};
 
 	// Initialize bit rate
 	if (BitRate==-1)
