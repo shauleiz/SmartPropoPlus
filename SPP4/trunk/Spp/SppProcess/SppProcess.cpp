@@ -51,7 +51,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_nChannels(0),
 	m_PulseMonitor(NULL),
 	m_PulseScopeObj(NULL),
-	m_PosQual(0)
+	m_PosQual(0),
+	m_JoyQual(0)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -245,6 +246,14 @@ SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 {
 	return m_PosQual;
+}
+
+// Return the calculated value of the Quality of Joystick communication
+// 0 means that the data is worthless
+// 100  means that the data is excellent
+SPPMAIN_API int  CSppProcess::GetJoystickCommQuality(void)
+{
+	return m_JoyQual;
 }
 
 /*
@@ -565,6 +574,11 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 			// If the quality is good it is repared inside m_CurrentPP
 			if (m_PosQual)
 				m_PosQual--;
+
+			// Gradual degradation in the quality of joystick communication
+			// If the quality is good it is repared inside m_CurrentPP
+			if (m_JoyQual)
+				m_JoyQual--;
 
 			// Call the correct function ProcessPulseXXX() 
 			m_CurrentPP(PulseLength, negative);
@@ -2074,7 +2088,12 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 		writeOk =  SetBtnDelayed(ch[m_BtnMapping[k]-1]>511,k+1); // TODO: Replace 511 with some constant definition
 
 	// Feed structure to vJoy device rID
-	UpdateVJD(rID, &m_vJoyPosition);
+	BOOL updated = UpdateVJD(rID, &m_vJoyPosition);
+
+
+	// Mark quality of joystick connection as excellent
+	if (updated)
+		m_JoyQual=100;
 }
 
 void CSppProcess::ButtonMappingChanged(BTNArr* BtnMap, UINT nBtn, UINT vJoyId)

@@ -40,7 +40,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 
 	// Add icon to system tray
 	m_tnid.cbSize = 0;
-	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL, NULL);
+	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, NULL);
 	return;
 }
 
@@ -160,24 +160,24 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
 void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 {
 	// Change Icon
-	if (wParam == STOPPED)
+	if (wParam == S0)
 	{
-		TaskBarAddIcon(IDI_STOPPED, CONSOLE_BALOON_STP, (LPTSTR)lParam);
+		TaskBarAddIcon(IDI_S0, CONSOLE_TT_S0, (LPTSTR)lParam);
 		SetStreamingButton(false);
 	}
-	else if (wParam == WORK)
+	else if (wParam == W10)
 	{
-		TaskBarAddIcon(IDI_WORK, CONSOLE_BALOON_WRK, (LPTSTR)lParam);
+		TaskBarAddIcon(IDI_W10, CONSOLE_TT_W10, (LPTSTR)lParam);
 		SetStreamingButton(false);
 	}
-	else if (wParam == LISTENING)
+	else if (wParam == W8)
 	{
-		TaskBarAddIcon(IDI_LISTEN, CONSOLE_BALOON_LSN, (LPTSTR)lParam);
+		TaskBarAddIcon(IDI_W8, CONSOLE_TT_W8, (LPTSTR)lParam);
 		SetStreamingButton(false);
 	}
 	else
 	{
-		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_BALOON_TTL, (LPTSTR)lParam);
+		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, (LPTSTR)lParam);
 		SetStreamingButton(true);
 	};
 }

@@ -102,6 +102,33 @@ extern "C"
 #define CONSOLE_BALOON_WRK	_T("SmartPropoPlus Console (Working)")
 #define CONSOLE_BALOON_LSN	_T("SmartPropoPlus Console (Listening)")
 #define CONSOLE_BALOON_TXT	"Use this application to control:\n- Modulation Type\n- Modulation Shift\n\nChanges are effective Immediately!"
+
+// Notification icon tooltips
+#define CONSOLE_TT_DEF		_T("SmartPropoPlus Console")
+#define CONSOLE_TT_S0		_T("SmartPropoPlus (Sleeping)")
+#define CONSOLE_TT_W10		_T("SmartPropoPlus (Feeding Joystick)")
+#define CONSOLE_TT_W9		_T("(SmartPropoPlus (Cannot feed Joystick)")
+#define CONSOLE_TT_W8		_T("SmartPropoPlus (Signal unrecognized)")
+#define CONSOLE_TT_W81		CONSOLE_TT_W8
+#define CONSOLE_TT_W82		CONSOLE_TT_W8
+#define CONSOLE_TT_W7		_T("SmartPropoPlus (Waiting for Signal)")
+#define CONSOLE_TT_W71		CONSOLE_TT_W7
+#define CONSOLE_TT_W72		CONSOLE_TT_W7
+
+// Notification icon balloon messages
+#define CONSOLE_BLN_DEF		_T("")
+#define CONSOLE_BLN_S0		_T("SmartPropoPlus went to sleep")
+#define CONSOLE_BLN_W10		_T("SmartPropoPlus is fully operational")
+#define CONSOLE_BLN_W101	_T("Try other audio channel for better performance")
+#define CONSOLE_BLN_W9		_T("Audio signal is OK but cannot feed position to vJoy Device")
+#define CONSOLE_BLN_W8		_T("Audio signal is OK but cannot calculate joystick position. Try another type of Modulation")
+#define CONSOLE_BLN_W81		_T("Cannot calculate joystick position. Try the other audio channel")
+#define CONSOLE_BLN_W82		_T("Cannot calculate joystick position. Try the other audio channel")
+#define CONSOLE_BLN_W7		_T("Transmitter disconnected")
+#define CONSOLE_BLN_W71		_T("No signal from R/C. Try the other audio channel")
+#define CONSOLE_BLN_W72		_T("Weak signal from R/C. Try increasing audio level")
+
+
 #define BALOON_DLL_STOPPED	"SmartPropoPlus stopped"
 #define BALOON_DLL_STARTING	"SmartPropoPlus is starting"
 #define BALOON_DLL_MODTYPE	"\nModulation type:\t%s"
@@ -192,6 +219,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 // Audio levels
 #define LEVEL_VHI	95
 #define LEVEL_LO	50
+#define LEVEL_VLO	10
 
 #define  SCP function<void (int index, int length, bool low, LPVOID timestamp, LPVOID Param)>
 #define  PP function<void (int, BOOL)>
@@ -290,10 +318,17 @@ struct MOD {
 // Operational state machine
 enum OperatState {
 	UNKNOWN = 0,
-	STOPPED,
-	STARTED,
-	LISTENING,
-	WORK
+	S0,
+	W10,
+	W101,
+	W9,
+	W91,
+	W8,
+	W81,
+	W82,
+	W7,
+	W71,
+	W72
 };
 
 // Start mode
