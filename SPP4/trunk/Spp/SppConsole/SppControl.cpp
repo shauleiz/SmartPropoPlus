@@ -1017,8 +1017,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	HINSTANCE h;
 	//LPCTSTR * names;
 	//long filter_ver;
-	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
-	LPFNDLLFUNC0 GetDllVersion;
+	UINT			(CALLBACK * GetDllVersion)(void);
 	int				(CALLBACK *pGetNumberOfFilters)(void);
 	const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
 	const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
@@ -1063,7 +1062,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	hDllFilters = h;
 
 	// Verify that the DLL version is not too old
-	GetDllVersion = (LPFNDLLFUNC0)GetProcAddress(h,"GetDllVersion");
+	GetDllVersion = (UINT(CALLBACK *)(void))GetProcAddress(h,"GetDllVersion");
 	if (!GetDllVersion)
 	{
 		SendMessage(hDlg, FILTER_DLL, false, 0);
@@ -1083,7 +1082,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	//// Build the list in the GUI
 	//		Get the number of filters
 	int nFilters;
-	pGetNumberOfFilters = (int  (CALLBACK *)(void))GetProcAddress(h,"GetNumberOfFilters");
+	pGetNumberOfFilters = (int (CALLBACK *)(void))GetProcAddress(h,"GetNumberOfFilters");
 	if (pGetNumberOfFilters)
 		nFilters  = pGetNumberOfFilters();
 	else
@@ -1101,7 +1100,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	UINT idSel = Conf->GetSelectedFilter();
 
 	// Get interface functions
-	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexA = (const char * (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (CALLBACK *)(const int iFilter))GetProcAddress(h,"SelectFilterByIndex");
 	pGetIndexOfSelectedFilter = (const int  (CALLBACK *)(void))GetProcAddress(h,"GetIndexOfSelectedFilter");
@@ -1222,6 +1221,7 @@ DWORD		GetFilterFileVersion(LPTSTR FilterPath)
 	HINSTANCE h;
 	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
 	LPFNDLLFUNC0 GetDllVersion;
+
 	//int				(CALLBACK *pGetNumberOfFilters)(void);
 	//const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
 	//const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
@@ -1242,7 +1242,7 @@ DWORD		GetFilterFileVersion(LPTSTR FilterPath)
 		LogMessage(INFO, IDS_I_FILTERDLL);
 	}
 
-	// Verify that the DLL version is not too old
+	// Version 3.x.x - Verify that the DLL version is not too old
 	GetDllVersion = (LPFNDLLFUNC0)GetProcAddress(h,"GetDllVersion");
 	if (!GetDllVersion)
 	{
