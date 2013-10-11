@@ -4,17 +4,12 @@
 //  "/* [NEW]"
 
 #ifdef FILTER_EXPORTS
-#define FILTER_API /*__declspec(dllexport)*/
+#define FILTER_API __declspec(dllexport)
 #else
 #define FILTER_API __declspec(dllimport)
 #endif
 
 #define FILTER_VER	0x00040000
-
-extern FILTER_API int nFilter;
-
-FILTER_API int fnFilter(void);
-
 
 typedef struct _JS_CHANNELS	// Joystick channel data
 {
