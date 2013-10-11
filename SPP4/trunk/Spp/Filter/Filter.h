@@ -14,7 +14,7 @@
 typedef struct _JS_CHANNELS	// Joystick channel data
 {
 	int ch;			// Number of channels
-	int * value;	// Pointer to data buffer ; ch>n>=0 ; value[n] holds channel (n+1) 
+	int * value;	// Pointer to data buffer ; value[n] holds channel (n+1) ; ch>n>= 0 
 } JS_CHANNELS, * PJS_CHANNELS;
 
 struct FilterItem {

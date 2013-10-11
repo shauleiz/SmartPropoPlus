@@ -126,6 +126,42 @@ PJS_CHANNELS ConvertDummy(PJS_CHANNELS data, int max, int min)
 /////////////////////////////////////////////////////////////////////////////////////////
 // Filters
 
+/* [NEW]
+				How to quickly write a new filter
+				=================================
+
+	*	Define a new Filter forward declaration and place it in file Filter.h
+		Look for example "MyNewFilter"
+	*	Add the new filter to array "ListOfFilters" in Filter.h following the example ("MyNewFilter"):
+		> Designate a unique id (Natural number above 100)
+		> Write a short description of the filter (Under 50 characters)
+	*	Write a new function (e.g. "MyNewFilter") - Function interface MUST be as follows:
+		PJS_CHANNELS MyNewFilter(PJS_CHANNELS data, int max, int min)
+		Replace "MyNewFilter" to whatever you want.
+
+	**	Function interface:
+		data:	Structure holding the number of incoming channels and their current respective values
+		max:	The maximum incoming channel value
+		min:	The minimum incoming channel value
+		Return: Structure holding the number of outgoing channels and their current respective values
+
+	**	Static declarations:
+		static far JS_CHANNELS output;
+		static far int in_data[N_IN]={0}
+		static far int out_data[N_OUT]={0};
+		Define N_IN as an upper limit number of input channel, but never read past data.value[data.ch-1]
+		
+	**	Operation:
+		> Copy data.value[0] to data.value[data.ch-1] to in_data[]
+		> Use in_data[] to perform the desired mixing
+		> Copy the result to out_data[]
+
+	**	Return value:
+		output.ch = N_OUT;
+		output.value = out_data;
+		return &output;
+*/
+
 /*
 Contributed by Matthew Morrison
 
