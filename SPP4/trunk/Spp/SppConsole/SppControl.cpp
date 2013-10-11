@@ -1219,8 +1219,9 @@ void		SelectFilter(int FilterId)
 DWORD		GetFilterFileVersion(LPTSTR FilterPath)
 {
 	HINSTANCE h;
-	typedef UINT (CALLBACK* LPFNDLLFUNC0)();
-	LPFNDLLFUNC0 GetDllVersion;
+	//typedef UINT (CALLBACK* LPFNDLLFUNC0)();
+	//LPFNDLLFUNC0 GetDllVersion;
+	UINT			(CALLBACK * GetDllVersion)(void);
 
 	//int				(CALLBACK *pGetNumberOfFilters)(void);
 	//const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
@@ -1243,7 +1244,7 @@ DWORD		GetFilterFileVersion(LPTSTR FilterPath)
 	}
 
 	// Version 3.x.x - Verify that the DLL version is not too old
-	GetDllVersion = (LPFNDLLFUNC0)GetProcAddress(h,"GetDllVersion");
+	GetDllVersion = (UINT(CALLBACK *)(void))GetProcAddress(h,"GetDllVersion");
 	if (!GetDllVersion)
 	{
 		LogMessage(ERR, IDS_E_FILTERDLLVER);
