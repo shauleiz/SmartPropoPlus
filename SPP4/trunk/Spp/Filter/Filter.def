@@ -12,3 +12,4 @@ GetFilterNameByIndex	@4
 GetFilterIdByIndex	@5
 SelectFilterByIndex @6
 GetIndexOfSelectedFilter	@7
+GetFilterNameByIndexW @8

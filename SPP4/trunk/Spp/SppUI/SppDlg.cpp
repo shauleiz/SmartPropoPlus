@@ -501,6 +501,18 @@ void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
 }
 
+void SppDlg::AddLine2FilterListW(int FilterID, LPCWSTR FilterName)
+{
+	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+
+	ComboBox_Enable(hFilterList, TRUE);
+
+	int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterName ); 
+	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
+}
+
+
+
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 {
 	if (!mod)
@@ -1245,6 +1257,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case FILTER_ADDA:
 		DialogObj->AddLine2FilterListA((int)wParam, (const char *)lParam);
+		break;
+
+	case FILTER_ADDW:
+		DialogObj->AddLine2FilterListW((int)wParam, (LPCWSTR)lParam);
 		break;
 
 	case FILTER_NUM:

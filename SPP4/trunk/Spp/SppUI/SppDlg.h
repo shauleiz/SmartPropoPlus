@@ -54,6 +54,7 @@ public: // Called from window procedure
 	void SetStreamingButton(BOOL isProcessingAudio);
 	//void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
+	void AddLine2FilterListW(int iFilter, LPCWSTR FilterName);
 	void UpdateFilter(void);
 	void InitFilterDisplay(HWND);
 	void OnFilterFileBrowse(void);

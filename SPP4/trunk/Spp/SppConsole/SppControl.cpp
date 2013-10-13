@@ -983,6 +983,8 @@ void SetPulseScope(HWND hDlg)
 	int monitor = 1; // Default value
 	if (Conf)
 		monitor = Conf->PulseScope();
+	if (monitor == -1)
+		monitor = 0;
 
 	BOOL bMonitor = 1;
 	if (!monitor)
@@ -1020,6 +1022,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	UINT			(CALLBACK * GetDllVersion)(void);
 	int				(CALLBACK *pGetNumberOfFilters)(void);
 	const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
+	LPCWSTR			(CALLBACK *pGetFilterNameByIndexW)(const int iFilter);
 	const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
 	const int		(CALLBACK *pSelectFilterByIndex)(const int iFilter);
 	const int		(CALLBACK * pGetIndexOfSelectedFilter)(void);
@@ -1101,19 +1104,37 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 	// Get interface functions
 	pGetFilterNameByIndexA = (const char * (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndexW"); // TODO: Add support to WCHAR
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (CALLBACK *)(const int iFilter))GetProcAddress(h,"SelectFilterByIndex");
 	pGetIndexOfSelectedFilter = (const int  (CALLBACK *)(void))GetProcAddress(h,"GetIndexOfSelectedFilter");
 
 	// For every filter send data to GUI and to config file
-	const char * FilterName;
+	const char * FilterName = NULL;
+	WCHAR FilterNameWa[255] = {NULL};
+	LPWSTR FilterNameW = &FilterNameWa[0];
 	int FilterId = -1;
 	for (int iFilter=0; iFilter<nFilters ; iFilter++)
 	{
-		FilterName = pGetFilterNameByIndexA(iFilter);
+		FilterName = NULL;
+		FilterNameWa[0] = NULL;
+		size_t converted;
+
+		if (pGetFilterNameByIndexW)
+			FilterNameW = const_cast<WCHAR *>(pGetFilterNameByIndexW(iFilter));
+		else
+			FilterName = pGetFilterNameByIndexA(iFilter);
+
+		// If got a char* then convert to LPCWSTR
+		if (!FilterNameW || !wcslen(FilterNameW))
+			mbstowcs_s(&converted, FilterNameW, 255, FilterName, strlen(FilterName));
+
+		if (!FilterNameW)
+			return h;
+
 		FilterId = pGetFilterIdByIndex(iFilter);
-		Conf->AddFilter(FilterId, FilterName);
-		SendMessage(hDlg, FILTER_ADDA, FilterId, (LPARAM)FilterName);
+		Conf->AddFilter(FilterId, FilterNameW);
+		SendMessage(hDlg, FILTER_ADDW, FilterId, (LPARAM)FilterNameW);
 		if (FilterId == idSel)
 		{
 			SendMessage(hDlg, FILTER_SELCTED, FilterId, 0);
@@ -1174,11 +1195,13 @@ void		SelectFilter(int FilterId)
 	int				(CALLBACK *pGetNumberOfFilters)(void);
 	const int		(CALLBACK *pGetFilterIdByIndex)(const int iFilter);
 	const char *    (CALLBACK *pGetFilterNameByIndexA)(const int iFilter);
+	LPCWSTR			(CALLBACK *pGetFilterNameByIndexW)(const int iFilter);
 	pGetNumberOfFilters = (int  (CALLBACK *)(void))GetProcAddress(hDllFilters,"GetNumberOfFilters");
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (WINAPI *)(const int iFilter))GetProcAddress(hDllFilters,"SelectFilterByIndex");
 	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
 	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(hDllFilters,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterNameByIndexW"); // TODO: Add support to WCHAR
 
 
 	int nFilters;
@@ -1208,8 +1231,21 @@ void		SelectFilter(int FilterId)
 	};
 
 	// Mark selected filter in config file as selected
-	const char * Name = pGetFilterNameByIndexA(iSel);
-	Conf->AddFilter(FilterId, Name, true);
+	WCHAR NameWa[255] = {NULL};
+	LPWSTR NameW = &NameWa[0];
+	size_t converted;
+	const char * Name = NULL;
+	if (pGetFilterNameByIndexW)
+		NameW = const_cast<WCHAR *>(pGetFilterNameByIndexW(iSel));
+	else
+		Name = pGetFilterNameByIndexA(iSel);
+
+	// If got a char* then convert to LPCWSTR
+	if (Name && (!NameW || !wcslen(NameW)))
+		mbstowcs_s(&converted, NameW, 255, Name, strlen(Name));
+
+
+	Conf->AddFilter(FilterId, NameW, true);
 
 	// Get the pointer to the filter function
 	Spp->SelectFilter(iSel, (LPVOID)pProcessChannels);

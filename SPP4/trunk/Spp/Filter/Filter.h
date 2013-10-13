@@ -20,7 +20,7 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 struct FilterItem {
 	int	id;				// Filter ID
 	void * Function;	// Filter Function
-	char * DisplayName;	// Filter name as displayed in the menu
+	LPCTSTR DisplayName;	// Filter name as displayed in the menu
 } ;
 
 
@@ -29,6 +29,7 @@ extern "C"  FILTER_API LONG PASCAL GetDllVersion();
 extern "C"  FILTER_API PJS_CHANNELS PASCAL ProcessChannels(PJS_CHANNELS, int max, int min);
 extern "C"  FILTER_API int PASCAL GetNumberOfFilters();
 extern "C"  FILTER_API const char * PASCAL GetFilterNameByIndex(const int iFilter);
+extern "C"  FILTER_API LPCWSTR PASCAL GetFilterNameByIndexW(const int iFilter);
 extern "C"  FILTER_API const int PASCAL GetFilterIdByIndex(const int iFilter);
 extern "C"  FILTER_API const int PASCAL SelectFilterByIndex(const int iFilter);
 extern "C"  FILTER_API const int PASCAL GetIndexOfSelectedFilter(void);
@@ -56,11 +57,11 @@ int SelectedFilter = -1;	/* By default - nothing selected */
 FilterItem ListOfFilters[] = 
 {
 	/* FilterID,	function,			Filter name*/
-	{108, (void *)ConvertEskyCCPM,		"CCPM: E-sky (6ch) Type 1"},			
-	{109, (void *)ConvertEskyCCPMNew,	"CCPM: E-sky (6ch) Type 2"},	// Contributed by Joseph Congiundi
-	{110, (void *)ConvertEskyCCPM3D,	"CCPM: E-sky (6ch) 3D"},		// Contributed by Matthew Morrison
-	{102, (void *)ConvertVTail,			"V-Tail (Ch1+Ch4)"},
-	{103, (void *)ConvertDeltaWing,		"Delta Wing (Ch1+Ch2)"},
+	{108, (void *)ConvertEskyCCPM,		TEXT("CCPM: E-sky (6ch) Type 1")},			
+	{109, (void *)ConvertEskyCCPMNew,	TEXT("CCPM: E-sky (6ch) Type 2")},	// Contributed by Joseph Congiundi
+	{110, (void *)ConvertEskyCCPM3D,	TEXT("CCPM: E-sky (6ch) 3D")},		// Contributed by Matthew Morrison
+	{102, (void *)ConvertVTail,			TEXT("V-Tail (Ch1+Ch4)")},
+	{103, (void *)ConvertDeltaWing,		TEXT("Delta Wing (Ch1+Ch2)")},
 	/* [NEW]
 	Here you can add entry for your own filter, following the following example:
 	{104, (void *)MyNewFilter,		"My New Filter - Example only"},*/

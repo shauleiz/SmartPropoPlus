@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <stdlib.h>
 #include "Filter.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -45,15 +46,49 @@ FILTER_API int PASCAL GetNumberOfFilters()
 FILTER_API const char * PASCAL GetFilterNameByIndex(const int iFilter)
 {
 	FilterItem * item;
+	LPCWSTR wDisplayName;
+	size_t convertedChars = 0;
+	size_t  sizeInBytes = 255;
+	static char cDisplayName[255];
+
+	int n = GetNumberOfFilters();
+	if (n == iFilter || -1 == iFilter)
+		return NULL;
+
+	if (iFilter > n)
+		return "";
+
+	item = &(ListOfFilters[iFilter]);
+	wDisplayName = item->DisplayName;
+	sizeInBytes = ((wcslen(wDisplayName)+1) * 2);
+	errno_t err = 0;
+
+	err = wcstombs_s(&convertedChars, &(cDisplayName[0]), sizeInBytes, wDisplayName, sizeInBytes);
+	if (err != 0)
+		return NULL;
+	else
+		return cDisplayName;
+};
+
+/* 
+	Return a constant string representing the selected filter
+	The filter is selected by its index (zero based);
+	If the function is called with one-after-the-last filter index - it returns NULL.
+	If the function is called with a filter index that is not implemented - it returns "".
+
+*/
+FILTER_API LPCWSTR PASCAL GetFilterNameByIndexW(const int iFilter)
+{
+	FilterItem * item;
 
 	int n = GetNumberOfFilters();
 	if (n == iFilter)
 		return NULL;
 
 	if (iFilter > n)
-		return "";
-
-	item = &(ListOfFilters[iFilter]);		
+		return L"";
+		
+	item = &(ListOfFilters[iFilter]);
 	return item->DisplayName;
 };
 
