@@ -36,8 +36,6 @@ UINT const WMSPP_DLG_MONITOR=			BASE_SUB+9;				// The payload is boolean Start/S
 UINT const FILTER_DLL		=			BASE_SUB+10;			// The payload is boolean: Filter DLL exists/absent
 UINT const FILTER_VER		=			BASE_SUB+11;			// The payload is boolean + version: If false version is too low. 
 UINT const FILTER_NUM		=			BASE_SUB+12;			// The payload is the number of filters in the filter DLL & Filter short file name
-UINT const FILTER_ADDA		=			BASE_SUB+13;			// The payload is: Filter Index and Pointer to filter name (ASCII)
-UINT const FILTER_ADDW		=			BASE_SUB+13;			// The payload is: Filter Index and Pointer to filter name (WCHAR)
 UINT const WMSPP_DLG_FILTER	=			BASE_SUB+14;			// The payload is: Filter Index of the selected filter (if none then -1)
 UINT const WMSPP_PRCS_GETSPR=			BASE_SUB+15;			// Get Number of Samples/Second for the default capture device
 UINT const WMSPP_PRCS_GETBPS=			BASE_SUB+16;			// Get Number of Bits per Sample for the default capture device
@@ -76,6 +74,8 @@ UINT const WMSPP_DLG_PLSSCOP=			BASE_SUB+48;			// The payload is boolean Start/S
 UINT const PULSE_SCOPE		=			BASE_SUB+49;			// The payload is in WPARAMS, true: Start Pulse Scope
 UINT const WMSPP_DLG_ICONFD	=			BASE_SUB+50;			// Inform CU that GUI became iconified (wParam!=0) or not (wParam==0)
 UINT const WMSPP_STAT_UPDT	=			BASE_SUB+51;			// Inform GUI of CU status. wParam=Status, lParam=Message
+UINT const FILTER_ADDA		=			BASE_SUB+52;			// The payload is: Filter Index and Pointer to filter name (ASCII)
+UINT const FILTER_ADDW		=			BASE_SUB+53;			// The payload is: Filter Index and Pointer to filter name (WCHAR)
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

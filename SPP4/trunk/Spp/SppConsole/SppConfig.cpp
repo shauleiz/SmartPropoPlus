@@ -1006,7 +1006,7 @@ TiXmlHandle CSppConfig::GetFilterFileHandle(void)
 bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select) 
 {
 	// This means remove selection
-	if ((int)Id == -1)
+	if ((int)Id == -1 || !Name)
 		return AddFilter(Id, TEXT(""), select);
 
 	string str(Name);
