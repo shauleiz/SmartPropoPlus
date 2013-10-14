@@ -2,6 +2,14 @@
 #define IDC_STATIC (-1)
 #endif
 
+#define FILEVER "0,4,0,0"
+
+#ifdef X64
+#define PRODVER "0,4,0,0 (x64)"
+#else
+#define PRODVER "0,4,0,0 (x86)"
+#endif
+
 #define IDD_ABOUTBOX                            103
 #define IDM_ABOUT                               104
 #define IDM_EXIT                                105
