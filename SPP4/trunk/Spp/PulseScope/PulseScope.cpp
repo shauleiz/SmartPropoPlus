@@ -224,10 +224,10 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 		LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
 		CPulseScope *pPulseScope = (CPulseScope *)pcs->lpCreateParams;
 
-		::SetWindowLongPtrW(
+		::SetWindowLongPtr(
 			hwnd,
 			GWLP_USERDATA,
-			PtrToUlong(pPulseScope)
+			reinterpret_cast<LONG_PTR>(pPulseScope)
 			);
 
 		result = 1;
@@ -235,7 +235,7 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 	else
 	{
 		CPulseScope *pPulseScope = reinterpret_cast<CPulseScope *>(static_cast<LONG_PTR>(
-			::GetWindowLongPtrW(
+			::GetWindowLongPtr(
 			hwnd,
 			GWLP_USERDATA
 			)));

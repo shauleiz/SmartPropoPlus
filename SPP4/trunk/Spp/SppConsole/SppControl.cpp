@@ -31,6 +31,7 @@ HINSTANCE hDllFilters = 0;
 HINSTANCE g_hInstance = 0;
 HWND hLog;
 bool Monitor = true;
+thread * tMonitor = NULL;
 int vJoyDevice = 1;
 bool reqPopulateFilter = false;
 UINT AudioLevel[2] = {0, 0};
@@ -239,7 +240,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		StartPollingDevice(vJoyDevice); 
 
 	// Start monitoring thread
-	static thread * tMonitor = NULL;
 	tMonitor = new thread(thMonitor, &Monitor);
 	if (!tMonitor)
 			goto ExitApp;
@@ -514,8 +514,9 @@ LRESULT CALLBACK MainWindowProc(
 
 			break;
 
-		// User pressed OK (or Cancel) button
+			// User pressed OK (or Cancel) button
 		case WMSPP_DLG_OK:
+			PulseScope(FALSE);
 			if (wParam)
 				Conf->Save();
 			break;
@@ -753,6 +754,8 @@ void AudioLevelWatch()
 	static bool WentAutoCh=true;
 	static bool WentAutoBr=true;
 
+	if (!AudioId)
+		return; // TODO: Add log here - this is an error
 	// Initializing channel state
 	//if (isRight==-1)
 	//{
