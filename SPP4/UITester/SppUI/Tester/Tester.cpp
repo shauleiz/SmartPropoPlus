@@ -139,7 +139,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
-	HWND hHidden;
+	HWND hTopUiWin;
 
 	switch (message)
 	{
@@ -153,11 +153,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
+			hTopUiWin = GetTopUiWnd();
+			SendMessage(hTopUiWin, WM_COMMAND, wParam,lParam);
 			DestroyWindow(hWnd);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
+		break;
+	case WM_CLOSE:
+		hTopUiWin = GetTopUiWnd();
+		SendMessage(hTopUiWin, message, wParam,lParam);
+		DestroyWindow(hWnd);
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
