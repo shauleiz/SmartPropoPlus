@@ -8,8 +8,9 @@
 #pragma once
 
 #include "resource.h"
+#define MAX_LOADSTRING 100
 
-HWND SPPTOPWIN_API GetTestHiddenWnd(void);
+HWND SPPTOPWIN_API GetTopUiWnd(void);
 
 int SPPTOPWIN_API MyEntryPoint(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
