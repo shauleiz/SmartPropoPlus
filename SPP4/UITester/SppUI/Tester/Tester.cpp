@@ -1,5 +1,11 @@
 // Tester.cpp : Defines the entry point for the application.
 //
+// Application - Test SPP4 user interface
+// Opens top UI window (SppTopWin) that is the UI entry point
+// Interacts with SppTopWin, simulating SPP4 activity
+//
+// Not part of SPP4 release
+////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "../SppTopWin/SppTopWin.h"
