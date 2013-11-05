@@ -43,7 +43,6 @@ LRESULT CALLBACK	TopWinWndProc(HWND, UINT, WPARAM, LPARAM);
 void				StartTopWinThread(Object^ data);
 static void			GetHwnd(Object^ data);
 
-
 public ref class MainPage : Window
 {
 };
@@ -53,6 +52,7 @@ public ref class WPFPageHost
 public:
 	WPFPageHost() {};
 	static WpfCtrlWin::CtrlWindow^ hostedPage;
+	static WindowInteropHelper^ ctrlhelper;
 };
 
 
@@ -198,6 +198,10 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		case IDM_EXIT:
+			WPFPageHost::hostedPage->Hide();
+			DestroyWindow(hWnd);
+			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -208,7 +212,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
-		PostQuitMessage(0);
+		DestroyWindow(hWnd);
 		break;
 	case 12347:
 		//_private->Clock->Set_YYY();
@@ -225,7 +229,10 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 static void GetHwnd(Object^ data)
 {
 	WpfCtrlWin::CtrlWindow^ ctrlpage =  gcnew WpfCtrlWin::CtrlWindow();
+	WPFPageHost::hostedPage = ctrlpage;
 	WindowInteropHelper^ ctrlhelper = gcnew WindowInteropHelper(ctrlpage);
+	WPFPageHost::ctrlhelper = ctrlhelper;
+
+	ctrlhelper->Owner = (IntPtr)hTopWnd;
 	ctrlpage->Show();
-	WPFPageHost::hostedPage = ctrlpage; 
 }

@@ -93,6 +93,7 @@
       <AdditionalDependencies>user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <SubSystem>Windows</SubSystem>
+      <ProgramDatabaseFile>$(SolutionDir)$(Configuration)\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -163,10 +164,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="app.rc" />
+    <ResourceCompile Include="SppTopWin.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="app.ico" />
+    <Image Include="SppTopWin.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WpfCtrlWin\WpfCtrlWin.csproj">

@@ -40,12 +40,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="app.rc">
+    <ResourceCompile Include="SppTopWin.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="app.ico">
+    <Image Include="SppTopWin.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
