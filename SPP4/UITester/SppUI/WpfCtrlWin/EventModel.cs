@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Windows.Threading;
+using System.Collections.Generic;
 
 namespace CtrlWindowNS
 {
@@ -18,55 +19,34 @@ namespace CtrlWindowNS
     /// </summary>
     public class EventModel : INotifyPropertyChanged
     {
-        private string _selected_jack;
 
         /// <summary>
         /// Gets / sets the event Selected audio jack
         /// </summary>
+        // From http://stackoverflow.com/questions/1315621/implementing-inotifypropertychanged-does-a-better-way-exist
+        protected bool SetField<T>(ref T field, T value, string propertyName)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        // Selected Audio Jack - Property is "SelectedJack"
+        private string _selected_jack;
         public string SelectedJack
         {
             get { return _selected_jack; }
-            set
-            {
-                if (value == _selected_jack)
-                    return;
-
-                _selected_jack = value;
-                Dispatcher.CurrentDispatcher.BeginInvoke(
-    new Action<String>(OnPropertyChanged),
-    DispatcherPriority.DataBind, "SelectedJack");
-
-            }
+            set { SetField(ref _selected_jack, value, "SelectedJack"); }
         }
 
-#if false
-        private DateTime _date;
 
-        /// <summary>
-        /// Gets / sets the date of this event
-        /// </summary>
-        public DateTime Date
-        {
-            get { return _date; }
-            set
-            {
-                if (value == _date)
-                    return;
-
-                _date = value;
-                OnPropertyChanged("Date");
-            }
-        }
-        
-#endif
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

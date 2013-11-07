@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk" 
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
         	MouseLeftButtonDown="NonRectangularWindow_MouseLeftButtonDown"
             LocationChanged="LocChanged"
              mc:Ignorable="d" 
@@ -12,7 +13,18 @@
     AllowsTransparency="True"
     Background="Transparent" d:DesignWidth="820" d:DesignHeight="420">
 
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="206.84" Margin="295.062,149.08,278.062,64.08" Width="246.876">
+    <Window.Resources>
+        <!--<sys:String x:Key="MyString">Hello</sys:String>-->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MainWinDic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    
+    
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="206.84" Margin="295.062,149.08,159.062,64.08" Width="365.876">
         <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -35,37 +47,40 @@
         <Border BorderBrush="LightGray"
           BorderThickness="3"
           CornerRadius="3" Margin="10">
-            <Grid x:Name="LayoutRoot" Background="White">
+            <Grid x:Name="LayoutRoot" Margin="3,3,7,7">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFDAEDEE" Offset="0.028"/>
+                        <GradientStop Color="#FFADCFC1" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" MinHeight="23.96" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="55*"/>
+                    <RowDefinition Height="54*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="195*"/>
+                    <ColumnDefinition Width="64*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Event"
+                <TextBlock Text="{StaticResource applicationTitle}"
                  FontWeight="Bold"
-                 HorizontalAlignment="Center"
-                 Grid.ColumnSpan="2"/>
+                 HorizontalAlignment="Center" Grid.Column="1" Height="15.96" Margin="10,3,2.894,3" Width="181.731"/>
 
-                <TextBlock Text="Name:"
-                 Grid.Row="1"/>
-                <TextBox Name="NameTextBox" Text="{Binding SelectedJack,  UpdateSourceTrigger=PropertyChanged}"
-               Grid.Row="1" Grid.Column="1"/>
+                <TextBlock Text="{StaticResource AudioLable}"
+                 Grid.Row="1" Height="15.96" Margin="3,4"/>
+                <TextBox Name="Nm_SelectedJack" Text="{Binding SelectedJack,   UpdateSourceTrigger=PropertyChanged}"
+               Grid.Row="1" Grid.Column="1" Height="17.96" Background="{x:Null}" Grid.ColumnSpan="2"/>
 
-                <TextBlock Text="Date:"
-                 Grid.Row="2"/>
-                <!--<TextBox Text="{Binding Path=Date, Mode=TwoWay}"
-                      Grid.Row="2" Grid.Column="1"/>-->
 
-                <Button Content="Modify Event"
-              Click="Button_Click"
-              Grid.Row="3" Grid.Column="1"
-              HorizontalAlignment="Right"/>
+                <Button Content="Lower" Click="Button_Click" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left"  Height="19.96" Margin="91.015,20.964,0,20.963" Width="73.58"/>
+                <Button Content="P1" Click="P1_Click" HorizontalAlignment="Left" Margin="15.938,31.927,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
+                <Button Content="P2" Click="P2_Click" HorizontalAlignment="Left" Margin="15.938,2.967,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
             </Grid>
         </Border>
     </Grid>

@@ -26,11 +26,9 @@ namespace CtrlWindowNS
             // create a model object
             _event = new EventModel()
             {
- //               Date = new DateTime(2011, 7, 1),
                 SelectedJack = "-- No audio jack Selected --"
             };
 
-            // bind the Date to the UI
             this.DataContext = _event;
         }
 
@@ -47,13 +45,23 @@ namespace CtrlWindowNS
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
             _event.SelectedJack = _event.SelectedJack.ToLower();
- //           _event.Date = _event.Date.AddDays(1);
         }
 
         public void Set_TB_SelectedJack(string intext)
         {
             _event.SelectedJack = intext;
+        }
+
+        private void P1_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void P2_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
