@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Strings (begin)-->
+    <sys:String x:Key="applicationTitle">SmartPropoPlus Wizard</sys:String>
+    <sys:String x:Key="AudioLable">Audio Input:</sys:String>
+    <!-- Strings (end) -->
+   
+</ResourceDictionary>
