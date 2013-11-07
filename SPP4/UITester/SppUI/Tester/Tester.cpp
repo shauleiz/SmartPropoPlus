@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "../SppTopWin/SppTopWin.h"
+#include "WinMessages.h"
 #include "Tester.h"
 
 #define MAX_LOADSTRING 100
@@ -52,6 +53,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	// Call GUI Window (TODO: Hide)
 	MyEntryPoint(hInstance, hPrevInstance, lpCmdLine, SW_SHOW, hMainAppWnd);
+	
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -150,6 +152,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_ABOUT:
+			hTopUiWin = GetTopUiWnd();
+			SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)L"Test Jack",0);
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:

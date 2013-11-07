@@ -6,7 +6,7 @@
 
 #include "stdafx.h"
 using namespace System;
-using namespace System::Xaml;
+//using namespace System::Xaml;
 using namespace System::Windows;
 using namespace System::Windows::Documents;
 using namespace System::Threading;
@@ -16,8 +16,7 @@ using namespace System::Windows::Media;
 using namespace System::Windows::Interop;
 using namespace System::Threading;
 using namespace System::Runtime::InteropServices; // Marshal
-using namespace WpfCtrlWin;
-//using namespace DatabindingExample;
+using namespace CtrlWindowNS;
 
 #include "uxtheme.h"
 #include <stdio.h>
@@ -26,6 +25,7 @@ using namespace WpfCtrlWin;
 #include <msclr/marshal.h>
 #include <msclr\auto_gcroot.h>
 
+#include "../Tester/WinMessages.h" // TODO - Replace
 #include "SppTopWin.h"
 
 
@@ -43,7 +43,7 @@ LRESULT CALLBACK	TopWinWndProc(HWND, UINT, WPARAM, LPARAM);
 void				StartTopWinThread(Object^ data);
 static void			GetHwnd(Object^ data);
 
-public ref class MainPage : Window
+public ref class CtrlWindow : Window
 {
 };
 
@@ -51,14 +51,14 @@ public ref class WPFPageHost
 {
 public:
 	WPFPageHost() {};
-	static WpfCtrlWin::CtrlWindow^ hostedPage;
+	static CtrlWindowNS::CtrlWindow^ hostedPage;
 	static WindowInteropHelper^ ctrlhelper;
 };
 
 
 class ControlWrapperPrivate
 {
-    public: msclr::auto_gcroot<WpfCtrlWin::CtrlWindow^> CtrlWindow;
+    public: msclr::auto_gcroot<CtrlWindowNS::CtrlWindow^> CtrlWindow;
 };
 
 ControlWrapperPrivate* privateCtrl;
@@ -102,7 +102,7 @@ int SPPTOPWIN_API MyEntryPoint(_In_ HINSTANCE hInstance,
 void StartTopWinThread(Object^ data)
 {
 	::MSG lmsg;
-	int nCmdShow = SW_SHOW; // TODO: Change to SW_HIDE
+	int nCmdShow = SW_HIDE; 
 
 	MyRegisterClass(hInst);
 
@@ -111,7 +111,7 @@ void StartTopWinThread(Object^ data)
 		return;
 		
 	privateCtrl = new ControlWrapperPrivate();
-	privateCtrl->CtrlWindow = gcnew WpfCtrlWin::CtrlWindow();
+	privateCtrl->CtrlWindow = gcnew CtrlWindowNS::CtrlWindow();
 
 	// Top UI Window message loop:
 	while (GetMessage(&lmsg, NULL, 0, 0))
@@ -202,6 +202,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 			WPFPageHost::hostedPage->Hide();
 			DestroyWindow(hWnd);
 			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -214,12 +215,32 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WM_DESTROY:
 		DestroyWindow(hWnd);
 		break;
-	case 12347:
+
+	// Audio related messages
+	case REM_ALL_JACK:
+		//DialogObj->CleanAudioList();
+		break;
+
+	case POPULATE_JACKS:
+		WPFPageHost::hostedPage->Set_TB_SelectedJack(gcnew System::String((LPCWSTR)wParam));
+		//DialogObj->AddLine2AudioList((jack_info *)(wParam));
+		break;
+
+	case SET_AUDIO_PARAMS:
+		//DialogObj->AudioChannelParams((UINT)wParam, (WCHAR)lParam);
+		break;
+		
+	case SET_AUDIO_AUTO:
+		//DialogObj->AudioAutoParams((UINT)wParam, (WCHAR)lParam);
+		break;
+
+
+	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));
 		//WPFPageHost::hostedPage->Set_YYY(gcnew System::String("12345"));
 		//title = (const char *)Marshal::StringToHGlobalAnsi(WPFPageHost::hostedPage->title).ToPointer();
-		break;
+		//break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -228,7 +249,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 static void GetHwnd(Object^ data)
 {
-	WpfCtrlWin::CtrlWindow^ ctrlpage =  gcnew WpfCtrlWin::CtrlWindow();
+	CtrlWindowNS::CtrlWindow^ ctrlpage =  gcnew CtrlWindowNS::CtrlWindow();
 	WPFPageHost::hostedPage = ctrlpage;
 	WindowInteropHelper^ ctrlhelper = gcnew WindowInteropHelper(ctrlpage);
 	WPFPageHost::ctrlhelper = ctrlhelper;
