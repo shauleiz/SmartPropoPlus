@@ -21,10 +21,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    
-    
-    
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="206.84" Margin="295.062,149.08,159.062,64.08" Width="365.876">
+
+
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="206.84" Margin="435.062,20.08,19.062,193.08" Width="365.876">
         <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -47,7 +47,7 @@
         <Border BorderBrush="LightGray"
           BorderThickness="3"
           CornerRadius="3" Margin="10">
-            <Grid x:Name="LayoutRoot" Margin="3,3,7,7">
+            <Grid x:Name="LayoutRoot" Margin="3,7,7,7">
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FFDAEDEE" Offset="0.028"/>
@@ -68,6 +68,7 @@
                     <ColumnDefinition Width="64*"/>
                 </Grid.ColumnDefinitions>
 
+
                 <TextBlock Text="{StaticResource applicationTitle}"
                  FontWeight="Bold"
                  HorizontalAlignment="Center" Grid.Column="1" Height="15.96" Margin="10,3,2.894,3" Width="181.731"/>
@@ -79,9 +80,43 @@
 
 
                 <Button Content="Lower" Click="Button_Click" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left"  Height="19.96" Margin="91.015,20.964,0,20.963" Width="73.58"/>
-                <Button Content="P1" Click="P1_Click" HorizontalAlignment="Left" Margin="15.938,31.927,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
-                <Button Content="P2" Click="P2_Click" HorizontalAlignment="Left" Margin="15.938,2.967,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
+                <CheckBox  Content="P1" x:Name="P1_Btn" Click="P1_Click" HorizontalAlignment="Left" Margin="15.938,31.927,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
+                <CheckBox  Content="P2" x:Name="P2_Btn" Click="P2_Click" HorizontalAlignment="Left" Margin="15.938,2.967,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
             </Grid>
+        </Border>
+        <Grid HorizontalAlignment="Left" Name="P1_GRID" Height="186.84" Margin="-401.062,10,0,0" VerticalAlignment="Top" Width="160" Visibility="{Binding ElementName=P1_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#3F5ACB19" Offset="0"/>
+                    <GradientStop Color="#FFF71414" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Label Content="This is P1" HorizontalAlignment="Left" Height="33" Margin="43,72,0,0" VerticalAlignment="Top" Width="77"/>
+        </Grid>
+        <Border BorderThickness="1" HorizontalAlignment="Left" Height="213" Margin="-414.062,-2.08,0,-4.08" VerticalAlignment="Top" Width="188" CornerRadius="4" Visibility="{Binding ElementName=P1_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}">
+            <Border.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="#FFAC1313" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+        </Border>
+        <Grid HorizontalAlignment="Left" Name="P2_GRID" Height="186.84" Margin="-196.062,10,0,0" VerticalAlignment="Top" Width="160" Visibility="{Binding ElementName=P2_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#3F5ACB19" Offset="0"/>
+                    <GradientStop Color="#FFF71414" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Label Content="This is P2" HorizontalAlignment="Left" Height="32" Margin="78,153,0,0" VerticalAlignment="Top" Width="77"/>
+        </Grid>
+        <Border BorderThickness="1" HorizontalAlignment="Left" Height="213" Margin="-209.062,-2.08,0,-4.08" VerticalAlignment="Top" Width="188" CornerRadius="4" Visibility="{Binding ElementName=P2_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}">
+            <Border.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="#FFAC1313" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
         </Border>
     </Grid>
 </Window>
