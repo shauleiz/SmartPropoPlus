@@ -5,5 +5,7 @@
     <sys:String x:Key="applicationTitle">SmartPropoPlus Wizard</sys:String>
     <sys:String x:Key="AudioLable">Audio Input:</sys:String>
     <!-- Strings (end) -->
-   
+    
+    <BooleanToVisibilityConverter x:Key="boolConverter" />
+
 </ResourceDictionary>
