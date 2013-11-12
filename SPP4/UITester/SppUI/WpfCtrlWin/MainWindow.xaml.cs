@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Text;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace CtrlWindowNS
 {
@@ -22,7 +23,6 @@ namespace CtrlWindowNS
         private EventModel _event;
         public delegate void ClockMoving(double Left, double Top);
         public event ClockMoving OnMove;
-        List<AudioLine> items;
 
         public CtrlWindow()
         {
@@ -32,31 +32,23 @@ namespace CtrlWindowNS
             // create a model object
             _event = new EventModel()
             {
-                SelectedJack = "-- No audio jack Selected --"
+                SelectedJack = "-- No audio jack Selected --",
+                _AudioDeviceCollection = new ObservableCollection<AudioLine>()
             };
+
+
             this.DataContext = _event;
 
             // Init audio list view
-            items = new List<AudioLine>();
-            items.Add(new AudioLine() { DeviceName = "1 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88" });
-            items.Add(new AudioLine() { DeviceName = "2 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5" });
-            items.Add(new AudioLine() { DeviceName = "3 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88" });
-            items.Add(new AudioLine() { DeviceName = "4 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5" });
-            items.Add(new AudioLine() { DeviceName = "5 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88" });
-            items.Add(new AudioLine() { DeviceName = "6 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5" });
-            Audio_LB.ItemsSource = items;
-
-            //// Remove fifth item
-            //items.RemoveAt(4);
-
-            // Select Second item
-            Audio_LB.SelectedIndex = 3;
-
-            // Scroll to selected item
-            Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
-            ListViewItem item = Audio_LB.ItemContainerGenerator.ContainerFromItem(Audio_LB.SelectedIndex) as ListViewItem;
-            if (item != null)
-                item.Focus();
+            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "1 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88", EmptyStr= "-"  });
+            Insert_Jack("YDevName", "Ylevels", false);
+            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "2 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5", EmptyStr= "-"  });
+            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "3 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88", EmptyStr= "-"  });
+            Insert_Jack("YXDevName", "YXlevels", false);
+            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "4 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5", EmptyStr= "-"  });
+            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "5 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88", EmptyStr= "-"  });
+            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "6 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5", EmptyStr= "-"  });
+            Insert_Jack("XXXDevName", "XXXlevels", false);
         }
 
         void NonRectangularWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -74,14 +66,39 @@ namespace CtrlWindowNS
         {
             _event.SelectedJack = _event.SelectedJack.ToLower();
             // Remove fifth item
-            AudioLine line = Audio_LB.Items.GetItemAt(4) as AudioLine;
-            items.Remove(line);
-            Audio_LB.Items.Refresh();
+            _event._AudioDeviceCollection.RemoveAt(4);
+
+            // Select Second item
+            Audio_LB.SelectedIndex = 1;
+
+            // Scroll to selected item
+            Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
+            ListViewItem item = Audio_LB.ItemContainerGenerator.ContainerFromItem(Audio_LB.SelectedIndex) as ListViewItem;
+            if (item != null)
+                item.Focus();
+
+            Insert_Jack("DDDevName", "DDDlevels", true);
         }
 
         public void Set_TB_SelectedJack(string intext)
         {
             _event.SelectedJack = intext;
+        }
+
+        public void Insert_Jack(string DevName, string levels, bool Selected)
+        {
+            AudioLine item = new AudioLine { DeviceName = DevName, LR_LevelsStr = levels, EmptyStr = "-" };
+            _event._AudioDeviceCollection.Add(item);
+
+            if (Selected)
+            {
+                int index = _event._AudioDeviceCollection.IndexOf(item);
+                Audio_LB.SelectedIndex = index;
+                Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
+                ListViewItem lvitem = Audio_LB.ItemContainerGenerator.ContainerFromItem(index) as ListViewItem;
+                if (lvitem != null) 
+                    lvitem.Focus();
+           };
         }
 
         private void P1_Click(object sender, RoutedEventArgs e)
@@ -98,14 +115,19 @@ namespace CtrlWindowNS
         {
 
         }
+
+       
     }
 
     public class AudioLine
     {
         public string DeviceName { get; set; }
         public string LR_LevelsStr { get; set; }
+        public string EmptyStr  { get; set; }
     }
 
+
+    // Boolean to Color converter - may be overriden in the dictionary
   [ValueConversion(typeof(bool), typeof(Brush))]
     public sealed class BoolToBorderBrushColorConverter : IValueConverter
     {
