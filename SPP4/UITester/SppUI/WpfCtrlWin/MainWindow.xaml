@@ -114,10 +114,10 @@
                         <GradientStop Color="#FFAC1313" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.BorderBrush>
-                <ListView Name="Audio_LB"  HorizontalAlignment="Left" Height="73.832" Margin="25.302,37.577,0,0" VerticalAlignment="Top" Width="517.472" IsSynchronizedWithCurrentItem="False" SelectionChanged="Audio_LB_SelectionChanged" MinWidth="10">
+                <ListView Name="Audio_LB"  ItemsSource="{Binding AudioDeviceCollection}"  HorizontalAlignment="Left" Height="163.998" Margin="25.302,37.577,0,0" VerticalAlignment="Top" Width="517.472"  MinWidth="10">
                     <ListView.View>
                         <GridView AllowsColumnReorder="true">
-                            <GridViewColumn Header="Jack"  Width="30"   />
+                            <GridViewColumn Header="Jack"  DisplayMemberBinding="{Binding EmptyStr}"  Width="30"   />
                             <GridViewColumn Header="L/R Levels" DisplayMemberBinding="{Binding LR_LevelsStr}" Width="100"/>
                             <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}"  />
                         </GridView>

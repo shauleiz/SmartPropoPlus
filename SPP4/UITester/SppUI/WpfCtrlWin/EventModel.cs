@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CtrlWindowNS
 {
@@ -38,6 +39,13 @@ namespace CtrlWindowNS
         {
             get { return _selected_jack; }
             set { SetField(ref _selected_jack, value, "SelectedJack"); }
+        }
+
+        // Audio: List of audio lines
+        public ObservableCollection<AudioLine> _AudioDeviceCollection;
+        public ObservableCollection<AudioLine> AudioDeviceCollection
+        { 
+            get { return _AudioDeviceCollection; } 
         }
 
         // Audio list box headers
