@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Globalization;
 using System.Diagnostics;
 using System.Text;
+using System.ComponentModel;
 
 namespace CtrlWindowNS
 {
@@ -21,6 +22,7 @@ namespace CtrlWindowNS
         private EventModel _event;
         public delegate void ClockMoving(double Left, double Top);
         public event ClockMoving OnMove;
+        List<AudioLine> items;
 
         public CtrlWindow()
         {
@@ -32,8 +34,29 @@ namespace CtrlWindowNS
             {
                 SelectedJack = "-- No audio jack Selected --"
             };
-
             this.DataContext = _event;
+
+            // Init audio list view
+            items = new List<AudioLine>();
+            items.Add(new AudioLine() { DeviceName = "1 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88" });
+            items.Add(new AudioLine() { DeviceName = "2 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5" });
+            items.Add(new AudioLine() { DeviceName = "3 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88" });
+            items.Add(new AudioLine() { DeviceName = "4 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5" });
+            items.Add(new AudioLine() { DeviceName = "5 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88" });
+            items.Add(new AudioLine() { DeviceName = "6 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5" });
+            Audio_LB.ItemsSource = items;
+
+            //// Remove fifth item
+            //items.RemoveAt(4);
+
+            // Select Second item
+            Audio_LB.SelectedIndex = 3;
+
+            // Scroll to selected item
+            Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
+            ListViewItem item = Audio_LB.ItemContainerGenerator.ContainerFromItem(Audio_LB.SelectedIndex) as ListViewItem;
+            if (item != null)
+                item.Focus();
         }
 
         void NonRectangularWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -49,8 +72,11 @@ namespace CtrlWindowNS
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
             _event.SelectedJack = _event.SelectedJack.ToLower();
+            // Remove fifth item
+            AudioLine line = Audio_LB.Items.GetItemAt(4) as AudioLine;
+            items.Remove(line);
+            Audio_LB.Items.Refresh();
         }
 
         public void Set_TB_SelectedJack(string intext)
@@ -63,10 +89,21 @@ namespace CtrlWindowNS
 
         }
 
-        private void P2_Click(object sender, RoutedEventArgs e)
+        private void Audio_Click(object sender, RoutedEventArgs e)
         {
 
         }
+
+        private void Audio_LB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+    }
+
+    public class AudioLine
+    {
+        public string DeviceName { get; set; }
+        public string LR_LevelsStr { get; set; }
     }
 
   [ValueConversion(typeof(bool), typeof(Brush))]
