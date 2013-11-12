@@ -40,6 +40,8 @@ namespace CtrlWindowNS
             set { SetField(ref _selected_jack, value, "SelectedJack"); }
         }
 
+        // Audio list box headers
+        public string DaviceStr = "Device";
 
         public event PropertyChangedEventHandler PropertyChanged;
 

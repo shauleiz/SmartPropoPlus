@@ -8,19 +8,10 @@
     <!-- Strings (end) -->
 
     
+    <!-- Converter instances (begin) -->
     <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->
     <BooleanToVisibilityConverter x:Key="boolConverter" />
     <local:BoolToBorderBrushColorConverter x:Key="ColorConverter" TrueValue="Blue" FalseValue="Transparent"/>
+    <!-- Converters instances (end) -->
 
-    <!--<Style TargetType="Border">
-        <Setter Property="BorderBrush" Value="Blue" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Border}">
-                    <Border x:Name="bg" BorderBrush="Red">                 
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>-->
 </ResourceDictionary>
