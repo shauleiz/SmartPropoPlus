@@ -10,6 +10,9 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Data;
+using System.Globalization;
+using System.Diagnostics;
+using System.Text;
 
 namespace CtrlWindowNS
 {
@@ -21,7 +24,8 @@ namespace CtrlWindowNS
 
         public CtrlWindow()
         {
-            InitializeComponent();
+            BindingErrorTraceListener.SetTrace();
+            InitializeComponent();    
 
             // create a model object
             _event = new EventModel()
@@ -64,4 +68,94 @@ namespace CtrlWindowNS
 
         }
     }
+
+  [ValueConversion(typeof(bool), typeof(Brush))]
+    public sealed class BoolToBorderBrushColorConverter : IValueConverter
+    {
+        public Brush TrueValue { get; set; }
+        public Brush FalseValue { get; set; }
+
+        public BoolToBorderBrushColorConverter()
+        {
+            // set defaults
+            TrueValue = Brushes.GreenYellow;
+            FalseValue = Brushes.Red;
+        }
+
+        public object Convert(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            if (!(value is bool))
+                return null;
+            return (bool)value ? TrueValue : FalseValue;
+        }
+
+        public object ConvertBack(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            if (Equals(value, TrueValue))
+                return true;
+            if (Equals(value, FalseValue))
+                return false;
+            return null;
+        }
+    }
+   
+}
+
+// Detecting Binding Errors
+// Based on: http://tech.pro/tutorial/940/wpf-snippet-detecting-binding-errors
+namespace CtrlWindowNS
+{
+  public class BindingErrorTraceListener : DefaultTraceListener
+  {
+    private static BindingErrorTraceListener _Listener;
+
+    public static void SetTrace()
+    { SetTrace(SourceLevels.Error, TraceOptions.None); }
+
+    public static void SetTrace(SourceLevels level, TraceOptions options)
+    {
+      if (_Listener == null)
+      {
+        _Listener = new BindingErrorTraceListener();
+        PresentationTraceSources.DataBindingSource.Listeners.Add(_Listener);
+      }
+
+      _Listener.TraceOutputOptions = options;
+      PresentationTraceSources.DataBindingSource.Switch.Level = level;
+    }
+
+    public static void CloseTrace()
+    {
+      if (_Listener == null)
+      { return; }
+
+      _Listener.Flush();
+      _Listener.Close();
+      PresentationTraceSources.DataBindingSource.Listeners.Remove(_Listener);
+      _Listener = null;
+    }
+
+
+
+    private StringBuilder _Message = new StringBuilder();
+
+    private BindingErrorTraceListener()
+    { }
+
+    public override void Write(string message)
+    { _Message.Append(message); }
+
+    public override void WriteLine(string message)
+    {
+      _Message.Append(message);
+
+      var final = _Message.ToString();
+      _Message.Length = 0;
+
+      MessageBox.Show(final, "Binding Error", MessageBoxButton.OK, 
+        MessageBoxImage.Error);
+    }
+  }
 }
