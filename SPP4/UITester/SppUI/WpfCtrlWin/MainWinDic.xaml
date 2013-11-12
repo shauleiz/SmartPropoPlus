@@ -1,11 +1,26 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:CtrlWindowNS"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Strings (begin)-->
     <sys:String x:Key="applicationTitle">SmartPropoPlus Wizard</sys:String>
     <sys:String x:Key="AudioLable">Audio Input:</sys:String>
     <!-- Strings (end) -->
-    
-    <BooleanToVisibilityConverter x:Key="boolConverter" />
 
+    
+    <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->
+    <BooleanToVisibilityConverter x:Key="boolConverter" />
+    <local:BoolToBorderBrushColorConverter x:Key="ColorConverter" TrueValue="Blue" FalseValue="Transparent"/>
+
+    <!--<Style TargetType="Border">
+        <Setter Property="BorderBrush" Value="Blue" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Border}">
+                    <Border x:Name="bg" BorderBrush="Red">                 
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>-->
 </ResourceDictionary>
