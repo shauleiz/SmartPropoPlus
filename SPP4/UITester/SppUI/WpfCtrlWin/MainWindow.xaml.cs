@@ -33,22 +33,14 @@ namespace CtrlWindowNS
             _event = new EventModel()
             {
                 SelectedJack = "-- No audio jack Selected --",
-                _AudioDeviceCollection = new ObservableCollection<AudioLine>()
+                _AudioDeviceCollection = new ObservableCollection<AudioLine>(),
+                AudioBitrate = "0 Bit",
+                AudioChannel = "Unknown channel",
             };
 
 
             this.DataContext = _event;
 
-            // Init audio list view
-            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "1 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88", EmptyStr= "-"  });
-            Insert_Jack("YDevName", "Ylevels", false);
-            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "2 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5", EmptyStr= "-"  });
-            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "3 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88", EmptyStr= "-"  });
-            Insert_Jack("YXDevName", "YXlevels", false);
-            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "4 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5", EmptyStr= "-"  });
-            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "5 Mic in at Front pannel (Pink)", LR_LevelsStr = "0/88", EmptyStr= "-"  });
-            _event._AudioDeviceCollection.Add(new AudioLine { DeviceName = "6 Line in at Rear pannel (Black)", LR_LevelsStr = "0/5", EmptyStr= "-"  });
-            Insert_Jack("XXXDevName", "XXXlevels", false);
         }
 
         void NonRectangularWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -66,7 +58,9 @@ namespace CtrlWindowNS
         {
             _event.SelectedJack = _event.SelectedJack.ToLower();
             // Remove fifth item
-            _event._AudioDeviceCollection.RemoveAt(4);
+            int iRem = 4;
+             if (_event._AudioDeviceCollection.Count> iRem)
+                 _event._AudioDeviceCollection.RemoveAt(iRem);
 
             // Select Second item
             Audio_LB.SelectedIndex = 1;
@@ -85,6 +79,22 @@ namespace CtrlWindowNS
             _event.SelectedJack = intext;
         }
 
+        // Clean list of Audio devices
+        public void CleanAudioList()
+        {
+            if (_event._AudioDeviceCollection.Count>0)
+                _event._AudioDeviceCollection.Clear();
+        }
+
+        /// <summary>
+        ///  Insert an audio device (= jack) to _AudioDeviceCollection
+        ///  If marked as Selected then:
+        ///  1. Put the device name in the control window
+        ///  2. Mark it as selected in the listview and scroll to it
+        /// </summary>
+        /// <param name="DevName"> Display name of the device</param>
+        /// <param name="levels"> Audio levels as string</param>
+        /// <param name="Selected">If true: This is the selected device</param>
         public void Insert_Jack(string DevName, string levels, bool Selected)
         {
             AudioLine item = new AudioLine { DeviceName = DevName, LR_LevelsStr = levels, EmptyStr = "-" };
@@ -92,6 +102,7 @@ namespace CtrlWindowNS
 
             if (Selected)
             {
+                Set_TB_SelectedJack(DevName);
                 int index = _event._AudioDeviceCollection.IndexOf(item);
                 Audio_LB.SelectedIndex = index;
                 Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
@@ -99,6 +110,34 @@ namespace CtrlWindowNS
                 if (lvitem != null) 
                     lvitem.Focus();
            };
+        }
+
+        /// <summary>
+        /// Updates channel info - selected channel
+        /// </summary>
+        /// <param name="Channel"> Chan be 'L'/'R'/'M'</param>
+        public void Set_Channel(char Channel)
+        {
+            switch (Channel)
+            {
+                case 'L':
+                    _event.AudioChannel = "Left Channel";
+                    break;
+                case 'R':
+                    _event.AudioChannel = "Right Channel";
+                    break;
+                case 'M':
+                    _event.AudioChannel = "Mono";
+                    break;
+                default:
+                    _event.AudioChannel = "Unknown Channel";
+                    break;
+            };
+        }
+
+        public void Set_Bitrate(int br)
+        {
+            _event.AudioBitrate = br.ToString()+"Bit";
         }
 
         private void P1_Click(object sender, RoutedEventArgs e)

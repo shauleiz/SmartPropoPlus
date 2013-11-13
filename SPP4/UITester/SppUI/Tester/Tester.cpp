@@ -25,6 +25,7 @@ ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+void CaptureDevicesPopulate(HWND , int);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -149,10 +150,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
 		// Parse the menu selections:
+		hTopUiWin = GetTopUiWnd();
 		switch (wmId)
 		{
 		case IDM_ABOUT:
-			hTopUiWin = GetTopUiWnd();
 			SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)L"Test Jack",0);
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
@@ -161,6 +162,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hTopUiWin, WM_COMMAND, wParam,lParam);
 			DestroyWindow(hWnd);
 			break;
+
+		case IDM_AUDIO_REMALL:
+			SendMessage(hTopUiWin, REM_ALL_JACK, 0,0);
+			break;
+
+		case IDM_AUDIO_POP2:
+			CaptureDevicesPopulate(hTopUiWin, 2);
+			break;
+
+		case IDM_AUDIO_POP7:
+			CaptureDevicesPopulate(hTopUiWin, 7);
+			break;
+
+		case IDM_RIGHT_CHANNEL:
+			SendMessage(hTopUiWin, SET_AUDIO_PARAMS, 8,'R');
+			break;
+
+		case IDM_LEFT_CHANNEL:
+			SendMessage(hTopUiWin, SET_AUDIO_PARAMS, 16,'L');
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -202,4 +224,67 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return (INT_PTR)FALSE;
+}
+
+void CaptureDevicesPopulate(HWND hTopUiWin, int type)
+{
+	jack_info jack;
+	jack.struct_size = sizeof(jack_info);
+	SendMessage(hTopUiWin, REM_ALL_JACK,0, 0);
+
+	WCHAR * fn[7] = 
+	{
+		L"FriendlyName Number 1",
+		L"FriendlyName Number 2",
+		L"FriendlyName Number 3",
+		L"FriendlyName Number 4",
+		L"FriendlyName Number 5",
+		L"FriendlyName Number 6",
+		L"FriendlyName Number 7"
+	};
+
+		WCHAR * id[7] = 
+	{
+		L"{FriendlyName Number 1}",
+		L"{FriendlyName Number 2}",
+		L"{FriendlyName Number 3}",
+		L"{FriendlyName Number 4}",
+		L"{FriendlyName Number 5}",
+		L"{FriendlyName Number 6}",
+		L"{FriendlyName Number 7}"
+	};
+
+	if (type == 2)
+	{
+		jack.id = _wcsdup(id[6]);
+		jack.FriendlyName = _wcsdup(fn[6]);
+		jack.Default = false;
+		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
+		free(jack.id);
+		free(jack.FriendlyName);
+
+		jack.id = _wcsdup(id[4]);
+		jack.FriendlyName = _wcsdup(fn[4]);
+		jack.Default = true;
+		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
+		free(jack.id);
+		free(jack.FriendlyName);
+	}
+	else
+	{
+		for (int i=0; i<7;i++)
+		{
+		jack.id = _wcsdup(id[i]);
+		jack.FriendlyName = _wcsdup(fn[i]);
+		if(i==1) 
+			jack.Default = true;
+		else
+			jack.Default = false;
+		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
+		free(jack.id);
+		free(jack.FriendlyName);
+		};
+	};
+
+	return;
 }
