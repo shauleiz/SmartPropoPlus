@@ -41,6 +41,23 @@ namespace CtrlWindowNS
             set { SetField(ref _selected_jack, value, "SelectedJack"); }
         }
 
+        // Set Left/Right/Mono audio channel
+        private string _audio_channel;
+        public string AudioChannel
+        {
+            get { return _audio_channel; }
+            set { SetField(ref _audio_channel, value, "AudioChannel"); }
+        }
+
+        // Set Left/Right/Mono audio channel
+        private string _audio_bitrate;
+        public string AudioBitrate
+        {
+            get { return _audio_bitrate; }
+            set { SetField(ref _audio_bitrate, value, "AudioBitrate"); }
+        }
+
+
         // Audio: List of audio lines
         public ObservableCollection<AudioLine> _AudioDeviceCollection;
         public ObservableCollection<AudioLine> AudioDeviceCollection

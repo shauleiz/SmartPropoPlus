@@ -57,29 +57,29 @@
                     <RowDefinition Height="Auto" MinHeight="23.96" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="55*"/>
-                    <RowDefinition Height="54*"/>
+                    <RowDefinition Height="21*"/>
+                    <RowDefinition Height="76*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="195*"/>
                     <ColumnDefinition Width="64*"/>
                 </Grid.ColumnDefinitions>
 
 
-                <TextBlock Text="{StaticResource applicationTitle}"
-                 FontWeight="Bold"
-                 HorizontalAlignment="Center" Grid.Column="1" Height="15.96" Margin="10,3,2.894,3" Width="181.731"/>
+                <TextBlock Text="{StaticResource applicationTitle}" FontWeight="Bold"
+                 HorizontalAlignment="Center" Grid.Column="1" Height="15.96" />
 
-                <TextBlock Text="{StaticResource AudioLable}"
-                 Grid.Row="1" Height="15.96" Margin="3,4"/>
+                <TextBlock Text="{StaticResource AudioLable}" Grid.Row="1" Height="15.96" Margin="3,4"/>
+                <TextBlock Text="{Binding AudioChannel}" Grid.Row="2" Height="15.96" Margin="3,4"/>
+                <TextBlock Text="{Binding AudioBitrate}" Grid.Row="2" Grid.Column="1" Height="15.96" Margin="3,4,0,4" HorizontalAlignment="Left" />
                 <TextBox Name="Nm_SelectedJack" Text="{Binding SelectedJack,   UpdateSourceTrigger=PropertyChanged}"
                Grid.Row="1" Grid.Column="1" Height="17.96" Background="{x:Null}" Grid.ColumnSpan="2"/>
 
 
-                <Button Content="Lower" Click="Button_Click" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left"  Height="19.96" Margin="91.015,20.964,0,20.963" Width="73.58"/>
-                <CheckBox  Content="P1" x:Name="P1_Btn" Click="P1_Click" IsChecked="True" HorizontalAlignment="Left" Margin="15.938,31.927,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375"/>
-                <CheckBox  Content="Audio" x:Name="Audio_Btn" Click="Audio_Click" IsChecked="True" HorizontalAlignment="Left" Margin="15.938,2.966,0,0" Grid.Row="5" VerticalAlignment="Top" Width="52.375"/>
+                <Button Content="Lower" Click="Button_Click" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center"  Height="19.96"  Width="73.58"/>
+                <CheckBox  Content="P1" x:Name="P1_Btn" Click="P1_Click" IsChecked="True" HorizontalAlignment="Left" Margin="15.938,31.927,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375" Height="15.098"/>
+                <CheckBox  Content="Audio" x:Name="Audio_Btn" Click="Audio_Click" IsChecked="True" HorizontalAlignment="Left" Margin="15.938,2.966,0,0" Grid.Row="5" VerticalAlignment="Top" Width="52.375" Height="15.098"/>
             </Grid>
         </Border>
         <Grid HorizontalAlignment="Left" Name="P1_GRID" Height="186.84" Margin="-401.062,10,0,0" VerticalAlignment="Top" Width="160" Visibility="{Binding ElementName=P1_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}">

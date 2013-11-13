@@ -28,6 +28,19 @@ using namespace CtrlWindowNS;
 #include "../Tester/WinMessages.h" // TODO - Replace
 #include "SppTopWin.h"
 
+// Declarations (TODO: Remove after integration)
+struct jack_info
+{
+	/* Inter-unit information about jack/capture endpoint information */
+	int	struct_size;
+	WCHAR * id;
+	COLORREF color;
+	WCHAR * FriendlyName;
+	//bool	Enabled;
+	bool	Default;
+	int		nChannels;
+};
+
 
 // Global Variables:
 HINSTANCE hInst;														// current instance
@@ -42,6 +55,8 @@ BOOL				InitTopWinInstance(HINSTANCE, int);
 LRESULT CALLBACK	TopWinWndProc(HWND, UINT, WPARAM, LPARAM);
 void				StartTopWinThread(Object^ data);
 static void			GetHwnd(Object^ data);
+void				AddLine2AudioList(jack_info * jack);
+void				AudioChannelParams(UINT Bitrate, WCHAR Channel);
 
 public ref class CtrlWindow : Window
 {
@@ -218,16 +233,15 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 	// Audio related messages
 	case REM_ALL_JACK:
-		//DialogObj->CleanAudioList();
+		WPFPageHost::hostedPage->CleanAudioList();
 		break;
 
 	case POPULATE_JACKS:
-		WPFPageHost::hostedPage->Set_TB_SelectedJack(gcnew System::String((LPCWSTR)wParam));
-		//DialogObj->AddLine2AudioList((jack_info *)(wParam));
+		AddLine2AudioList((jack_info *)(wParam));
 		break;
 
 	case SET_AUDIO_PARAMS:
-		//DialogObj->AudioChannelParams((UINT)wParam, (WCHAR)lParam);
+		AudioChannelParams((UINT)wParam, (WCHAR)lParam);
 		break;
 		
 	case SET_AUDIO_AUTO:
@@ -256,4 +270,26 @@ static void GetHwnd(Object^ data)
 
 	ctrlhelper->Owner = (IntPtr)hTopWnd;
 	ctrlpage->Show();
+}
+
+// Add line to the list of audio devices
+// Mark the selected device
+void AddLine2AudioList(jack_info * jack)
+{
+	WPFPageHost::hostedPage->Insert_Jack(gcnew System::String(jack->FriendlyName), gcnew System::String("0/0"), jack->Default);
+}
+
+// Set the parameters of the audio (8/16 bits Left/Right/Mono)
+// If Bitrate = 0 then don't change
+// If Channel="" or Channel=NULL then don't change
+void AudioChannelParams(UINT Bitrate, WCHAR Channel)
+{
+#if 0
+	if (Bitrate == 8)
+		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_8);
+	else if (Bitrate == 16)
+		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_16);
+#endif // 0
+	WPFPageHost::hostedPage->Set_Bitrate(Bitrate);
+	WPFPageHost::hostedPage->Set_Channel(Channel);
 }
