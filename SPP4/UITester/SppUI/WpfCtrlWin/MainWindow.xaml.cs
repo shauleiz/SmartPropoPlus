@@ -37,6 +37,7 @@ namespace CtrlWindowNS
                 AudioBitrate = 0,
                 AudioChannel = 'U',
                 IsNotAutoBitrate = true,
+                IsNotAutoChannel = true,
             };
 
 
@@ -139,6 +140,7 @@ namespace CtrlWindowNS
     }
 
 
+    #region Converters
     // Boolean to Color converter - may be overriden in the dictionary
     [ValueConversion(typeof(bool), typeof(Brush))]
     public sealed class BoolToBorderBrushColorConverter : IValueConverter
@@ -254,8 +256,28 @@ namespace CtrlWindowNS
         }
     }
 
-#if true
-    
+    // Char to bool converter - Returns true if value is equal to 'Target' (default: 'L')
+    [ValueConversion(typeof(int), typeof(bool))]
+    public sealed class CharToChannelBoolConverter : IValueConverter
+    {
+        public char Target { get; set; }
+
+        public CharToChannelBoolConverter() { Target = 'L'; }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Equals(value, Target);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Equals(value, true))
+                return Target;
+            else
+                return DependencyProperty.UnsetValue;
+        }
+    }
+
     // Boolean NOT converter - Based on http://stackoverflow.com/questions/1039636/how-to-bind-inverse-boolean-properties-in-wpf
     [ValueConversion(typeof(bool), typeof(bool))]
     public class InverseBooleanConverter : IValueConverter
@@ -264,9 +286,6 @@ namespace CtrlWindowNS
         public object Convert(object value, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            //if (targetType != typeof(bool))
-            //    throw new InvalidOperationException("The target is not a boolean");
-
             return !(bool)value;
         }
 
@@ -276,9 +295,12 @@ namespace CtrlWindowNS
             return !(bool)value;
         }
     }
- #endif
- 
-	}
+    
+    #endregion // Converters
+
+} // namespace CtrlWindowNS
+
+
 // Detecting Binding Errors
 // Based on: http://tech.pro/tutorial/940/wpf-snippet-detecting-binding-errors
 namespace CtrlWindowNS
