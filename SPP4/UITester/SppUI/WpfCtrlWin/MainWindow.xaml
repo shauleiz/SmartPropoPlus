@@ -71,8 +71,8 @@
                  HorizontalAlignment="Center" Grid.Column="1" Height="15.96" />
 
                 <TextBlock Text="{StaticResource AudioLable}" Grid.Row="1" Height="15.96" Margin="3,4"/>
-                <TextBlock Text="{Binding AudioChannel}" Grid.Row="2" Height="15.96" Margin="3,4"/>
-                <TextBlock Text="{Binding AudioBitrate}" Grid.Row="2" Grid.Column="1" Height="15.96" Margin="3,4,0,4" HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding AudioChannel, Converter={StaticResource ChannelConverter}}" Grid.Row="2" Height="15.96" Margin="3,4"/>
+                <TextBlock Text="{Binding AudioBitrate, Converter={StaticResource BitrateConverter}}" Grid.Row="2" Grid.Column="1" Height="15.96" Margin="3,4,0,4" HorizontalAlignment="Left" />
                 <TextBox Name="Nm_SelectedJack" Text="{Binding SelectedJack,   UpdateSourceTrigger=PropertyChanged}"
                Grid.Row="1" Grid.Column="1" Height="17.96" Background="{x:Null}" Grid.ColumnSpan="2"/>
 

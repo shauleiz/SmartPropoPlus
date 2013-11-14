@@ -12,6 +12,8 @@
     <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->
     <BooleanToVisibilityConverter x:Key="boolConverter" />
     <local:BoolToBorderBrushColorConverter x:Key="ColorConverter" TrueValue="Blue" FalseValue="Transparent"/>
-    <!-- Converters instances (end) -->
+    <local:IntToBitrateStrConverter x:Key="BitrateConverter" />
+    <local:CharToChannelStrConverter x:Key="ChannelConverter" />
+   <!-- Converters instances (end) -->
 
 </ResourceDictionary>

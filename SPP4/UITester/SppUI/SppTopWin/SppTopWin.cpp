@@ -290,6 +290,6 @@ void AudioChannelParams(UINT Bitrate, WCHAR Channel)
 	else if (Bitrate == 16)
 		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_16);
 #endif // 0
-	WPFPageHost::hostedPage->Set_Bitrate(Bitrate);
-	WPFPageHost::hostedPage->Set_Channel(Channel);
+	WPFPageHost::hostedPage->_event->AudioBitrate = Bitrate;
+	WPFPageHost::hostedPage->_event->AudioChannel = Channel;  //>Set_Channel(Channel);
 }
