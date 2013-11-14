@@ -20,7 +20,7 @@ namespace CtrlWindowNS
 {
     public partial class CtrlWindow : Window
     {
-        private EventModel _event;
+        public EventModel _event;
         public delegate void ClockMoving(double Left, double Top);
         public event ClockMoving OnMove;
 
@@ -34,8 +34,8 @@ namespace CtrlWindowNS
             {
                 SelectedJack = "-- No audio jack Selected --",
                 _AudioDeviceCollection = new ObservableCollection<AudioLine>(),
-                AudioBitrate = "0 Bit",
-                AudioChannel = "Unknown channel",
+                AudioBitrate = 0,
+                AudioChannel = 'U',
             };
 
 
@@ -112,34 +112,6 @@ namespace CtrlWindowNS
            };
         }
 
-        /// <summary>
-        /// Updates channel info - selected channel
-        /// </summary>
-        /// <param name="Channel"> Chan be 'L'/'R'/'M'</param>
-        public void Set_Channel(char Channel)
-        {
-            switch (Channel)
-            {
-                case 'L':
-                    _event.AudioChannel = "Left Channel";
-                    break;
-                case 'R':
-                    _event.AudioChannel = "Right Channel";
-                    break;
-                case 'M':
-                    _event.AudioChannel = "Mono";
-                    break;
-                default:
-                    _event.AudioChannel = "Unknown Channel";
-                    break;
-            };
-        }
-
-        public void Set_Bitrate(int br)
-        {
-            _event.AudioBitrate = br.ToString()+"Bit";
-        }
-
         private void P1_Click(object sender, RoutedEventArgs e)
         {
 
@@ -166,9 +138,9 @@ namespace CtrlWindowNS
     }
 
 
-    // Boolean to Color converter - may be overriden in the dictionary
+   // Boolean to Color converter - may be overriden in the dictionary
   [ValueConversion(typeof(bool), typeof(Brush))]
-    public sealed class BoolToBorderBrushColorConverter : IValueConverter
+  public sealed class BoolToBorderBrushColorConverter : IValueConverter
     {
         public Brush TrueValue { get; set; }
         public Brush FalseValue { get; set; }
@@ -198,8 +170,68 @@ namespace CtrlWindowNS
             return null;
         }
     }
-   
+
+  [ValueConversion(typeof(int), typeof(string))]
+  public sealed class IntToBitrateStrConverter : IValueConverter
+  {
+      public string Upendix { get; set; }
+
+      public IntToBitrateStrConverter() { Upendix = "Bit"; }
+
+      public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+      {
+          return value.ToString() + Upendix;
+      }
+
+      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+      {
+          string str = value as string;
+          return System.Convert.ToInt32(str);
+      }
+  }
+
+
+  [ValueConversion(typeof(char), typeof(string))]
+  public sealed class CharToChannelStrConverter : IValueConverter
+  {
+      public string Left { get; set; }
+      public string Right { get; set; }
+      public string Mono { get; set; }
+      public string Unknn { get; set; }
+
+      public CharToChannelStrConverter() { Left = "Left Channel"; Right = "Right Channel"; Mono = "Mono"; Unknn = "Channel Unknown"; }
+
+      public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+      {
+          string ch = value.ToString();
+            switch (ch[0])
+            {
+                case 'L':
+                    return Left;
+                case 'R':
+                    return Right;
+                case 'M':
+                    return Mono;
+                default:
+                    return Unknn;
+            };
+      }
+
+      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+      {
+                if (Equals(value, Left))
+                    return 'L';
+                if (Equals(value, Right))
+                    return 'R';
+                if (Equals(value, Mono))
+                    return 'M';
+          
+          return null;
+      }
+  }
 }
+
+
 
 // Detecting Binding Errors
 // Based on: http://tech.pro/tutorial/940/wpf-snippet-detecting-binding-errors

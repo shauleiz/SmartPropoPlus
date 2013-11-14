@@ -42,16 +42,16 @@ namespace CtrlWindowNS
         }
 
         // Set Left/Right/Mono audio channel
-        private string _audio_channel;
-        public string AudioChannel
+        private char _audio_channel;
+        public char AudioChannel
         {
             get { return _audio_channel; }
             set { SetField(ref _audio_channel, value, "AudioChannel"); }
         }
 
         // Set Left/Right/Mono audio channel
-        private string _audio_bitrate;
-        public string AudioBitrate
+        private int _audio_bitrate;
+        public int AudioBitrate
         {
             get { return _audio_bitrate; }
             set { SetField(ref _audio_bitrate, value, "AudioBitrate"); }
