@@ -27,7 +27,7 @@ namespace CtrlWindowNS
         public CtrlWindow()
         {
             BindingErrorTraceListener.SetTrace();
-            InitializeComponent();    
+            InitializeComponent();
 
             // create a model object
             _event = new EventModel()
@@ -36,6 +36,7 @@ namespace CtrlWindowNS
                 _AudioDeviceCollection = new ObservableCollection<AudioLine>(),
                 AudioBitrate = 0,
                 AudioChannel = 'U',
+                IsNotAutoBitrate = true,
             };
 
 
@@ -59,8 +60,8 @@ namespace CtrlWindowNS
             _event.SelectedJack = _event.SelectedJack.ToLower();
             // Remove fifth item
             int iRem = 4;
-             if (_event._AudioDeviceCollection.Count> iRem)
-                 _event._AudioDeviceCollection.RemoveAt(iRem);
+            if (_event._AudioDeviceCollection.Count > iRem)
+                _event._AudioDeviceCollection.RemoveAt(iRem);
 
             // Select Second item
             Audio_LB.SelectedIndex = 1;
@@ -82,7 +83,7 @@ namespace CtrlWindowNS
         // Clean list of Audio devices
         public void CleanAudioList()
         {
-            if (_event._AudioDeviceCollection.Count>0)
+            if (_event._AudioDeviceCollection.Count > 0)
                 _event._AudioDeviceCollection.Clear();
         }
 
@@ -107,9 +108,9 @@ namespace CtrlWindowNS
                 Audio_LB.SelectedIndex = index;
                 Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
                 ListViewItem lvitem = Audio_LB.ItemContainerGenerator.ContainerFromItem(index) as ListViewItem;
-                if (lvitem != null) 
+                if (lvitem != null)
                     lvitem.Focus();
-           };
+            };
         }
 
         private void P1_Click(object sender, RoutedEventArgs e)
@@ -127,20 +128,20 @@ namespace CtrlWindowNS
 
         }
 
-       
+
     }
 
     public class AudioLine
     {
         public string DeviceName { get; set; }
         public string LR_LevelsStr { get; set; }
-        public string EmptyStr  { get; set; }
+        public string EmptyStr { get; set; }
     }
 
 
-   // Boolean to Color converter - may be overriden in the dictionary
-  [ValueConversion(typeof(bool), typeof(Brush))]
-  public sealed class BoolToBorderBrushColorConverter : IValueConverter
+    // Boolean to Color converter - may be overriden in the dictionary
+    [ValueConversion(typeof(bool), typeof(Brush))]
+    public sealed class BoolToBorderBrushColorConverter : IValueConverter
     {
         public Brush TrueValue { get; set; }
         public Brush FalseValue { get; set; }
@@ -171,39 +172,62 @@ namespace CtrlWindowNS
         }
     }
 
-  [ValueConversion(typeof(int), typeof(string))]
-  public sealed class IntToBitrateStrConverter : IValueConverter
-  {
-      public string Upendix { get; set; }
+    // Int to string converter - adds 'Upendix' to bitrate value (default: "Bit")
+    [ValueConversion(typeof(int), typeof(string))]
+    public sealed class IntToBitrateStrConverter : IValueConverter
+    {
+        public string Upendix { get; set; }
 
-      public IntToBitrateStrConverter() { Upendix = "Bit"; }
+        public IntToBitrateStrConverter() { Upendix = "Bit"; }
 
-      public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-      {
-          return value.ToString() + Upendix;
-      }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value.ToString() + Upendix;
+        }
 
-      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-      {
-          string str = value as string;
-          return System.Convert.ToInt32(str);
-      }
-  }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string str = value as string;
+            return System.Convert.ToInt32(str);
+        }
+    }
 
+    // Int to bool converter - Returns true if value is equal to 'Target' (default: 8)
+    [ValueConversion(typeof(int), typeof(bool))]
+    public sealed class IntToBitrateBoolConverter : IValueConverter
+    {
+        public int Target { get; set; }
 
-  [ValueConversion(typeof(char), typeof(string))]
-  public sealed class CharToChannelStrConverter : IValueConverter
-  {
-      public string Left { get; set; }
-      public string Right { get; set; }
-      public string Mono { get; set; }
-      public string Unknn { get; set; }
+        public IntToBitrateBoolConverter() { Target = 8; }
 
-      public CharToChannelStrConverter() { Left = "Left Channel"; Right = "Right Channel"; Mono = "Mono"; Unknn = "Channel Unknown"; }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Equals(value, Target);
+        }
 
-      public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-      {
-          string ch = value.ToString();
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Equals(value, true))
+                return Target;
+            else
+                return DependencyProperty.UnsetValue;
+        }
+    }
+
+    // Char to string converter - Replace L/R/M with more elaborate strings
+    [ValueConversion(typeof(char), typeof(string))]
+    public sealed class CharToChannelStrConverter : IValueConverter
+    {
+        public string Left { get; set; }
+        public string Right { get; set; }
+        public string Mono { get; set; }
+        public string Unknn { get; set; }
+
+        public CharToChannelStrConverter() { Left = "Left Channel"; Right = "Right Channel"; Mono = "Mono"; Unknn = "Channel Unknown"; }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string ch = value.ToString();
             switch (ch[0])
             {
                 case 'L':
@@ -215,24 +239,46 @@ namespace CtrlWindowNS
                 default:
                     return Unknn;
             };
-      }
+        }
 
-      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-      {
-                if (Equals(value, Left))
-                    return 'L';
-                if (Equals(value, Right))
-                    return 'R';
-                if (Equals(value, Mono))
-                    return 'M';
-          
-          return null;
-      }
-  }
-}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Equals(value, Left))
+                return 'L';
+            if (Equals(value, Right))
+                return 'R';
+            if (Equals(value, Mono))
+                return 'M';
 
+            return null;
+        }
+    }
 
+#if true
+    
+    // Boolean NOT converter - Based on http://stackoverflow.com/questions/1039636/how-to-bind-inverse-boolean-properties-in-wpf
+    [ValueConversion(typeof(bool), typeof(bool))]
+    public class InverseBooleanConverter : IValueConverter
+    {
 
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            //if (targetType != typeof(bool))
+            //    throw new InvalidOperationException("The target is not a boolean");
+
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+    }
+ #endif
+ 
+	}
 // Detecting Binding Errors
 // Based on: http://tech.pro/tutorial/940/wpf-snippet-detecting-binding-errors
 namespace CtrlWindowNS

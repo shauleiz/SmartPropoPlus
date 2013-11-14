@@ -13,7 +13,10 @@
     <BooleanToVisibilityConverter x:Key="boolConverter" />
     <local:BoolToBorderBrushColorConverter x:Key="ColorConverter" TrueValue="Blue" FalseValue="Transparent"/>
     <local:IntToBitrateStrConverter x:Key="BitrateConverter" />
-    <local:CharToChannelStrConverter x:Key="ChannelConverter" />
-   <!-- Converters instances (end) -->
+    <local:IntToBitrateBoolConverter Target="8" x:Key="Bitrate8Converter" />
+    <local:IntToBitrateBoolConverter Target="16" x:Key="Bitrate16Converter" />
+   <local:CharToChannelStrConverter x:Key="ChannelConverter" />
+    <local:InverseBooleanConverter x:Key="InvConverter" />
+  <!-- Converters instances (end) -->
 
 </ResourceDictionary>

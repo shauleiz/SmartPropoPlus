@@ -49,12 +49,20 @@ namespace CtrlWindowNS
             set { SetField(ref _audio_channel, value, "AudioChannel"); }
         }
 
-        // Set Left/Right/Mono audio channel
+        // Set audio channel Bit Rate
         private int _audio_bitrate;
         public int AudioBitrate
         {
             get { return _audio_bitrate; }
             set { SetField(ref _audio_bitrate, value, "AudioBitrate"); }
+        }
+
+        // Auto bitrate chaeck box - NOT checked
+        private bool _is_Not_AutoBitrate;
+        public bool IsNotAutoBitrate
+        {
+            get { return _is_Not_AutoBitrate; }
+            set { SetField(ref _is_Not_AutoBitrate, value, "IsNotAutoBitrate"); }
         }
 
 
