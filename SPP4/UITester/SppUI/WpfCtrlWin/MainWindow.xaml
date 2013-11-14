@@ -100,14 +100,14 @@
             </Border>
 
         </Grid>
-        <Border x:Name="AudioBorder" BorderThickness="1" HorizontalAlignment="Left" Margin="-192.7,0,-2.338,-262.229" VerticalAlignment="Bottom" CornerRadius="4" Height="253.884" Width="560.914"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}">
+        <Border x:Name="AudioBorder" BorderThickness="1" HorizontalAlignment="Left" Margin="-192.7,0,-2.338,-278.563" VerticalAlignment="Bottom" CornerRadius="4" Height="270.218" Width="560.914"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}">
             <Border.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
                     <GradientStop Color="#FFAC1313" Offset="1"/>
                 </LinearGradientBrush>
             </Border.BorderBrush>
-            <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" Height="233.884" VerticalAlignment="Top" Width="540.914" Margin="9,9,0,0">
+            <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" Height="250.218" VerticalAlignment="Top" Width="540.914" Margin="9,9,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="64*"/>
                     <RowDefinition Height="53*"/>
@@ -131,11 +131,19 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <GroupBox HorizontalAlignment="Left" VerticalAlignment="Top" Header="Bit Rate" Margin="10,10,0,0" Height="85.947" Grid.Row="1" Width="101.206">
+                <GroupBox HorizontalAlignment="Left" VerticalAlignment="Top" Header="Bit Rate" Margin="10,0,0,0" Height="103.347" Grid.Row="1" Width="101.206">
                     <StackPanel Margin="0,0,0,4.803">
                         <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoBitrate, Converter={StaticResource InvConverter}}" />
                         <RadioButton Content="8 bit" IsEnabled="{Binding IsNotAutoBitrate}" IsChecked="{Binding AudioBitrate, Converter={StaticResource Bitrate8Converter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center"/>
                         <RadioButton Content="16 bit" IsEnabled="{Binding IsNotAutoBitrate}"  IsChecked="{Binding AudioBitrate, Converter={StaticResource Bitrate16Converter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Column="1" Header="Audio Channel" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Top" Height="103.347" Width="115.459">
+                    <StackPanel Margin="0,0,14.253,4.803">
+                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoChannel, Converter={StaticResource ResourceKey=InvConverter}}" />
+                        <RadioButton Content="Left" IsEnabled="{Binding IsNotAutoChannel}" IsChecked="{Binding AudioChannel, Converter={StaticResource ResourceKey=ChannelLeftConverter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center"/>
+                        <RadioButton Content="Right" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelRightConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"/>
+                        <RadioButton Content="Mono" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelMonoConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"/>
                     </StackPanel>
                 </GroupBox>
             </Grid>

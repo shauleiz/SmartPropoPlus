@@ -16,6 +16,9 @@
     <local:IntToBitrateBoolConverter Target="8" x:Key="Bitrate8Converter" />
     <local:IntToBitrateBoolConverter Target="16" x:Key="Bitrate16Converter" />
    <local:CharToChannelStrConverter x:Key="ChannelConverter" />
+    <local:CharToChannelBoolConverter Target="L" x:Key="ChannelLeftConverter" />
+    <local:CharToChannelBoolConverter Target="R" x:Key="ChannelRightConverter" />
+    <local:CharToChannelBoolConverter Target="M" x:Key="ChannelMonoConverter" />
     <local:InverseBooleanConverter x:Key="InvConverter" />
   <!-- Converters instances (end) -->
 
