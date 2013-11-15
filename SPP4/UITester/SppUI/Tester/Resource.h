@@ -14,3 +14,7 @@
 #define IDM_AUDIO_POP7                          40002
 #define IDM_LEFT_CHANNEL                        40003
 #define IDM_RIGHT_CHANNEL                       40004
+#define IDM_AUTO_CH1                            40005
+#define IDM_AUTO_BR1                            40006
+#define IDM_AUTO_CH0                            40007
+#define IDM_AUTO_BR0                            40008

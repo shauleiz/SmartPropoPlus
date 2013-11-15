@@ -28,6 +28,16 @@ IDC_TESTER MENU
         MENUITEM SEPARATOR
         MENUITEM "Left Channel (16b)", IDM_LEFT_CHANNEL
         MENUITEM "Right Channel (8b)", IDM_RIGHT_CHANNEL
+        POPUP "Auto (Channel)"
+        {
+            MENUITEM "True", IDM_AUTO_CH1
+            MENUITEM "False", IDM_AUTO_CH0
+        }
+        POPUP "Auto (Bitrate)"
+        {
+            MENUITEM "True", IDM_AUTO_BR1
+            MENUITEM "False", IDM_AUTO_BR0
+        }
     }
     POPUP "&Help"
     {

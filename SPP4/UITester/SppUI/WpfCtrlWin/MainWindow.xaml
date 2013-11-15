@@ -133,14 +133,14 @@
                 </ListView>
                 <GroupBox HorizontalAlignment="Left" VerticalAlignment="Top" Header="Bit Rate" Margin="10,0,0,0" Height="103.347" Grid.Row="1" Width="101.206">
                     <StackPanel Margin="0,0,0,4.803">
-                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoBitrate, Converter={StaticResource InvConverter}}" />
+                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoBitrate, Converter={StaticResource InvConverter}}" Checked="Audio_CheckBox_Click" Unchecked="Audio_CheckBox_Click"/>
                         <RadioButton Name="EightBitRB" Content="8 bit" IsEnabled="{Binding IsNotAutoBitrate}" IsChecked="{Binding AudioBitrate, Converter={StaticResource Bitrate8Converter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center" Checked="Audio_RB_Checked"/>
                         <RadioButton Name="SixteenBitRB" Content="16 bit" IsEnabled="{Binding IsNotAutoBitrate}"  IsChecked="{Binding AudioBitrate, Converter={StaticResource Bitrate16Converter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Grid.Column="1" Header="Audio Channel" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Top" Height="103.347" Width="115.459">
                     <StackPanel Margin="0,0,14.253,4.803">
-                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoChannel, Converter={StaticResource ResourceKey=InvConverter}}" />
+                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoChannel, Converter={StaticResource ResourceKey=InvConverter}}"   Checked="Audio_CheckBox_Click" Unchecked="Audio_CheckBox_Click" />
                         <RadioButton Name="LeftRB" Content="Left" IsEnabled="{Binding IsNotAutoChannel}" IsChecked="{Binding AudioChannel, Converter={StaticResource ResourceKey=ChannelLeftConverter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center"  Checked="Audio_RB_Checked"/>
                         <RadioButton Name="RightRB" Content="Right" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelRightConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
                         <RadioButton Name="MonoRB" Content="Mono" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelMonoConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
