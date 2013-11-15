@@ -58,8 +58,13 @@ static void			GetHwnd(Object^ data);
 void				AddLine2AudioList(jack_info * jack);
 void				AudioChannelParams(UINT Bitrate, WCHAR Channel);
 
+#pragma managed
+
 public ref class CtrlWindow : Window
 {
+//public:
+//	delegate void WinMoving(double Left, double Top);
+//	event WinMoving ^OnMove;
 };
 
 public ref class WPFPageHost
@@ -261,6 +266,9 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	return 0;
 }
 
+void CtrlWindowMoving(double Left, double Top);
+void CtrlAudioChanging(int bitrate, WCHAR channel);
+
 static void GetHwnd(Object^ data)
 {
 	CtrlWindowNS::CtrlWindow^ ctrlpage =  gcnew CtrlWindowNS::CtrlWindow();
@@ -270,6 +278,10 @@ static void GetHwnd(Object^ data)
 
 	ctrlhelper->Owner = (IntPtr)hTopWnd;
 	ctrlpage->Show();
+
+	// Assign event handlers
+	ctrlpage->OnMove += gcnew CtrlWindowNS::CtrlWindow::WinMoving(CtrlWindowMoving);
+	ctrlpage->OnAudioChanged += gcnew CtrlWindowNS::CtrlWindow::AudioChanging(CtrlAudioChanging);
 }
 
 // Add line to the list of audio devices
@@ -284,12 +296,24 @@ void AddLine2AudioList(jack_info * jack)
 // If Channel="" or Channel=NULL then don't change
 void AudioChannelParams(UINT Bitrate, WCHAR Channel)
 {
-#if 0
-	if (Bitrate == 8)
-		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_8);
-	else if (Bitrate == 16)
-		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_16);
-#endif // 0
 	WPFPageHost::hostedPage->_event->AudioBitrate = Bitrate;
 	WPFPageHost::hostedPage->_event->AudioChannel = Channel;  //>Set_Channel(Channel);
+}
+
+
+// TODO: Use this function to coordinate moving of windows
+void CtrlWindowMoving(double Left, double Top)
+{
+}
+
+void CtrlAudioChanging(int bitrate, WCHAR channel)
+{
+	// Convert default values
+	if (!bitrate)
+		bitrate = 8;
+	if (channel == TEXT('U'))
+		channel = TEXT('L');
+
+	// Update CU
+	SendMessage(hAppWin, WMSPP_DLG_CHNL, bitrate,  channel);
 }

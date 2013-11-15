@@ -21,8 +21,10 @@ namespace CtrlWindowNS
     public partial class CtrlWindow : Window
     {
         public EventModel _event;
-        public delegate void ClockMoving(double Left, double Top);
-        public event ClockMoving OnMove;
+        public delegate void WinMoving(double Left, double Top);
+        public event WinMoving OnMove;
+        public delegate void AudioChanging(int bitrate, char channel);
+        public event AudioChanging OnAudioChanged;
 
         public CtrlWindow()
         {
@@ -119,14 +121,12 @@ namespace CtrlWindowNS
 
         }
 
-        private void Audio_Click(object sender, RoutedEventArgs e)
+
+        // One of the Audio radio buttons was checked - Call event OnAudioChanged
+        private void Audio_RB_Checked(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        private void Audio_LB_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
+            if (OnAudioChanged != null)
+                OnAudioChanged(_event.AudioBitrate, _event.AudioChannel);
         }
 
 

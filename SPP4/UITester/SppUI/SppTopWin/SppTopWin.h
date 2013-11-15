@@ -17,3 +17,4 @@ int SPPTOPWIN_API MyEntryPoint(_In_ HINSTANCE hInstance,
                      _In_ LPTSTR    lpCmdLine,
                      _In_ int       nCmdShow,
 					 _In_opt_ HWND		hTopAppWnd);
+
