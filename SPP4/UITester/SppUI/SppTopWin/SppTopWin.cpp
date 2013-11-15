@@ -26,21 +26,8 @@ using namespace CtrlWindowNS;
 #include <msclr\auto_gcroot.h>
 
 #include "../Tester/WinMessages.h" // TODO - Replace
+#include "../Tester/Tester.h" // TODO - Replace
 #include "SppTopWin.h"
-
-// Declarations (TODO: Remove after integration)
-struct jack_info
-{
-	/* Inter-unit information about jack/capture endpoint information */
-	int	struct_size;
-	WCHAR * id;
-	COLORREF color;
-	WCHAR * FriendlyName;
-	//bool	Enabled;
-	bool	Default;
-	int		nChannels;
-};
-
 
 // Global Variables:
 HINSTANCE hInst;														// current instance
@@ -57,8 +44,7 @@ void				StartTopWinThread(Object^ data);
 static void			GetHwnd(Object^ data);
 void				AddLine2AudioList(jack_info * jack);
 void				AudioChannelParams(UINT Bitrate, WCHAR Channel);
-
-#pragma managed
+void				AudioAutoParams(WORD Mask, WORD Flags);
 
 public ref class CtrlWindow : Window
 {
@@ -250,7 +236,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		break;
 		
 	case SET_AUDIO_AUTO:
-		//DialogObj->AudioAutoParams((UINT)wParam, (WCHAR)lParam);
+		AudioAutoParams((UINT)wParam, (WCHAR)lParam);
 		break;
 
 
@@ -268,6 +254,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 void CtrlWindowMoving(double Left, double Top);
 void CtrlAudioChanging(int bitrate, WCHAR channel);
+void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
 
 static void GetHwnd(Object^ data)
 {
@@ -282,6 +269,7 @@ static void GetHwnd(Object^ data)
 	// Assign event handlers
 	ctrlpage->OnMove += gcnew CtrlWindowNS::CtrlWindow::WinMoving(CtrlWindowMoving);
 	ctrlpage->OnAudioChanged += gcnew CtrlWindowNS::CtrlWindow::AudioChanging(CtrlAudioChanging);
+	ctrlpage->OnAudioAutoChanged += gcnew CtrlWindowNS::CtrlWindow::AudioAutoChanging(CtrlAudioAutoChanging);
 }
 
 // Add line to the list of audio devices
@@ -317,3 +305,35 @@ void CtrlAudioChanging(int bitrate, WCHAR channel)
 	// Update CU
 	SendMessage(hAppWin, WMSPP_DLG_CHNL, bitrate,  channel);
 }
+
+void AudioAutoParams(WORD Mask, WORD Flags)
+{
+	if (Mask&AUTOCHANNEL)
+	{
+		if (Flags&AUTOCHANNEL)
+			WPFPageHost::hostedPage->_event->IsNotAutoChannel = false;
+		else
+			WPFPageHost::hostedPage->_event->IsNotAutoChannel = true;
+	};
+
+	if (Mask&AUTOBITRATE)
+	{
+		if (Flags&AUTOBITRATE)
+			WPFPageHost::hostedPage->_event->IsNotAutoBitrate = false;
+		else
+			WPFPageHost::hostedPage->_event->IsNotAutoBitrate = true;
+	};
+}
+
+void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked)
+{
+	WORD val=0;
+
+	if (AutoBitrateChecked)
+		val |= AUTOBITRATE;
+	if (AutoChannelChecked)
+		val |= AUTOCHANNEL;
+
+	SendMessage(hAppWin, WMSPP_DLG_AUTO, AUTOBITRATE|AUTOCHANNEL, val);
+}
+

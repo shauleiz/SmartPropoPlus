@@ -22,6 +22,7 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 HWND  hMainAppWnd = NULL;						// Handle to the main app window
 UINT  DefaultBitRate=0;
 TCHAR DefaultChannel=TEXT('U');
+bool AutoBitrate, AutoChannel;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -189,6 +190,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_LEFT_CHANNEL:
 			SendMessage(hTopUiWin, SET_AUDIO_PARAMS, 16,'L');
 			break;
+		case IDM_AUTO_CH1:
+			SendMessage(hTopUiWin, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,  (WPARAM)AUTOCHANNEL);
+			break;
+		case IDM_AUTO_CH0:
+			SendMessage(hTopUiWin, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,  0);
+			break;
+		case IDM_AUTO_BR1:
+			SendMessage(hTopUiWin, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE, (LPARAM)AUTOBITRATE);
+			break;
+		case IDM_AUTO_BR0:
+			SendMessage(hTopUiWin, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE, 0);
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -211,6 +224,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WMSPP_DLG_CHNL:
 		SetDefaultBitRate((UINT)wParam);
 		SetDefaultChannel((TCHAR)lParam);
+		DisplayAudioStat();
+		break;
+
+	case WMSPP_DLG_AUTO:
+		if ((WORD)wParam & AUTOCHANNEL)
+			AutoChannel = (((WORD)lParam & AUTOCHANNEL)!=0);
+		if ((WORD)wParam & AUTOBITRATE)
+			AutoBitrate = (((WORD)lParam & AUTOBITRATE)!=0);
 		DisplayAudioStat();
 		break;
 
@@ -311,8 +332,19 @@ void SetDefaultChannel(TCHAR ch)
 
 void DisplayAudioStat(void)
 {
-	std::wstring str;
-	str = L"Bitrate="+ std::to_wstring(DefaultBitRate) + L"; Channel=" + DefaultChannel;
+	std::wstring str, AutoChannelStr, AutoBitrateStr;
+
+	if (AutoChannel)
+		AutoChannelStr = L"(A)";
+	else
+		AutoChannelStr = L"(M)";
+
+	if (AutoBitrate)
+		AutoBitrateStr = L"(A)";
+	else
+		AutoBitrateStr = L"(M)";
+
+	str = L"Bitrate="+ std::to_wstring(DefaultBitRate) +AutoBitrateStr+ L"; Channel=" + DefaultChannel+AutoChannelStr;
 	SetWindowText(hMainAppWnd, str.c_str());
 	UpdateWindow(hMainAppWnd);
 }

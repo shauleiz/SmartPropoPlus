@@ -25,6 +25,8 @@ namespace CtrlWindowNS
         public event WinMoving OnMove;
         public delegate void AudioChanging(int bitrate, char channel);
         public event AudioChanging OnAudioChanged;
+        public delegate void AudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
+        public event AudioAutoChanging OnAudioAutoChanged;
 
         public CtrlWindow()
         {
@@ -127,6 +129,12 @@ namespace CtrlWindowNS
         {
             if (OnAudioChanged != null)
                 OnAudioChanged(_event.AudioBitrate, _event.AudioChannel);
+        }
+
+        private void Audio_CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+                OnAudioAutoChanged(!_event.IsNotAutoBitrate, !_event.IsNotAutoChannel);
+
         }
 
 

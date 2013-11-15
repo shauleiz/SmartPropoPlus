@@ -2,6 +2,8 @@
 
 #include "resource.h"
 
+#define AUTOCHANNEL	0x0001
+#define AUTOBITRATE	0x0002
 
 // Declarations
 struct jack_info
