@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include <string>
 #include "../SppTopWin/SppTopWin.h"
 #include "WinMessages.h"
 #include "Tester.h"
@@ -19,6 +20,8 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 HWND  hMainAppWnd = NULL;						// Handle to the main app window
+UINT  DefaultBitRate=0;
+TCHAR DefaultChannel=TEXT('U');
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -26,6 +29,9 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void CaptureDevicesPopulate(HWND , int);
+void SetDefaultBitRate(UINT);
+void SetDefaultChannel(TCHAR);
+void DisplayAudioStat(void);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -115,6 +121,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+   hMainAppWnd=hWnd;
 
    if (!hWnd)
    {
@@ -200,6 +207,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+
+	case WMSPP_DLG_CHNL:
+		SetDefaultBitRate((UINT)wParam);
+		SetDefaultChannel((TCHAR)lParam);
+		DisplayAudioStat();
+		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -287,4 +301,18 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 	};
 
 	return;
+}
+
+void SetDefaultBitRate(UINT br)
+{	DefaultBitRate = br;}
+
+void SetDefaultChannel(TCHAR ch)
+{ DefaultChannel = ch; }
+
+void DisplayAudioStat(void)
+{
+	std::wstring str;
+	str = L"Bitrate="+ std::to_wstring(DefaultBitRate) + L"; Channel=" + DefaultChannel;
+	SetWindowText(hMainAppWnd, str.c_str());
+	UpdateWindow(hMainAppWnd);
 }
