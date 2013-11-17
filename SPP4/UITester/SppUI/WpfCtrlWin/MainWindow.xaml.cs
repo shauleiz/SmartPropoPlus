@@ -77,7 +77,7 @@ namespace CtrlWindowNS
             if (item != null)
                 item.Focus();
 
-            Insert_Jack("DDDevName", "DDDlevels", true, 0);
+            Insert_Jack("{MyId}", "DDDevName", 0, 0, true, 0);
         }
 
         public void Set_TB_SelectedJack(string intext)
@@ -101,10 +101,10 @@ namespace CtrlWindowNS
         /// <param name="DevName"> Display name of the device</param>
         /// <param name="levels"> Audio levels as string</param>
         /// <param name="Selected">If true: This is the selected device</param>
-        public void Insert_Jack(string DevName, string levels, bool Selected, uint color)
+        public void Insert_Jack(string JackID, string DevName, uint LLevel, uint RLevel, bool Selected, uint color)
         {
             Color csColor = Color.FromRgb((byte)((color & 0xff0000) >> 0x10), (byte)((color & 0xff00) >> 8), (byte)(color & 0xff));
-            AudioLine item = new AudioLine { DeviceName = DevName, LR_LevelsStr = levels, EmptyStr = "-", Fill = new SolidColorBrush(csColor) };
+            AudioLine item = new AudioLine { ID = JackID, DeviceName = DevName, LevelLeft = LLevel, LevelRight = RLevel, EmptyStr = "-", Fill = new SolidColorBrush(csColor) };
             _event._AudioDeviceCollection.Add(item);
 
             if (Selected)
@@ -117,6 +117,30 @@ namespace CtrlWindowNS
                 if (lvitem != null)
                     lvitem.Focus();
             };
+        }
+
+        // Display the audio levels of channels (Left/Right)
+        // Levels are in the range 0-100
+        public void SetAudioLevels_Jack(string JackID, uint Left, uint Right)
+        {
+            // Find jack by ID
+            int index = -1;
+            int count = _event._AudioDeviceCollection.Count;
+            for (int i = 0; i < count; i++)
+                if (_event._AudioDeviceCollection[i].ID.Equals(JackID))
+                    index = i;
+
+            // Not found
+            if (index<0)
+                return;
+
+            // Update levels
+            _event._AudioDeviceCollection[index].LevelLeft = Left;
+            _event._AudioDeviceCollection[index].LevelRight = Right;
+
+            // Refresh view
+            ICollectionView view = CollectionViewSource.GetDefaultView(_event._AudioDeviceCollection);
+            view.Refresh();
         }
 
         private void P1_Click(object sender, RoutedEventArgs e)
@@ -144,9 +168,12 @@ namespace CtrlWindowNS
     public class AudioLine
     {
         public string DeviceName { get; set; }
-        public string LR_LevelsStr { get; set; }
+ //       public string LR_LevelsStr { get; set; }
         public string EmptyStr { get; set; }
         public Brush Fill { get; set; }
+        public string ID { get; set; }
+        public uint LevelLeft { get; set; }
+        public uint LevelRight { get; set; }
     }
 
 

@@ -45,6 +45,7 @@ static void			GetHwnd(Object^ data);
 void				AddLine2AudioList(jack_info * jack);
 void				AudioChannelParams(UINT Bitrate, WCHAR Channel);
 void				AudioAutoParams(WORD Mask, WORD Flags);
+void				DisplayAudioLevels(PVOID Id, UINT Left, UINT Right);
 
 public ref class CtrlWindow : Window
 {
@@ -239,6 +240,11 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		AudioAutoParams((UINT)wParam, (WCHAR)lParam);
 		break;
 
+	case VJOYDEV_CH_LEVEL:
+		DisplayAudioLevels((PVOID)wParam, LOWORD(lParam), HIWORD(lParam));
+		break;
+
+
 
 	//case 12347:
 		//_private->Clock->Set_YYY();
@@ -276,7 +282,7 @@ static void GetHwnd(Object^ data)
 // Mark the selected device
 void AddLine2AudioList(jack_info * jack)
 {
-	WPFPageHost::hostedPage->Insert_Jack(gcnew System::String(jack->FriendlyName), gcnew System::String("0/0"), jack->Default, jack->color);
+	WPFPageHost::hostedPage->Insert_Jack(gcnew System::String(jack->id), gcnew System::String(jack->FriendlyName), 0, 0, jack->Default, jack->color);
 }
 
 // Set the parameters of the audio (8/16 bits Left/Right/Mono)
@@ -286,6 +292,13 @@ void AudioChannelParams(UINT Bitrate, WCHAR Channel)
 {
 	WPFPageHost::hostedPage->_event->AudioBitrate = Bitrate;
 	WPFPageHost::hostedPage->_event->AudioChannel = Channel;  //>Set_Channel(Channel);
+}
+
+// Display the audio levels of channels (Left/Right)
+// Levels are in the range 0-100
+void DisplayAudioLevels(PVOID Id, UINT Left, UINT Right)
+{
+	WPFPageHost::hostedPage->SetAudioLevels_Jack(gcnew System::String((LPCTSTR)Id), Left, Right);
 }
 
 
