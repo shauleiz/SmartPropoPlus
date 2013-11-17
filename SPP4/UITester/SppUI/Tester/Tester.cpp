@@ -22,6 +22,7 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 HWND  hMainAppWnd = NULL;						// Handle to the main app window
 UINT  DefaultBitRate=0;
 TCHAR DefaultChannel=TEXT('U');
+WCHAR * DefaultJackId = NULL;
 bool AutoBitrate, AutoChannel;
 
 // Forward declarations of functions included in this code module:
@@ -202,6 +203,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_AUTO_BR0:
 			SendMessage(hTopUiWin, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE, 0);
 			break;
+		case IDM_LEFT_HIGH:
+			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(99,25));//
+			break;
+		case IDM_RIGHT_HIGH:
+			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(20,90));//
+			break;
+		case IDM_MONO_HIGH:
+			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(85,85));//
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -305,6 +315,7 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 		free(jack.FriendlyName);
 
 		jack.id = _wcsdup(id[4]);
+		DefaultJackId = _wcsdup(id[4]);
 		jack.FriendlyName = _wcsdup(fn[4]);
 		jack.Default = true;
 		jack.color = color[4];
@@ -319,8 +330,11 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 		jack.id = _wcsdup(id[i]);
 		jack.color = color[i];
 		jack.FriendlyName = _wcsdup(fn[i]);
-		if(i==1) 
+		if(i==1)
+		{
+			DefaultJackId = _wcsdup(id[i]);
 			jack.Default = true;
+		}
 		else
 			jack.Default = false;
 		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);

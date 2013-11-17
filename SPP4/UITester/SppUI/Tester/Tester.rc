@@ -38,6 +38,12 @@ IDC_TESTER MENU
             MENUITEM "True", IDM_AUTO_BR1
             MENUITEM "False", IDM_AUTO_BR0
         }
+        POPUP "Levels"
+        {
+            MENUITEM "Left High", IDM_LEFT_HIGH
+            MENUITEM "Right High", IDM_RIGHT_HIGH
+            MENUITEM "Mono High", IDM_MONO_HIGH
+        }
     }
     POPUP "&Help"
     {

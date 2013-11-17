@@ -129,13 +129,15 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid>
-                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding Fill}" Cursor="Hand" />
-                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="3" Height="3" Fill="Black" Cursor="Hand" />
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Fill="white" Stroke="black"  StrokeThickness="0.5"/>
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding Fill}"  StrokeThickness="0.5"/>
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="4" Height="4" Fill="Black"  Stroke="white"  StrokeThickness="0.5"/>
                                         </Grid>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="L/R Levels" DisplayMemberBinding="{Binding LR_LevelsStr}" Width="100"/>
+                            <GridViewColumn Header="L Levels" DisplayMemberBinding="{Binding LevelLeft}" Width="60"/>
+                            <GridViewColumn Header="R Levels" DisplayMemberBinding="{Binding LevelRight}" Width="60"/>
                             <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}"  />
                         </GridView>
                     </ListView.View>

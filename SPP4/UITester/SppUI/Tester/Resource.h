@@ -18,3 +18,6 @@
 #define IDM_AUTO_BR1                            40006
 #define IDM_AUTO_CH0                            40007
 #define IDM_AUTO_BR0                            40008
+#define IDM_LEFT_HIGH                           40009
+#define IDM_RIGHT_HIGH                          40010
+#define IDM_MONO_HIGH                           40011
