@@ -77,7 +77,7 @@ namespace CtrlWindowNS
             if (item != null)
                 item.Focus();
 
-            Insert_Jack("DDDevName", "DDDlevels", true);
+            Insert_Jack("DDDevName", "DDDlevels", true, 0);
         }
 
         public void Set_TB_SelectedJack(string intext)
@@ -101,9 +101,10 @@ namespace CtrlWindowNS
         /// <param name="DevName"> Display name of the device</param>
         /// <param name="levels"> Audio levels as string</param>
         /// <param name="Selected">If true: This is the selected device</param>
-        public void Insert_Jack(string DevName, string levels, bool Selected)
+        public void Insert_Jack(string DevName, string levels, bool Selected, uint color)
         {
-            AudioLine item = new AudioLine { DeviceName = DevName, LR_LevelsStr = levels, EmptyStr = "-" };
+            Color csColor = Color.FromRgb((byte)((color & 0xff0000) >> 0x10), (byte)((color & 0xff00) >> 8), (byte)(color & 0xff));
+            AudioLine item = new AudioLine { DeviceName = DevName, LR_LevelsStr = levels, EmptyStr = "-", Fill = new SolidColorBrush(csColor) };
             _event._AudioDeviceCollection.Add(item);
 
             if (Selected)
@@ -145,6 +146,7 @@ namespace CtrlWindowNS
         public string DeviceName { get; set; }
         public string LR_LevelsStr { get; set; }
         public string EmptyStr { get; set; }
+        public Brush Fill { get; set; }
     }
 
 

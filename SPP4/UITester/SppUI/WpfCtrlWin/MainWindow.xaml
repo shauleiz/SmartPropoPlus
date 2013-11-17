@@ -125,7 +125,16 @@
                 <ListView x:Name="Audio_LB"  ItemsSource="{Binding AudioDeviceCollection}" Height="103.062" Margin="10,10,10,0" VerticalAlignment="Top"  MinWidth="10" Grid.ColumnSpan="2" RenderTransformOrigin="0.509,0.144">
                     <ListView.View>
                         <GridView AllowsColumnReorder="true">
-                            <GridViewColumn Header="Jack"  DisplayMemberBinding="{Binding EmptyStr}"  Width="30"   />
+                            <GridViewColumn Header="Jack"  Width="30">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding Fill}" Cursor="Hand" />
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="3" Height="3" Fill="Black" Cursor="Hand" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                             <GridViewColumn Header="L/R Levels" DisplayMemberBinding="{Binding LR_LevelsStr}" Width="100"/>
                             <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}"  />
                         </GridView>
