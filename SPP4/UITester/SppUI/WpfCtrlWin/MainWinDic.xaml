@@ -7,6 +7,11 @@
     <sys:String x:Key="AudioLable">Audio Input:</sys:String>
     <!-- Strings (end) -->
 
+    <DataTemplate x:Key="jack_image">
+        <Ellipse x:Name="JackImage">
+           
+        </Ellipse>
+    </DataTemplate>
     
     <!-- Converter instances (begin) -->
     <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->

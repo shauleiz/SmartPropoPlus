@@ -278,7 +278,7 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 		L"FriendlyName Number 7"
 	};
 
-		WCHAR * id[7] = 
+	WCHAR * id[7] = 
 	{
 		L"{FriendlyName Number 1}",
 		L"{FriendlyName Number 2}",
@@ -289,11 +289,17 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 		L"{FriendlyName Number 7}"
 	};
 
+	COLORREF color[7] = 
+	{
+		red, green, blue, white, black, yellow, cyan
+	};
+
 	if (type == 2)
 	{
 		jack.id = _wcsdup(id[6]);
 		jack.FriendlyName = _wcsdup(fn[6]);
 		jack.Default = false;
+		jack.color = color[6];
 		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
 		free(jack.id);
 		free(jack.FriendlyName);
@@ -301,6 +307,7 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 		jack.id = _wcsdup(id[4]);
 		jack.FriendlyName = _wcsdup(fn[4]);
 		jack.Default = true;
+		jack.color = color[4];
 		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
 		free(jack.id);
 		free(jack.FriendlyName);
@@ -310,6 +317,7 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 		for (int i=0; i<7;i++)
 		{
 		jack.id = _wcsdup(id[i]);
+		jack.color = color[i];
 		jack.FriendlyName = _wcsdup(fn[i]);
 		if(i==1) 
 			jack.Default = true;

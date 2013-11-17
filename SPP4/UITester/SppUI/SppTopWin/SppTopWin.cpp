@@ -276,7 +276,7 @@ static void GetHwnd(Object^ data)
 // Mark the selected device
 void AddLine2AudioList(jack_info * jack)
 {
-	WPFPageHost::hostedPage->Insert_Jack(gcnew System::String(jack->FriendlyName), gcnew System::String("0/0"), jack->Default);
+	WPFPageHost::hostedPage->Insert_Jack(gcnew System::String(jack->FriendlyName), gcnew System::String("0/0"), jack->Default, jack->color);
 }
 
 // Set the parameters of the audio (8/16 bits Left/Right/Mono)
