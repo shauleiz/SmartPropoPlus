@@ -65,7 +65,7 @@ namespace CtrlWindowNS
             set { SetField(ref _is_Not_AutoBitrate, value, "IsNotAutoBitrate"); }
         }
 
-        // Auto channel chaeck box - NOT checked
+        // Auto channel chack box - NOT checked
         private bool _is_Not_AutoChannel;
         public bool IsNotAutoChannel
         {
@@ -79,6 +79,19 @@ namespace CtrlWindowNS
         public ObservableCollection<AudioLine> AudioDeviceCollection
         { 
             get { return _AudioDeviceCollection; } 
+        }
+
+        // Audio list - Selected item
+        private AudioLine _SelectedAudioDevice;
+        public  AudioLine SelectedAudioDevice
+        {
+            get
+            { return _SelectedAudioDevice;}
+
+            set 
+            {
+                SetField(ref _SelectedAudioDevice, value, "SelectedAudioDevice");
+            }
         }
 
         // Audio list box headers

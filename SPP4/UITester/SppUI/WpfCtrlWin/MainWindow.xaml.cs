@@ -138,6 +138,10 @@ namespace CtrlWindowNS
             _event._AudioDeviceCollection[index].LevelLeft = Left;
             _event._AudioDeviceCollection[index].LevelRight = Right;
 
+            // Notify of the change
+            _event.SelectedAudioDevice = null;
+            _event.SelectedAudioDevice = _event._AudioDeviceCollection[index];
+
             // Refresh view
             ICollectionView view = CollectionViewSource.GetDefaultView(_event._AudioDeviceCollection);
             view.Refresh();

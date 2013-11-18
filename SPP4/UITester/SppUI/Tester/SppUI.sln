@@ -10,6 +10,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SppTopWin", "..\SppTopWin\SppTopWin.vcxproj", "{1CBD4BF0-C68C-48E4-BBFC-FD2CC7C0680E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfCtrlWin", "..\WpfCtrlWin\WpfCtrlWin.csproj", "{605D2177-CAC7-4CFC-9FCB-587C7584D4BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB} = {DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VUMeterControlLibrary", "..\Controls\VUMeterControlLibrary\VUMeterControlLibrary.csproj", "{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +74,22 @@ Global
 		{605D2177-CAC7-4CFC-9FCB-587C7584D4BD}.Release|Win32.Build.0 = Release|Any CPU
 		{605D2177-CAC7-4CFC-9FCB-587C7584D4BD}.Release|x64.ActiveCfg = Release|Any CPU
 		{605D2177-CAC7-4CFC-9FCB-587C7584D4BD}.Release|x64.Build.0 = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|Win32.Build.0 = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Debug|x64.Build.0 = Debug|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|Win32.ActiveCfg = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|Win32.Build.0 = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|x64.ActiveCfg = Release|Any CPU
+		{DF76B6E4-B590-47DD-ABBC-0F4B18456DFB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
