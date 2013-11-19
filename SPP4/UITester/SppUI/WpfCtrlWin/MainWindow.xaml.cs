@@ -44,7 +44,6 @@ namespace CtrlWindowNS
                 IsNotAutoChannel = true,
             };
 
-
             this.DataContext = _event;
 
         }

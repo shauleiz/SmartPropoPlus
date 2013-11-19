@@ -114,8 +114,9 @@
                     <RowDefinition Height="53*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="67*" />
-                    <ColumnDefinition Width="203*" />
+                    <ColumnDefinition Width="134*" />
+                    <ColumnDefinition Width="146*" />
+                    <ColumnDefinition Width="261*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -123,7 +124,7 @@
                         <GradientStop Color="#FF04DADA" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
-                <ListView x:Name="Audio_LB"  ItemsSource="{Binding AudioDeviceCollection}" SelectedItem="{Binding  SelectedAudioDevice, Mode=TwoWay}" Height="103.062" Margin="10,10,10,0" VerticalAlignment="Top"  MinWidth="10" Grid.ColumnSpan="2" RenderTransformOrigin="0.509,0.144">
+                <ListView x:Name="Audio_LB" ItemsSource="{Binding AudioDeviceCollection}" SelectedItem="{Binding  SelectedAudioDevice, Mode=TwoWay}" Height="103.062" Margin="10,10,10,0" VerticalAlignment="Top"  MinWidth="10" Grid.ColumnSpan="3" RenderTransformOrigin="0.509,0.144">
                     <ListView.View>
                         <GridView AllowsColumnReorder="true">
                             <GridViewColumn Header="Jack"  Width="30">
@@ -158,27 +159,53 @@
                         <RadioButton Name="MonoRB" Content="Mono" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelMonoConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
                     </StackPanel>
                 </GroupBox>
-                <control:VUMeterControl  x:Name="vuMeterControl_Left" MaxValue="100" Value="{Binding SelectedAudioDevice.LevelLeft}" HorizontalAlignment="Center" VerticalAlignment="Top" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="13.423" Grid.Column="1" Margin="160.332,21.871,233.245,0" Grid.Row="1" Height="81.129">
-                    <control:VUMeterControl.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform/>
-                            <SkewTransform/>
-                            <RotateTransform Angle="0"/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </control:VUMeterControl.RenderTransform>
-                </control:VUMeterControl>
-                <control:VUMeterControl  x:Name="vuMeterControl_Right" HorizontalAlignment="Center" VerticalAlignment="Top" Background="LightGray" MaxValue="100" BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="13.423" Grid.Column="1" Margin="280.504,42.629,113.073,-9.629" Grid.Row="1">
-                    <control:VUMeterControl.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform/>
-                            <SkewTransform/>
-                            <RotateTransform Angle="90"/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </control:VUMeterControl.RenderTransform>
-                </control:VUMeterControl>
-                <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="16.871" Margin="153.5,0,0,0" Grid.Row="1" TextWrapping="Wrap"  Text="{Binding Path=SelectedAudioDevice.LevelLeft}" VerticalAlignment="Top" Width="27"/>
+                <GroupBox Grid.Column="2" Header="Audio Level" HorizontalAlignment="Left" Height="102" Margin="10,1,0,0" Grid.Row="1" VerticalAlignment="Top" Width="241">
+                    <Grid HorizontalAlignment="Stretch"  Margin="0" VerticalAlignment="Stretch" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="31*"/>
+                            <ColumnDefinition Width="42*"/>
+                            <ColumnDefinition Width="156*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock HorizontalAlignment="Left" Margin="2.5,12,0,12" TextWrapping="Wrap" VerticalAlignment="Center" Width="30.5" Height="16" Grid.ColumnSpan="2"><Run Text="Left"/></TextBlock>
+                        <TextBlock HorizontalAlignment="Left" Margin="2.5,12,0,12" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Text="Right" Width="34" Height="16" Grid.ColumnSpan="2" >
+                            <TextBlock.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform AngleX="1.591"/>
+                                    <RotateTransform/>
+                                    <TranslateTransform X="-1.847"/>
+                                </TransformGroup>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                        <control:VUMeterControl  x:Name="vuMeterControl_Left"  MaxValue="100" Value="{Binding SelectedAudioDevice.LevelLeft}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-45.751,75,-21.378"  Grid.Column="2" Grid.RowSpan="2">
+                            <control:VUMeterControl.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </control:VUMeterControl.RenderTransform>
+                        </control:VUMeterControl>
+                        <control:VUMeterControl x:Name="vuMeterControl_Right" MaxValue="100" Value="{Binding SelectedAudioDevice.LevelRight}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-5.503,75,-61.126" Grid.Column="2" Grid.RowSpan="2">
+                            <control:VUMeterControl.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </control:VUMeterControl.RenderTransform>
+
+                        </control:VUMeterControl>
+                        <TextBox x:Name="AudioLevel_TB_Left"  IsReadOnly="True"  Grid.Column="1" HorizontalAlignment="Right" Height="16.871" Margin="0.5,11.564,0,11.565" TextWrapping="Wrap"  Text="{Binding SelectedAudioDevice.LevelLeft, StringFormat='{}{0}%'}" VerticalAlignment="Center" Width="41.5" Cursor="Arrow" TextAlignment="Right" Background="{x:Null}"/>
+                        <TextBox x:Name="AudioLevel_TB_Right"  IsReadOnly="True" Grid.Column="1" HorizontalAlignment="Right" Height="16.872" Margin="0.5,11.564,0,11.564" TextWrapping="Wrap"  Text="{Binding SelectedAudioDevice.LevelRight, StringFormat='{}{0}%'}" VerticalAlignment="Center" Width="41.5" Cursor="Arrow" TextAlignment="Right" Grid.Row="1" Background="{x:Null}"/>
+                    </Grid>
+                </GroupBox>
             </Grid>
         </Border>
     </Grid>
