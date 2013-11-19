@@ -45,6 +45,7 @@
         </Style>-->
 
         </Grid.Resources>
+        <Path x:Name="RootPath" Stroke="#FFD81010" Fill="BurlyWood" Data="M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z" Margin="-374.5,10,386.512,8.887" Stretch="Fill" />
         <Border x:Name="RootBorder"  BorderThickness="3"  CornerRadius="3" Margin="10" BorderBrush="{Binding ElementName=LayoutRoot, Path=IsMouseOver, Converter={StaticResource ColorConverter}}"  >
             <Grid x:Name="LayoutRoot" Margin="3,7,7,7"  >
                 <Grid.Background>
@@ -83,7 +84,7 @@
                 <CheckBox  Content="Audio" x:Name="Audio_Btn"  IsChecked="True" HorizontalAlignment="Left" Margin="15.938,2.966,0,0" Grid.Row="5" VerticalAlignment="Top" Width="52.375" Height="15.098"/>
             </Grid>
         </Border>
-        <Grid HorizontalAlignment="Left" Name="P1_GRID" Height="186.84" Margin="-401.062,10,0,0" VerticalAlignment="Top" Width="160" Visibility="{Binding ElementName=P1_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}">
+        <Grid HorizontalAlignment="Left" Name="P1_GRID" Height="186.84" Margin="-401.062,10,0,0" VerticalAlignment="Top" Width="160" Visibility="{Binding ElementName=P1_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}" d:IsHidden="True">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#3F5ACB19" Offset="0"/>
