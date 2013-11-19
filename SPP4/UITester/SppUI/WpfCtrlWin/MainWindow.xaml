@@ -25,7 +25,7 @@
 
 
 
-    <Grid x:Name="Top_GRID" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="206.841" Margin="435.062,0,19.062,424.374" Width="365.876">
+    <Grid x:Name="Top_GRID" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="878.923" Margin="10,0,9.813,10.077" Width="807.187">
         <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -45,64 +45,11 @@
         </Style>-->
 
         </Grid.Resources>
-        <Path x:Name="RootPath" Stroke="#FFD81010" Fill="BurlyWood" Data="M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z" Margin="-374.5,10,386.512,8.887" Stretch="Fill" />
-        <Border x:Name="RootBorder"  BorderThickness="3"  CornerRadius="3" Margin="10" BorderBrush="{Binding ElementName=LayoutRoot, Path=IsMouseOver, Converter={StaticResource ColorConverter}}"  >
-            <Grid x:Name="LayoutRoot" Margin="3,7,7,7"  >
-                <Grid.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FFDAEDEE" Offset="0.028"/>
-                        <GradientStop Color="#FFADCFC1" Offset="1"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" MinHeight="23.96" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="21*"/>
-                    <RowDefinition Height="76*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="195*"/>
-                    <ColumnDefinition Width="64*"/>
-                </Grid.ColumnDefinitions>
-
-
-                <TextBlock Text="{StaticResource applicationTitle}" FontWeight="Bold"
-                 HorizontalAlignment="Center" Grid.Column="1" Height="15.96" />
-
-                <TextBlock Text="{StaticResource AudioLable}" Grid.Row="1" Height="15.96" Margin="3,4"/>
-                <TextBlock Name="AudioChannel" Text="{Binding AudioChannel, Converter={StaticResource ChannelConverter}}" Grid.Row="2" Height="15.96" Margin="3,4"/>
-                <TextBlock Name="AudioBitrate" Text="{Binding AudioBitrate, Converter={StaticResource BitrateConverter}}" Grid.Row="2" Grid.Column="1" Height="15.96" Margin="3,4,0,4" HorizontalAlignment="Left" />
-                <TextBox Name="Nm_SelectedJack" Text="{Binding SelectedJack,   UpdateSourceTrigger=PropertyChanged}"
-               Grid.Row="1" Grid.Column="1" Height="17.96" Background="{x:Null}" Grid.ColumnSpan="2"/>
-
-
-                <Button Content="Lower" Click="Button_Click" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center"  Height="19.96"  Width="73.58"/>
-                <CheckBox  Content="P1" x:Name="P1_Btn" Click="P1_Click" IsChecked="True" HorizontalAlignment="Left" Margin="15.938,31.927,0,0" Grid.Row="5" VerticalAlignment="Top" Width="45.375" Height="15.098"/>
-                <CheckBox  Content="Audio" x:Name="Audio_Btn"  IsChecked="True" HorizontalAlignment="Left" Margin="15.938,2.966,0,0" Grid.Row="5" VerticalAlignment="Top" Width="52.375" Height="15.098"/>
-            </Grid>
-        </Border>
-        <Grid HorizontalAlignment="Left" Name="P1_GRID" Height="186.84" Margin="-401.062,10,0,0" VerticalAlignment="Top" Width="160" Visibility="{Binding ElementName=P1_Btn, Path=IsChecked, Converter={StaticResource boolConverter}}" d:IsHidden="True">
-            <Grid.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#3F5ACB19" Offset="0"/>
-                    <GradientStop Color="#FFF71414" Offset="1"/>
-                </LinearGradientBrush>
-            </Grid.Background>
-            <Label Content="This is P1" HorizontalAlignment="Left" Height="33" Margin="43,72,0,0" VerticalAlignment="Top" Width="77"/>
-            <Border BorderThickness="1" HorizontalAlignment="Left" Height="213" Margin="-16.062,-15.08,-11.938,-11.08" VerticalAlignment="Top" Width="188" CornerRadius="4"  RenderTransformOrigin="2.665,0.441">
-                <Border.BorderBrush>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="Black" Offset="0"/>
-                        <GradientStop Color="#FFAC1313" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.BorderBrush>
-            </Border>
-
-        </Grid>
-        <Border x:Name="AudioBorder" BorderThickness="1" HorizontalAlignment="Left" Margin="-192.7,0,-2.338,-278.563" VerticalAlignment="Bottom" CornerRadius="4" Height="270.218" Width="560.914"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="159*"/>
+            <ColumnDefinition Width="110*"/>
+        </Grid.ColumnDefinitions>
+        <Border x:Name="AudioBorder" BorderThickness="1" HorizontalAlignment="Left" Margin="246.273,0,-0.187,392.666" VerticalAlignment="Bottom" CornerRadius="4" Height="270.218" Width="560.914"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2">
             <Border.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -209,5 +156,39 @@
                 </GroupBox>
             </Grid>
         </Border>
+        <Canvas Margin="397.187,10.038,9.813,667.961" Grid.ColumnSpan="2">
+            <Path x:Name="RootPath" StrokeThickness="3" Stroke="{Binding ElementName=RootPath, Path=IsMouseOver, Converter={StaticResource ColorConverter}}" Data="M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z" Stretch="Fill" Canvas.Left="0" Height="190" Width="400" Canvas.Top="10" >
+                <Path.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFDAEDEE"/>
+                        <GradientStop Color="#FFECF3F3" Offset="0.992"/>
+                    </LinearGradientBrush>
+                </Path.Fill>
+            </Path>
+            <Grid Name="CanvasGrid" Height="200" Width="400">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50*" />
+                    <RowDefinition Height="31*"/>
+                    <RowDefinition Height="33*"/>
+                    <RowDefinition Height="36*"/>
+                    <RowDefinition Height="50*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="143*"/>
+                    <ColumnDefinition Width="153*"/>
+                    <ColumnDefinition Width="24"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{StaticResource applicationTitle}" FontWeight="Bold"
+            		HorizontalAlignment="Center" Grid.Column="2" Height="18.647"   Width="138" Margin="0,15.676,15,15.677" />
+                <TextBlock Text="{StaticResource AudioLable}" Height="15.96"  Grid.ColumnSpan="2" Grid.Row="1" Margin="5,7.52"/>
+                <TextBox x:Name="Nm_SelectedJack" Text="{Binding SelectedJack, UpdateSourceTrigger=PropertyChanged}"
+                	Grid.Column="1" Height="17.96" Background="{x:Null}" Grid.ColumnSpan="3"  Grid.Row="1" Margin="3,6.52"/>
+                <TextBlock x:Name="AudioChannel" Text="{Binding AudioChannel, Converter={StaticResource ChannelConverter}}" Height="15.96" Margin="5,5.394,3,11.646" RenderTransformOrigin="0.423,0.543" Grid.Row="2"/>
+                <TextBlock Name="AudioBitrate" Text="{Binding AudioBitrate, Converter={StaticResource BitrateConverter}}" Grid.Row="2" Grid.Column="1" Height="15.96" Margin="3,5.394,0,11.646" HorizontalAlignment="Left" Width="130" />
+                <CheckBox  Content="Audio" x:Name="Audio_Btn"  IsChecked="True" HorizontalAlignment="Left" Margin="3.271,4.382,0,0" Grid.Row="2" VerticalAlignment="Top" Width="52.375" Height="15.098" Grid.Column="2"/>
+
+            </Grid>
+        </Canvas>
     </Grid>
 </Window>
