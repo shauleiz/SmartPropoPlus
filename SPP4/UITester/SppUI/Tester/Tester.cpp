@@ -207,7 +207,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(99,25));//
 			break;
 		case IDM_RIGHT_HIGH:
-			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(20,90));//
+			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(20,100));//
 			break;
 		case IDM_MONO_HIGH:
 			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(85,85));//
