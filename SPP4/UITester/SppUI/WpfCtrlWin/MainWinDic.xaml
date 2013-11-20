@@ -7,13 +7,15 @@
     <sys:String x:Key="AudioLable">Audio Input:</sys:String>
     <!-- Strings (end) -->
 
+    <!-- Graphivcal elements -->
     <DataTemplate x:Key="jack_image">
         <Ellipse x:Name="JackImage">
-           
         </Ellipse>
     </DataTemplate>
-    
-    <!-- Converter instances (begin) -->
+
+    <Geometry  x:Key="CTRL_PATH1">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z</Geometry >
+
+            <!-- Converter instances (begin) -->
     <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->
     <BooleanToVisibilityConverter x:Key="boolConverter" />
     <local:BoolToBorderBrushColorConverter x:Key="ColorConverter" TrueValue="Blue" FalseValue="#FFDAEDEE"/>
