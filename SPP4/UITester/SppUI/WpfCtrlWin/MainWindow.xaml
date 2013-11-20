@@ -187,14 +187,14 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{StaticResource AudioLable}" FontStyle="Normal" Margin="10,3,3,3" VerticalAlignment="Bottom"  />
-                        <TextBox x:Name="Nm_SelectedJack" FontStyle="Normal" Text="{Binding SelectedJack, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox x:Name="Nm_SelectedJack" FontStyle="Normal" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}"
                 	Grid.Column="1" Height="17.96"  Background="{x:Null}" Grid.ColumnSpan="2" VerticalAlignment="Bottom" IsReadOnly="True" Margin="25,0,3,3"/>
                         <TextBlock x:Name="AudioChannel"  FontStyle="Normal" Text="{Binding AudioChannel, Converter={StaticResource ChannelConverter}}" Height="15.96" Margin="10,3,3,3" RenderTransformOrigin="0.423,0.543" Grid.Row="1"/>
                         <TextBlock Name="AudioBitrate" FontStyle="Normal" Text="{Binding AudioBitrate, Converter={StaticResource BitrateConverter}}" Grid.Row="1" Grid.Column="1" Height="15.96"  HorizontalAlignment="Left" Width="130" />
                         <CheckBox  Content="Disp" x:Name="Audio_Btn"  IsChecked="True" HorizontalAlignment="Left" Margin="69.625,10,0,0" VerticalAlignment="Top" Width="52.375" Height="15.098" Grid.Column="2" Grid.Row="1"/>
                         <Grid Name="JackImageGrid" Grid.Column="1" HorizontalAlignment="Left" Height="17.96" Margin="3,11.04,0,0" VerticalAlignment="Top" Width="17">
                             <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Fill="white" Stroke="black"  StrokeThickness="0.5"/>
-                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding Fill}"  StrokeThickness="0.5"/>
+                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding SelectedJack.Fill}"  StrokeThickness="0.5"/>
                             <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="4" Height="4" Fill="Black"  Stroke="white"  StrokeThickness="0.5"/>
                         </Grid>
                     </Grid>

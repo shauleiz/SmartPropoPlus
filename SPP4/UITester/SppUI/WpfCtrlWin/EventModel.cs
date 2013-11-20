@@ -33,9 +33,9 @@ namespace CtrlWindowNS
             return true;
         }
 
-        // Selected Audio Jack - Property is "SelectedJack"
-        private string _selected_jack;
-        public string SelectedJack
+        // Selected Audio Jack
+        private AudioLine _selected_jack;
+        public AudioLine SelectedJack
         {
             get { return _selected_jack; }
             set { SetField(ref _selected_jack, value, "SelectedJack"); }

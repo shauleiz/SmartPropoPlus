@@ -36,7 +36,7 @@ namespace CtrlWindowNS
             // create a model object
             _event = new EventModel()
             {
-                SelectedJack = "-- No audio jack Selected --",
+                SelectedJack = new AudioLine { DeviceName = "-- Not Implemented -- ", LevelLeft = 0, LevelRight = 0, EmptyStr = "-", Fill = new SolidColorBrush() },
                 _AudioDeviceCollection = new ObservableCollection<AudioLine>(),
                 AudioBitrate = 0,
                 AudioChannel = 'U',
@@ -59,9 +59,10 @@ namespace CtrlWindowNS
                 OnMove(Left, Top);
         }
 
+#if false
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            _event.SelectedJack = _event.SelectedJack.ToLower();
+            _event.SelectedJack = _event.SelectedJack.DeviceName.ToLower();
             // Remove fifth item
             int iRem = 4;
             if (_event._AudioDeviceCollection.Count > iRem)
@@ -78,17 +79,15 @@ namespace CtrlWindowNS
 
             Insert_Jack("{MyId}", "DDDevName", 0, 0, true, 0);
         }
-
-        public void Set_TB_SelectedJack(string intext)
-        {
-            _event.SelectedJack = intext;
-        }
+        
+#endif
 
         // Clean list of Audio devices
         public void CleanAudioList()
         {
             if (_event._AudioDeviceCollection.Count > 0)
                 _event._AudioDeviceCollection.Clear();
+            _event.SelectedJack = null;
         }
 
         /// <summary>
@@ -108,7 +107,7 @@ namespace CtrlWindowNS
 
             if (Selected)
             {
-                Set_TB_SelectedJack(DevName);
+                _event.SelectedJack = item;
                 int index = _event._AudioDeviceCollection.IndexOf(item);
                 Audio_LB.SelectedIndex = index;
                 Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
