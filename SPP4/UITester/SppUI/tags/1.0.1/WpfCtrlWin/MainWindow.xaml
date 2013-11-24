@@ -1,0 +1,230 @@
+﻿<Window x:Class="CtrlWindowNS.CtrlWindow"
+    xmlns:local="clr-namespace:CtrlWindowNS"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:control="clr-namespace:VUMeterControlLibrary;assembly=VUMeterControlLibrary"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        	MouseLeftButtonDown="NonRectangularWindow_MouseLeftButtonDown"
+            LocationChanged="LocChanged"
+             mc:Ignorable="d" 
+             SizeToContent="WidthAndHeight"
+            WindowStyle="None"
+    AllowsTransparency="True"
+    Background="Transparent" d:DesignWidth="827.187" d:DesignHeight="898.923">
+    <Window.Resources>
+        <!--<sys:String x:Key="MyString">Hello</sys:String>-->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MainWinDic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+
+    <Grid x:Name="Top_GRID" Height="898.923" Margin="0" Width="817.28">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+            </Style>
+            <!--<Style TargetType="sdk:DatePicker">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>-->
+
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="81*"/>
+            <RowDefinition Height="212*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="403*"/>
+            <ColumnDefinition Width="404*"/>
+        </Grid.ColumnDefinitions>
+        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499">
+            <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" VerticalAlignment="Top" Margin="0" Width="550.914" Height="274">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64*"/>
+                    <RowDefinition Height="53*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="134*" />
+                    <ColumnDefinition Width="146*" />
+                    <ColumnDefinition Width="261*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#005CCB1C" Offset="0"/>
+                        <GradientStop Color="#0004DADA" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <ListView x:Name="Audio_LB" ItemsSource="{Binding AudioDeviceCollection}" SelectedItem="{Binding  SelectedAudioDevice, Mode=TwoWay}" Height="122" Margin="10,18,15,0" VerticalAlignment="Top"  MinWidth="10" Grid.ColumnSpan="3" RenderTransformOrigin="0.509,0.144">
+                    <ListView.View>
+                        <GridView AllowsColumnReorder="true">
+                            <GridViewColumn Header="Jack"  Width="30">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Fill="white" Stroke="black"  StrokeThickness="0.5"/>
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding Fill}"  StrokeThickness="0.5"/>
+                                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="4" Height="4" Fill="Black"  Stroke="white"  StrokeThickness="0.5"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="L Levels" DisplayMemberBinding="{Binding LevelLeft}" Width="60"/>
+                            <GridViewColumn Header="R Levels" DisplayMemberBinding="{Binding LevelRight}" Width="60"/>
+                            <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}"  />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <GroupBox HorizontalAlignment="Left" VerticalAlignment="Top" Header="Bit Rate" Margin="10,0,0,0" Height="103.347" Grid.Row="1" Width="101.206">
+                    <StackPanel Margin="0,0,0,4.803">
+                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoBitrate, Converter={StaticResource InvConverter}}" Checked="Audio_CheckBox_Click" Unchecked="Audio_CheckBox_Click"/>
+                        <RadioButton Name="EightBitRB" Content="8 bit" IsEnabled="{Binding IsNotAutoBitrate}" IsChecked="{Binding AudioBitrate, Converter={StaticResource Bitrate8Converter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center" Checked="Audio_RB_Checked"/>
+                        <RadioButton Name="SixteenBitRB" Content="16 bit" IsEnabled="{Binding IsNotAutoBitrate}"  IsChecked="{Binding AudioBitrate, Converter={StaticResource Bitrate16Converter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Column="1" Header="Audio Channel" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Top" Height="103.347" Width="115.459">
+                    <StackPanel Margin="0,0,14.253,4.803">
+                        <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoChannel, Converter={StaticResource ResourceKey=InvConverter}}"   Checked="Audio_CheckBox_Click" Unchecked="Audio_CheckBox_Click" />
+                        <RadioButton Name="LeftRB" Content="Left" IsEnabled="{Binding IsNotAutoChannel}" IsChecked="{Binding AudioChannel, Converter={StaticResource ResourceKey=ChannelLeftConverter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center"  Checked="Audio_RB_Checked"/>
+                        <RadioButton Name="RightRB" Content="Right" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelRightConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
+                        <RadioButton Name="MonoRB" Content="Mono" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelMonoConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Column="2" Header="Audio Level" HorizontalAlignment="Left" Height="102" Margin="10,1,0,0" Grid.Row="1" VerticalAlignment="Top" Width="241">
+                    <Grid HorizontalAlignment="Stretch"  Margin="0" VerticalAlignment="Stretch" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="31*"/>
+                            <ColumnDefinition Width="42*"/>
+                            <ColumnDefinition Width="156*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock HorizontalAlignment="Left" Margin="2.5,12,0,12" TextWrapping="Wrap" VerticalAlignment="Center" Width="30.5" Height="16" Grid.ColumnSpan="2"><Run Text="Left"/></TextBlock>
+                        <TextBlock HorizontalAlignment="Left" Margin="2.5,12,0,12" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Text="Right" Width="34" Height="16" Grid.ColumnSpan="2" >
+                            <TextBlock.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform AngleX="1.591"/>
+                                    <RotateTransform/>
+                                    <TranslateTransform X="-1.847"/>
+                                </TransformGroup>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                        <control:VUMeterControl  x:Name="vuMeterControl_Left"  MaxValue="100" Value="{Binding SelectedAudioDevice.LevelLeft}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-45.751,75,-21.378"  Grid.Column="2" Grid.RowSpan="2">
+                            <control:VUMeterControl.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </control:VUMeterControl.RenderTransform>
+                        </control:VUMeterControl>
+                        <control:VUMeterControl x:Name="vuMeterControl_Right" MaxValue="100" Value="{Binding SelectedAudioDevice.LevelRight}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-5.503,75,-61.126" Grid.Column="2" Grid.RowSpan="2">
+                            <control:VUMeterControl.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </control:VUMeterControl.RenderTransform>
+
+                        </control:VUMeterControl>
+                        <TextBox x:Name="AudioLevel_TB_Left"  IsReadOnly="True"  Grid.Column="1" HorizontalAlignment="Right" Height="16.871" Margin="0.5,11.564,0,11.565" TextWrapping="Wrap"  Text="{Binding SelectedAudioDevice.LevelLeft, StringFormat='{}{0}%'}" VerticalAlignment="Center" Width="41.5" Cursor="Arrow" TextAlignment="Right" Background="{x:Null}"/>
+                        <TextBox x:Name="AudioLevel_TB_Right"  IsReadOnly="True" Grid.Column="1" HorizontalAlignment="Right" Height="16.872" Margin="0.5,11.564,0,11.564" TextWrapping="Wrap"  Text="{Binding SelectedAudioDevice.LevelRight, StringFormat='{}{0}%'}" VerticalAlignment="Center" Width="41.5" Cursor="Arrow" TextAlignment="Right" Grid.Row="1" Background="{x:Null}"/>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Border>
+        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right">
+            <Path x:Name="RootPath" StrokeThickness="3"  Data="{StaticResource CTRL_PATH1}" Stretch="Fill" Canvas.Left="0" Height="248" Width="400" Canvas.Top="-26" Stroke="#FF85E4EE" >
+                <Path.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFDAEDEE"/>
+                        <GradientStop Color="#FFECF3F3" Offset="0.992"/>
+                    </LinearGradientBrush>
+                </Path.Fill>
+            </Path>
+            <Grid Name="CanvasGrid" Height="262" Width="400" Canvas.Top="-40" HorizontalAlignment="Right">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="46*" />
+                    <RowDefinition Height="67*"/>
+                    <RowDefinition Height="23*"/>
+                    <RowDefinition Height="86*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="143*"/>
+                    <ColumnDefinition Width="153*"/>
+                    <ColumnDefinition Width="24"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{StaticResource applicationTitle}" FontWeight="Bold"
+            		HorizontalAlignment="Center" Grid.Column="2" Height="18.647"   Width="138" Margin="0,13.676,15,13.677" />
+                <GroupBox  Name="AudioGroup" Background="Transparent" Grid.ColumnSpan="4" Header="Audio" HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" Margin="10,6,6,6" BorderBrush="{Binding ElementName=AudioGroup, Path=IsMouseOver, Converter={StaticResource ColorConverter}}" FontStyle="Italic">
+                    <Grid Name="AudioGroupGrid" Margin="10,0,0,-4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{StaticResource AudioLable}" FontStyle="Normal" Margin="10,3,3,3" VerticalAlignment="Bottom"  />
+                        <TextBox x:Name="Nm_SelectedJack" FontStyle="Normal" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}" ToolTipService.InitialShowDelay="0" ToolTipService.Placement="Left" ToolTipService.PlacementRectangle="1 1 1 1"
+                	Grid.Column="1" Height="17.96"  Background="{x:Null}" Grid.ColumnSpan="2" VerticalAlignment="Bottom" IsReadOnly="True" Margin="25,0,3,3"/>
+                        <TextBlock x:Name="AudioChannel"  FontStyle="Normal" Text="{Binding AudioChannel, Converter={StaticResource ChannelConverter}}" Height="15.96" Margin="10,3,3,3" RenderTransformOrigin="0.423,0.543" Grid.Row="1"/>
+                        <TextBlock Name="AudioBitrate" FontStyle="Normal" Text="{Binding AudioBitrate, Converter={StaticResource BitrateConverter}}" Grid.Row="1" Grid.Column="1" Height="15.96"  HorizontalAlignment="Left" Width="130" />
+                        <CheckBox  Content="Disp" x:Name="Audio_Btn"  IsChecked="True" HorizontalAlignment="Left" Margin="69.625,10,0,0" VerticalAlignment="Top" Width="52.375" Height="15.098" Grid.Column="2" Grid.Row="1"/>
+                        <Grid Name="JackImageGrid" Grid.Column="1" HorizontalAlignment="Left" Height="17.96" Margin="3,16.376,0,0" VerticalAlignment="Top" Width="17" ToolTip="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}" ToolTipService.InitialShowDelay="0" >
+                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Fill="white" Stroke="black"  StrokeThickness="0.5"/>
+                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding SelectedJack.Fill}"  StrokeThickness="0.5" />
+                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="4" Height="4" Fill="Black"  Stroke="white"  StrokeThickness="0.5"/>
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+                <Grid Name="SignalGrid" Grid.Row="3" Grid.ColumnSpan="4" Margin="10,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="16*"/>
+                        <RowDefinition Height="13*"/>
+                        <RowDefinition Height="13*"/>
+                        <RowDefinition Height="13*"/>
+                        <RowDefinition Height="13*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="17*"/>
+                        <ColumnDefinition Width="31*"/>
+                        <ColumnDefinition Width="25*"/>
+                        <ColumnDefinition Width="25*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Modulation: " Grid.Column="1" HorizontalAlignment="Left" Height="15.96" Margin="3,-0.049,0,19.779" Width="67.357" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+                    <TextBox Text="*************" Grid.Column="2" Height="12.836" IsReadOnly="True" Margin="3,1.513" />
+                    <TextBlock Text="Channel 1:" Grid.Column="1"  Grid.Row="1"  FontSize="11" HorizontalAlignment="Right"  />
+                    <TextBlock Text="Channel 2:" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right"  FontSize="11"  />
+                    <TextBlock Text="Channel 3:" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" FontSize="11"  />
+                    <TextBlock Text="Channel 4:" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right"  FontSize="11"   />
+                </Grid>
+            </Grid>
+        </Canvas>
+    </Grid>
+</Window>
