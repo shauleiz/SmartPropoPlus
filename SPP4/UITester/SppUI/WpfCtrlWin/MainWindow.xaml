@@ -25,7 +25,7 @@
 
 
 
-    <Grid x:Name="Top_GRID" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="878.923" Margin="10,0,9.813,10.077" Width="807.187">
+    <Grid x:Name="Top_GRID" Height="898.923" Margin="0" Width="817.28">
         <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -45,12 +45,16 @@
         </Style>-->
 
         </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="81*"/>
+            <RowDefinition Height="212*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="159*"/>
-            <ColumnDefinition Width="110*"/>
+            <ColumnDefinition Width="403*"/>
+            <ColumnDefinition Width="404*"/>
         </Grid.ColumnDefinitions>
-        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Left" Margin="246.273,0,0,392.435" VerticalAlignment="Bottom" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE">
-            <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" VerticalAlignment="Top" Margin="0,0,-1.914,-1" Width="550.914" Height="274">
+        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499">
+            <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" VerticalAlignment="Top" Margin="0" Width="550.914" Height="274">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="64*"/>
                     <RowDefinition Height="53*"/>
@@ -150,8 +154,8 @@
                 </GroupBox>
             </Grid>
         </Border>
-        <Canvas Margin="397.187,10.038,9.813,667.961" Grid.ColumnSpan="2">
-            <Path x:Name="RootPath" StrokeThickness="3"  Data="{StaticResource CTRL_PATH1}" Stretch="Fill" Canvas.Left="0" Height="190" Width="400" Canvas.Top="10" Stroke="#FF85E4EE" >
+        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right">
+            <Path x:Name="RootPath" StrokeThickness="3"  Data="{StaticResource CTRL_PATH1}" Stretch="Fill" Canvas.Left="0" Height="248" Width="400" Canvas.Top="-26" Stroke="#FF85E4EE" >
                 <Path.Fill>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FFDAEDEE"/>
@@ -159,13 +163,12 @@
                     </LinearGradientBrush>
                 </Path.Fill>
             </Path>
-            <Grid Name="CanvasGrid" Height="200" Width="400">
+            <Grid Name="CanvasGrid" Height="262" Width="400" Canvas.Top="-40" HorizontalAlignment="Right">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="47*" />
-                    <RowDefinition Height="50*"/>
-                    <RowDefinition Height="32*"/>
-                    <RowDefinition Height="21*"/>
-                    <RowDefinition Height="50*"/>
+                    <RowDefinition Height="46*" />
+                    <RowDefinition Height="67*"/>
+                    <RowDefinition Height="23*"/>
+                    <RowDefinition Height="86*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="80"/>
@@ -174,9 +177,9 @@
                     <ColumnDefinition Width="24"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{StaticResource applicationTitle}" FontWeight="Bold"
-            		HorizontalAlignment="Center" Grid.Column="2" Height="18.647"   Width="138" Margin="0,14.176,15,14.177" />
-                <GroupBox  Name="AudioGroup" Background="Transparent" Grid.ColumnSpan="4" Header="Audio" HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" Margin="6" BorderBrush="{Binding ElementName=AudioGroup, Path=IsMouseOver, Converter={StaticResource ColorConverter}}" FontStyle="Italic">
-                    <Grid Name="AudioGroupGrid" Margin="0,-12,0,-4">
+            		HorizontalAlignment="Center" Grid.Column="2" Height="18.647"   Width="138" Margin="0,13.676,15,13.677" />
+                <GroupBox  Name="AudioGroup" Background="Transparent" Grid.ColumnSpan="4" Header="Audio" HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" Margin="10,6,6,6" BorderBrush="{Binding ElementName=AudioGroup, Path=IsMouseOver, Converter={StaticResource ColorConverter}}" FontStyle="Italic">
+                    <Grid Name="AudioGroupGrid" Margin="10,0,0,-4">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -187,18 +190,40 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{StaticResource AudioLable}" FontStyle="Normal" Margin="10,3,3,3" VerticalAlignment="Bottom"  />
-                        <TextBox x:Name="Nm_SelectedJack" FontStyle="Normal" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox x:Name="Nm_SelectedJack" FontStyle="Normal" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}" ToolTipService.InitialShowDelay="0" ToolTipService.Placement="Left" ToolTipService.PlacementRectangle="1 1 1 1"
                 	Grid.Column="1" Height="17.96"  Background="{x:Null}" Grid.ColumnSpan="2" VerticalAlignment="Bottom" IsReadOnly="True" Margin="25,0,3,3"/>
                         <TextBlock x:Name="AudioChannel"  FontStyle="Normal" Text="{Binding AudioChannel, Converter={StaticResource ChannelConverter}}" Height="15.96" Margin="10,3,3,3" RenderTransformOrigin="0.423,0.543" Grid.Row="1"/>
                         <TextBlock Name="AudioBitrate" FontStyle="Normal" Text="{Binding AudioBitrate, Converter={StaticResource BitrateConverter}}" Grid.Row="1" Grid.Column="1" Height="15.96"  HorizontalAlignment="Left" Width="130" />
                         <CheckBox  Content="Disp" x:Name="Audio_Btn"  IsChecked="True" HorizontalAlignment="Left" Margin="69.625,10,0,0" VerticalAlignment="Top" Width="52.375" Height="15.098" Grid.Column="2" Grid.Row="1"/>
-                        <Grid Name="JackImageGrid" Grid.Column="1" HorizontalAlignment="Left" Height="17.96" Margin="3,11.04,0,0" VerticalAlignment="Top" Width="17">
+                        <Grid Name="JackImageGrid" Grid.Column="1" HorizontalAlignment="Left" Height="17.96" Margin="3,16.376,0,0" VerticalAlignment="Top" Width="17" ToolTip="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged}" ToolTipService.InitialShowDelay="0" >
                             <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="10" Height="10" Fill="white" Stroke="black"  StrokeThickness="0.5"/>
-                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding SelectedJack.Fill}"  StrokeThickness="0.5"/>
+                            <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="8" Height="8" Fill="{Binding SelectedJack.Fill}"  StrokeThickness="0.5" />
                             <Ellipse VerticalAlignment="Center" HorizontalAlignment="Center" Width="4" Height="4" Fill="Black"  Stroke="white"  StrokeThickness="0.5"/>
                         </Grid>
                     </Grid>
                 </GroupBox>
+                <Grid Name="SignalGrid" Grid.Row="3" Grid.ColumnSpan="4" Margin="10,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="16*"/>
+                        <RowDefinition Height="13*"/>
+                        <RowDefinition Height="13*"/>
+                        <RowDefinition Height="13*"/>
+                        <RowDefinition Height="13*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="17*"/>
+                        <ColumnDefinition Width="31*"/>
+                        <ColumnDefinition Width="25*"/>
+                        <ColumnDefinition Width="25*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Modulation: " Grid.Column="1" HorizontalAlignment="Left" Height="15.96" Margin="3,-0.049,0,19.779" Width="67.357" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+                    <TextBox Text="*************" Grid.Column="2" Height="12.836" IsReadOnly="True" Margin="3,1.513" />
+                    <TextBlock Text="Channel 1:" Grid.Column="1"  Grid.Row="1"  FontSize="11" HorizontalAlignment="Right"  />
+                    <TextBlock Text="Channel 2:" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right"  FontSize="11"  />
+                    <TextBlock Text="Channel 3:" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" FontSize="11"  />
+                    <TextBlock Text="Channel 4:" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right"  FontSize="11"   />
+                </Grid>
             </Grid>
         </Canvas>
     </Grid>

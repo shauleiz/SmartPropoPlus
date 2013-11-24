@@ -59,28 +59,6 @@ namespace CtrlWindowNS
                 OnMove(Left, Top);
         }
 
-#if false
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            _event.SelectedJack = _event.SelectedJack.DeviceName.ToLower();
-            // Remove fifth item
-            int iRem = 4;
-            if (_event._AudioDeviceCollection.Count > iRem)
-                _event._AudioDeviceCollection.RemoveAt(iRem);
-
-            // Select Second item
-            Audio_LB.SelectedIndex = 1;
-
-            // Scroll to selected item
-            Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
-            ListViewItem item = Audio_LB.ItemContainerGenerator.ContainerFromItem(Audio_LB.SelectedIndex) as ListViewItem;
-            if (item != null)
-                item.Focus();
-
-            Insert_Jack("{MyId}", "DDDevName", 0, 0, true, 0);
-        }
-        
-#endif
 
         // Clean list of Audio devices
         public void CleanAudioList()
