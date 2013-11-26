@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
     xmlns:control="clr-namespace:VUMeterControlLibrary;assembly=VUMeterControlLibrary"
+    xmlns:ctrl="clr-namespace:WpfCtrlWin"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
         	MouseLeftButtonDown="NonRectangularWindow_MouseLeftButtonDown"
             LocationChanged="LocChanged"
@@ -226,5 +227,31 @@
                 </Grid>
             </Grid>
         </Canvas>
+        <StackPanel HorizontalAlignment="Left" Margin="153.046,35.333,0,24.508" Width="161.333">
+            <Expander Header="More Options" Background="#FFFB2828" >
+                <StackPanel Margin="10,4,0,0">
+                    <CheckBox Margin="4" Content="Option 1" />
+                    <CheckBox Margin="4" Content="Option 2" />
+                    <CheckBox Margin="4" Content="Option 2" />           
+                </StackPanel>
+            </Expander>
+            <Expander Header="Much More Options" Background="#FF0FB3CD" >
+                <StackPanel Margin="10,4,-61.333,0" Background="#FF0FB3CD" Height="64.628">
+                    <CheckBox Margin="4" Content="Option 1" />
+                    <CheckBox Margin="4" Content="Option 2" />
+                    <CheckBox Margin="4" Content="Option 3" />
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="-0.14,95.878,0,0" HorizontalAlignment="Left" VerticalAlignment="Bottom"  >
+            <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="1" BarColor="#FF94FFFF" BarBgColor="#7FF0FFFF"/>
+            <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="2"  />
+            <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="3"  />
+            <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="4"  />
+            <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="5"  />
+            <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="6"  />
+            <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="7"  />
+            <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="X"  />
+        </StackPanel>
     </Grid>
 </Window>
