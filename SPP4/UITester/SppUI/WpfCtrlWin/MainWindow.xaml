@@ -273,7 +273,7 @@
                 <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="15"   Grid.Column="14"/>
                 <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="16"  Grid.Column="15" />
             </Grid>
-            <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,26.61,228.108,36.348" VerticalAlignment="Center" Width="108.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" >
+            <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,26.61,228.108,36.348" VerticalAlignment="Center" Width="108.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                 <Label.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -298,15 +298,25 @@
                     <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                     <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                 </Grid.ColumnDefinitions>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Bottom" Width="Auto"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
             </Grid>
+            <Label Content="vJoy Axes"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform X="39.962" Y="-39.962"/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
         </Grid>
     </Grid>
 </Window>
