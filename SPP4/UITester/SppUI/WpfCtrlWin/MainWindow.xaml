@@ -54,7 +54,7 @@
             <ColumnDefinition Width="403*"/>
             <ColumnDefinition Width="404*"/>
         </Grid.ColumnDefinitions>
-        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499">
+        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499" d:IsHidden="True" d:IsLocked="True">
             <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" VerticalAlignment="Top" Margin="0" Width="550.914" Height="274">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="64*"/>
@@ -155,7 +155,7 @@
                 </GroupBox>
             </Grid>
         </Border>
-        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right">
+        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right" d:IsHidden="True" d:IsLocked="True">
             <Path x:Name="RootPath" StrokeThickness="3"  Data="{StaticResource CTRL_PATH1}" Stretch="Fill" Canvas.Left="0" Height="248" Width="400" Canvas.Top="-26" Stroke="#FF85E4EE" >
                 <Path.Fill>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -227,7 +227,7 @@
                 </Grid>
             </Grid>
         </Canvas>
-        <Grid Height="280.967"  Name="JoyTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="2" HorizontalAlignment="right" Width="544.966">
+        <Grid Height="280.967"  Name="JoyTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="2" HorizontalAlignment="right" Width="544.966" ShowGridLines="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="3*"/>
@@ -298,14 +298,22 @@
                     <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                     <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                 </Grid.ColumnDefinitions>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Bottom" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="1"  Margin="1" Grid.Column="0" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="2"  Margin="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="3"   Margin="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="4" Margin="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="5" Margin="1" Grid.Column="4" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="6" Margin="1" Grid.Column="5" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="7" Margin="1" Grid.Column="6" HorizontalContentAlignment="Center"/>
+                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="8" Margin="1" Grid.Column="7" HorizontalContentAlignment="Center"/>
             </Grid>
             <Label Content="vJoy Axes"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                 <Label.RenderTransform>
