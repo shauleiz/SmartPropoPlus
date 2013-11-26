@@ -325,6 +325,28 @@
                     </TransformGroup>
                 </Label.RenderTransform>
             </Label>
+            <Grid x:Name="ButtonGrid" Grid.Column="2" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="203">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Content="Mapped Buttons" Grid.Row="0" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
+                <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
+                <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30"  Background="#4CADD8E6">
+                    <Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
+                </WrapPanel>
+                <Label Content="UnMapped Buttons" Grid.Row="3" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
+                <WrapPanel Orientation="Horizontal" Grid.Row="4"  MinWidth="30"  Background="#4CADD8E6">
+                    <Label Content="No Unmapped Buttons"   Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
+                </WrapPanel>
+                <GridSplitter HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Center"
+                  Grid.Row="2" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
+                  Height="5" Background="#FFBCBCBC"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
