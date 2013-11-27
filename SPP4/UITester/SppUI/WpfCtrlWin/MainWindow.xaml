@@ -227,129 +227,143 @@
                 </Grid>
             </Grid>
         </Canvas>
-        <Grid Height="280.967"  Name="JoyTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="2" HorizontalAlignment="right" Width="544.966" ShowGridLines="True">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="3*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="272*"/>
-                <ColumnDefinition Width="223*"/>
-            </Grid.ColumnDefinitions>
-            <Grid Name="InputGrid" Margin="10,0,0,161" HorizontalAlignment="Left" VerticalAlignment="Stretch"  Grid.ColumnSpan="2" Grid.Column="1" Grid.RowSpan="2" Width="474.966"  >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                </Grid.ColumnDefinitions>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="1" Grid.Column="0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="2"  Grid.Column="1" />
-                <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="3"  Grid.Column="2" />
-                <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="4" Grid.Column="3"  />
-                <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="5"  Grid.Column="4" />
-                <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="6"   Grid.Column="5"/>
-                <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="7"   Grid.Column="6"/>
-                <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="8"  Grid.Column="7" />
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="9" Grid.Column="8"/>
-                <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="10"  Grid.Column="9" />
-                <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="11"  Grid.Column="10" />
-                <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="12" Grid.Column="11"  />
-                <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="13"  Grid.Column="12" />
-                <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="14"   Grid.Column="13"/>
-                <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="15"   Grid.Column="14"/>
-                <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="16"  Grid.Column="15" />
-            </Grid>
-            <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,26.61,228.108,36.348" VerticalAlignment="Center" Width="108.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
-                <Label.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="90"/>
-                        <TranslateTransform X="39.962" Y="-39.962"/>
-                    </TransformGroup>
-                </Label.RenderTransform>
-            </Label>
-            <Grid Grid.Column="1" Name="JoyAxisGrid" HorizontalAlignment="Left" Height="145.967" Margin="10,13,0,0" Grid.Row="1" VerticalAlignment="Top" Width="252">
+        <Expander x:Name="vJoyExpander" Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Grid.Row="1" VerticalAlignment="Top" Width="539.14" BorderBrush="#FFF1A988" Background="#FFF1F185" Margin="0,304,0,0" BorderThickness="2">
+            <Expander.Header>
+                <Grid Width="503" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image  Grid.Column="1" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" Height="10" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="0" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged, StringFormat='Device: {0}'}"  />
+                </Grid>
+            </Expander.Header>
+            <Grid Height="Auto"  x:Name="JoyTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="11*"/>
-                    <RowDefinition Height="62*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="3*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="272*"/>
+                    <ColumnDefinition Width="223*"/>
                 </Grid.ColumnDefinitions>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="1"  Margin="1" Grid.Column="0" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="2"  Margin="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="3"   Margin="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="4" Margin="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="5" Margin="1" Grid.Column="4" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="6" Margin="1" Grid.Column="5" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="7" Margin="1" Grid.Column="6" HorizontalContentAlignment="Center"/>
-                <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="8" Margin="1" Grid.Column="7" HorizontalContentAlignment="Center"/>
+                <Grid x:Name="InputGrid"  HorizontalAlignment="Left" VerticalAlignment="Bottom"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33F590A7" Height="102"  >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="1" Grid.Column="0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="2"  Grid.Column="1" />
+                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="3"  Grid.Column="2" />
+                    <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="4" Grid.Column="3"  />
+                    <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="5"  Grid.Column="4" />
+                    <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="6"   Grid.Column="5"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="7"   Grid.Column="6"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="8"  Grid.Column="7" />
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="9" Grid.Column="8"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="10"  Grid.Column="9" />
+                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="11"  Grid.Column="10" />
+                    <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="12" Grid.Column="11"  />
+                    <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="13"  Grid.Column="12" />
+                    <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="14"   Grid.Column="13"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="15"   Grid.Column="14"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="16"  Grid.Column="15" />
+                </Grid>
+                <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,-4.39,197.108,67.348" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform X="39.962" Y="-39.962"/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
+                <Grid Grid.Column="1" x:Name="JoyAxisGrid" HorizontalAlignment="Left" Height="145.967" Margin="10,13,0,0" Grid.Row="2" VerticalAlignment="Top" Width="252" Background="#33E6C80C">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="62*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="1"  Margin="1" Grid.Column="0" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="2"  Margin="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="3"   Margin="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="4" Margin="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="5" Margin="1" Grid.Column="4" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="6" Margin="1" Grid.Column="5" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="7" Margin="1" Grid.Column="6" HorizontalContentAlignment="Center"/>
+                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="8" Margin="1" Grid.Column="7" HorizontalContentAlignment="Center"/>
+                </Grid>
+                <Rectangle Grid.Row="1" Fill="#FFDCD9D9" Grid.ColumnSpan="3" />
+                <Label Content="vJoy Axes"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform X="39.962" Y="-39.962"/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
+                <Grid x:Name="ButtonGrid" Grid.Column="2" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="203">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Mapped Buttons" Grid.Row="0" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
+                    <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
+                    <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30" Background="#4CADD8E6">
+                        <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
+                        <ctrl:JoyButton Number="1"  Mapped="True" />
+                        <ctrl:JoyButton Number="2"  Mapped="True" Pressed="True" />
+                    </WrapPanel>
+                    <Label Content="UnMapped Buttons" Grid.Row="3" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
+                    <WrapPanel Orientation="Horizontal" Grid.Row="4"  MinWidth="30"  Background="#4CADD8E6">
+                        <ctrl:JoyButton Mapped="False"  Number="3"/>
+                        <Label Content="No Unmapped Buttons"   Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
+                    </WrapPanel>
+                    <GridSplitter HorizontalAlignment="Stretch" 
+        				VerticalAlignment="Center"
+        				Grid.Row="2" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
+        				Height="5" Background="#FFBCBCBC"/>
+                </Grid>
             </Grid>
-            <Label Content="vJoy Axes"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
-                <Label.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="90"/>
-                        <TranslateTransform X="39.962" Y="-39.962"/>
-                    </TransformGroup>
-                </Label.RenderTransform>
-            </Label>
-            <Grid x:Name="ButtonGrid" Grid.Column="2" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="203">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Label Content="Mapped Buttons" Grid.Row="0" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
-                <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
-                <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30" Background="#4CADD8E6">
-                    <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
-                    <ctrl:JoyButton Number="1"  Mapped="True" />
-                    <ctrl:JoyButton Number="2"  Mapped="True" Pressed="True" />
-                </WrapPanel>
-                <Label Content="UnMapped Buttons" Grid.Row="3" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
-                <WrapPanel Orientation="Horizontal" Grid.Row="4"  MinWidth="30"  Background="#4CADD8E6">
-                    <ctrl:JoyButton Mapped="False"  Number="3"></ctrl:JoyButton>
-                    <Label Content="No Unmapped Buttons"   Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
-                </WrapPanel>
-                <GridSplitter HorizontalAlignment="Stretch" 
-                  VerticalAlignment="Center"
-                  Grid.Row="2" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
-                  Height="5" Background="#FFBCBCBC"/>
-            </Grid>
-        </Grid>
+        </Expander>
     </Grid>
 </Window>
