@@ -54,7 +54,7 @@
             <ColumnDefinition Width="403*"/>
             <ColumnDefinition Width="404*"/>
         </Grid.ColumnDefinitions>
-        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499" d:IsHidden="True" d:IsLocked="True">
+        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499">
             <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" VerticalAlignment="Top" Margin="0" Width="550.914" Height="274">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="64*"/>
@@ -155,7 +155,7 @@
                 </GroupBox>
             </Grid>
         </Border>
-        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right" d:IsHidden="True" d:IsLocked="True">
+        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right">
             <Path x:Name="RootPath" StrokeThickness="3"  Data="{StaticResource CTRL_PATH1}" Stretch="Fill" Canvas.Left="0" Height="248" Width="400" Canvas.Top="-26" Stroke="#FF85E4EE" >
                 <Path.Fill>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -335,11 +335,14 @@
                 </Grid.RowDefinitions>
                 <Label Content="Mapped Buttons" Grid.Row="0" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
                 <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
-                <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30"  Background="#4CADD8E6">
-                    <Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
+                <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30" Background="#4CADD8E6">
+                    <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
+                    <ctrl:JoyButton Number="1"  Mapped="True" />
+                    <ctrl:JoyButton Number="2"  Mapped="True" Pressed="True" />
                 </WrapPanel>
                 <Label Content="UnMapped Buttons" Grid.Row="3" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>
                 <WrapPanel Orientation="Horizontal" Grid.Row="4"  MinWidth="30"  Background="#4CADD8E6">
+                    <ctrl:JoyButton Mapped="False"  Number="3"></ctrl:JoyButton>
                     <Label Content="No Unmapped Buttons"   Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
                 </WrapPanel>
                 <GridSplitter HorizontalAlignment="Stretch" 
