@@ -103,6 +103,7 @@ namespace CtrlWindowNS
         public ObservableCollection<vJoyDevice> vJoyDeviceCollection
         {
             get { return _vJoyDeviceCollection; }
+            set { SetField(ref _vJoyDeviceCollection, value, "vJoyDeviceCollection"); }
         }
 
         // Selected vJoy device
