@@ -270,6 +270,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 void CtrlWindowMoving(double Left, double Top);
 void CtrlAudioChanging(int bitrate, WCHAR channel);
 void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
+void CtrlvJoyDeviceChanging(UINT id);
 
 static void GetHwnd(Object^ data)
 {
@@ -285,6 +286,7 @@ static void GetHwnd(Object^ data)
 	ctrlpage->OnMove += gcnew CtrlWindowNS::CtrlWindow::WinMoving(CtrlWindowMoving);
 	ctrlpage->OnAudioChanged += gcnew CtrlWindowNS::CtrlWindow::AudioChanging(CtrlAudioChanging);
 	ctrlpage->OnAudioAutoChanged += gcnew CtrlWindowNS::CtrlWindow::AudioAutoChanging(CtrlAudioAutoChanging);
+	ctrlpage->OnvJoyDeviceChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyDeviceChanging(CtrlvJoyDeviceChanging);
 }
 
 // Add line to the list of audio devices
@@ -359,3 +361,7 @@ void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked)
 	SendMessage(hAppWin, WMSPP_DLG_AUTO, AUTOBITRATE|AUTOCHANNEL, val);
 }
 
+void CtrlvJoyDeviceChanging(UINT id)
+{
+	SendMessage(hAppWin, WMSPP_DLG_VJOYSEL, (WPARAM)id, 0);
+}

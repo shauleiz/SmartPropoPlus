@@ -28,6 +28,9 @@ namespace CtrlWindowNS
         public delegate void AudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
         public event AudioAutoChanging OnAudioAutoChanged;
 
+        public delegate void vJoyDeviceChanging(uint id);
+        public event vJoyDeviceChanging OnvJoyDeviceChanged;
+
         #region General
         public CtrlWindow()
         {
@@ -198,8 +201,17 @@ namespace CtrlWindowNS
                     _event._vJoyDeviceCollection[i].vj_Selected = false;
         }
 
+        // Get the new selected vJoy device as the user selected from the combo box
+        //  - Call event OnvJoyDeviceChanged
+        private void vJoyDeviceCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            uint selected_id = _event.SelectedvjDevice.vj_DeviceNumber;
+            vJoyDevSelect(selected_id);
+            OnvJoyDeviceChanged(selected_id);
+        }
 
         #endregion // "vJoy Interface"
+
 
     }
 

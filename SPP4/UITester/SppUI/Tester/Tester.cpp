@@ -24,6 +24,7 @@ UINT  DefaultBitRate=0;
 TCHAR DefaultChannel=TEXT('U');
 WCHAR * DefaultJackId = NULL;
 bool AutoBitrate, AutoChannel;
+UINT vJoyDeviseSelected = 0;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -35,6 +36,7 @@ void SetDefaultBitRate(UINT);
 void SetDefaultChannel(TCHAR);
 void DisplayAudioStat(void);
 void vJoyRemoveAll(HWND hTopUiWin);
+void DisplayvJoyStat(void);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -262,6 +264,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DisplayAudioStat();
 		break;
 
+	case WMSPP_DLG_VJOYSEL:
+		vJoyDeviseSelected = wParam;
+		DisplayvJoyStat();
+		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -390,3 +397,11 @@ void DisplayAudioStat(void)
 
 void vJoyRemoveAll(HWND hTopUiWin)
 {SendMessage(hTopUiWin, VJOYDEV_REMALL, 0, 0);}
+
+void DisplayvJoyStat(void)
+{
+	std::wstring str;
+	str = L"Selected vJoy Device: " + std::to_wstring(vJoyDeviseSelected);
+	SetWindowText(hMainAppWnd, str.c_str());
+	UpdateWindow(hMainAppWnd);
+}
