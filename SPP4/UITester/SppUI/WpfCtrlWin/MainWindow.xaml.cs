@@ -28,6 +28,7 @@ namespace CtrlWindowNS
         public delegate void AudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
         public event AudioAutoChanging OnAudioAutoChanged;
 
+        #region General
         public CtrlWindow()
         {
             BindingErrorTraceListener.SetTrace();
@@ -42,10 +43,13 @@ namespace CtrlWindowNS
                 AudioChannel = 'U',
                 IsNotAutoBitrate = true,
                 IsNotAutoChannel = true,
+
+                SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0,  vj_Selected = false},
+                _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
+
             };
 
             this.DataContext = _event;
-
         }
 
         void NonRectangularWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -59,6 +63,9 @@ namespace CtrlWindowNS
                 OnMove(Left, Top);
         }
 
+        #endregion General
+
+        #region Audio
 
         // Clean list of Audio devices
         public void CleanAudioList()
@@ -123,10 +130,10 @@ namespace CtrlWindowNS
             view.Refresh();
         }
 
-        private void P1_Click(object sender, RoutedEventArgs e)
-        {
+        //private void P1_Click(object sender, RoutedEventArgs e)
+        //{
 
-        }
+        //}
 
 
         // One of the Audio radio buttons was checked - Call event OnAudioChanged
@@ -142,18 +149,63 @@ namespace CtrlWindowNS
 
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
 
+        //private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+
+        //}
+
+
+       #endregion Audio
+
+        #region "vJoy Interface"
+
+        // Clean list of vJoy devices
+        public void vJoyRemoveAll()
+        {
+            if (_event._vJoyDeviceCollection.Count > 0)
+                _event._vJoyDeviceCollection.Clear();
+            _event.SelectedvjDevice = null;
         }
 
+        // Add vJoy Device to list
+        public void vJoyDevAdd(uint id)
+        {
+            // Is item in range
+            if ((id <= 0) || (id > 16))
+                return;
+
+            // Add item
+            vJoyDevice item = new vJoyDevice { vj_DeviceNumber = id, vj_Selected = false};
+            _event._vJoyDeviceCollection.Add(item);
+        }
+
+        // Set the selected vJoy device
+        public void vJoyDevSelect(uint id)
+        {
+            // Is item in range
+            if ((id <= 0) || (id > 16))
+                return;
+
+            int count = _event._vJoyDeviceCollection.Count;
+            for (int i = 0; i < count; i++)
+                if (id == _event._vJoyDeviceCollection[i].vj_DeviceNumber)
+                {
+                    _event._vJoyDeviceCollection[i].vj_Selected = true;
+                    _event.SelectedvjDevice = _event._vJoyDeviceCollection[i];
+                }
+                else
+                    _event._vJoyDeviceCollection[i].vj_Selected = false;
+        }
+
+
+        #endregion // "vJoy Interface"
 
     }
 
     public class AudioLine
     {
         public string DeviceName { get; set; }
- //       public string LR_LevelsStr { get; set; }
         public string EmptyStr { get; set; }
         public Brush Fill { get; set; }
         public string ID { get; set; }
@@ -161,7 +213,13 @@ namespace CtrlWindowNS
         public uint LevelRight { get; set; }
     }
 
-
+    public class vJoyDevice
+    {
+        public uint vj_DeviceNumber { get; set; }
+        public uint vj_nButtons { get; set; }
+        public uint vj_nAxes { get; set; }
+        public bool vj_Selected { get; set; }
+    }
     #region Converters
     // Boolean to Color converter - may be overriden in the dictionary
     [ValueConversion(typeof(bool), typeof(Brush))]

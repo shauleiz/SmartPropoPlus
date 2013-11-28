@@ -45,6 +45,12 @@ IDC_TESTER MENU
             MENUITEM "Mono High", IDM_MONO_HIGH
         }
     }
+    POPUP "vJoy"
+    {
+        MENUITEM "Clear List", IDM_VJOY_CLEAN
+        MENUITEM "Populate (1)", IDM_ADDVJOY_1
+        MENUITEM "Populate (4)", IDM_ADDVJOY_4
+    }
     POPUP "&Help"
     {
         MENUITEM "&About ...", IDM_ABOUT

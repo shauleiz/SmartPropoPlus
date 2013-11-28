@@ -34,6 +34,7 @@ void CaptureDevicesPopulate(HWND , int);
 void SetDefaultBitRate(UINT);
 void SetDefaultChannel(TCHAR);
 void DisplayAudioStat(void);
+void vJoyRemoveAll(HWND hTopUiWin);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -213,6 +214,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hTopUiWin, VJOYDEV_CH_LEVEL, (WPARAM)DefaultJackId, MAKELPARAM(85,85));//
 			break;
 
+		case IDM_VJOY_CLEAN:
+			vJoyRemoveAll(hTopUiWin);
+			break;
+
+		case IDM_ADDVJOY_1:
+			SendMessage(hTopUiWin, VJOYDEV_ADD, 1, 1); // Add device 1, Selected
+			break;
+
+		case IDM_ADDVJOY_4:
+			SendMessage(hTopUiWin, VJOYDEV_ADD, 1, 0); // Add device 1, Not Selected
+			SendMessage(hTopUiWin, VJOYDEV_ADD, 2, 0); // Add device 2, Not Selected
+			SendMessage(hTopUiWin, VJOYDEV_ADD, 4, 1); // Add device 4, Selected
+			SendMessage(hTopUiWin, VJOYDEV_ADD, 8, 0); // Add device 8, Not Selected
+			break;
+
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -370,3 +387,6 @@ void DisplayAudioStat(void)
 	SetWindowText(hMainAppWnd, str.c_str());
 	UpdateWindow(hMainAppWnd);
 }
+
+void vJoyRemoveAll(HWND hTopUiWin)
+{SendMessage(hTopUiWin, VJOYDEV_REMALL, 0, 0);}
