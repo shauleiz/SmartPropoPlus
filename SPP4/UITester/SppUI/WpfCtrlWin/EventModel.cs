@@ -97,6 +97,24 @@ namespace CtrlWindowNS
         // Audio list box headers
         public string DaviceStr = "Device";
 
+        #region "vJoy Interface"
+        // vJoy: List of available vJoy devices
+        public ObservableCollection<vJoyDevice> _vJoyDeviceCollection;
+        public ObservableCollection<vJoyDevice> vJoyDeviceCollection
+        {
+            get { return _vJoyDeviceCollection; }
+        }
+
+        // Selected vJoy device
+        private vJoyDevice _selected_vjDevice;
+        public vJoyDevice SelectedvjDevice
+        {
+            get { return _selected_vjDevice; }
+            set { SetField(ref _selected_vjDevice, value, "SelectedvjDevice"); }
+        }
+
+        #endregion
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)

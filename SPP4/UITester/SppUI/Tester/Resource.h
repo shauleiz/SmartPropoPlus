@@ -21,3 +21,6 @@
 #define IDM_LEFT_HIGH                           40009
 #define IDM_RIGHT_HIGH                          40010
 #define IDM_MONO_HIGH                           40011
+#define IDM_VJOY_CLEAN                          40012
+#define IDM_ADDVJOY_1                           40013
+#define IDM_ADDVJOY_4                           40014
