@@ -205,9 +205,12 @@ namespace CtrlWindowNS
         //  - Call event OnvJoyDeviceChanged
         private void vJoyDeviceCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            uint selected_id = _event.SelectedvjDevice.vj_DeviceNumber;
-            vJoyDevSelect(selected_id);
-            OnvJoyDeviceChanged(selected_id);
+            if (_event.SelectedvjDevice != null)
+            {
+                uint selected_id = _event.SelectedvjDevice.vj_DeviceNumber;
+                //vJoyDevSelect(selected_id);
+                OnvJoyDeviceChanged(selected_id);
+            };
         }
 
         #endregion // "vJoy Interface"
