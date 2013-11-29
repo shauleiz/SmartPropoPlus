@@ -221,10 +221,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDM_ADDVJOY_1:
+			vJoyRemoveAll(hTopUiWin);
 			SendMessage(hTopUiWin, VJOYDEV_ADD, 1, 1); // Add device 1, Selected
 			break;
 
 		case IDM_ADDVJOY_4:
+			vJoyRemoveAll(hTopUiWin);
 			SendMessage(hTopUiWin, VJOYDEV_ADD, 1, 0); // Add device 1, Not Selected
 			SendMessage(hTopUiWin, VJOYDEV_ADD, 2, 0); // Add device 2, Not Selected
 			SendMessage(hTopUiWin, VJOYDEV_ADD, 4, 1); // Add device 4, Selected

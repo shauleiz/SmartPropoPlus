@@ -244,7 +244,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		DisplayAudioLevels((PVOID)wParam, LOWORD(lParam), HIWORD(lParam));
 		break;
 
-	case IDM_VJOY_CLEAN:
+	case VJOYDEV_REMALL:
 		WPFPageHost::hostedPage->vJoyRemoveAll();
 		break;
 

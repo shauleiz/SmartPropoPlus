@@ -238,7 +238,7 @@
                     <Image  Grid.Column="2" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
                     <TextBlock Grid.Column="0" Text="vJoy Device: " Height="16"  />
                     <!--<TextBlock Grid.Column="1" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0}'}"  />-->
-                    <ComboBox Name="vJoyDeviceCB" Grid.Column="1" Margin="0,0,357,0"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice}" SelectionChanged="vJoyDeviceCB_SelectionChanged">
+                    <ComboBox Name="vJoyDeviceCB" Grid.Column="1" Margin="0,0,357,0"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice, Mode=TwoWay}" SelectionChanged="vJoyDeviceCB_SelectionChanged">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
