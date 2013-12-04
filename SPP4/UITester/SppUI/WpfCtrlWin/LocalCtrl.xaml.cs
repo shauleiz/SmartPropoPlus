@@ -23,22 +23,10 @@ namespace WpfCtrlWin
             InitializeComponent();
         }
 
-#if false
-        public  bool IsEnabled1
-        {
-            get { return (bool)GetValue(IsEnabled1Property); }
-            set { SetValue(IsEnabled1Property, value); }
-        }
+        public Brush BarColorSv = null;
+        public uint ChannelLevelSv = 50;
 
-        public  readonly DependencyProperty IsEnabled1Property =
-            DependencyProperty.Register("IsEnabled1", typeof(bool), typeof(ChannelCtrl), new UIPropertyMetadata(true, (o, e) =>
-            {
-                ((ChannelCtrl)o).ChannelLevel = (bool)e.NewValue ? (uint)10 : (uint)60;
-                ((ChannelCtrl)o).ChLevelPB.IsEnabled = (bool)e.NewValue;
-                ((ChannelCtrl)o).IsEnabled = ((ChannelCtrl)o).IsEnabled1;
-            }));
-        
-#endif
+
         public string ChannelName { set { ChNumTB.Content = value; } }
         public uint ChannelLevel { set { ChLevelPB.Value = value; } }
         public Brush BarColor { 
@@ -51,30 +39,37 @@ namespace WpfCtrlWin
 
             } 
             get { return ChLevelPB.Foreground; } }
-
-
         public Brush BarBgColor
         {
             set
             {
-                //_barbgcolor = ChLevelPB.Background.ToString();
                 ChLevelPB.Background = value;
             }
             get { return ChLevelPB.Background; }
         }
 
-#if false
-        public bool IsEnabled
+        public new bool IsEnabled
         {
             get { return (bool)GetValue(IsEnabledProperty); }
             set { SetValue(IsEnabledProperty, value); }
         }
-        public static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register("IsEnabled", typeof(bool), typeof(ChannelCtrl), new UIPropertyMetadata(false, (o, e) =>
+        public new static readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.Register("IsEnabled", typeof(bool), typeof(ChannelCtrl), new UIPropertyMetadata(true, (o, e) =>
             {
-                ((ChannelCtrl)o).ChLevelPB.Foreground = new SolidColorBrush(Colors.LightGray);
+                if (!(bool)e.NewValue)
+                {
+                    ((ChannelCtrl)o).ChannelLevelSv = (uint)((ChannelCtrl)o).ChLevelPB.Value;
+                    ((ChannelCtrl)o).ChannelLevel = 0;
+                    ((ChannelCtrl)o).BarColorSv = ((ChannelCtrl)o).BarColor.CloneCurrentValue();
+                    ((ChannelCtrl)o).ChLevelPB.Foreground = new SolidColorBrush(Colors.Transparent);
+                }
+                else
+                {
+                    ((ChannelCtrl)o).BarColor =  ((ChannelCtrl)o).BarColorSv.CloneCurrentValue();
+                    ((ChannelCtrl)o).ChLevelPB.Value = ((ChannelCtrl)o).ChannelLevelSv;
+                }
             }));
-        
-#endif    
+
+
     }
 }
