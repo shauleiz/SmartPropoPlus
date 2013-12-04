@@ -27,6 +27,9 @@
     <local:CharToChannelBoolConverter Target="R" x:Key="ChannelRightConverter" />
     <local:CharToChannelBoolConverter Target="M" x:Key="ChannelMonoConverter" />
     <local:InverseBooleanConverter x:Key="InvConverter" />
+    
+    <!-- Based on:  http://wpftutorial.net/DebugDataBinding.html -->
+    <local:DatabindingDebugConverter x:Key="debugConverter" />
   <!-- Converters instances (end) -->
 
 </ResourceDictionary>

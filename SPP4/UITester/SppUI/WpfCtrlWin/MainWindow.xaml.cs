@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace CtrlWindowNS
 {
@@ -31,7 +32,7 @@ namespace CtrlWindowNS
         public delegate void vJoyDeviceChanging(uint id);
         public event vJoyDeviceChanging OnvJoyDeviceChanged;
 
-        #region General
+#region General
         public CtrlWindow()
         {
             BindingErrorTraceListener.SetTrace();
@@ -47,9 +48,9 @@ namespace CtrlWindowNS
                 IsNotAutoBitrate = true,
                 IsNotAutoChannel = true,
 
-                SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0,  vj_Selected = false},
+                SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
-
+                vJoyAxisEn_X = false,
             };
 
             this.DataContext = _event;
@@ -68,7 +69,7 @@ namespace CtrlWindowNS
 
         #endregion General
 
-        #region Audio
+#region Audio
 
         // Clean list of Audio devices
         public void CleanAudioList()
@@ -161,7 +162,7 @@ namespace CtrlWindowNS
 
        #endregion Audio
 
-        #region "vJoy Interface"
+#region "vJoy Interface"
 
         // Clean list of vJoy devices
         public void vJoyRemoveAll()
@@ -179,7 +180,7 @@ namespace CtrlWindowNS
                 return;
 
             // Add item
-            vJoyDevice item = new vJoyDevice { vj_DeviceNumber = id, vj_Selected = false};
+            vJoyDevice item = new vJoyDevice { vj_DeviceNumber = id};
             _event._vJoyDeviceCollection.Add(item);
         }
 
@@ -193,12 +194,7 @@ namespace CtrlWindowNS
             int count = _event._vJoyDeviceCollection.Count;
             for (int i = 0; i < count; i++)
                 if (id == _event._vJoyDeviceCollection[i].vj_DeviceNumber)
-                {
-                    _event._vJoyDeviceCollection[i].vj_Selected = true;
                     _event.SelectedvjDevice = _event._vJoyDeviceCollection[i];
-                }
-                else
-                    _event._vJoyDeviceCollection[i].vj_Selected = false;
         }
 
         // Get the new selected vJoy device as the user selected from the combo box
@@ -208,12 +204,28 @@ namespace CtrlWindowNS
             if (_event.SelectedvjDevice != null)
             {
                 uint selected_id = _event.SelectedvjDevice.vj_DeviceNumber;
-                //vJoyDevSelect(selected_id);
                 OnvJoyDeviceChanged(selected_id);
             };
         }
 
-        #endregion // "vJoy Interface"
+
+        // Enable/disable controls according to vJoy device settings
+        public void EnableControls(uint id, Mcontrols ctrl)
+        {
+            ////// Verify correct vJoy device
+            if (_event.SelectedvjDevice.vj_DeviceNumber != id)
+                return;
+
+            _event.CurrentvjCtrl = ctrl;
+            //_event.CurrentvjCtrl.nButtons = ctrl.nButtons;
+            //_event.CurrentvjCtrl.axis = ctrl.axis;
+
+            _event.vJoyAxisEn_X = ctrl.axis[7];
+            
+        }
+
+
+#endregion // "vJoy Interface"
 
 
     }
@@ -233,8 +245,20 @@ namespace CtrlWindowNS
         public uint vj_DeviceNumber { get; set; }
         public uint vj_nButtons { get; set; }
         public uint vj_nAxes { get; set; }
-        public bool vj_Selected { get; set; }
+        //public bool vj_Selected { get; set; }
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public class Mcontrols
+    {
+        //private bool[] ax = new bool[8];
+        //public bool[] axis { get { return ax; } set { ax = value; } }
+        public uint nButtons { get; set; }	// Number of buttons
+        public bool[] axis { get; set; }
+        public Mcontrols() {axis  = new bool[8];}
+    }
+
+
     #region Converters
     // Boolean to Color converter - may be overriden in the dictionary
     [ValueConversion(typeof(bool), typeof(Brush))]
@@ -390,7 +414,55 @@ namespace CtrlWindowNS
             return !(bool)value;
         }
     }
+
+
+    /// <summary>
+    /// This converter does nothing except breaking the
+    /// debugger into the convert method
+    /// From: http://wpftutorial.net/DebugDataBinding.html
+    /// </summary>
+    public class DatabindingDebugConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            Debugger.Break();
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            Debugger.Break();
+            return value;
+        }
+    }
+    // Unsigned Integer to to boolean - The Unsigned Integer represents a vJoy axis (0=X ... 7=SL1)
+    // The bollean value is the boolean value in the array of enabled axis in CurrentvjCtrl.Axis
+#if false
+    [ValueConversion(typeof(uint), typeof(bool))]
+    public class UintToEnabledAxis : IValueConverter
+    {
+        public uint Axis { get; set; }
+        public UintToEnabledAxis() { Axis = 0; }
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (Axis > 7)
+                return false;
+
+            return _event.CurrentvjCtrl.Axis[Axis];
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+
+    }
+
     
+#endif
     #endregion // Converters
 
 } // namespace CtrlWindowNS

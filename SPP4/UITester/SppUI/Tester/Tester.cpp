@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include <string>
+#include <array>
 #include "../SppTopWin/SppTopWin.h"
 #include "WinMessages.h"
 #include "Tester.h"
@@ -37,6 +38,7 @@ void SetDefaultChannel(TCHAR);
 void DisplayAudioStat(void);
 void vJoyRemoveAll(HWND hTopUiWin);
 void DisplayvJoyStat(void);
+void SetAvailableControls(UINT id, HWND hDlg, int stat);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -233,6 +235,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hTopUiWin, VJOYDEV_ADD, 8, 0); // Add device 8, Not Selected
 			break;
 
+		case IDM_VJOY_CTRLS1:
+			SetAvailableControls(1, hTopUiWin, 1);
+			SetAvailableControls(4, hTopUiWin, 1);
+			break;
+
+		case IDM_VJOY_CTRLS2:
+			SetAvailableControls(1, hTopUiWin, 2);
+			SetAvailableControls(4, hTopUiWin, 2);
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -406,4 +417,24 @@ void DisplayvJoyStat(void)
 	str = L"Selected vJoy Device: " + std::to_wstring(vJoyDeviseSelected);
 	SetWindowText(hMainAppWnd, str.c_str());
 	UpdateWindow(hMainAppWnd);
+}
+
+			
+void SetAvailableControls(UINT id, HWND hDlg, int stat)
+{
+	controls ctrls;
+	ctrls.axis[0] = ctrls.axis[1] =ctrls.axis[2] = ctrls.axis[3] =
+	ctrls.axis[4] = ctrls.axis[5] =ctrls.axis[6] = ctrls.axis[7] = TRUE;
+
+	// Get data from vJoy Interface
+	if (stat == 1)
+		ctrls.nButtons = 4;
+	else
+	{
+		ctrls.nButtons = 8;
+		ctrls.axis[5] =ctrls.axis[6] =ctrls.axis[7] = FALSE;
+	}
+
+	// Send data to GUI
+	SendMessage(hDlg, VJOYDEV_SETAVAIL, id, (LPARAM)&ctrls);
 }

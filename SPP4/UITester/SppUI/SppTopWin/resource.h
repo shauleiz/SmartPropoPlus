@@ -3,7 +3,7 @@
 // Used by SppTopWin.rc
 //
 
-#define IDS_APP_TITLE			103
+//#define IDS_APP_TITLE			103
 
 #define IDR_MAINFRAME			128
 #define IDD_TESTER_DIALOG	102

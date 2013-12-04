@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     xmlns:control="clr-namespace:VUMeterControlLibrary;assembly=VUMeterControlLibrary"
     xmlns:ctrl="clr-namespace:WpfCtrlWin"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -128,7 +129,7 @@
                                 </TransformGroup>
                             </TextBlock.RenderTransform>
                         </TextBlock>
-                        <control:VUMeterControl  x:Name="vuMeterControl_Left"  MaxValue="100" Value="{Binding SelectedAudioDevice.LevelLeft}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-45.751,75,-21.378"  Grid.Column="2" Grid.RowSpan="2">
+                        <control:VUMeterControl  x:Name="vuMeterControl_Left"  IsEnabled="True"  MaxValue="100" Value="{Binding SelectedAudioDevice.LevelLeft}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-45.751,75,-21.378"  Grid.Column="2" Grid.RowSpan="2">
                             <control:VUMeterControl.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -138,7 +139,7 @@
                                 </TransformGroup>
                             </control:VUMeterControl.RenderTransform>
                         </control:VUMeterControl>
-                        <control:VUMeterControl x:Name="vuMeterControl_Right" MaxValue="100" Value="{Binding SelectedAudioDevice.LevelRight}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-5.503,75,-61.126" Grid.Column="2" Grid.RowSpan="2">
+                        <control:VUMeterControl x:Name="vuMeterControl_Right"  IsEnabled="{Binding IsNotAutoChannel}" MaxValue="100" Value="{Binding SelectedAudioDevice.LevelRight}" HorizontalAlignment="Right" Background="LightGray"  BlockCount="20" HighLevel="10" MiddleLevel="5"  RenderTransformOrigin="0.898,0.497"  Width="17" Margin="0,-5.503,75,-61.126" Grid.Column="2" Grid.RowSpan="2" >
                             <control:VUMeterControl.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -327,14 +328,14 @@
                         <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                         <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  IsEnabled="True" ChannelLevel="10" ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  IsEnabled="False" ChannelLevel="10" ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  IsEnabled="{Binding IsNotAutoChannel, Converter={StaticResource ResourceKey=InvConverter}}" ChannelLevel="10" ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
                     <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
                     <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
                     <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl2" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="Sl0" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl  IsEnabled="{Binding IsNotAutoChannel}" ChannelLevel="10" ChannelName="Sl1" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
                     <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="1"  Margin="1" Grid.Column="0" HorizontalContentAlignment="Center"/>
                     <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="2"  Margin="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
                     <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="3"   Margin="1" Grid.Column="2" HorizontalContentAlignment="Center"/>

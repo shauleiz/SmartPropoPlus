@@ -41,26 +41,43 @@ namespace VUMeterControlLibrary
     private void GenerateBlocks()
     {
       items.Clear();
-      for (int i = 0; i < BlockCount; i++)
+      if (this.IsEnabled)
       {
-        if (i < BlockCount - HighLevel) items.Add(new Block() { Level = 1 });
-        if (i >= BlockCount - HighLevel && i < BlockCount - MiddleLevel) items.Add(new Block() { Level = 2 });
-        if (i >= BlockCount - MiddleLevel) items.Add(new Block() { Level = 3 });
+          for (int i = 0; i < BlockCount; i++)
+          {
+              if (i < BlockCount - HighLevel) items.Add(new Block() { Level = 1 });
+              if (i >= BlockCount - HighLevel && i < BlockCount - MiddleLevel) items.Add(new Block() { Level = 2 });
+              if (i >= BlockCount - MiddleLevel) items.Add(new Block() { Level = 3 });
+          }
       }
     }
 
     #region Dependency Properties
 
+    public new bool  IsEnabled
+    {
+        get { return (bool)GetValue(IsEnabledProperty); }
+        set { SetValue(IsEnabledProperty, value); }
+    }
+    public new static readonly  DependencyProperty IsEnabledProperty =
+        DependencyProperty.Register("IsEnabled", typeof(bool), typeof(VUMeterControl), new UIPropertyMetadata(false, (o, e) =>
+        {
+            ((VUMeterControl)o).GenerateBlocks();
+        }));
+
+
+
     public int BlockCount
     {
-      get { return (int)GetValue(BlockCountProperty); }
-      set { SetValue(BlockCountProperty, value); }
+        get { return (int)GetValue(BlockCountProperty); }
+        set { SetValue(BlockCountProperty, value); }
     }
     public static readonly DependencyProperty BlockCountProperty =
         DependencyProperty.Register("BlockCount", typeof(int), typeof(VUMeterControl), new UIPropertyMetadata(15, (o, e) =>
         {
-          ((VUMeterControl)o).GenerateBlocks();
+            ((VUMeterControl)o).GenerateBlocks();
         }));
+
 
     public int HighLevel
     {
