@@ -34,3 +34,20 @@ struct jack_info
 	bool	Default;
 	int		nChannels;
 };
+
+/// Channel to Button/Axis mapping
+#define MAX_BUTTONS		128
+typedef std::array<BYTE, MAX_BUTTONS> BTNArr;
+struct Mapping {
+	UINT nAxes;
+	DWORD * pAxisMap;
+	UINT nButtons;
+	BTNArr * ButtonArray;
+};
+
+// Control (Buttons/Axes) mask (availability)
+struct controls
+{
+	UINT nButtons;	// Number of buttons
+	BOOL axis[8];	// Axis-mask: axis[0] indicates if X exists ... axis[7] refers to SL1
+};

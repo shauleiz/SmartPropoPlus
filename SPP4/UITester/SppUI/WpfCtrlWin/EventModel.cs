@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Windows.Threading;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace CtrlWindowNS
 {
@@ -32,6 +33,16 @@ namespace CtrlWindowNS
             OnPropertyChanged(propertyName);
             return true;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+#region Audio
 
         // Selected Audio Jack
         private AudioLine _selected_jack;
@@ -97,7 +108,9 @@ namespace CtrlWindowNS
         // Audio list box headers
         public string DaviceStr = "Device";
 
-        #region "vJoy Interface"
+#endregion Audio
+
+#region "vJoy Interface"
         // vJoy: List of available vJoy devices
         public ObservableCollection<vJoyDevice> _vJoyDeviceCollection;
         public ObservableCollection<vJoyDevice> vJoyDeviceCollection
@@ -114,14 +127,36 @@ namespace CtrlWindowNS
             set { SetField(ref _selected_vjDevice, value, "SelectedvjDevice"); }
         }
 
-        #endregion
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
+        // vJoy Axis status - Enabled/Disabled
+        private bool vjoy_axis_en_X;
+        public bool vJoyAxisEn_X
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            get { return vjoy_axis_en_X; }
+            set { SetField(ref vjoy_axis_en_X, value, "vJoyAxisEn_X"); }
         }
+
+        // Set number of existing buttons in the currently selected vJoy Device
+        private Mcontrols _current_vjctrl;
+        public  Mcontrols CurrentvjCtrl
+        {
+            get { return _current_vjctrl; }
+            set 
+            {
+                SetField(ref _current_vjctrl, value, "CurrentvjCtrl");
+
+                _current_vjctrl.nButtons = value.nButtons;
+                OnPropertyChanged("CurrentvjCtrl.nButtons");
+
+                int len = _current_vjctrl.axis.Length;
+                for (int i = 0; i < len; i++ )
+                {
+                    _current_vjctrl.axis[i] = value.axis[i];
+                }
+                OnPropertyChanged(Binding.IndexerName);
+            }
+        }
+
+#endregion "vJoy Interface"
+
     }
 }

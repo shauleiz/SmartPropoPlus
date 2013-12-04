@@ -50,6 +50,9 @@ IDC_TESTER MENU
         MENUITEM "Clear List", IDM_VJOY_CLEAN
         MENUITEM "Populate (1)", IDM_ADDVJOY_1
         MENUITEM "Populate (4)", IDM_ADDVJOY_4
+        MENUITEM SEPARATOR
+        MENUITEM "Controls (All+4 Btns)", IDM_VJOY_CTRLS1
+        MENUITEM "Controls (4x+8 Btns)", IDM_VJOY_CTRLS2
     }
     POPUP "&Help"
     {

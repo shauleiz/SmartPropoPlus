@@ -24,3 +24,5 @@
 #define IDM_VJOY_CLEAN                          40012
 #define IDM_ADDVJOY_1                           40013
 #define IDM_ADDVJOY_4                           40014
+#define IDM_VJOY_CTRLS1                         40015
+#define IDM_VJOY_CTRLS2                         40016

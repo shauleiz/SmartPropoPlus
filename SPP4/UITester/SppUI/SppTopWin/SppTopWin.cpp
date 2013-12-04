@@ -46,6 +46,7 @@ void				AddLine2AudioList(jack_info * jack);
 void				AudioChannelParams(UINT Bitrate, WCHAR Channel);
 void				AudioAutoParams(WORD Mask, WORD Flags);
 void				DisplayAudioLevels(PVOID Id, UINT Left, UINT Right);
+void				vJoyDevSetAvail(UINT id, controls * ctrl);
 
 public ref class CtrlWindow : Window
 {
@@ -254,6 +255,9 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 			WPFPageHost::hostedPage->vJoyDevSelect((UINT)wParam);
 		break;
 
+	case VJOYDEV_SETAVAIL:
+		vJoyDevSetAvail((UINT)wParam, (controls * )lParam);
+		break;
 
 	//case 12347:
 		//_private->Clock->Set_YYY();
@@ -312,6 +316,17 @@ void DisplayAudioLevels(PVOID Id, UINT Left, UINT Right)
 	WPFPageHost::hostedPage->SetAudioLevels_Jack(gcnew System::String((LPCTSTR)Id), Left, Right);
 }
 
+void vJoyDevSetAvail(UINT id, controls * ctrl)
+{
+	const UINT nAxes = 8;
+	Mcontrols^ Mcrtl = gcnew Mcontrols();
+	array<int>^ Maxis = gcnew array<int>(nAxes);
+	Mcrtl->nButtons = ctrl->nButtons;
+	for (int i=0; i<nAxes; i++)
+		Mcrtl->axis[i] = ctrl->axis[i];
+	
+	WPFPageHost::hostedPage->EnableControls(id, Mcrtl);
+}
 
 // TODO: Use this function to coordinate moving of windows
 void CtrlWindowMoving(double Left, double Top)
