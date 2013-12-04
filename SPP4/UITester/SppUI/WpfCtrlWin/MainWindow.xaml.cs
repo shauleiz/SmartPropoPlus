@@ -218,7 +218,7 @@ namespace CtrlWindowNS
 
             _event.CurrentvjCtrl = ctrl;
             //_event.CurrentvjCtrl.nButtons = ctrl.nButtons;
-            //_event.CurrentvjCtrl.axis = ctrl.axis;
+            _event.CurrentvjCtrl.axis = ctrl.axis;
 
             _event.vJoyAxisEn_X = ctrl.axis[7];
             
