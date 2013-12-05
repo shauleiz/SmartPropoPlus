@@ -127,13 +127,6 @@ namespace CtrlWindowNS
             set { SetField(ref _selected_vjDevice, value, "SelectedvjDevice"); }
         }
 
-        // vJoy Axis status - Enabled/Disabled
-        private bool vjoy_axis_en_X;
-        public bool vJoyAxisEn_X
-        {
-            get { return vjoy_axis_en_X; }
-            set { SetField(ref vjoy_axis_en_X, value, "vJoyAxisEn_X"); }
-        }
 
         // Set number of existing buttons in the currently selected vJoy Device
         private Mcontrols _current_vjctrl;
