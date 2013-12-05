@@ -23,19 +23,20 @@ namespace WpfCtrlWin
             InitializeComponent();
         }
 
-        public Brush BarColorSv = null;
+        public Brush BarColorSv;
+        public Brush BarBgColorSv;
         public uint ChannelLevelSv = 50;
-
 
         public string ChannelName { set { ChNumTB.Content = value; } }
         public uint ChannelLevel { set { ChLevelPB.Value = value; } }
         public Brush BarColor { 
             set 
             {
+                BarColorSv = value;
                 if (IsEnabled)
                     ChLevelPB.Foreground = value;
                 else
-                    ChLevelPB.Foreground = new SolidColorBrush(Colors.LightGray);
+                    ChLevelPB.Foreground = new SolidColorBrush(Colors.Transparent);
 
             } 
             get { return ChLevelPB.Foreground; } }
@@ -43,7 +44,11 @@ namespace WpfCtrlWin
         {
             set
             {
-                ChLevelPB.Background = value;
+                BarBgColorSv = value;
+                if (IsEnabled)
+                    ChLevelPB.Background = value;
+                else
+                    ChLevelPB.Background = new SolidColorBrush(Colors.Transparent);
             }
             get { return ChLevelPB.Background; }
         }
@@ -54,18 +59,18 @@ namespace WpfCtrlWin
             set { SetValue(IsEnabledProperty, value); }
         }
         public new static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register("IsEnabled", typeof(bool), typeof(ChannelCtrl), new UIPropertyMetadata(true, (o, e) =>
+            DependencyProperty.Register("IsEnabled", typeof(bool), typeof(ChannelCtrl), new UIPropertyMetadata(false, (o, e) =>
             {
                 if (!(bool)e.NewValue)
                 {
-                    ((ChannelCtrl)o).ChannelLevelSv = (uint)((ChannelCtrl)o).ChLevelPB.Value;
                     ((ChannelCtrl)o).ChannelLevel = 0;
-                    ((ChannelCtrl)o).BarColorSv = ((ChannelCtrl)o).BarColor.CloneCurrentValue();
                     ((ChannelCtrl)o).ChLevelPB.Foreground = new SolidColorBrush(Colors.Transparent);
+                    ((ChannelCtrl)o).ChLevelPB.Background = new SolidColorBrush(Colors.Transparent);
                 }
                 else
                 {
-                    ((ChannelCtrl)o).BarColor =  ((ChannelCtrl)o).BarColorSv.CloneCurrentValue();
+                    ((ChannelCtrl)o).BarColor = ((ChannelCtrl)o).BarColorSv.CloneCurrentValue();
+                    ((ChannelCtrl)o).BarBgColor = ((ChannelCtrl)o).BarBgColorSv.CloneCurrentValue();
                     ((ChannelCtrl)o).ChLevelPB.Value = ((ChannelCtrl)o).ChannelLevelSv;
                 }
             }));

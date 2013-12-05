@@ -50,7 +50,6 @@ namespace CtrlWindowNS
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
-                vJoyAxisEn_X = false,
             };
 
             this.DataContext = _event;
@@ -212,6 +211,10 @@ namespace CtrlWindowNS
         // Enable/disable controls according to vJoy device settings
         public void EnableControls(uint id, Mcontrols ctrl)
         {
+            int len = ctrl.axis.Length;
+            if (_event.CurrentvjCtrl != null)
+                _event.CurrentvjCtrl.axis = new bool[len];
+
             ////// Verify correct vJoy device
             if (_event.SelectedvjDevice.vj_DeviceNumber != id)
                 return;
@@ -219,8 +222,6 @@ namespace CtrlWindowNS
             _event.CurrentvjCtrl = ctrl;
             //_event.CurrentvjCtrl.nButtons = ctrl.nButtons;
             _event.CurrentvjCtrl.axis = ctrl.axis;
-
-            _event.vJoyAxisEn_X = ctrl.axis[7];
             
         }
 
