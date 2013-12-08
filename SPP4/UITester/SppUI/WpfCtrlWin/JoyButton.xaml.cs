@@ -27,6 +27,8 @@ namespace WpfCtrlWin
         private bool _pressed = false;
         private bool _mapped = false;
         private bool _enabled = false;
+        private int _BtnValue = 0;
+        private int _BtnLast = 0;
         private Brush _bgPressedBrush = new SolidColorBrush(Colors.Red);
         private Brush _bgReleasedBrush = new SolidColorBrush(Colors.LightGray);
         private Brush _bgUnMappedBrush = new SolidColorBrush(Colors.Wheat);
@@ -47,6 +49,11 @@ namespace WpfCtrlWin
         /// </summary>
         private Brush BgColor() 
         { 
+            if (_BtnLast < _BtnValue)
+                _enabled = false;
+            else
+                _enabled = true;
+
                 if (!_enabled)
                     BackGround.Fill = _bgDisabledBrush;
                 else
@@ -68,7 +75,6 @@ namespace WpfCtrlWin
 
         private Brush RingStroke { set { OuterRing.Stroke = value; } get { return OuterRing.Stroke; } }
 
-        public String Number { set { ButtonNumber.Content = value; } get { return ButtonNumber.Content as string; } }
 
 
 #if false
@@ -125,6 +131,10 @@ namespace WpfCtrlWin
                 ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor(); 
             }));
 
+        /// <summary>
+        /// LastButton - The number of enabled vJoy device buttons - Used to determened if a button enabled
+        /// Button is enabled if its number is leaa or equal to the 'LastButton'
+        /// </summary>
         public int LastButton
         {
             get { return (int)GetValue(LastButtonProperty); }
@@ -134,15 +144,27 @@ namespace WpfCtrlWin
         public static readonly DependencyProperty LastButtonProperty =
             DependencyProperty.Register("LastButton", typeof(int), typeof(JoyButton), new UIPropertyMetadata(0, (o, e) =>
             {
-                var result = 0;
-                if (int.TryParse(((JoyButton)o).Number, out result))
-                    ((JoyButton)o)._enabled = ((int)e.NewValue >= Convert.ToInt32(((JoyButton)o).Number));
-                else
-                    ((JoyButton)o)._enabled = false;
+             //   if (int.TryParse(((JoyButton)o).Number, out result))
+                ((JoyButton)o)._BtnLast = (int)e.NewValue;
+             //   else
+              //      ((JoyButton)o)._enabled = false;
 
                 ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
             }));
 
+        public int Number
+        {
+            get { return (int)GetValue(NumberProperty); }
+            set { SetValue(NumberProperty, value); }
+        }
+
+        public static readonly DependencyProperty NumberProperty =
+            DependencyProperty.Register("Number", typeof(int), typeof(JoyButton), new UIPropertyMetadata(0, (o, e) =>
+            {
+                ((JoyButton)o)._BtnValue =  (int)e.NewValue;
+                ((JoyButton)o).ButtonNumber.Content = ((JoyButton)o)._BtnValue;
+                ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
+            }));
 
     }
 }
