@@ -368,11 +368,11 @@
                     <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
                     <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30" Background="#4CADD8E6">
                         <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
-                        <ctrl:JoyButton Number="1" LastButton="8" IsMapped="True"  IsPressed="False"/>
-                        <ctrl:JoyButton Number="2" LastButton="8" IsMapped="True"  IsPressed="False"/>
-                        <ctrl:JoyButton Number="3" LastButton="8"    IsMapped="True"  IsPressed="False" />
-                        <ctrl:JoyButton Number="4"  LastButton="8" IsMapped="True"  IsPressed="True"  />
-                        <ctrl:JoyButton Number="5" IsMapped="True"  IsPressed="False"  LastButton="8"/>
+                        <ctrl:JoyButton Number="1" />
+                        <ctrl:JoyButton Number="2" IsMapped="True"  IsPressed="False"/>
+                        <ctrl:JoyButton Number="3" IsMapped="True"  IsPressed="False" />
+                        <ctrl:JoyButton Number="4" IsMapped="True"  IsPressed="True"  />
+                        <ctrl:JoyButton Number="5" IsMapped="True"  IsPressed="False" />
                         <ctrl:JoyButton Number="6"/>
                         <ctrl:JoyButton Number="7"/>
                         <ctrl:JoyButton Number="8"/>
