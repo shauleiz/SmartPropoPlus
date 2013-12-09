@@ -50,6 +50,7 @@ namespace CtrlWindowNS
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
+                CurrentAxisVal = new vJoyAxisVal(),
             };
 
             this.DataContext = _event;
@@ -196,6 +197,15 @@ namespace CtrlWindowNS
                     _event.SelectedvjDevice = _event._vJoyDeviceCollection[i];
         }
 
+        // Update the position of the  progress bar that corresponds to the vJoy axis
+        public void SetJoystickAxisData(uint iDev, uint Axis, UInt32 AxisValue)
+        {
+            // Use data for selected device only
+            if (_event.SelectedvjDevice.vj_DeviceNumber != iDev)
+                return;
+            _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
+        }
+
         // Get the new selected vJoy device as the user selected from the combo box
         //  - Call event OnvJoyDeviceChanged
         private void vJoyDeviceCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -220,7 +230,7 @@ namespace CtrlWindowNS
                 return;
 
             _event.CurrentvjCtrl = ctrl;
-            //_event.CurrentvjCtrl.nButtons = ctrl.nButtons;
+            _event.CurrentvjCtrl.nButtons = ctrl.nButtons;
             _event.CurrentvjCtrl.axis = ctrl.axis;
             
         }
@@ -231,6 +241,7 @@ namespace CtrlWindowNS
 
     }
 
+#region Data Structures
     public class AudioLine
     {
         public string DeviceName { get; set; }
@@ -252,13 +263,55 @@ namespace CtrlWindowNS
     [StructLayout(LayoutKind.Sequential, Pack = 2)]
     public class Mcontrols
     {
-        //private bool[] ax = new bool[8];
-        //public bool[] axis { get { return ax; } set { ax = value; } }
         public uint nButtons { get; set; }	// Number of buttons
-        public bool[] axis { get; set; }
+        public bool[] axis { get; set; }    // Axis Exists
         public Mcontrols() {axis  = new bool[8];}
     }
 
+
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public class vJoyDaviceState
+    {
+        public int Id;
+        public UInt32[] AxisVal  { get; set; }
+        public bool[] ButtonVal  { get; set; }
+
+        public vJoyDaviceState()
+        {
+            Id = -1;
+            AxisVal = new UInt32[8];
+            ButtonVal = new bool[32];
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public class vJoyAxisVal : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public UInt32[] AxisVal { get; set; }
+        public vJoyAxisVal() { AxisVal = new UInt32[8] { 0, 0, 0, 0, 0, 0, 0, 0 }; }
+
+        public UInt32 this[uint index]
+        {
+            get { return AxisVal[index]; }
+            set
+            {
+                AxisVal[index] = value;
+                OnPropertyChanged(Binding.IndexerName);
+            }
+        }
+    }
+
+
+
+#endregion Data Structures
 
     #region Converters
     // Boolean to Color converter - may be overriden in the dictionary

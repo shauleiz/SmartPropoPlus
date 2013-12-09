@@ -51,3 +51,4 @@ struct controls
 	UINT nButtons;	// Number of buttons
 	BOOL axis[8];	// Axis-mask: axis[0] indicates if X exists ... axis[7] refers to SL1
 };
+

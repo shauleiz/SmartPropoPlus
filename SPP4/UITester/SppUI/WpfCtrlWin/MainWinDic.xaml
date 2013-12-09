@@ -33,8 +33,10 @@
     <local:DatabindingDebugConverter x:Key="debugConverter" />
   <!-- Converters instances (end) -->
 
+    <!-- Styles -->
+    <!-- vJoy Button Style -->
     <Style TargetType="ctrl:JoyButton">
-        <Setter Property="LastButton" Value="8" />
+        <Setter Property="LastButton" Value= "{Binding CurrentvjCtrl.nButtons}" />
         <Setter Property="IsMapped" Value="False" /> 
         <Setter Property="IsPressed" Value="False" />
     </Style>

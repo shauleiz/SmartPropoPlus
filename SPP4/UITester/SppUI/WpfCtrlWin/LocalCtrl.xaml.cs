@@ -25,10 +25,24 @@ namespace WpfCtrlWin
 
         public Brush BarColorSv;
         public Brush BarBgColorSv;
-        public uint ChannelLevelSv = 50;
+        public UInt32 ChannelLevelSv = 50;
 
         public string ChannelName { set { ChNumTB.Content = value; } }
-        public uint ChannelLevel { set { ChLevelPB.Value = value; } }
+
+
+        public UInt32 ChannelLevel { 
+            set { SetValue(ChannelLevelProperty, value); }
+            get { return (UInt32)GetValue(IsEnabledProperty); }
+        }  
+
+        public static readonly DependencyProperty ChannelLevelProperty =
+            DependencyProperty.Register("ChannelLevel", typeof(UInt32), typeof(ChannelCtrl), new UIPropertyMetadata((UInt32)0, (o, e) =>
+            {
+                ((ChannelCtrl)o).ChLevelPB.Value = (UInt32)e.NewValue;
+                ((ChannelCtrl)o).ChannelLevelSv = (UInt32)e.NewValue;
+            }));
+
+
         public Brush BarColor { 
             set 
             {
