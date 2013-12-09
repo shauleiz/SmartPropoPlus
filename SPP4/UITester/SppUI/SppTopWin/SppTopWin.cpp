@@ -259,6 +259,9 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		vJoyDevSetAvail((UINT)wParam, (controls * )lParam);
 		break;
 
+	case WMSPP_JMON_AXIS:
+		WPFPageHost::hostedPage->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
+		break;
 	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));

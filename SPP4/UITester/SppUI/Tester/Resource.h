@@ -26,3 +26,5 @@
 #define IDM_ADDVJOY_4                           40014
 #define IDM_VJOY_CTRLS1                         40015
 #define IDM_VJOY_CTRLS2                         40016
+#define IDM_AXES_LO2HI1                         40017
+#define IDM_AXES_HI2LO4                         40018

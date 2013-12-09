@@ -149,6 +149,9 @@ namespace CtrlWindowNS
             }
         }
 
+
+        public vJoyAxisVal CurrentAxisVal { get; set; }
+
 #endregion "vJoy Interface"
 
     }

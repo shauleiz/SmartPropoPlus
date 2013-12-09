@@ -39,6 +39,7 @@ void DisplayAudioStat(void);
 void vJoyRemoveAll(HWND hTopUiWin);
 void DisplayvJoyStat(void);
 void SetAvailableControls(UINT id, HWND hDlg, int stat);
+void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -245,6 +246,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetAvailableControls(4, hTopUiWin, 2);
 			break;
 
+		case IDM_AXES_LO2HI1:
+			SetAxesSlope(1, true, hTopUiWin);
+			break;
+
+		case IDM_AXES_HI2LO4:
+			SetAxesSlope(4, false, hTopUiWin);
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -437,4 +446,25 @@ void SetAvailableControls(UINT id, HWND hDlg, int stat)
 
 	// Send data to GUI
 	SendMessage(hDlg, VJOYDEV_SETAVAIL, id, (LPARAM)&ctrls);
+}
+
+void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg)
+{
+	UINT32 MaxRange = 100;
+	int Step = MaxRange/8; 
+	UINT32 AxisValue = 0;
+	UINT32 Axis=0x30;
+
+	if (!GoingUp)
+	{
+		Step = -1*Step;
+		AxisValue = MaxRange;
+	}
+
+	for (int i=0; i<8; i++)
+	{
+		Axis=0x30+i;
+		AxisValue+=Step;
+		PostMessage(hDlg, WMSPP_JMON_AXIS, id + (Axis<<16), AxisValue);
+	};
 }
