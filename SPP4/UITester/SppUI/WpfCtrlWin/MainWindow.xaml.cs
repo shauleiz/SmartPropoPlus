@@ -51,6 +51,7 @@ namespace CtrlWindowNS
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
                 CurrentAxisVal = new vJoyAxisVal(),
+                CurrentButtonsVal = new vJoyButtonsVal(32), // Number of buttons
             };
 
             this.DataContext = _event;
@@ -206,6 +207,32 @@ namespace CtrlWindowNS
             _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
         }
 
+        // Set/Reset vJoy device buttons
+        public void SetButtonValues(uint id, IntPtr BtnVals)
+        {
+            // Use data for selected device only
+            if (_event != null  &&  _event.SelectedvjDevice.vj_DeviceNumber != id)
+                return;
+
+            // Get the number of buttons that actually active
+            uint nButtons = 0;
+            if (_event != null && _event.CurrentvjCtrl != null && _event.CurrentvjCtrl.nButtons <= 128)
+                nButtons = _event.CurrentvjCtrl.nButtons;
+
+            // Copy unmanaged array to managed array
+            byte[] BtnValsArray = new byte[nButtons];
+            Marshal.Copy(BtnVals, BtnValsArray, 0, BtnValsArray.Length);
+
+            // Copy managed array to model object
+            uint count=0;
+            foreach (byte element in BtnValsArray)
+            {           
+                _event.CurrentButtonsVal[count] = (element==0) ? false : true;
+                count += 1;
+            }
+
+        }
+
         // Get the new selected vJoy device as the user selected from the combo box
         //  - Call event OnvJoyDeviceChanged
         private void vJoyDeviceCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -234,7 +261,6 @@ namespace CtrlWindowNS
             _event.CurrentvjCtrl.axis = ctrl.axis;
             
         }
-
 
 #endregion // "vJoy Interface"
 
@@ -309,6 +335,32 @@ namespace CtrlWindowNS
         }
     }
 
+
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public class vJoyButtonsVal : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public bool[] ButtonsVal { get; set; }
+        public vJoyButtonsVal() { ButtonsVal = new bool[32]; }
+        public vJoyButtonsVal(uint size) { ButtonsVal = new bool[size]; }
+
+        public bool this[uint index]
+        {
+            get { return ButtonsVal[index]; }
+            set
+            {
+                ButtonsVal[index] = value;
+                OnPropertyChanged(Binding.IndexerName);
+            }
+        }
+    }
 
 
 #endregion Data Structures

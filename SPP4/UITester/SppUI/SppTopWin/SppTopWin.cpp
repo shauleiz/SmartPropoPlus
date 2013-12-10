@@ -47,7 +47,7 @@ void				AudioChannelParams(UINT Bitrate, WCHAR Channel);
 void				AudioAutoParams(WORD Mask, WORD Flags);
 void				DisplayAudioLevels(PVOID Id, UINT Left, UINT Right);
 void				vJoyDevSetAvail(UINT id, controls * ctrl);
-
+void				SetButtonValues(UINT id, BTNArr * BtnVals);
 public ref class CtrlWindow : Window
 {
 //public:
@@ -262,6 +262,11 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WMSPP_JMON_AXIS:
 		WPFPageHost::hostedPage->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
 		break;
+
+	case WMSPP_JMON_BTN:
+		SetButtonValues((UINT)wParam, (BTNArr *)lParam);
+		break;
+
 	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));
@@ -329,6 +334,15 @@ void vJoyDevSetAvail(UINT id, controls * ctrl)
 		Mcrtl->axis[i] = ctrl->axis[i];
 	
 	WPFPageHost::hostedPage->EnableControls(id, Mcrtl);
+}
+
+void SetButtonValues(UINT id, BTNArr * BtnVals)
+{
+	const UINT  nButons = 32;
+	array<BYTE>^ MBtnVals = gcnew array<BYTE>(nButons);
+	BYTE * _array_of_vals = BtnVals->data();
+
+	WPFPageHost::hostedPage->SetButtonValues(id,  (IntPtr)_array_of_vals);
 }
 
 // TODO: Use this function to coordinate moving of windows

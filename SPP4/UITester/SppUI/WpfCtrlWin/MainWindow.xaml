@@ -368,38 +368,38 @@
                     <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
                     <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30" Background="#4CADD8E6">
                         <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
-                        <ctrl:JoyButton Number="1" />
-                        <ctrl:JoyButton Number="2" IsMapped="True"  IsPressed="False"/>
-                        <ctrl:JoyButton Number="3" IsMapped="True"  IsPressed="False" />
-                        <ctrl:JoyButton Number="4" IsMapped="True"  IsPressed="True"  />
-                        <ctrl:JoyButton Number="5" IsMapped="True"  IsPressed="False" />
-                        <ctrl:JoyButton Number="6"/>
-                        <ctrl:JoyButton Number="7"/>
-                        <ctrl:JoyButton Number="8"/>
-                        <ctrl:JoyButton Number="9"/>
-                        <ctrl:JoyButton Number="10"/>
-                        <ctrl:JoyButton Number="11"/>
-                        <ctrl:JoyButton Number="12"/>
-                        <ctrl:JoyButton Number="13"/>
-                        <ctrl:JoyButton Number="14"/>
-                        <ctrl:JoyButton Number="15"/>
-                        <ctrl:JoyButton Number="16"/>
-                        <ctrl:JoyButton Number="17"/>
-                        <ctrl:JoyButton Number="18"/>
-                        <ctrl:JoyButton Number="19"/>
-                        <ctrl:JoyButton Number="20"/>
-                        <ctrl:JoyButton Number="21"/>
-                        <ctrl:JoyButton Number="22"/>
-                        <ctrl:JoyButton Number="23"/>
-                        <ctrl:JoyButton Number="24"/>
-                        <ctrl:JoyButton Number="25"/>
-                        <ctrl:JoyButton Number="26"/>
-                        <ctrl:JoyButton Number="27"/>
-                        <ctrl:JoyButton Number="28"/>
-                        <ctrl:JoyButton Number="29"/>
-                        <ctrl:JoyButton Number="30"/>
-                        <ctrl:JoyButton Number="31"/>
-                        <ctrl:JoyButton Number="32"/>
+                        <ctrl:JoyButton Number="1" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[0]}" />
+                        <ctrl:JoyButton Number="2" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[1]}"/>
+                        <ctrl:JoyButton Number="3" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[2]}" />
+                        <ctrl:JoyButton Number="4" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[3]}" />
+                        <ctrl:JoyButton Number="5" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[4]}" />
+                        <ctrl:JoyButton Number="6" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[5]}" />
+                        <ctrl:JoyButton Number="7" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[6]}" />
+                        <ctrl:JoyButton Number="8" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[7]}" />
+                        <ctrl:JoyButton Number="9" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[8]}" />
+                        <ctrl:JoyButton Number="10" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[9]}" />
+                        <ctrl:JoyButton Number="11" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[10]}" />
+                        <ctrl:JoyButton Number="12" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[11]}" />
+                        <ctrl:JoyButton Number="13" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[12]}" />
+                        <ctrl:JoyButton Number="14" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[13]}" />
+                        <ctrl:JoyButton Number="15" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[14]}" />
+                        <ctrl:JoyButton Number="16" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[15]}" />
+                        <ctrl:JoyButton Number="17" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[16]}" />
+                        <ctrl:JoyButton Number="18" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[17]}" />
+                        <ctrl:JoyButton Number="19" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[18]}" />
+                        <ctrl:JoyButton Number="20" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[19]}" />
+                        <ctrl:JoyButton Number="21" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[20]}" />
+                        <ctrl:JoyButton Number="22" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[21]}" />
+                        <ctrl:JoyButton Number="23" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[22]}" />
+                        <ctrl:JoyButton Number="24" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[23]}" />
+                        <ctrl:JoyButton Number="25" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[24]}" />
+                        <ctrl:JoyButton Number="26" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[25]}" />
+                        <ctrl:JoyButton Number="27" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[26]}" />
+                        <ctrl:JoyButton Number="28" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[27]}" />
+                        <ctrl:JoyButton Number="29" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[28]}" />
+                        <ctrl:JoyButton Number="30" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[29]}" />
+                        <ctrl:JoyButton Number="31" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[30]}" />
+                        <ctrl:JoyButton Number="32" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[31]}" />
                     </WrapPanel>
                     <!--<Label Content="UnMapped Buttons" Grid.Row="3" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>-->
                     <!--<WrapPanel Orientation="Horizontal" Grid.Row="4"  MinWidth="30"  Background="#4CADD8E6">
