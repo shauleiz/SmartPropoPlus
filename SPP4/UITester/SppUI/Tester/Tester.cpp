@@ -42,14 +42,14 @@ void SetAvailableControls(UINT id, HWND hDlg, int stat);
 void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPTSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+					   _In_opt_ HINSTANCE hPrevInstance,
+					   _In_ LPTSTR    lpCmdLine,
+					   _In_ int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
- 	// TODO: Place code here.
+	// TODO: Place code here.
 	MSG msg;
 	HACCEL hAccelTable;
 
@@ -68,7 +68,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	// Call GUI Window (TODO: Hide)
 	MyEntryPoint(hInstance, hPrevInstance, lpCmdLine, SW_SHOW, hMainAppWnd);
-	
+
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -123,23 +123,23 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   HWND hWnd;
+	HWND hWnd;
 
-   hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-   hMainAppWnd=hWnd;
+	hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+	hMainAppWnd=hWnd;
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
-   return TRUE;
+	return TRUE;
 }
 
 //
@@ -373,19 +373,19 @@ void CaptureDevicesPopulate(HWND hTopUiWin, int type)
 	{
 		for (int i=0; i<7;i++)
 		{
-		jack.id = _wcsdup(id[i]);
-		jack.color = color[i];
-		jack.FriendlyName = _wcsdup(fn[i]);
-		if(i==1)
-		{
-			DefaultJackId = _wcsdup(id[i]);
-			jack.Default = true;
-		}
-		else
-			jack.Default = false;
-		SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
-		free(jack.id);
-		free(jack.FriendlyName);
+			jack.id = _wcsdup(id[i]);
+			jack.color = color[i];
+			jack.FriendlyName = _wcsdup(fn[i]);
+			if(i==1)
+			{
+				DefaultJackId = _wcsdup(id[i]);
+				jack.Default = true;
+			}
+			else
+				jack.Default = false;
+			SendMessage(hTopUiWin, POPULATE_JACKS, (WPARAM)&jack, 0);
+			free(jack.id);
+			free(jack.FriendlyName);
 		};
 	};
 
@@ -428,12 +428,12 @@ void DisplayvJoyStat(void)
 	UpdateWindow(hMainAppWnd);
 }
 
-			
+
 void SetAvailableControls(UINT id, HWND hDlg, int stat)
 {
 	controls ctrls;
 	ctrls.axis[0] = ctrls.axis[1] =ctrls.axis[2] = ctrls.axis[3] =
-	ctrls.axis[4] = ctrls.axis[5] =ctrls.axis[6] = ctrls.axis[7] = TRUE;
+		ctrls.axis[4] = ctrls.axis[5] =ctrls.axis[6] = ctrls.axis[7] = TRUE;
 
 	// Get data from vJoy Interface
 	if (stat == 1)
@@ -467,4 +467,18 @@ void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg)
 		AxisValue+=Step;
 		PostMessage(hDlg, WMSPP_JMON_AXIS, id + (Axis<<16), AxisValue);
 	};
+
+#define MAX_BUTTONS		128
+	typedef std::array<BYTE, MAX_BUTTONS> BTNArr;
+	BTNArr BtnVal;
+	BtnVal.fill(0);
+
+	for (int i=0; i<32; i++)
+	{
+		BtnVal[i] = i%2;
+		if (!GoingUp)
+			BtnVal[i] = BtnVal[i] ? 0 : 1;
+	}
+
+	SendMessage(hDlg, WMSPP_JMON_BTN, id , (LPARAM)&BtnVal);
 }

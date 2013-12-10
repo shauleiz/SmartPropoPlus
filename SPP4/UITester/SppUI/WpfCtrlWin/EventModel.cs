@@ -152,6 +152,8 @@ namespace CtrlWindowNS
 
         public vJoyAxisVal CurrentAxisVal { get; set; }
 
+        public vJoyButtonsVal CurrentButtonsVal { get; set; }
+
 #endregion "vJoy Interface"
 
     }
