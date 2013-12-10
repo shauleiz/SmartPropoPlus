@@ -328,14 +328,14 @@
                         <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                         <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[0]}" IsEnabled="{Binding CurrentvjCtrl.axis[0]}"  ChannelName="X" Grid.Row="1" Grid.Column="0" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[1]}" IsEnabled="{Binding CurrentvjCtrl.axis[1]}"  ChannelName="Y" Grid.Row="1" Grid.Column="1" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[2]}" IsEnabled="{Binding CurrentvjCtrl.axis[2]}"  ChannelName="Z" Grid.Row="1" Grid.Column="2" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[3]}" IsEnabled="{Binding CurrentvjCtrl.axis[3]}"  ChannelName="Rx" Grid.Row="1" Grid.Column="3" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[4]}" IsEnabled="{Binding CurrentvjCtrl.axis[4]}"  ChannelName="Ry" Grid.Row="1" Grid.Column="4" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[5]}" IsEnabled="{Binding CurrentvjCtrl.axis[5]}"  ChannelName="Rz" Grid.Row="1" Grid.Column="5" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[6]}" IsEnabled="{Binding CurrentvjCtrl.axis[6]}"  ChannelName="Sl0" Grid.Row="1" Grid.Column="6" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentAxisVal[7]}" IsEnabled="{Binding CurrentvjCtrl.axis[7]}"  ChannelName="Sl1" Grid.Row="1" Grid.Column="7" Height="Auto" VerticalAlignment="Top" Width="Auto" BarColor="Blue"   BarBgColor="#330F3E3C" Margin="0,10,0,0"/>
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}" ChannelLevel="{Binding Path=CurrentAxisVal[0]}" IsEnabled="{Binding CurrentvjCtrl.axis[0]}"   ChannelName="X"   Grid.Column="0" BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[1]}" IsEnabled="{Binding CurrentvjCtrl.axis[1]}"  ChannelName="Y"   Grid.Column="1"  BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[2]}" IsEnabled="{Binding CurrentvjCtrl.axis[2]}"  ChannelName="Z"   Grid.Column="2" BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[3]}" IsEnabled="{Binding CurrentvjCtrl.axis[3]}"  ChannelName="Rx"  Grid.Column="3"    BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[4]}" IsEnabled="{Binding CurrentvjCtrl.axis[4]}"  ChannelName="Ry"  Grid.Column="4"   BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[5]}" IsEnabled="{Binding CurrentvjCtrl.axis[5]}"  ChannelName="Rz"  Grid.Column="5"   BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[6]}" IsEnabled="{Binding CurrentvjCtrl.axis[6]}"  ChannelName="Sl0" Grid.Column="6"    BarColor="Blue"   BarBgColor="#330F3E3C" />
+                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[7]}" IsEnabled="{Binding CurrentvjCtrl.axis[7]}"  ChannelName="Sl1" Grid.Column="7"    BarColor="Blue"   BarBgColor="#330F3E3C" />
                     <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="1"  Margin="1" Grid.Column="0" HorizontalContentAlignment="Center"/>
                     <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="2"  Margin="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
                     <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="3"   Margin="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
@@ -356,7 +356,7 @@
                         </TransformGroup>
                     </Label.RenderTransform>
                 </Label>
-                <Grid x:Name="ButtonGrid" Grid.Column="2" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="203">
+                <Grid x:Name="ButtonGrid" Grid.Column="2" Background="#4CADD8E6" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="203">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="*"/>
@@ -366,7 +366,7 @@
                     </Grid.RowDefinitions>
                     <Label Content="Buttons" Grid.Row="0" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1"/>
                     <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
-                    <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30" Background="#4CADD8E6">
+                    <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30"  Margin="0,5">
                         <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
                         <ctrl:JoyButton Number="1" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[0]}" />
                         <ctrl:JoyButton Number="2" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[1]}"/>

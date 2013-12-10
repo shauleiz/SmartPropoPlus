@@ -43,7 +43,8 @@ namespace WpfCtrlWin
             }));
 
 
-        public Brush BarColor { 
+        public Brush BarColor
+        { 
             set 
             {
                 BarColorSv = value;
@@ -53,7 +54,10 @@ namespace WpfCtrlWin
                     ChLevelPB.Foreground = new SolidColorBrush(Colors.Transparent);
 
             } 
-            get { return ChLevelPB.Foreground; } }
+            get { return ChLevelPB.Foreground; } 
+        }
+
+
         public Brush BarBgColor
         {
             set
