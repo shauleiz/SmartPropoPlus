@@ -11,7 +11,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ProgressBar x:Name="ChLevelPB"  HorizontalAlignment="Center"  Margin="5,0,5,0" VerticalAlignment="Bottom" Orientation="Vertical" Cursor="Arrow" MinWidth="10" MinHeight="8" Foreground="#FFDE174D" BorderThickness="0" BorderBrush="#FF8B5F6B" Background="#338B5F6B" HorizontalContentAlignment="Stretch" Height="83.314" Width="Auto"/>
-        <Label x:Name="ChNumTB" Content="Ch1" HorizontalAlignment="Center" Margin="0" Grid.Row="1" VerticalAlignment="Center" FontSize="7" />
+        <Label x:Name="ChNumTB" Content="Ch1" Margin="0" Grid.Row="1" FontSize="9" VerticalAlignment="Center" HorizontalAlignment="Center" />
     </Grid>
 
 
