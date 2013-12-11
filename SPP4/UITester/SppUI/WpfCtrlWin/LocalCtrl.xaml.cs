@@ -32,7 +32,7 @@ namespace WpfCtrlWin
 
         public UInt32 ChannelLevel { 
             set { SetValue(ChannelLevelProperty, value); }
-            get { return (UInt32)GetValue(IsEnabledProperty); }
+            get { return (UInt32)GetValue(ChannelLevelProperty); }
         }  
 
         public static readonly DependencyProperty ChannelLevelProperty =
@@ -44,19 +44,21 @@ namespace WpfCtrlWin
 
 
         public Brush BarColor
+        {
+            set { SetValue(BarColorProperty, value); }
+            get { return (Brush)GetValue(BarColorProperty); }
+        }  
+
+        public static readonly DependencyProperty BarColorProperty =
+            DependencyProperty.Register("BarColor", typeof(Brush), typeof(ChannelCtrl), new UIPropertyMetadata((Brush)null, (o, e) =>
         { 
-            set 
-            {
-                BarColorSv = value;
-                if (IsEnabled)
-                    ChLevelPB.Foreground = value;
+                ((ChannelCtrl)o).BarColorSv = (Brush)e.NewValue;
+                if (((ChannelCtrl)o).IsEnabled)
+                    ((ChannelCtrl)o).ChLevelPB.Foreground = (Brush)e.NewValue;
                 else
-                    ChLevelPB.Foreground = new SolidColorBrush(Colors.Transparent);
+                    ((ChannelCtrl)o).ChLevelPB.Foreground = new SolidColorBrush(Colors.Transparent);
 
-            } 
-            get { return ChLevelPB.Foreground; } 
-        }
-
+        } ));
 
         public Brush BarBgColor
         {
@@ -70,12 +72,13 @@ namespace WpfCtrlWin
             }
             get { return ChLevelPB.Background; }
         }
-
+        
         public new bool IsEnabled
         {
             get { return (bool)GetValue(IsEnabledProperty); }
             set { SetValue(IsEnabledProperty, value); }
         }
+
         public new static readonly DependencyProperty IsEnabledProperty =
             DependencyProperty.Register("IsEnabled", typeof(bool), typeof(ChannelCtrl), new UIPropertyMetadata(false, (o, e) =>
             {
