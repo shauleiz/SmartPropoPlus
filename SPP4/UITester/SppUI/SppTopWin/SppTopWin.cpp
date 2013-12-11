@@ -267,6 +267,10 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		SetButtonValues((UINT)wParam, (BTNArr *)lParam);
 		break;
 
+	case WMSPP_PRCS_RCHMNT:
+		WPFPageHost::hostedPage->SetProcessedChData((UINT)wParam, (UINT)lParam);
+		break;
+
 	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));

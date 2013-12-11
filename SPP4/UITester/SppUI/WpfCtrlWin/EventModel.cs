@@ -150,7 +150,8 @@ namespace CtrlWindowNS
         }
 
 
-        public vJoyAxisVal CurrentAxisVal { get; set; }
+        public LevelMonitors CurrentAxisVal { get; set; }
+        public LevelMonitors CurrentJoyInputVal { get; set; }
 
         public vJoyButtonsVal CurrentButtonsVal { get; set; }
 

@@ -40,6 +40,7 @@ void vJoyRemoveAll(HWND hTopUiWin);
 void DisplayvJoyStat(void);
 void SetAvailableControls(UINT id, HWND hDlg, int stat);
 void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg);
+void SetvJoyInputSlope(bool GoingUp, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -252,6 +253,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case IDM_AXES_HI2LO4:
 			SetAxesSlope(4, false, hTopUiWin);
+			break;
+
+		case IDM_INPUT_LO2HI:
+			SetvJoyInputSlope(true, hTopUiWin);
+			break;
+
+		case IDM_INPUT_HI2LO:
+			SetvJoyInputSlope(false, hTopUiWin);
 			break;
 
 		default:
@@ -481,4 +490,24 @@ void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg)
 	}
 
 	SendMessage(hDlg, WMSPP_JMON_BTN, id , (LPARAM)&BtnVal);
+}
+
+void SetvJoyInputSlope(bool GoingUp, HWND hDlg)
+{
+	UINT32 nChannels = 16;
+	UINT32 MaxRange = 100;
+	int Step = MaxRange/nChannels;
+	UINT32 ChannelValue=0;
+
+	if (!GoingUp)
+	{
+		Step = -1*Step;
+		ChannelValue = MaxRange;
+	}
+
+	for (int i=0; i<16; i++)
+	{
+		ChannelValue+=Step;
+		PostMessage(hDlg, WMSPP_PRCS_RCHMNT, i, ChannelValue);
+	};
 }
