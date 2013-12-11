@@ -32,7 +32,7 @@ namespace WpfCtrlWin
         private Brush _bgPressedBrush = new SolidColorBrush(Colors.Red);
         private Brush _bgReleasedBrush = new SolidColorBrush(Colors.LightGray);
         private Brush _bgUnMappedBrush = new SolidColorBrush(Colors.Wheat);
-        private Brush _bgDisabledBrush = new SolidColorBrush(Colors.Yellow);
+        private Brush _bgDisabledBrush = new SolidColorBrush(Colors.Transparent);
         private Brush _ringStrokeBrush = new SolidColorBrush(Colors.Black);
         private Brush _ringDisabledBrush = new SolidColorBrush(Colors.Transparent);
 
@@ -73,7 +73,35 @@ namespace WpfCtrlWin
         }
 
 
-        private Brush RingStroke { set { OuterRing.Stroke = value; } get { return OuterRing.Stroke; } }
+        //private Brush RingStroke { set { OuterRing.Stroke = value; } get { return OuterRing.Stroke; } }
+        /// <summary>
+        /// Compute value of Ring-Stroke brush
+        /// </summary>
+        private Brush RingStroke()
+        {
+            if (_BtnLast < _BtnValue)
+                _enabled = false;
+            else
+                _enabled = true;
+
+            if (!_enabled)
+                BackGround.Fill = _bgDisabledBrush;
+            else
+            {
+                if (!_mapped)
+                    BackGround.Fill = _bgUnMappedBrush;
+                else
+                {
+                    if (_pressed)
+                        BackGround.Fill = _bgPressedBrush;
+                    else
+                        BackGround.Fill = _bgReleasedBrush;
+                }
+            }
+
+            return BackGround.Fill;
+        }
+
 
 
 
@@ -112,7 +140,8 @@ namespace WpfCtrlWin
             DependencyProperty.Register("IsMapped", typeof(bool), typeof(JoyButton), new UIPropertyMetadata(false, (o, e) =>
             {
                 ((JoyButton)o)._mapped = (bool)e.NewValue;
-                ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor(); 
+                ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
+                ((JoyButton)o).OuterRing.Stroke = ((JoyButton)o).RingStroke();
             }));
 
         /// <summary>
@@ -128,12 +157,13 @@ namespace WpfCtrlWin
             DependencyProperty.Register("IsPressed", typeof(bool), typeof(JoyButton), new UIPropertyMetadata(false, (o, e) =>
             {
                 ((JoyButton)o)._pressed = (bool)e.NewValue;
-                ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor(); 
+                ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
+                ((JoyButton)o).OuterRing.Stroke = ((JoyButton)o).RingStroke();
             }));
 
         /// <summary>
         /// LastButton - The number of enabled vJoy device buttons - Used to determened if a button enabled
-        /// Button is enabled if its number is leaa or equal to the 'LastButton'
+        /// Button is enabled if its number is less or equal to the 'LastButton'
         /// </summary>
         public int LastButton
         {
@@ -144,12 +174,9 @@ namespace WpfCtrlWin
         public static readonly DependencyProperty LastButtonProperty =
             DependencyProperty.Register("LastButton", typeof(int), typeof(JoyButton), new UIPropertyMetadata(0, (o, e) =>
             {
-             //   if (int.TryParse(((JoyButton)o).Number, out result))
                 ((JoyButton)o)._BtnLast = (int)e.NewValue;
-             //   else
-              //      ((JoyButton)o)._enabled = false;
-
                 ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
+                ((JoyButton)o).OuterRing.Stroke = ((JoyButton)o).RingStroke();
             }));
 
         public int Number
@@ -164,6 +191,7 @@ namespace WpfCtrlWin
                 ((JoyButton)o)._BtnValue =  (int)e.NewValue;
                 ((JoyButton)o).ButtonNumber.Content = ((JoyButton)o)._BtnValue;
                 ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
+                ((JoyButton)o).OuterRing.Stroke = ((JoyButton)o).RingStroke();
             }));
 
     }

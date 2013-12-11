@@ -48,7 +48,7 @@
         <Setter Property="Width" Value="Auto" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Margin" Value="0,10,0,0" />
-        <!-- <Setter Property="BarColor" Value="Blue" />-->
+        <Setter Property="BarColor" Value="Blue" />
     </Style>
 
     <!-- BarColor="Blue"   BarBgColor="#330F3E3C" -->
