@@ -50,7 +50,8 @@ namespace CtrlWindowNS
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
-                CurrentAxisVal = new vJoyAxisVal(),
+                CurrentAxisVal = new LevelMonitors(8),
+                CurrentJoyInputVal = new LevelMonitors(16),
                 CurrentButtonsVal = new vJoyButtonsVal(32), // Number of buttons
             };
 
@@ -207,11 +208,21 @@ namespace CtrlWindowNS
             _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
         }
 
+
+        // Update the position of the progress bar that corresponds to the processed channel
+        public void SetProcessedChData(uint iCh, uint data)
+        {
+            if (_event.CurrentJoyInputVal == null || _event.CurrentJoyInputVal.NumberOfMonitors() <= iCh)
+                return;
+            _event.CurrentJoyInputVal[iCh] = data;                
+        }
+
+
         // Set/Reset vJoy device buttons
         public void SetButtonValues(uint id, IntPtr BtnVals)
         {
             // Use data for selected device only
-            if (_event != null  &&  _event.SelectedvjDevice.vj_DeviceNumber != id)
+            if (_event != null && _event.SelectedvjDevice.vj_DeviceNumber != id)
                 return;
 
             // Get the number of buttons that actually active
@@ -253,7 +264,7 @@ namespace CtrlWindowNS
                 _event.CurrentvjCtrl.axis = new bool[len];
 
             ////// Verify correct vJoy device
-            if (_event.SelectedvjDevice.vj_DeviceNumber != id)
+            if (_event.SelectedvjDevice != null && _event.SelectedvjDevice.vj_DeviceNumber != id)
                 return;
 
             _event.CurrentvjCtrl = ctrl;
@@ -330,6 +341,33 @@ namespace CtrlWindowNS
             set
             {
                 AxisVal[index] = value;
+                OnPropertyChanged(Binding.IndexerName);
+            }
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public class LevelMonitors : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public UInt32[] LevelVal { get; set; }
+        public LevelMonitors() { LevelVal = new UInt32[8] { 0, 0, 0, 0, 0, 0, 0, 0 }; }
+        public LevelMonitors(int size) { LevelVal = new UInt32[size]; }
+        public int NumberOfMonitors() { return LevelVal.Length; }
+
+        public UInt32 this[uint index]
+        {
+            get { return LevelVal[index]; }
+            set
+            {
+                LevelVal[index] = value;
                 OnPropertyChanged(Binding.IndexerName);
             }
         }

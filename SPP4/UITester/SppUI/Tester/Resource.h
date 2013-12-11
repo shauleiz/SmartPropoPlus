@@ -28,3 +28,5 @@
 #define IDM_VJOY_CTRLS2                         40016
 #define IDM_AXES_LO2HI1                         40017
 #define IDM_AXES_HI2LO4                         40018
+#define IDM_INPUT_LO2HI                         40019
+#define IDM_INPUT_HI2LO                         40020

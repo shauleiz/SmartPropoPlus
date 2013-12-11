@@ -56,6 +56,9 @@ IDC_TESTER MENU
         MENUITEM SEPARATOR
         MENUITEM "Axes Lo2Hi (1)", IDM_AXES_LO2HI1
         MENUITEM "Axes Hi2Lo (4)", IDM_AXES_HI2LO4
+        MENUITEM SEPARATOR
+        MENUITEM "Input Lo2Hi", IDM_INPUT_LO2HI
+        MENUITEM "Input Hi 2Lo", IDM_INPUT_HI2LO
     }
     POPUP "&Help"
     {

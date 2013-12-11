@@ -286,22 +286,22 @@
                         <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                         <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="1" Grid.Column="0"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="2"  Grid.Column="1" />
-                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="3"  Grid.Column="2" />
-                    <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="4" Grid.Column="3"  />
-                    <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="5"  Grid.Column="4" />
-                    <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="6"   Grid.Column="5"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="7"   Grid.Column="6"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="8"  Grid.Column="7" />
-                    <ctrl:ChannelCtrl  ChannelLevel="10" ChannelName="9" Grid.Column="8"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="10"  Grid.Column="9" />
-                    <ctrl:ChannelCtrl  ChannelLevel="20" ChannelName="11"  Grid.Column="10" />
-                    <ctrl:ChannelCtrl  ChannelLevel="100" ChannelName="12" Grid.Column="11"  />
-                    <ctrl:ChannelCtrl  ChannelLevel="85" ChannelName="13"  Grid.Column="12" />
-                    <ctrl:ChannelCtrl  ChannelLevel="0" ChannelName="14"   Grid.Column="13"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="5" ChannelName="15"   Grid.Column="14"/>
-                    <ctrl:ChannelCtrl  ChannelLevel="50" ChannelName="16"  Grid.Column="15" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[0]}" ChannelName="1" Grid.Column="0"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[1]}" ChannelName="2"  Grid.Column="1" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[2]}" ChannelName="3"  Grid.Column="2" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[3]}" ChannelName="4" Grid.Column="3"  />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[4]}" ChannelName="5"  Grid.Column="4" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[5]}" ChannelName="6"   Grid.Column="5"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[6]}" ChannelName="7"   Grid.Column="6"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[7]}" ChannelName="8"  Grid.Column="7" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[8]}" ChannelName="9" Grid.Column="8"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[9]}" ChannelName="10"  Grid.Column="9" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[10]}" ChannelName="11"   Grid.Column="10" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[11]}" ChannelName="12" Grid.Column="11"  />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[12]}" ChannelName="13"  Grid.Column="12" />
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[13]}" ChannelName="14"   Grid.Column="13"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[14]}" ChannelName="15"   Grid.Column="14"/>
+                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[15]}" ChannelName="16"  Grid.Column="15" />
                 </Grid>
                 <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,-4.39,197.108,67.348" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                     <Label.RenderTransform>
