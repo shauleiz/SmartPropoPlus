@@ -205,7 +205,8 @@ namespace CtrlWindowNS
             // Use data for selected device only
             if (_event.SelectedvjDevice.vj_DeviceNumber != iDev)
                 return;
-            _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
+            if (_event.CurrentvjCtrl != null && _event.CurrentvjCtrl.axis[Axis - 0x30])
+                _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
         }
 
 
