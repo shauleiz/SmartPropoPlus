@@ -40,7 +40,7 @@
         <Setter Property="IsMapped" Value="False" /> 
         <Setter Property="IsPressed" Value="False" />
     </Style>
-     
+
     <!-- vJoy Axis Style -->
     <Style TargetType="ctrl:ChannelCtrl" x:Key="VJOY_AXIS">
         <Setter Property="Grid.Row" Value="1" />
@@ -48,8 +48,12 @@
         <Setter Property="Width" Value="Auto" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Margin" Value="0,10,0,0" />
-        <Setter Property="BarColor" Value="Blue" />
     </Style>
 
-    <!-- BarColor="Blue"   BarBgColor="#330F3E3C" -->
+    <!-- vJoy Input Channels Style -->
+    <Style TargetType="ctrl:ChannelCtrl" x:Key="VJOY_INPUT_CH">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+    </Style>
+
 </ResourceDictionary>

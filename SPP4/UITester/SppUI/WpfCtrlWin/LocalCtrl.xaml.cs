@@ -23,8 +23,8 @@ namespace WpfCtrlWin
             InitializeComponent();
         }
 
-        public Brush BarColorSv;
-        public Brush BarBgColorSv;
+        public Brush BarColorSv = new SolidColorBrush(Colors.Blue); 
+        public Brush BarBgColorSv = new SolidColorBrush(Colors.LightGray);
         public UInt32 ChannelLevelSv = 50;
 
         public string ChannelName { set { ChNumTB.Content = value; } }
