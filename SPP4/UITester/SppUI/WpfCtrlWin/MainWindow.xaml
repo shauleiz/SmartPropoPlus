@@ -413,6 +413,7 @@
                 </Grid>
             </Grid>
         </Expander>
+        <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
         <Grid x:Name="TestGrid" HorizontalAlignment="Left" Height="205" Margin="-0.14,0,0,0" VerticalAlignment="Top" Width="279">
             <ItemsControl ItemsSource="{Binding Path=vJoyAxisCollection}">
                 <ItemsControl.ItemContainerStyle>
