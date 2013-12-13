@@ -55,7 +55,7 @@
             <ColumnDefinition Width="403*"/>
             <ColumnDefinition Width="404*"/>
         </Grid.ColumnDefinitions>
-        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499" d:IsHidden="True">
+        <Border x:Name="AudioBorder" BorderThickness="3" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" CornerRadius="20" Height="281.295" Width="550.727"  Visibility="{Binding IsChecked, Converter={StaticResource boolConverter}, ElementName=Audio_Btn}" Grid.ColumnSpan="2" Background="#FFEBF3F3" BorderBrush="#FF85E4EE" Grid.Row="1" RenderTransformOrigin="0.616,0.499">
             <Grid HorizontalAlignment="Left" x:Name="Audio_GRID" VerticalAlignment="Top" Margin="0" Width="550.914" Height="274">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="64*"/>
@@ -156,7 +156,7 @@
                 </GroupBox>
             </Grid>
         </Border>
-        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right" d:IsHidden="True">
+        <Canvas  Grid.Column="1" Height="222" VerticalAlignment="Bottom" Width="400" HorizontalAlignment="Right">
             <Path x:Name="RootPath" StrokeThickness="3"  Data="{StaticResource CTRL_PATH1}" Stretch="Fill" Canvas.Left="0" Height="248" Width="400" Canvas.Top="-26" Stroke="#FF85E4EE" >
                 <Path.Fill>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -228,7 +228,7 @@
                 </Grid>
             </Grid>
         </Canvas>
-        <Expander x:Name="vJoyExpander" Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Grid.Row="1" VerticalAlignment="Top" Width="539.14" BorderBrush="#FFF1A988" Background="#FFF1F185" Margin="0,304,0,0" BorderThickness="2" d:IsHidden="True">
+        <Expander x:Name="vJoyExpander" Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Grid.Row="1" VerticalAlignment="Top" Width="539.14" BorderBrush="#FFF1A988" Background="#FFF1F185" Margin="0,304,0,0" BorderThickness="2">
             <Expander.Header>
                 <Grid Width="503" >
                     <Grid.ColumnDefinitions>
@@ -313,37 +313,56 @@
                         </TransformGroup>
                     </Label.RenderTransform>
                 </Label>
-                <Grid Grid.Column="1" x:Name="JoyAxisGrid" HorizontalAlignment="Left" Height="145.967" Margin="10,13,0,0" Grid.Row="2" VerticalAlignment="Top" Width="252" Background="#33E6C80C" d:IsHidden="True">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="11*"/>
-                        <RowDefinition Height="62*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}" ChannelLevel="{Binding Path=CurrentAxisVal[0]}" IsEnabled="{Binding CurrentvjCtrl.axis[0]}"   ChannelName="X"   Grid.Column="0"    BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[1]}" IsEnabled="{Binding CurrentvjCtrl.axis[1]}"  ChannelName="Y"   Grid.Column="1"  BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[2]}" IsEnabled="{Binding CurrentvjCtrl.axis[2]}"  ChannelName="Z"   Grid.Column="2" BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[3]}" IsEnabled="{Binding CurrentvjCtrl.axis[3]}"  ChannelName="Rx"  Grid.Column="3"    BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[4]}" IsEnabled="{Binding CurrentvjCtrl.axis[4]}"  ChannelName="Ry"  Grid.Column="4"    BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[5]}" IsEnabled="{Binding CurrentvjCtrl.axis[5]}"  ChannelName="Rz"  Grid.Column="5"     BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[6]}" IsEnabled="{Binding CurrentvjCtrl.axis[6]}"  ChannelName="Sl0" Grid.Column="6"     BarBgColor="#330F3E3C" />
-                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_AXIS}"  ChannelLevel="{Binding Path=CurrentAxisVal[7]}" IsEnabled="{Binding CurrentvjCtrl.axis[7]}"  ChannelName="Sl1" Grid.Column="7"     BarBgColor="#330F3E3C" />
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="1"  Margin="1" Grid.Column="0" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="2"  Margin="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="3"   Margin="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="4" Margin="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="5" Margin="1" Grid.Column="4" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="6" Margin="1" Grid.Column="5" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="7" Margin="1" Grid.Column="6" HorizontalContentAlignment="Center"/>
-                    <TextBox  Height="Auto" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Stretch" Text="8" Margin="1" Grid.Column="7" HorizontalContentAlignment="Center"/>
+                <Grid Grid.Column="1" x:Name="JoyAxisGrid" HorizontalAlignment="Left" Height="145.967" Margin="0,13.033,0,0" Grid.Row="2" VerticalAlignment="Top" Width="243" Background="#33E6C80C">
+                    <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
+                    <ItemsControl ItemsSource="{Binding Path=vJoyAxisCollection}" >
+                        <ItemsControl.ItemContainerStyle>
+                            <Style>
+                                <Setter Property="Grid.Column" Value="{Binding Path=Id}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid ShowGridLines="True" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition  SharedSizeGroup="LevelBar"/>
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <Style TargetType="ctrl:ChannelCtrl">
+                                        <Setter Property="IsEnabled" Value="{Binding Path=Implemented}" />
+                                        <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
+                                        <Setter Property="ToolTip" Value="{Binding Path=Name}" />
+                                        <Setter Property="ChannelName" Value="{Binding Path=Name}" />
+                                        <Setter Property="Height" Value="Auto" />
+                                        <Setter Property="Width" Value="Auto" />
+                                        <Setter Property="VerticalAlignment" Value="Top" />
+                                        <Setter Property="Margin" Value="0,10,0,0" />
+                                    </Style>
+                                </DataTemplate.Resources>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition  Height="30"/>
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <!-- TODO: Text should be bound to mapping source NOT Id -->
+                                    <TextBox IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=Id}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" />
+                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
                 <Rectangle Grid.Row="1" Fill="#FFDCD9D9" Grid.ColumnSpan="3" />
                 <Label Content="vJoy Axes &amp; Buttons"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
@@ -413,50 +432,5 @@
                 </Grid>
             </Grid>
         </Expander>
-        <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
-        <Grid x:Name="TestGrid" HorizontalAlignment="Left" Height="205" Margin="-0.14,0,0,0" VerticalAlignment="Top" Width="279">
-            <ItemsControl ItemsSource="{Binding Path=vJoyAxisCollection}">
-                <ItemsControl.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="Grid.Column" Value="{Binding Path=Id}" />                        
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid ShowGridLines="True">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                        </Grid>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <DataTemplate.Resources>
-                            <Style TargetType="ctrl:ChannelCtrl">
-                                <Setter Property="IsEnabled" Value="{Binding Path=Implemented}" />
-                                <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
-                                <Setter Property="ToolTip" Value="{Binding Path=Name}" />
-                                <Setter Property="ChannelName" Value="{Binding Path=Name}" />
-                                <Setter Property="Height" Value="Auto" />
-                                <Setter Property="Width" Value="Auto" />
-                                <Setter Property="VerticalAlignment" Value="Top" />
-                                <Setter Property="Margin" Value="0,10,0,0" />
-                            </Style>
-                        </DataTemplate.Resources>
-                        <Grid>
-                            <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>
     </Grid>
 </Window>
