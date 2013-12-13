@@ -48,6 +48,7 @@
         <Setter Property="Width" Value="Auto" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Margin" Value="0,10,0,0" />
+        <!--<Setter Property="BarColor" Value="Black" />--> 
     </Style>
 
     <!-- vJoy Input Channels Style -->
