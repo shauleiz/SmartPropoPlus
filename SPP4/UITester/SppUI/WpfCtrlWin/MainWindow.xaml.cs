@@ -53,7 +53,12 @@ namespace CtrlWindowNS
                 CurrentAxisVal = new LevelMonitors(8),
                 CurrentJoyInputVal = new LevelMonitors(16),
                 CurrentButtonsVal = new vJoyButtonsVal(32), // Number of buttons
+
+                _vJoyAxisCollection = new ObservableCollection<LevelMonitor>(),
+
             };
+
+            InitvJoyAxes();
 
             this.DataContext = _event;
         }
@@ -205,8 +210,15 @@ namespace CtrlWindowNS
             // Use data for selected device only
             if (_event.SelectedvjDevice.vj_DeviceNumber != iDev)
                 return;
+
+            // TODO: Remove
             if (_event.CurrentvjCtrl != null && _event.CurrentvjCtrl.axis[Axis - 0x30])
                 _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
+
+            // New
+            if (_event._vJoyAxisCollection != null && _event._vJoyAxisCollection[(int)Axis - 0x30] != null)
+                _event._vJoyAxisCollection[(int)Axis - 0x30].Level =  AxisValue; // TODO: HID_USAGE_X
+
         }
 
 
@@ -268,11 +280,49 @@ namespace CtrlWindowNS
             if (_event.SelectedvjDevice != null && _event.SelectedvjDevice.vj_DeviceNumber != id)
                 return;
 
+            // TODO: Remove later
             _event.CurrentvjCtrl = ctrl;
             _event.CurrentvjCtrl.nButtons = ctrl.nButtons;
             _event.CurrentvjCtrl.axis = ctrl.axis;
-            
+
+            // New
+            if (_event._vJoyAxisCollection != null)
+            {
+                int count = ctrl.axis.Length;
+                for (int i=0; i<count; i++)
+                {
+                    if (i>=_event._vJoyAxisCollection.Count)
+                        break;
+                    _event._vJoyAxisCollection[i].Implemented = ctrl.axis[i];
+                }
+            }
+           
         }
+
+        public void InitvJoyAxes()
+        {
+            if (_event == null || _event._vJoyAxisCollection == null)
+                return;
+            LevelMonitor item;
+            _event._vJoyAxisCollection.Clear();
+            item = new LevelMonitor(1, "X");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(2, "Y");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(3, "Z");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(4, "Rx");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(5, "Ry");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(6, "Rz");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(7, "SL0");
+            _event._vJoyAxisCollection.Add(item);
+            item = new LevelMonitor(8, "SL1");
+            _event._vJoyAxisCollection.Add(item);
+        }
+
 
 #endregion // "vJoy Interface"
 
@@ -322,31 +372,12 @@ namespace CtrlWindowNS
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 2)]
-    public class vJoyAxisVal : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public UInt32[] AxisVal { get; set; }
-        public vJoyAxisVal() { AxisVal = new UInt32[8] { 0, 0, 0, 0, 0, 0, 0, 0 }; }
-
-        public UInt32 this[uint index]
-        {
-            get { return AxisVal[index]; }
-            set
-            {
-                AxisVal[index] = value;
-                OnPropertyChanged(Binding.IndexerName);
-            }
-        }
-    }
-
+#if true
+    /// <summary>
+    /// Object of this class represents an array of level-monitors
+    /// Used to display Axis-level and channel level
+    /// To be replaced by an ObservableCollection of elements (ItemsControl) 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 2)]
     public class LevelMonitors : INotifyPropertyChanged
     {
@@ -373,7 +404,7 @@ namespace CtrlWindowNS
             }
         }
     }
-
+#endif
 
     [StructLayout(LayoutKind.Sequential, Pack = 2)]
     public class vJoyButtonsVal : INotifyPropertyChanged
@@ -401,6 +432,107 @@ namespace CtrlWindowNS
         }
     }
 
+    /// <summary>
+    /// Represents information about a constantly changing scalar
+    /// such as a joystick axis or a data channel
+    /// To support full versatility, it supports both mapping to and mapping by
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
+    public class LevelMonitor
+    {
+        // Private (internal values)
+        private uint _level = 50;       // Levels range 0-100
+        private int _id = -1;           // Valid id is >0
+        private bool _implemented = false; // True if this axis/channel implemented
+        private String _name = "";      // Friendly name for this object
+        private List<object> _map_target = new List<object>();   // Array of objects to which this object is mapped to (For channels)
+        private object _map_source;     // Object that mapped to this object
+
+        // Constructors
+        public LevelMonitor() { _map_target.Clear(); _map_source = null; }
+        public LevelMonitor(String name) { _map_target.Clear(); _map_source = null; _name = name; }
+        public LevelMonitor(int id) { _map_target.Clear(); _map_source = null; _id = id; }
+        public LevelMonitor(int id, String name) { _map_target.Clear(); _map_source = null; _id = id; _name = name; }
+
+        // Accessors
+        public uint Level
+        {
+            get { return _level; }
+            set
+            {
+                _level = value;
+                if (_level > 100)
+                    _level = 100;
+            }
+        }
+
+        public bool Implemented
+        {
+            get { return _implemented; }
+            set { _implemented = value;}
+        }
+
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; if (_id < 1) _id = -1; }
+        }
+
+        public String Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+
+        // Mapping interface
+        /// <summary>
+        /// Add an  object to the array of mapping targets
+        /// If object exists do not add it - just return the index of the object
+        /// </summary>
+        /// <param name="target"> Add this object to the array of mapping targets</param>
+        /// <returns>True if added or if object already exists - false otherwize</returns>
+        public bool MapTarget(object target)
+        {
+            if (_map_target == null)
+                return false;
+
+            // Search for identical object
+            foreach (object element in _map_target)
+            {
+                if (element.Equals(target)) return true;
+            }
+
+            // Not found - Add object
+            _map_target.Add(target);
+            return true;
+        }
+
+        /// <summary>
+        /// Removes a mapping target from the list of targets
+        /// </summary>
+        /// <param name="target">Object to remove</param>
+        /// <returns>true if removed</returns>
+        public bool UnMapTarget(object target)
+        {
+            if (_map_target == null)
+                return false;
+
+            return _map_target.Remove(target);
+        }
+
+        /// <summary>
+        /// Gets the target object by index
+        /// </summary>
+        /// <param name="index">Index of object in the list of targets</param>
+        /// <returns>The object (or null if out of range)</returns>
+        public object GetMapTargetAt(uint index)
+        {
+            if (index > _map_target.Count)
+                return null;
+
+            return _map_target[(int)index];
+        }
+    }
 
 #endregion Data Structures
 
