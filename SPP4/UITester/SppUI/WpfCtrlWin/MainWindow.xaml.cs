@@ -219,6 +219,9 @@ namespace CtrlWindowNS
             if (_event._vJoyAxisCollection != null && _event._vJoyAxisCollection[(int)Axis - 0x30] != null)
                 _event._vJoyAxisCollection[(int)Axis - 0x30].Level =  AxisValue; // TODO: HID_USAGE_X
 
+            // Refresh view
+            ICollectionView view = CollectionViewSource.GetDefaultView(_event._vJoyAxisCollection);
+            view.Refresh();
         }
 
 
@@ -289,14 +292,18 @@ namespace CtrlWindowNS
             if (_event._vJoyAxisCollection != null)
             {
                 int count = ctrl.axis.Length;
-                for (int i=0; i<count; i++)
+                for (int i = 0; i < count; i++)
                 {
-                    if (i>=_event._vJoyAxisCollection.Count)
+                    if (i >= _event._vJoyAxisCollection.Count)
                         break;
                     _event._vJoyAxisCollection[i].Implemented = ctrl.axis[i];
                 }
+
+                // Refresh view
+                ICollectionView view = CollectionViewSource.GetDefaultView(_event._vJoyAxisCollection);
+                view.Refresh();
             }
-           
+
         }
 
         public void InitvJoyAxes()
@@ -305,21 +312,21 @@ namespace CtrlWindowNS
                 return;
             LevelMonitor item;
             _event._vJoyAxisCollection.Clear();
-            item = new LevelMonitor(1, "X");
+            item = new LevelMonitor(0, "X");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(2, "Y");
+            item = new LevelMonitor(1, "Y");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(3, "Z");
+            item = new LevelMonitor(2, "Z");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(4, "Rx");
+            item = new LevelMonitor(3, "Rx");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(5, "Ry");
+            item = new LevelMonitor(4, "Ry");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(6, "Rz");
+            item = new LevelMonitor(5, "Rz");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(7, "SL0");
+            item = new LevelMonitor(6, "SL0");
             _event._vJoyAxisCollection.Add(item);
-            item = new LevelMonitor(8, "SL1");
+            item = new LevelMonitor(7, "SL1");
             _event._vJoyAxisCollection.Add(item);
         }
 
@@ -442,7 +449,7 @@ namespace CtrlWindowNS
     {
         // Private (internal values)
         private uint _level = 50;       // Levels range 0-100
-        private int _id = -1;           // Valid id is >0
+        private int _id = -1;           // Valid id is >=0
         private bool _implemented = false; // True if this axis/channel implemented
         private String _name = "";      // Friendly name for this object
         private List<object> _map_target = new List<object>();   // Array of objects to which this object is mapped to (For channels)

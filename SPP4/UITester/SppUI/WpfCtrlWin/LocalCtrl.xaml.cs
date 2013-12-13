@@ -27,7 +27,15 @@ namespace WpfCtrlWin
         public Brush BarBgColorSv = new SolidColorBrush(Colors.LightGray);
         public UInt32 ChannelLevelSv = 50;
 
-        public string ChannelName { set { ChNumTB.Content = value; } }
+        public string ChannelName { /////set { ChNumTB.Content = value; } }
+            set { SetValue(ChannelNameProperty, value); }
+            get { return (string)GetValue(ChannelNameProperty); }
+        }
+        public static readonly DependencyProperty ChannelNameProperty =
+            DependencyProperty.Register("ChannelName", typeof(string), typeof(ChannelCtrl), new UIPropertyMetadata((string)"", (o, e) =>
+            {
+                ((ChannelCtrl)o).ChNumTB.Content = (string)e.NewValue;
+            }));
 
 
         public UInt32 ChannelLevel { 
