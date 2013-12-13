@@ -153,6 +153,20 @@ namespace CtrlWindowNS
         public LevelMonitors CurrentAxisVal { get; set; }
         public LevelMonitors CurrentJoyInputVal { get; set; }
 
+        public ObservableCollection<LevelMonitor> _vJoyAxisCollection;
+        public ObservableCollection<LevelMonitor> vJoyAxisCollection
+        {
+            get { return _vJoyAxisCollection; }
+            set { SetField(ref _vJoyAxisCollection, value, "vJoyAxisCollection"); }
+        }
+
+        public ObservableCollection<LevelMonitor> _vJoyInputChannel;
+        public ObservableCollection<LevelMonitor> vJoyInputChannel
+        {
+            get { return _vJoyInputChannel; }
+            set { SetField(ref _vJoyInputChannel, value, "vJoyInputChannel"); }
+        }
+
         public vJoyButtonsVal CurrentButtonsVal { get; set; }
 
 #endregion "vJoy Interface"
