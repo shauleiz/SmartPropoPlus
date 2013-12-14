@@ -268,40 +268,65 @@
                     <ColumnDefinition Width="223*"/>
                 </Grid.ColumnDefinitions>
                 <Grid x:Name="InputGrid"  HorizontalAlignment="Left" VerticalAlignment="Bottom"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33ff90A7" Height="102"  >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[0]}" ChannelName="1" Grid.Column="0"   Style="{StaticResource VJOY_INPUT_CH}"  />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[1]}" ChannelName="2"  Grid.Column="1"  Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[2]}" ChannelName="3"  Grid.Column="2" Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[3]}" ChannelName="4" Grid.Column="3"  Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[4]}" ChannelName="5"  Grid.Column="4" Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[5]}" ChannelName="6"   Grid.Column="5" Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[6]}" ChannelName="7"   Grid.Column="6"  Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[7]}" ChannelName="8"  Grid.Column="7"  Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[8]}" ChannelName="9" Grid.Column="8" Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[9]}" ChannelName="10"  Grid.Column="9" Style="{StaticResource VJOY_INPUT_CH}"  />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[10]}" ChannelName="11"   Grid.Column="10"  Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[11]}" ChannelName="12" Grid.Column="11"   Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[12]}" ChannelName="13"  Grid.Column="12"  Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[13]}" ChannelName="14"   Grid.Column="13" Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[14]}" ChannelName="15"   Grid.Column="14" Style="{StaticResource VJOY_INPUT_CH}" />
-                    <ctrl:ChannelCtrl  ChannelLevel="{Binding Path=CurrentJoyInputVal[15]}" ChannelName="16"  Grid.Column="15"  Style="{StaticResource VJOY_INPUT_CH}" />
+                    <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
+                    <ItemsControl ItemsSource="{Binding Path=vJoyInputCollection}" >
+                        <ItemsControl.ItemContainerStyle>
+                            <Style>
+                                <Setter Property="Grid.Column" Value="{Binding Path=Id}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid ShowGridLines="True" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar"/>
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar"/>
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <Style TargetType="ctrl:ChannelCtrl">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                        <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
+                                        <Setter Property="ChannelName" Value="{Binding Path=Name}" />
+                                        <Setter Property="Height" Value="Auto" />
+                                        <Setter Property="Width" Value="Auto" />
+                                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                                        <Setter Property="Margin" Value="0,5,0,0" />
+                                        <Setter Property="BarColor" Value="Turquoise" />
+                                        <Setter Property="ToolTip">
+                                            <Setter.Value>
+                                                <ToolTip  
+                                                Content="{Binding Path=Name}"
+                                                ContentStringFormat="Joystick Input Channel {0}"
+                                                />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </DataTemplate.Resources>
+                                <Grid>
+                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
                 <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,-4.39,197.108,67.348" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                     <Label.RenderTransform>
@@ -332,7 +357,7 @@
                                         <ColumnDefinition SharedSizeGroup="LevelBar" />
                                         <ColumnDefinition SharedSizeGroup="LevelBar" />
                                         <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition  SharedSizeGroup="LevelBar"/>
+                                        <ColumnDefinition SharedSizeGroup="LevelBar"/>
                                     </Grid.ColumnDefinitions>
                                 </Grid>
                             </ItemsPanelTemplate>
@@ -349,6 +374,14 @@
                                         <Setter Property="Width" Value="Auto" />
                                         <Setter Property="VerticalAlignment" Value="Top" />
                                         <Setter Property="Margin" Value="0,10,0,0" />
+                                        <Setter Property="ToolTip">
+                                            <Setter.Value>
+                                                <ToolTip  
+                                                Content="{Binding Path=Name}"
+                                                ContentStringFormat="Joystick Axis {0}"
+                                                />
+                                            </Setter.Value>
+                                        </Setter>
                                     </Style>
                                 </DataTemplate.Resources>
                                 <Grid>
