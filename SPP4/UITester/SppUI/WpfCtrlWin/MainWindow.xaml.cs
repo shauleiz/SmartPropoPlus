@@ -50,15 +50,16 @@ namespace CtrlWindowNS
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
-                CurrentAxisVal = new LevelMonitors(8),
-                CurrentJoyInputVal = new LevelMonitors(16),
                 CurrentButtonsVal = new vJoyButtonsVal(32), // Number of buttons
 
                 _vJoyAxisCollection = new ObservableCollection<LevelMonitor>(),
+                _vJoyInputCollection = new ObservableCollection<LevelMonitor>(),
 
             };
 
+            // Data initialization
             InitvJoyAxes();
+            InitvJoyInputChs(16);
 
             this.DataContext = _event;
         }
@@ -211,11 +212,11 @@ namespace CtrlWindowNS
             if (_event.SelectedvjDevice.vj_DeviceNumber != iDev)
                 return;
 
-            // TODO: Remove
-            if (_event.CurrentvjCtrl != null && _event.CurrentvjCtrl.axis[Axis - 0x30])
-                _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
+            //// TODO: Remove
+            //if (_event.CurrentvjCtrl != null && _event.CurrentvjCtrl.axis[Axis - 0x30])
+            //    _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
 
-            // New
+            //// New
             if (_event._vJoyAxisCollection != null && _event._vJoyAxisCollection[(int)Axis - 0x30] != null)
                 _event._vJoyAxisCollection[(int)Axis - 0x30].Level =  AxisValue; // TODO: HID_USAGE_X
 
@@ -228,9 +229,13 @@ namespace CtrlWindowNS
         // Update the position of the progress bar that corresponds to the processed channel
         public void SetProcessedChData(uint iCh, uint data)
         {
-            if (_event.CurrentJoyInputVal == null || _event.CurrentJoyInputVal.NumberOfMonitors() <= iCh)
+            if (_event._vJoyInputCollection == null || _event._vJoyInputCollection.Count <= iCh)
                 return;
-            _event.CurrentJoyInputVal[iCh] = data;                
+            _event._vJoyInputCollection[(int)iCh].Level = data;
+
+            // Refresh view
+            ICollectionView view = CollectionViewSource.GetDefaultView(_event._vJoyInputCollection);
+            view.Refresh();
         }
 
 
@@ -306,6 +311,7 @@ namespace CtrlWindowNS
 
         }
 
+        // Initialize vJoy Axes data collection
         public void InitvJoyAxes()
         {
             if (_event == null || _event._vJoyAxisCollection == null)
@@ -328,6 +334,23 @@ namespace CtrlWindowNS
             _event._vJoyAxisCollection.Add(item);
             item = new LevelMonitor(7, "SL1");
             _event._vJoyAxisCollection.Add(item);
+        }
+
+        // Initialize data collection of input channels to vJoy
+        public void InitvJoyInputChs(int nOfChs)
+        {
+            if (_event == null || _event._vJoyInputCollection == null)
+                return;
+            
+            LevelMonitor item;
+
+            _event._vJoyInputCollection.Clear();
+
+            for (int i = 0; i < nOfChs; i++)
+            {
+                item = new LevelMonitor(i, (i + 1).ToString());
+                _event._vJoyInputCollection.Add(item);
+            }
         }
 
 
