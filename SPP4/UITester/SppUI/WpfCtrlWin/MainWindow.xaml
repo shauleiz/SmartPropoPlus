@@ -301,28 +301,8 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <DataTemplate.Resources>
-                                    <Style TargetType="ctrl:ChannelCtrl">
-                                        <Setter Property="IsEnabled" Value="True" />
-                                        <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
-                                        <Setter Property="ChannelName" Value="{Binding Path=Name}" />
-                                        <Setter Property="Height" Value="Auto" />
-                                        <Setter Property="Width" Value="Auto" />
-                                        <Setter Property="VerticalAlignment" Value="Bottom" />
-                                        <Setter Property="Margin" Value="0,5,0,0" />
-                                        <Setter Property="BarColor" Value="Turquoise" />
-                                        <Setter Property="ToolTip">
-                                            <Setter.Value>
-                                                <ToolTip  
-                                                Content="{Binding Path=Name}"
-                                                ContentStringFormat="Joystick Input Channel {0}"
-                                                />
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </DataTemplate.Resources>
-                                <Grid>
-                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" />
+                               <Grid>
+                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" Style="{StaticResource VJOY_INPUT_CH_STYLE}" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -364,26 +344,6 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <DataTemplate.Resources>
-                                    <Style TargetType="ctrl:ChannelCtrl">
-                                        <Setter Property="IsEnabled" Value="{Binding Path=Implemented}" />
-                                        <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
-                                        <Setter Property="ToolTip" Value="{Binding Path=Name}" />
-                                        <Setter Property="ChannelName" Value="{Binding Path=Name}" />
-                                        <Setter Property="Height" Value="Auto" />
-                                        <Setter Property="Width" Value="Auto" />
-                                        <Setter Property="VerticalAlignment" Value="Top" />
-                                        <Setter Property="Margin" Value="0,10,0,0" />
-                                        <Setter Property="ToolTip">
-                                            <Setter.Value>
-                                                <ToolTip  
-                                                Content="{Binding Path=Name}"
-                                                ContentStringFormat="Joystick Axis {0}"
-                                                />
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </DataTemplate.Resources>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition  Height="30"/>
@@ -391,7 +351,7 @@
                                     </Grid.RowDefinitions>
                                     <!-- TODO: Text should be bound to mapping source NOT Id -->
                                     <TextBox IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=Id}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" />
-                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"/>
+                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"  Style="{StaticResource VJOY_AXES_STYLE}"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
