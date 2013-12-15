@@ -175,7 +175,7 @@ namespace CtrlWindowNS
             set { SetField(ref _vJoyButtonCollection, value, "vJoyButtonCollection"); }
         }
 
-        public vJoyButtonsVal CurrentButtonsVal { get; set; }
+        //public vJoyButtonsVal CurrentButtonsVal { get; set; }
 
 #endregion "vJoy Interface"
 

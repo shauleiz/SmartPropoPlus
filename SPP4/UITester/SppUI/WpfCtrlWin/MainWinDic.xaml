@@ -36,9 +36,25 @@
     <!-- Styles -->
     <!-- vJoy Button Style -->
     <Style TargetType="ctrl:JoyButton" x:Key="VJOY_BUTTONS">
-        <Setter Property="IsEnabled" Value= "{Binding Enabled}" />
-        <Setter Property="IsMapped" Value="False" />
-        <Setter Property="IsPressed" Value="False" />
+        <Setter Property="IsEnabled" Value= "{Binding Path=Implemented}" />
+        <Setter Property="IsMapped" Value="True" />
+        <Setter Property="IsPressed" Value="{Binding Path=Level}" />
+        <Setter Property="Number" Value="{Binding Path=Name}" />
+        <Setter Property="ToolTip">
+            <Setter.Value>
+                <ToolTip>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <!-- TODO: Replace with meaningful data -->
+                            <MultiBinding StringFormat="Joystick Button {0} - m. {1}">
+                                <Binding Path="Name" />
+                                <Binding Path="Name" /> 
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>                   
+                </ToolTip>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- vJoy Axis Style -->
@@ -48,7 +64,6 @@
         <Setter Property="Width" Value="Auto" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Margin" Value="0,10,0,0" />
-        <!--<Setter Property="BarColor" Value="Black" />-->
     </Style>
 
     <!-- vJoy Input Channels Style -->

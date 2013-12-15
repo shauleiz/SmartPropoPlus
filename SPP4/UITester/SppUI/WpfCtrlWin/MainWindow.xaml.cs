@@ -50,7 +50,6 @@ namespace CtrlWindowNS
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
-                CurrentButtonsVal = new vJoyButtonsVal(32), // Number of buttons
 
                 _vJoyAxisCollection = new ObservableCollection<LevelMonitor>(),
                 _vJoyInputCollection = new ObservableCollection<LevelMonitor>(),
@@ -261,10 +260,6 @@ namespace CtrlWindowNS
             uint count=0;
             foreach (byte element in BtnValsArray)
             {   
-                // TODO: Remove
-                _event.CurrentButtonsVal[count] = (element==0) ? false : true;
-
-                // New
                 _event._vJoyButtonCollection[(int)count].Level  = (element==0) ? false : true;
                 count += 1;
             }
