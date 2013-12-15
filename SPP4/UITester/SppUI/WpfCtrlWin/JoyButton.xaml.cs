@@ -49,10 +49,10 @@ namespace WpfCtrlWin
         /// </summary>
         private Brush BgColor() 
         { 
-            if (_BtnLast < _BtnValue)
-                _enabled = false;
-            else
-                _enabled = true;
+            //if (_BtnLast < _BtnValue)
+            //    _enabled = false;
+            //else
+            //    _enabled = true;
 
                 if (!_enabled)
                     BackGround.Fill = _bgDisabledBrush;
@@ -79,10 +79,10 @@ namespace WpfCtrlWin
         /// </summary>
         private Brush RingStroke()
         {
-            if (_BtnLast < _BtnValue)
-                _enabled = false;
-            else
-                _enabled = true;
+            //if (_BtnLast < _BtnValue)
+            //    _enabled = false;
+            //else
+            //    _enabled = true;
 
             if (!_enabled)
                 BackGround.Fill = _bgDisabledBrush;
@@ -105,7 +105,7 @@ namespace WpfCtrlWin
 
 
 
-#if false
+#if true
 
         /// <summary>
         /// IsEnabled - Represents an existing vJoy device button
@@ -123,6 +123,7 @@ namespace WpfCtrlWin
             {
                 ((JoyButton)o)._enabled = (bool)e.NewValue;
                 ((JoyButton)o).BackGround.Fill = ((JoyButton)o).BgColor();
+                ((JoyButton)o).OuterRing.Stroke = ((JoyButton)o).RingStroke();
             }));
         
 #endif

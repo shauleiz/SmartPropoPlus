@@ -35,8 +35,8 @@
 
     <!-- Styles -->
     <!-- vJoy Button Style -->
-    <Style TargetType="ctrl:JoyButton">
-        <Setter Property="LastButton" Value= "{Binding CurrentvjCtrl.nButtons}" />
+    <Style TargetType="ctrl:JoyButton" x:Key="VJOY_BUTTONS">
+        <Setter Property="IsEnabled" Value= "{Binding Enabled}" />
         <Setter Property="IsMapped" Value="False" />
         <Setter Property="IsPressed" Value="False" />
     </Style>
