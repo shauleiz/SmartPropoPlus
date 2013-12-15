@@ -54,12 +54,14 @@ namespace CtrlWindowNS
 
                 _vJoyAxisCollection = new ObservableCollection<LevelMonitor>(),
                 _vJoyInputCollection = new ObservableCollection<LevelMonitor>(),
+                _vJoyButtonCollection = new ObservableCollection<BoolMonitor>(), 
 
             };
 
             // Data initialization
             InitvJoyAxes();
             InitvJoyInputChs(16);
+            InitvJoyButtons(32);
 
             this.DataContext = _event;
         }
@@ -216,7 +218,7 @@ namespace CtrlWindowNS
             //if (_event.CurrentvjCtrl != null && _event.CurrentvjCtrl.axis[Axis - 0x30])
             //    _event.CurrentAxisVal[Axis - 0x30] = AxisValue; // TODO: HID_USAGE_X
 
-            //// New
+            // New
             if (_event._vJoyAxisCollection != null && _event._vJoyAxisCollection[(int)Axis - 0x30] != null)
                 _event._vJoyAxisCollection[(int)Axis - 0x30].Level =  AxisValue; // TODO: HID_USAGE_X
 
@@ -258,10 +260,17 @@ namespace CtrlWindowNS
             // Copy managed array to model object
             uint count=0;
             foreach (byte element in BtnValsArray)
-            {           
+            {   
+                // TODO: Remove
                 _event.CurrentButtonsVal[count] = (element==0) ? false : true;
+
+                // New
+                _event._vJoyButtonCollection[(int)count].Level  = (element==0) ? false : true;
                 count += 1;
             }
+            // Refresh view
+            ICollectionView view = CollectionViewSource.GetDefaultView(_event._vJoyButtonCollection);
+            view.Refresh();
 
         }
 
@@ -309,6 +318,24 @@ namespace CtrlWindowNS
                 view.Refresh();
             }
 
+            // New
+            if (_event._vJoyButtonCollection != null)
+            {
+                uint i=0;
+                foreach (BoolMonitor element in _event._vJoyButtonCollection)
+                {
+                    if (i < ctrl.nButtons)
+                        element.Implemented = true;
+                    else
+                        element.Implemented = false;
+                    i++;
+                }
+
+                // Refresh view
+                ICollectionView view = CollectionViewSource.GetDefaultView(_event._vJoyButtonCollection);
+                view.Refresh();
+            }
+
         }
 
         // Initialize vJoy Axes data collection
@@ -353,6 +380,19 @@ namespace CtrlWindowNS
             }
         }
 
+        // Initialize data collection of vJoy buttons
+        public void InitvJoyButtons(int nOfBtns)
+        { 
+            if (_event == null || _event._vJoyButtonCollection == null)
+                return;
+
+            BoolMonitor item;
+            for (int i = 0; i < nOfBtns; i++)
+            {
+                item = new BoolMonitor(i, (i + 1).ToString());
+                _event._vJoyButtonCollection.Add(item);
+            }
+        }
 
 #endregion // "vJoy Interface"
 
@@ -459,6 +499,32 @@ namespace CtrlWindowNS
                 ButtonsVal[index] = value;
                 OnPropertyChanged(Binding.IndexerName);
             }
+        }
+    }
+
+    public class BoolMonitor : LevelMonitor
+    {
+        private bool _level = false;
+        private bool _enabled = true;
+
+        public BoolMonitor(int id, String name) : base(id, name) { }
+
+        // Accessors
+        public new bool Level
+        {
+            get { return _level; }
+            set { _level = value; }
+        }
+
+        public  bool Enabled
+        {
+            get { return _enabled; }
+            set { _enabled = value; }
+        }
+
+        public new bool MapTarget(object target)
+        {
+            return false;
         }
     }
 

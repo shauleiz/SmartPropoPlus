@@ -372,14 +372,23 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="*"/>
-                        <!--<RowDefinition Height="Auto"/>
-                        <RowDefinition Height="20"/>
-                        <RowDefinition Height="*"/>-->
                     </Grid.RowDefinitions>
                     <Label Content="Buttons" Grid.Row="0" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1"/>
-                    <!--<Label Content="No Mapped Buttons" Grid.Row="1" Background="#4CADD8E6" Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" MinHeight="30"/>-->
-                    <WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30"  Margin="0,5">
-                        <!--<Label Content="No Mapped Buttons"  Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>-->
+                    <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
+                    <ItemsControl ItemsSource="{Binding Path=vJoyButtonCollection}"  Grid.Row="1" >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"  MinWidth="30" MinHeight="30"  Margin="0,5"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                    <!-- TODO: Text should be bound to mapping source NOT Id -->
+                                <ctrl:JoyButton IsEnabled="{Binding Path=Implemented}"  Number="{Binding Path=Name}"  IsMapped="True"   IsPressed="{Binding Path=Level}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!--<WrapPanel Orientation="Horizontal" Grid.Row="1"  MinWidth="30" MinHeight="30"  Margin="0,5">
                         <ctrl:JoyButton Number="1" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[0]}" />
                         <ctrl:JoyButton Number="2" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[1]}"/>
                         <ctrl:JoyButton Number="3" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[2]}" />
@@ -412,16 +421,7 @@
                         <ctrl:JoyButton Number="30" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[29]}" />
                         <ctrl:JoyButton Number="31" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[30]}" />
                         <ctrl:JoyButton Number="32" IsMapped="True"  IsPressed="{Binding Path=CurrentButtonsVal[31]}" />
-                    </WrapPanel>
-                    <!--<Label Content="UnMapped Buttons" Grid.Row="3" Background="LightBlue" Foreground="#FF3544DA" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" Padding="5,1"/>-->
-                    <!--<WrapPanel Orientation="Horizontal" Grid.Row="4"  MinWidth="30"  Background="#4CADD8E6">
-                        <ctrl:JoyButton Mapped="False"  Number="3"/>
-                        <Label Content="No Unmapped Buttons"   Foreground="#FFDA1542" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,1" Width="200.274"/>
                     </WrapPanel>-->
-                    <!--<GridSplitter HorizontalAlignment="Stretch" 
-        				VerticalAlignment="Center"
-        				Grid.Row="2" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
-        				Height="5" Background="#FFBCBCBC"/>-->
                 </Grid>
             </Grid>
         </Expander>

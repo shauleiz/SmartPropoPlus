@@ -167,6 +167,14 @@ namespace CtrlWindowNS
             set { SetField(ref _vJoyInputCollection, value, "vJoyInputChannel"); }
         }
 
+        // BoolMonitor
+        public ObservableCollection<BoolMonitor> _vJoyButtonCollection;
+        public ObservableCollection<BoolMonitor> vJoyButtonCollection
+        {
+            get { return _vJoyButtonCollection; }
+            set { SetField(ref _vJoyButtonCollection, value, "vJoyButtonCollection"); }
+        }
+
         public vJoyButtonsVal CurrentButtonsVal { get; set; }
 
 #endregion "vJoy Interface"
