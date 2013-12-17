@@ -287,6 +287,7 @@ void CtrlWindowMoving(double Left, double Top);
 void CtrlAudioChanging(int bitrate, WCHAR channel);
 void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
 void CtrlvJoyDeviceChanging(UINT id);
+void CtrlvJoyMapAxisChanging(int AxisId, int NewSrcCh);
 
 static void GetHwnd(Object^ data)
 {
@@ -303,6 +304,7 @@ static void GetHwnd(Object^ data)
 	ctrlpage->OnAudioChanged += gcnew CtrlWindowNS::CtrlWindow::AudioChanging(CtrlAudioChanging);
 	ctrlpage->OnAudioAutoChanged += gcnew CtrlWindowNS::CtrlWindow::AudioAutoChanging(CtrlAudioAutoChanging);
 	ctrlpage->OnvJoyDeviceChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyDeviceChanging(CtrlvJoyDeviceChanging);
+	ctrlpage->OnvJoyMapAxisChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyMapAxisChanging(CtrlvJoyMapAxisChanging);
 }
 
 // Add line to the list of audio devices
@@ -400,4 +402,21 @@ void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked)
 void CtrlvJoyDeviceChanging(UINT id)
 {
 	SendMessage(hAppWin, WMSPP_DLG_VJOYSEL, (WPARAM)id, 0);
+}
+
+
+void CtrlvJoyMapAxisChanging(int AxisId, int NewSrcCh)
+{
+	// Create a Mapping structure - make it all default than change only the new value
+	Mapping m;
+
+	// Init Mapping struct
+	DWORD AxisMap = 0;
+	m.nButtons=0;
+	m.nAxes=8; // TODO: Replace with macro
+	m.pAxisMap = &AxisMap;
+
+	// Send message
+	AxisMap = NewSrcCh<< (4*(7-AxisId));
+	SendMessage(hAppWin, WMSPP_DLG_MAP,(WPARAM)&m, 0);
 }

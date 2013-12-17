@@ -300,6 +300,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DisplayvJoyStat();
 		break;
 
+	case WMSPP_DLG_MAP:
+		hTopUiWin = GetTopUiWnd();
+		SendMessage(hTopUiWin, WMSPP_MAP_UPDT, wParam, lParam);
+		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

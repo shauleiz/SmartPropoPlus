@@ -349,8 +349,7 @@
                                         <RowDefinition  Height="30"/>
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <!-- TODO: Text should be bound to mapping source NOT Id -->
-                                    <TextBox IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=Id}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" />
+                                    <TextBox Name="MapSourceCh" IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=MapSource}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" TextChanged="MapSourceChanged" />
                                     <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"  Style="{StaticResource VJOY_AXES_STYLE}"/>
                                 </Grid>
                             </DataTemplate>

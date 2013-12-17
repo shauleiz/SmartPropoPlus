@@ -31,6 +31,9 @@ namespace CtrlWindowNS
 
         public delegate void vJoyDeviceChanging(uint id);
         public event vJoyDeviceChanging OnvJoyDeviceChanged;
+        public delegate void vJoyMapAxisChanging(int AxisId, int NewSrcCh);
+        public event vJoyMapAxisChanging OnvJoyMapAxisChanged;
+
 
 #region General
         public CtrlWindow()
@@ -389,7 +392,63 @@ namespace CtrlWindowNS
             }
         }
 
+        /// <summary>
+        /// Handler to Event TextChanged
+        /// Fired when the user changes the text of the mapping source of one of the vJoy axes
+        /// If input is valid then call SendAxisMappingData()
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MapSourceChanged(object sender, TextChangedEventArgs e)
+        {
+
+            // Get the new value from the Text Box
+            var textBox = sender as TextBox;
+            string src = textBox.Text;
+            int iSrc=0;
+            bool converted = Int32.TryParse(src, out iSrc);
+
+            // Get the Name of the target axis from the Sender
+            UIElementCollection Grd = ((sender as FrameworkElement).Parent as Grid).Children;
+            string Name = "";
+            int Id = -1;
+
+            foreach (object o in Grd)
+            {
+                if (o is WpfCtrlWin.ChannelCtrl)
+                    Name = (o as WpfCtrlWin.ChannelCtrl).ChannelName;
+            }
+
+            // Call the actual method that passes the change to the SppTopWin
+            if (textBox.Name.Equals("MapSourceCh") && converted && iSrc>0)
+                SendAxisMappingData(iSrc, Name);
+        }
+
+
+        // Send vJoy axis mapping information to the CLI wrapper
+        private void SendAxisMappingData(int NewSrc, string TargetName)
+        {
+
+            // Find the Axis Id by Name
+            int id = -1;
+            foreach (LevelMonitor element in _event._vJoyAxisCollection)
+            {
+                if (element.Name.Equals(TargetName))
+                {
+                    id = element.Id;
+                    break;
+                }
+            }
+            if (id < 0)
+                return;
+            // Invoke the event handler to carry the info to the CLI wrapper (SppTopWin)
+            OnvJoyMapAxisChanged(id, NewSrc);
+
+        }
+
 #endregion // "vJoy Interface"
+
+
 
 
     }
@@ -540,10 +599,10 @@ namespace CtrlWindowNS
         private object _map_source;     // Object that mapped to this object
 
         // Constructors
-        public LevelMonitor() { _map_target.Clear(); _map_source = null; }
-        public LevelMonitor(String name) { _map_target.Clear(); _map_source = null; _name = name; }
-        public LevelMonitor(int id) { _map_target.Clear(); _map_source = null; _id = id; }
-        public LevelMonitor(int id, String name) { _map_target.Clear(); _map_source = null; _id = id; _name = name; }
+        public LevelMonitor() { _map_target.Clear(); _map_source = "n/a"; }
+        public LevelMonitor(String name) { _map_target.Clear(); _map_source = "n/a"; _name = name; }
+        public LevelMonitor(int id) { _map_target.Clear(); _map_source = "n/a"; _id = id; }
+        public LevelMonitor(int id, String name) { _map_target.Clear(); _map_source = "n/a"; _id = id; _name = name; }
 
         // Accessors
         public uint Level
@@ -556,6 +615,19 @@ namespace CtrlWindowNS
                     _level = 100;
             }
         }
+
+        public object MapSource
+        {
+            get { return _map_source; }
+            set 
+            {
+                if (!_map_source.Equals(value))
+                {
+
+                    _map_source = value; 
+                };
+            }
+       }
 
         public bool Implemented
         {
