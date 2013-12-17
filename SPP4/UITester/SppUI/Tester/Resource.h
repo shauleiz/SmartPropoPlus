@@ -30,3 +30,5 @@
 #define IDM_AXES_HI2LO4                         40018
 #define IDM_INPUT_LO2HI                         40019
 #define IDM_INPUT_HI2LO                         40020
+#define IDM_MAP_DEFAULT                         40021
+#define IDM_MAP_GROUPS                          40022

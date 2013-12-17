@@ -272,6 +272,67 @@ namespace CtrlWindowNS
 
         }
 
+        // Fill-in mapping data
+        public void SetMappingData(ulong AxisMap, IntPtr ButtonMap)
+        {
+            /// Axes - Going over AxisMap.
+            /// Every nibble is an entry represents target axis (by location) and holds value of input channel.
+            /// Every entry is loaded into the mapping source in the target axis item
+            /// and added to the array of target axes in the source channel
+            /// 
+
+            int nAxes = _event._vJoyAxisCollection.Count;
+            int src = 0;
+            for (int i = 0; i < nAxes; i++)
+            {
+                src = (int)((AxisMap >> (i * 4)) & 0xF);
+                if (src < 1 || src > _event._vJoyInputCollection.Count)
+                    continue;
+                _event._vJoyAxisCollection[nAxes-i-1].MapSource = src;
+            };
+
+            RefreshTargetMapping();
+
+            // Refresh view
+            ICollectionView view1 = CollectionViewSource.GetDefaultView(_event._vJoyAxisCollection);
+            view1.Refresh();
+            
+        }
+
+        /// <summary>
+        /// Refresh all Map Target arrays in Input Collection
+        /// </summary>
+        private void RefreshTargetMapping()
+        {
+            // Reset
+            foreach (LevelMonitor element in _event._vJoyInputCollection)
+                element.UnMapAllTargets();
+
+            // Go over all Axes and buttons and get the sources
+            // For every source found, add target to its target list
+
+            // Axes
+            foreach (LevelMonitor element in _event._vJoyAxisCollection)
+            {
+                string sSrc = element.MapSource.ToString();
+                int iSrc = 0;
+                bool converted = Int32.TryParse(sSrc, out iSrc);
+                if (converted && iSrc > 0)
+                    _event._vJoyInputCollection[iSrc - 1].MapTarget(element.Id);
+            };
+
+            // Buttons
+            foreach (LevelMonitor element in _event._vJoyButtonCollection)
+            {
+                string sSrc = element.MapSource.ToString();
+                int iSrc = 0;
+                bool converted = Int32.TryParse(sSrc, out iSrc);
+                if (converted && iSrc > 0)
+                    _event._vJoyInputCollection[iSrc - 1].MapTarget(element.MapSource);
+            };
+
+        }
+
         // Get the new selected vJoy device as the user selected from the combo box
         //  - Call event OnvJoyDeviceChanged
         private void vJoyDeviceCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -300,7 +361,6 @@ namespace CtrlWindowNS
             _event.CurrentvjCtrl.nButtons = ctrl.nButtons;
             _event.CurrentvjCtrl.axis = ctrl.axis;
 
-            // New
             if (_event._vJoyAxisCollection != null)
             {
                 int count = ctrl.axis.Length;
@@ -316,7 +376,6 @@ namespace CtrlWindowNS
                 view.Refresh();
             }
 
-            // New
             if (_event._vJoyButtonCollection != null)
             {
                 uint i=0;
@@ -411,8 +470,6 @@ namespace CtrlWindowNS
             // Get the Name of the target axis from the Sender
             UIElementCollection Grd = ((sender as FrameworkElement).Parent as Grid).Children;
             string Name = "";
-            int Id = -1;
-
             foreach (object o in Grd)
             {
                 if (o is WpfCtrlWin.ChannelCtrl)
@@ -682,6 +739,12 @@ namespace CtrlWindowNS
 
             return _map_target.Remove(target);
         }
+
+        public void UnMapAllTargets()
+        {
+            _map_target.Clear();
+        }
+
 
         /// <summary>
         /// Gets the target object by index

@@ -48,6 +48,8 @@ void				AudioAutoParams(WORD Mask, WORD Flags);
 void				DisplayAudioLevels(PVOID Id, UINT Left, UINT Right);
 void				vJoyDevSetAvail(UINT id, controls * ctrl);
 void				SetButtonValues(UINT id, BTNArr * BtnVals);
+void				SetMappingData(Mapping * m);
+
 public ref class CtrlWindow : Window
 {
 //public:
@@ -271,6 +273,10 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		WPFPageHost::hostedPage->SetProcessedChData((UINT)wParam, (UINT)lParam);
 		break;
 
+	case WMSPP_MAP_UPDT:
+		SetMappingData((Mapping *)wParam);
+		break;
+
 	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));
@@ -345,10 +351,17 @@ void vJoyDevSetAvail(UINT id, controls * ctrl)
 void SetButtonValues(UINT id, BTNArr * BtnVals)
 {
 	const UINT  nButons = 32;
-	array<BYTE>^ MBtnVals = gcnew array<BYTE>(nButons);
+	//array<BYTE>^ MBtnVals = gcnew array<BYTE>(nButons);
 	BYTE * _array_of_vals = BtnVals->data();
 
 	WPFPageHost::hostedPage->SetButtonValues(id,  (IntPtr)_array_of_vals);
+}
+
+void SetMappingData(Mapping * map)
+{
+	DWORD AxisMap = *map->pAxisMap;
+	BYTE * ButtonMap = map->ButtonArray->data();
+	WPFPageHost::hostedPage->SetMappingData(AxisMap,  (IntPtr)ButtonMap);
 }
 
 // TODO: Use this function to coordinate moving of windows

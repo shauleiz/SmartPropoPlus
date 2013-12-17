@@ -59,6 +59,9 @@ IDC_TESTER MENU
         MENUITEM SEPARATOR
         MENUITEM "Input Lo2Hi", IDM_INPUT_LO2HI
         MENUITEM "Input Hi 2Lo", IDM_INPUT_HI2LO
+        MENUITEM SEPARATOR
+        MENUITEM "Mapping - Default", IDM_MAP_DEFAULT
+        MENUITEM "Mapping - Groups", IDM_MAP_GROUPS
     }
     POPUP "&Help"
     {

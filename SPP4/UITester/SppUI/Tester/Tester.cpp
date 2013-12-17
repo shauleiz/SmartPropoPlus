@@ -41,6 +41,7 @@ void DisplayvJoyStat(void);
 void SetAvailableControls(UINT id, HWND hDlg, int stat);
 void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg);
 void SetvJoyInputSlope(bool GoingUp, HWND hDlg);
+void SetChannelMapping(bool Default, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -263,6 +264,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetvJoyInputSlope(false, hTopUiWin);
 			break;
 
+		case IDM_MAP_DEFAULT:
+			SetChannelMapping(true, hTopUiWin);
+			break;
+
+		case IDM_MAP_GROUPS:
+			SetChannelMapping(false, hTopUiWin);
+			break;
+
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -302,7 +312,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WMSPP_DLG_MAP:
 		hTopUiWin = GetTopUiWnd();
-		SendMessage(hTopUiWin, WMSPP_MAP_UPDT, wParam, lParam);
+		//SendMessage(hTopUiWin, WMSPP_MAP_UPDT, wParam, lParam);
 		break;
 
 	default:
@@ -515,4 +525,48 @@ void SetvJoyInputSlope(bool GoingUp, HWND hDlg)
 		ChannelValue+=Step;
 		PostMessage(hDlg, WMSPP_PRCS_RCHMNT, i, ChannelValue);
 	};
+}
+
+void SetChannelMapping(bool Default, HWND hDlg)
+{
+	// Axes
+	const UINT nAxes = 8;
+	DWORD dAxisMap = 0x12345678;
+
+	// Buttons
+	BTNArr aButtonMap = {0};
+	UINT nButtons = (UINT)aButtonMap.size();
+	auto size = aButtonMap.size();
+
+	if (Default)
+	{
+
+		for (UINT i=0; i<size; i++)
+		{
+			if (i<24)
+				aButtonMap[i] = i+9;
+			else
+				aButtonMap[i] = 9;
+		}
+	} // Default
+	else
+	{ // 3 Groups of axes
+		dAxisMap = 0x11333338;
+		for (UINT i=0; i<size; i++)
+		{
+			if (i<24)
+				aButtonMap[i] = i+8;
+			else
+				aButtonMap[i] = 11;
+		}
+	};
+
+	// Create struct
+	Mapping Map;
+	Map.nAxes = nAxes;
+	Map.pAxisMap = &dAxisMap;
+	Map.nButtons = nButtons;
+	Map.ButtonArray = &aButtonMap;
+
+	SendMessage(hDlg, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
