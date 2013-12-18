@@ -68,16 +68,6 @@ namespace CtrlWindowNS
             this.DataContext = _event;
         }
 
-        void NonRectangularWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
-        }
-
-        private void LocChanged(object sender, System.EventArgs e)
-        {
-            if (OnMove != null)
-                OnMove(Left, Top);
-        }
 
         #endregion General
 
@@ -150,21 +140,6 @@ namespace CtrlWindowNS
         //{
 
         //}
-
-
-        // One of the Audio radio buttons was checked - Call event OnAudioChanged
-        private void Audio_RB_Checked(object sender, RoutedEventArgs e)
-        {
-            if (OnAudioChanged != null)
-                OnAudioChanged(_event.AudioBitrate, _event.AudioChannel);
-        }
-
-        private void Audio_CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-                OnAudioAutoChanged(!_event.IsNotAutoBitrate, !_event.IsNotAutoChannel);
-
-        }
-
 
         //private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         //{
@@ -291,6 +266,7 @@ namespace CtrlWindowNS
                 _event._vJoyAxisCollection[nAxes-i-1].MapSource = src;
             };
 
+            // Refresh values of targets in the Input Channels collection
             RefreshTargetMapping();
 
             // Refresh view
@@ -505,12 +481,58 @@ namespace CtrlWindowNS
 
 #endregion // "vJoy Interface"
 
+#region Attached Event
+        // One of the Audio radio buttons was checked - Call event OnAudioChanged
+        private void Audio_RB_Checked(object sender, RoutedEventArgs e)
+        {
+            if (OnAudioChanged != null)
+                OnAudioChanged(_event.AudioBitrate, _event.AudioChannel);
+        }
+
+        private void Audio_CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            OnAudioAutoChanged(!_event.IsNotAutoBitrate, !_event.IsNotAutoChannel);
+
+        }
 
 
 
+
+        /// Mouse entered a vJoy Input Channel
+        /// Set HoveredvjInput to number of selected channel
+        void NonRectangularWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void LocChanged(object sender, System.EventArgs e)
+        {
+            if (OnMove != null)
+                OnMove(Left, Top);
+        }
+
+        private void MouseEntervJoyInputCh(object sender, MouseEventArgs e)
+        {
+            WpfCtrlWin.ChannelCtrl cCtrl = sender as WpfCtrlWin.ChannelCtrl;
+            if (cCtrl != null && cCtrl.IsEnabled && (e.LeftButton == MouseButtonState.Released))
+                _event.HoveredvjInput = cCtrl.ChannelName;
+            else
+                _event.HoveredvjInput = "0";
+        }
+
+        /// Mouse Leaves a vJoy Input Channel
+        /// Set HoveredvjInput to 0
+        private void MouseLeavevJoyInputCh(object sender, MouseEventArgs e)
+        {
+            WpfCtrlWin.ChannelCtrl cCtrl = sender as WpfCtrlWin.ChannelCtrl;
+            if (cCtrl != null && cCtrl.IsEnabled && (e.LeftButton == MouseButtonState.Released))
+                _event.HoveredvjInput = "0";
+        }
     }
+    
+#endregion Attached Event
 
-#region Data Structures
+    #region Data Structures
     public class AudioLine
     {
         public string DeviceName { get; set; }
@@ -656,10 +678,10 @@ namespace CtrlWindowNS
         private object _map_source;     // Object that mapped to this object
 
         // Constructors
-        public LevelMonitor() { _map_target.Clear(); _map_source = "n/a"; }
-        public LevelMonitor(String name) { _map_target.Clear(); _map_source = "n/a"; _name = name; }
-        public LevelMonitor(int id) { _map_target.Clear(); _map_source = "n/a"; _id = id; }
-        public LevelMonitor(int id, String name) { _map_target.Clear(); _map_source = "n/a"; _id = id; _name = name; }
+        public LevelMonitor() { _map_target.Clear(); _map_source = ""; }
+        public LevelMonitor(String name) { _map_target.Clear(); _map_source = ""; _name = name; }
+        public LevelMonitor(int id) { _map_target.Clear(); _map_source = ""; _id = id; }
+        public LevelMonitor(int id, String name) { _map_target.Clear(); _map_source = ""; _id = id; _name = name; }
 
         // Accessors
         public uint Level

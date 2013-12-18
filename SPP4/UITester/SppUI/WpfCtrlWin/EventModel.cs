@@ -127,6 +127,13 @@ namespace CtrlWindowNS
             set { SetField(ref _selected_vjDevice, value, "SelectedvjDevice"); }
         }
 
+        // Input channel that the mouse hover above
+        private string _hovered_vjInput;
+        public string HoveredvjInput
+        {
+            get { return _hovered_vjInput; }
+            set { SetField(ref _hovered_vjInput, value, "HoveredvjInput"); }
+        }
 
         // Set number of existing buttons in the currently selected vJoy Device
         private Mcontrols _current_vjctrl;
