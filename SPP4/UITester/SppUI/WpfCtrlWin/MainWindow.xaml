@@ -267,7 +267,7 @@
                     <ColumnDefinition Width="272*"/>
                     <ColumnDefinition Width="223*"/>
                 </Grid.ColumnDefinitions>
-                <Grid x:Name="InputGrid"  HorizontalAlignment="Left" VerticalAlignment="Bottom"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33ff90A7" Height="102"  >
+                <Grid x:Name="InputGrid"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  >
                     <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
                     <ItemsControl ItemsSource="{Binding Path=vJoyInputCollection}" >
                         <ItemsControl.ItemContainerStyle>
@@ -279,30 +279,40 @@
                             <ItemsPanelTemplate>
                                 <Grid ShowGridLines="True" >
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar"/>
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar" />
-                                        <ColumnDefinition SharedSizeGroup="LevelBar"/>
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MaxWidth="15" />
                                     </Grid.ColumnDefinitions>
                                 </Grid>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                               <Grid>
-                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" Style="{StaticResource VJOY_INPUT_CH_STYLE}" />
+                            <DataTemplate>                                   
+                                <Grid>
+                                    <Rectangle Style="{StaticResource VJOY_INPUT_RECT_STYLE}" ></Rectangle>
+                                    <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" Style="{StaticResource VJOY_INPUT_CH_STYLE}" MouseEnter="MouseEntervJoyInputCh"  MouseLeave="MouseLeavevJoyInputCh"/>
+                                    <Grid.Style>
+                                        <Style TargetType="{x:Type Grid}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#55DAB3E8" ></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -349,14 +359,14 @@
                                         <RowDefinition  Height="30"/>
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBox Name="MapSourceCh" IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=MapSource}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" TextChanged="MapSourceChanged" />
+                                    <TextBox Name="MapSourceCh" IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=MapSource}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" TextChanged="MapSourceChanged" MaxWidth="20" />
                                     <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"  Style="{StaticResource VJOY_AXES_STYLE}"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Grid>
-                <Rectangle Grid.Row="1" Fill="#FFDCD9D9" Grid.ColumnSpan="3" />
+                <!--<Rectangle Grid.Row="1" Fill="#FFDCD9D9" Grid.ColumnSpan="3" />-->
                 <Label Content="vJoy Axes &amp; Buttons"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                     <Label.RenderTransform>
                         <TransformGroup>

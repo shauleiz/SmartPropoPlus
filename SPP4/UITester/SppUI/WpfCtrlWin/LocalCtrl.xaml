@@ -5,14 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="110" Width="30">
 
-    <Grid x:Name="InChannelGrid1" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="30">
+        <!--<Border Padding="0,4" BorderBrush="#FF720909" BorderThickness="2" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center">-->
+    <Grid x:Name="InChannelGrid1" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,2" >
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ProgressBar x:Name="ChLevelPB"  HorizontalAlignment="Center"  Margin="5,0,5,0" VerticalAlignment="Bottom" Orientation="Vertical" Cursor="Arrow" MinWidth="10" MinHeight="8" Foreground="#FFDE174D" BorderThickness="0" BorderBrush="#FF8B5F6B" Background="#338B5F6B" HorizontalContentAlignment="Stretch" Height="83.314" Width="Auto"/>
-        <Label x:Name="ChNumTB" Content="Ch1" Margin="0" Grid.Row="1" FontSize="9" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <ProgressBar x:Name="ChLevelPB"  HorizontalAlignment="Center"  Margin="5,0,5,0" VerticalAlignment="Bottom" Orientation="Vertical" Cursor="Arrow" MinWidth="10" MinHeight="8" Foreground="#FFDE174D" BorderThickness="0" BorderBrush="#FF8B5F6B" Background="#338B5F6B"  Height="83.314" Width="Auto" Padding="0,5" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center"/>
+        <Label x:Name="ChNumTB" Content="Ch1" Margin="0" Grid.Row="1" FontSize="9" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" />
     </Grid>
+<!--</Border>-->
 
 
 </UserControl>

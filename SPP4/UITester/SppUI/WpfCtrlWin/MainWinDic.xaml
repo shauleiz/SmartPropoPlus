@@ -71,8 +71,8 @@
         <Setter Property="IsEnabled" Value="True" />
         <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
         <Setter Property="ChannelName" Value="{Binding Path=Name}" />
-        <Setter Property="Height" Value="Auto" />
-        <Setter Property="Width" Value="Auto" />
+        <!--<Setter Property="Height" Value="Auto" />
+        <Setter Property="Width" Value="Auto" />-->
         <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="Margin" Value="0,5,0,0" />
         <Setter Property="BarColor" Value="Turquoise" />
@@ -121,6 +121,25 @@
                 </ToolTip>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="Rectangle"  x:Key="VJOY_INPUT_RECT_STYLE">
+        <Setter Property="MinWidth" Value="15" />
+        <Setter Property="MinHeight" Value="80" />
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="RadiusX" Value="3" />
+        <Setter Property="RadiusY" Value="3" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Style.Triggers>
+            <!--<DataTrigger Binding="{Binding Path=HoveredvjInput, RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType={x:Type Grid}}}" Value="5">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>-->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Stroke" Value="#FFE0105C" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>
