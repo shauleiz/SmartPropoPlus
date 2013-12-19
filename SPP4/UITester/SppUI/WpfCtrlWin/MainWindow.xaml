@@ -302,7 +302,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                     <Grid>                                    
-                                        <Rectangle Style="{StaticResource VJOY_INPUT_RECT_STYLE}" Stroke="Black" /> 
+                                        <Rectangle Style="{StaticResource VJOY_INPUT_RECT_STYLE}" /> 
                                         <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" Style="{StaticResource VJOY_INPUT_CH_STYLE}" MouseEnter="MouseEntervJoyInputCh"  MouseLeave="MouseLeavevJoyInputCh"/>
                                 </Grid>
                             </DataTemplate>
@@ -350,7 +350,7 @@
                                         <RowDefinition  Height="30"/>
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <Rectangle  Style="{StaticResource VJOY_AXIS_RECT_STYLE}" Stroke="Red"  Grid.Row="0" Grid.RowSpan="2" />
+                                    <Rectangle  Style="{StaticResource VJOY_AXIS_RECT_STYLE}"   Grid.Row="0" Grid.RowSpan="2" />
                                     <TextBox Name="MapSourceCh" IsEnabled="{Binding Path=Implemented}" Text="{Binding Path=MapSource}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" TextChanged="MapSourceChanged" MaxWidth="20" />
                                     <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"  Style="{StaticResource VJOY_AXES_STYLE}"/>
                                 </Grid>
