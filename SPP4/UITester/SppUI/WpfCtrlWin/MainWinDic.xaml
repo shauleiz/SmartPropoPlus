@@ -8,7 +8,7 @@
     <sys:String x:Key="AudioLable">Audio Input:</sys:String>
     <!-- Strings (end) -->
 
-    <!-- Graphivcal elements -->
+    <!-- Graphical elements -->
     <DataTemplate x:Key="jack_image">
         <Ellipse x:Name="JackImage">
         </Ellipse>
@@ -16,6 +16,9 @@
 
     <Geometry  x:Key="CTRL_PATH1">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z</Geometry >
 
+
+    <local:BindingProxy x:Key="proxy" Data="{Binding}" />
+    
     <!-- Converter instances (begin) -->
     <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->
     <BooleanToVisibilityConverter x:Key="boolConverter" />
@@ -33,6 +36,7 @@
     <local:DatabindingDebugConverter x:Key="debugConverter" />
     <!-- Converters instances (end) -->
 
+    
     <!-- Styles -->
     <!-- vJoy Button Style -->
     <Style TargetType="ctrl:JoyButton" x:Key="VJOY_BUTTONS">
@@ -76,7 +80,7 @@
         <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="Margin" Value="0,5,0,0" />
         <Setter Property="BarColor" Value="Turquoise" />
-        <Setter Property="ToolTip">
+        <!--<Setter Property="ToolTip">
             <Setter.Value>
                 <ToolTip
                     Content="{Binding Path=Name}"
@@ -91,7 +95,7 @@
                     </ToolTip.Background>
                 </ToolTip>
             </Setter.Value>
-        </Setter>
+        </Setter>-->
     </Style>
 
     <!-- vJoy Axes Style -->
@@ -127,15 +131,16 @@
         <Setter Property="MinWidth" Value="15" />
         <Setter Property="MinHeight" Value="80" />
         <Setter Property="Fill" Value="Transparent" />
-        <Setter Property="Stroke" Value="Transparent" />
-        <Setter Property="RadiusX" Value="3" />
+        <!--<Setter Property="Stroke" Value="Transparent" />-->
+        <Setter Property="Stroke" Value="#FFE0105C" />
+        <!--<Setter Property="RadiusX" Value="3" />-->
         <Setter Property="RadiusY" Value="3" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Style.Triggers>
-            <!--<DataTrigger Binding="{Binding Path=HoveredvjInput, RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType={x:Type Grid}}}" Value="5">
+            <DataTrigger Binding="{Binding Path=Data.HoveredvjInput, Source={StaticResource proxy}, Mode=TwoWay}" Value="0">
                 <Setter Property="Visibility" Value="Visible" />
-            </DataTrigger>-->
+            </DataTrigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Stroke" Value="#FFE0105C" />
             </Trigger>

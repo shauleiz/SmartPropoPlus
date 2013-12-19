@@ -50,6 +50,7 @@ namespace CtrlWindowNS
                 AudioChannel = 'U',
                 IsNotAutoBitrate = true,
                 IsNotAutoChannel = true,
+                HoveredvjInput = "0",
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
@@ -67,7 +68,6 @@ namespace CtrlWindowNS
 
             this.DataContext = _event;
         }
-
 
         #endregion General
 
@@ -990,6 +990,29 @@ namespace CtrlWindowNS
 #endif
     #endregion // Converters
 
+    // Based on http://www.thomaslevesque.com/2011/03/21/wpf-how-to-bind-to-data-when-the-datacontext-is-not-inherited
+    public class BindingProxy : Freezable
+    {
+        #region Overrides of Freezable
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new BindingProxy();
+        }
+
+        #endregion
+
+        public object Data
+        {
+            get { return (object)GetValue(DataProperty); }
+            set { SetValue(DataProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Data.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DataProperty =
+            DependencyProperty.Register("Data", typeof(object), typeof(BindingProxy), new UIPropertyMetadata(null));
+    }
+
 } // namespace CtrlWindowNS
 
 
@@ -997,6 +1020,7 @@ namespace CtrlWindowNS
 // Based on: http://tech.pro/tutorial/940/wpf-snippet-detecting-binding-errors
 namespace CtrlWindowNS
 {
+
   public class BindingErrorTraceListener : DefaultTraceListener
   {
     private static BindingErrorTraceListener _Listener;
