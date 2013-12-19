@@ -786,16 +786,36 @@ namespace CtrlWindowNS
 
     #region Converters
 
-    // Compare two string
-    [ValueConversion(typeof(object), typeof(bool))]
+    /// Compare two string 
+    /// If strings are identical (but not "0") then return Visibility.Visible
+    /// Else return Visibility.Collapsed
+    [ValueConversion(typeof(object), typeof(Visibility))]
     public class StringCompareConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values[0].Equals(values[1]))
-                return Visibility.Visible;
+            string Val0;
+
+            string param = parameter as string;
+            if (param != null && param.Equals("Axis") && (values[0] is int))
+            {
+                int i = (int)values[0];
+                if (i == 0 || values[0].Equals("0"))
+                    return Visibility.Collapsed;
+                Val0 = i.ToString();
+            }
             else
-                return Visibility.Collapsed;
+                Val0 = (string)values[0];
+
+            if (Val0 != null && !Val0.Equals("0"))
+            {
+                if (Val0.Equals(values[1]))
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+
+            return Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
