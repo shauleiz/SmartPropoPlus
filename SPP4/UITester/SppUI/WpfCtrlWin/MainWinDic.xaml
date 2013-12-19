@@ -32,6 +32,7 @@
     <local:CharToChannelBoolConverter Target="M" x:Key="ChannelMonoConverter" />
     <local:InverseBooleanConverter x:Key="InvConverter" />
     <local:StringCompareConverter x:Key="StringCompare" />
+    <local:StringCompareConverter x:Key="StringCompareAxis"/>
 
 
     <!-- Based on:  http://wpftutorial.net/DebugDataBinding.html -->
@@ -138,6 +139,38 @@
         <Setter Property="RadiusY" Value="3" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Visibility">
+            <Setter.Value>
+            <MultiBinding Converter="{StaticResource StringCompare}">
+                <Binding Path="Name" />
+                <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
+            </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <!--<Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Stroke" Value="#FFE0105C" />
+            </Trigger>
+        </Style.Triggers>-->
+    </Style>
+
+    <Style TargetType="Rectangle"  x:Key="VJOY_AXIS_RECT_STYLE">
+        <Setter Property="MinWidth" Value="15" />
+        <Setter Property="MinHeight" Value="80" />
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="Stroke" Value="#FFE0105C" />
+        <Setter Property="RadiusX" Value="3" />
+        <Setter Property="RadiusY" Value="3" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Visibility">
+            <Setter.Value>
+            <MultiBinding Converter="{StaticResource StringCompare}" ConverterParameter="Axis">
+                <Binding Path="MapSource" />
+                <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
+            </MultiBinding>
+            </Setter.Value>
+        </Setter>
         <!--<Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Stroke" Value="#FFE0105C" />
