@@ -302,17 +302,15 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                     <Grid>
-                                    <Rectangle RadiusX="{Binding Path=Data.HoveredvjInput, Source={StaticResource proxy}}" Style="{StaticResource VJOY_INPUT_RECT_STYLE}" ></Rectangle>
+                                    <Rectangle Style="{StaticResource VJOY_INPUT_RECT_STYLE}" >
+                                        <Rectangle.Visibility>
+                                            <MultiBinding Converter="{StaticResource StringCompare}">
+                                                <Binding Path="Name" />
+                                                <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
+                                            </MultiBinding>
+                                        </Rectangle.Visibility>
+                                    </Rectangle>
                                     <ctrl:ChannelCtrl  BarBgColor="#330F3E3C" Grid.Row="1" Style="{StaticResource VJOY_INPUT_CH_STYLE}" MouseEnter="MouseEntervJoyInputCh"  MouseLeave="MouseLeavevJoyInputCh"/>
-                                    <Grid.Style>
-                                        <Style TargetType="{x:Type Grid}">
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#55DAB3E8" ></Setter>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

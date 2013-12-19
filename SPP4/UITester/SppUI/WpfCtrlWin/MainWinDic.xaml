@@ -31,6 +31,8 @@
     <local:CharToChannelBoolConverter Target="R" x:Key="ChannelRightConverter" />
     <local:CharToChannelBoolConverter Target="M" x:Key="ChannelMonoConverter" />
     <local:InverseBooleanConverter x:Key="InvConverter" />
+    <local:StringCompareConverter x:Key="StringCompare" />
+
 
     <!-- Based on:  http://wpftutorial.net/DebugDataBinding.html -->
     <local:DatabindingDebugConverter x:Key="debugConverter" />
@@ -80,7 +82,7 @@
         <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="Margin" Value="0,5,0,0" />
         <Setter Property="BarColor" Value="Turquoise" />
-        <!--<Setter Property="ToolTip">
+        <Setter Property="ToolTip">
             <Setter.Value>
                 <ToolTip
                     Content="{Binding Path=Name}"
@@ -95,7 +97,7 @@
                     </ToolTip.Background>
                 </ToolTip>
             </Setter.Value>
-        </Setter>-->
+        </Setter>
     </Style>
 
     <!-- vJoy Axes Style -->
@@ -131,20 +133,16 @@
         <Setter Property="MinWidth" Value="15" />
         <Setter Property="MinHeight" Value="80" />
         <Setter Property="Fill" Value="Transparent" />
-        <!--<Setter Property="Stroke" Value="Transparent" />-->
         <Setter Property="Stroke" Value="#FFE0105C" />
-        <!--<Setter Property="RadiusX" Value="3" />-->
+        <Setter Property="RadiusX" Value="3" />
         <Setter Property="RadiusY" Value="3" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=Data.HoveredvjInput, Source={StaticResource proxy}, Mode=TwoWay}" Value="0">
-                <Setter Property="Visibility" Value="Visible" />
-            </DataTrigger>
+        <!--<Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Stroke" Value="#FFE0105C" />
             </Trigger>
-        </Style.Triggers>
+        </Style.Triggers>-->
     </Style>
 
 </ResourceDictionary>
