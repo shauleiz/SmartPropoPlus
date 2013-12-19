@@ -785,6 +785,26 @@ namespace CtrlWindowNS
 #endregion Data Structures
 
     #region Converters
+
+    // Compare two string
+    [ValueConversion(typeof(object), typeof(bool))]
+    public class StringCompareConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values[0].Equals(values[1]))
+                return Visibility.Visible;
+            else
+                return Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] output = {"Not",  "Implemented" };
+            return output;
+        }
+    }
+
     // Boolean to Color converter - may be overriden in the dictionary
     [ValueConversion(typeof(bool), typeof(Brush))]
     public sealed class BoolToBorderBrushColorConverter : IValueConverter
