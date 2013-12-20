@@ -17,6 +17,8 @@
     <Geometry  x:Key="CTRL_PATH1">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z</Geometry >
 
 
+    <!-- Enables access to DataContext from just any control -->
+    <!--Based on http://www.thomaslevesque.com/2011/03/21/wpf-how-to-bind-to-data-when-the-datacontext-is-not-inherited -->
     <local:BindingProxy x:Key="proxy" Data="{Binding}" />
     
     <!-- Converter instances (begin) -->
@@ -134,7 +136,8 @@
         <Setter Property="MinWidth" Value="15" />
         <Setter Property="MinHeight" Value="80" />
         <Setter Property="Fill" Value="Transparent" />
-        <Setter Property="Stroke" Value="#FFE0105C" />
+        <Setter Property="Stroke" Value="Red" />
+        <Setter Property="StrokeThickness" Value="3" />
         <Setter Property="RadiusX" Value="3" />
         <Setter Property="RadiusY" Value="3" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -147,18 +150,14 @@
             </MultiBinding>
             </Setter.Value>
         </Setter>
-        <!--<Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Stroke" Value="#FFE0105C" />
-            </Trigger>
-        </Style.Triggers>-->
     </Style>
 
     <Style TargetType="Rectangle"  x:Key="VJOY_AXIS_RECT_STYLE">
         <Setter Property="MinWidth" Value="15" />
         <Setter Property="MinHeight" Value="80" />
         <Setter Property="Fill" Value="Transparent" />
-        <Setter Property="Stroke" Value="#FFE0105C" />
+        <Setter Property="Stroke" Value="Blue" />
+        <Setter Property="StrokeThickness" Value="3" />
         <Setter Property="RadiusX" Value="3" />
         <Setter Property="RadiusY" Value="3" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />

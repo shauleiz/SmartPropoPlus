@@ -457,6 +457,12 @@ namespace CtrlWindowNS
                 SendAxisMappingData(iSrc, Name);
         }
 
+        private void MapSourceKeyDown(object sender, KeyEventArgs e)
+        {
+            // Process if ENTER
+            if (e.Key == Key.Return)
+                MapSourceChanged(sender, null);        
+        }
 
         // Send vJoy axis mapping information to the CLI wrapper
         private void SendAxisMappingData(int NewSrc, string TargetName)
@@ -528,6 +534,50 @@ namespace CtrlWindowNS
             if (cCtrl != null && cCtrl.IsEnabled && (e.LeftButton == MouseButtonState.Released))
                 _event.HoveredvjInput = "0";
         }
+
+
+        private void MouseMovevJoyInputCh(object sender, MouseEventArgs e)
+        {
+            WpfCtrlWin.ChannelCtrl InCh2Drag = sender as WpfCtrlWin.ChannelCtrl;
+            if (InCh2Drag != null && e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragDrop.DoDragDrop(InCh2Drag, InCh2Drag.ChannelName, DragDropEffects.Copy);
+            }
+        }
+
+        private void DragEnter_vJoyAxisRect(object sender, DragEventArgs e)
+        {
+        }
+
+        private void Drop_vJoyAxisRect(object sender, DragEventArgs e)
+        {
+
+            WpfCtrlWin.ChannelCtrl TargetAxis = sender as WpfCtrlWin.ChannelCtrl;
+            if (TargetAxis != null)
+            {
+                // If the DataObject contains string data, extract it. 
+                if (e.Data.GetDataPresent(DataFormats.StringFormat))
+                {
+                    string SourceCh = (string)e.Data.GetData(DataFormats.StringFormat);
+                    string TargetAx = TargetAxis.ChannelName;
+                    int iSrc = 0;
+                    bool converted = Int32.TryParse(SourceCh, out iSrc);
+                    if (converted)
+                        SendAxisMappingData(iSrc, TargetAx);
+                }
+            }
+        }
+
+        private void DragLeave_vJoyAxisRect(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void DragOver_vJoyAxisRect(object sender, DragEventArgs e)
+        {
+
+        }
+
     }
     
 #endregion Attached Event
