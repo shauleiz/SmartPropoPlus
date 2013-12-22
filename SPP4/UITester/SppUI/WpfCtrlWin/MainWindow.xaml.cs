@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 //using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Windows.Data;
 using System.Globalization;
 using System.Diagnostics;
@@ -41,6 +37,18 @@ namespace CtrlWindowNS
             BindingErrorTraceListener.SetTrace();
             InitializeComponent();
 
+            CtrlWindowInit();
+
+            // Data initialization
+            InitvJoyAxes();
+            InitvJoyInputChs(16);
+            InitvJoyButtons(32);
+
+            this.DataContext = _event;
+        }
+
+        private void CtrlWindowInit()
+        {
             // create a model object
             _event = new EventModel()
             {
@@ -52,21 +60,14 @@ namespace CtrlWindowNS
                 IsNotAutoChannel = true,
                 HoveredvjInput = "0",
 
-                SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0},
+                SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0 },
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
 
                 _vJoyAxisCollection = new ObservableCollection<LevelMonitor>(),
                 _vJoyInputCollection = new ObservableCollection<LevelMonitor>(),
-                _vJoyButtonCollection = new ObservableCollection<BoolMonitor>(), 
+                _vJoyButtonCollection = new ObservableCollection<BoolMonitor>(),
 
             };
-
-            // Data initialization
-            InitvJoyAxes();
-            InitvJoyInputChs(16);
-            InitvJoyButtons(32);
-
-            this.DataContext = _event;
         }
 
         #endregion General
