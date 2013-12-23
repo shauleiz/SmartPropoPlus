@@ -67,6 +67,8 @@ namespace CtrlWindowNS
                 _vJoyInputCollection = new ObservableCollection<LevelMonitor>(),
                 _vJoyButtonCollection = new ObservableCollection<BoolMonitor>(),
 
+                _DecoderCollection = new ObservableCollection<DecoderItem>(),
+
             };
         }
 
@@ -488,7 +490,50 @@ namespace CtrlWindowNS
 
 #endregion // "vJoy Interface"
 
-#region Attached Event
+#region Decoder Interface
+        /// Decoding is also referred to as "modulation"
+        /// Each decoder is defined by its Type (e.g. AIR1) its subtype (e.g. PCM) and name (This is the display text)
+        /// 
+
+
+        /// Add modulation entry to the collection of modulations
+        /// Testing that entry does not exist
+        public void AddModulation(string name, string type, string subtype)
+        {
+            // Search for type in collection
+            foreach (DecoderItem item in _event.DecoderCollection)
+            {
+                if (item.Name.Equals(name))
+                    return;
+            }
+
+            // Not found, so create item and add to collection
+            DecoderItem decoder = new DecoderItem { Name = name, Type = type, Subtype = subtype };
+            _event.DecoderCollection.Add(decoder);
+
+        }
+
+        /// <summary>
+        /// Set the selected modulation entry
+        /// </summary>
+        /// <param name="SelType"></param>
+        public void SetSelectedModulation(string SelType)
+        {
+            // Search for type in collection
+            foreach (DecoderItem item in _event.DecoderCollection)
+            {
+                if (item.Type.Equals(SelType))
+                {
+                    _event.SelectedDecoder = item;
+                    break;
+                }
+            }
+             
+        }
+
+#endregion Decoder Interface
+
+        #region Attached Event
         // One of the Audio radio buttons was checked - Call event OnAudioChanged
         private void Audio_RB_Checked(object sender, RoutedEventArgs e)
         {
@@ -578,6 +623,7 @@ namespace CtrlWindowNS
         {
 
         }
+
 
     }
     
@@ -831,6 +877,13 @@ namespace CtrlWindowNS
 
             return _map_target[(int)index];
         }
+    }
+
+    public class DecoderItem
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Subtype  { get; set; }
     }
 
 #endregion Data Structures

@@ -18,7 +18,7 @@
     Background="Transparent" d:DesignWidth="827.187" d:DesignHeight="898.923">
 
     <!-- MouseLeftButtonDown="NonRectangularWindow_MouseLeftButtonDown" -->
-    
+
     <Window.Resources>
         <!--<sys:String x:Key="MyString">Hello</sys:String>-->
         <ResourceDictionary>
@@ -29,8 +29,8 @@
     </Window.Resources>
 
 
-    <Grid x:Name="Top_GRID" Height="898.923" Margin="0" Width="817.28">    
-            <Grid.Resources>
+    <Grid x:Name="Top_GRID" Height="898.923" Margin="0" Width="817.28">
+        <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="3"/>
@@ -230,7 +230,70 @@
                 </Grid>
             </Grid>
         </Canvas>
-        <Expander x:Name="vJoyExpander" Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Grid.Row="1" VerticalAlignment="Top" Width="539.14" BorderBrush="#FFF1A988" Background="#FFF1F185" Margin="0,304,0,0" BorderThickness="2">
+        <Expander x:Name="DecodeExpander" Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Grid.Row="1" VerticalAlignment="Top" Width="539.14" BorderBrush="#FFF1A988" Background="#FF8FF185" Margin="0,319.579,0,0" BorderThickness="2">
+            <Expander.Header>
+                <Grid Width="503" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="76*"/>
+                        <ColumnDefinition Width="407*"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <Image  Grid.Column="2" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
+                    <TextBlock Grid.Column="0" Text="Decoder: " Height="16"  />
+                    <!--<ComboBox Name="DecoderCB" Grid.Column="1" Margin="0,0,357,0"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice, Mode=TwoWay}" SelectionChanged="vJoyDeviceCB_SelectionChanged">-->
+                    <!--<ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="{Binding vj_DeviceNumber}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>-->
+                </Grid>
+            </Expander.Header>
+            <Grid Height="200"  x:Name="DecoderTopGrid" Grid.IsSharedSizeScope="True" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966" Background="#FFE3EED3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="55*"/>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="41*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="367*"/>
+                    <ColumnDefinition Width="128*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Decoder" HorizontalAlignment="Center" Height="49.042" Margin="-10.233,-2.557,287.259,63.515" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform X="39.962" Y="-39.962"/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
+                <Label Content="Channels" HorizontalAlignment="Center" Height="49.042" Margin="-7.566,101.943,284.592,49.015" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Grid.RowSpan="3" >
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform X="39.962" Y="-39.962"/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
+                <ListView Grid.Column="1" Margin="5,5,0,5" Background="White" SelectionMode="Single" ItemsSource="{Binding DecoderCollection}"  SelectedItem="{Binding SelectedDecoder}" HorizontalAlignment="Left" Width="280" >
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn  Header="Type" DisplayMemberBinding="{Binding Subtype}" Width="50"/>
+                            <GridViewColumn  Header="Decoder" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+            </Grid>
+        </Expander>
+        <Expander x:Name="vJoyExpander" Grid.ColumnSpan="2"  HorizontalAlignment="Right"  Grid.Row="1" VerticalAlignment="Top" Width="539.14" BorderBrush="#FFF1A988" Background="#FFF1F185" Margin="0,286.294,0,0" BorderThickness="2">
             <Expander.Header>
                 <Grid Width="503" >
                     <Grid.ColumnDefinitions>
@@ -393,7 +456,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                    <!-- TODO: Text should be bound to mapping source NOT Id -->
+                                <!-- TODO: Text should be bound to mapping source NOT Id -->
                                 <ctrl:JoyButton Style="{StaticResource VJOY_BUTTONS}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

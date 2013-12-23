@@ -42,6 +42,7 @@ void SetAvailableControls(UINT id, HWND hDlg, int stat);
 void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg);
 void SetvJoyInputSlope(bool GoingUp, HWND hDlg);
 void SetChannelMapping(bool Default, HWND hDlg);
+void DecoderPopulate(HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -272,6 +273,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetChannelMapping(false, hTopUiWin);
 			break;
 
+		case IDM_DEC_POPULATE:
+			DecoderPopulate(hTopUiWin);
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -569,4 +573,23 @@ void SetChannelMapping(bool Default, HWND hDlg)
 	Map.ButtonArray = &aButtonMap;
 
 	SendMessage(hDlg, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
+}
+
+void DecoderPopulate(HWND hDlg)
+{
+	MOD mode;
+	LPCTSTR modedef[] = MOD_DEF_STR;
+
+	for (int i=0; i<9; i++)
+	{
+		mode.Type = modedef[2*i];
+		mode.Name = modedef[2*i+1];
+		if (i<4)
+			mode.Subtype =  _T("PPM");
+		else
+			mode.Subtype =  _T("PCM");
+	
+		SendMessage(hDlg, WMSPP_PRCS_SETMOD, (WPARAM)&mode, (LPARAM)(modedef[0]));
+	};
+
 }

@@ -32,3 +32,6 @@
 #define IDM_INPUT_HI2LO                         40020
 #define IDM_MAP_DEFAULT                         40021
 #define IDM_MAP_GROUPS                          40022
+#define IDM_DEC_PPMGEN                          40023
+#define IDM_DEC_POPULATE                        40024
+#define IDM_DEC_PCMJR                           40025
