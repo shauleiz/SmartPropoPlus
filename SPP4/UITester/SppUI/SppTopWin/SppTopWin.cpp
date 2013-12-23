@@ -49,6 +49,7 @@ void				DisplayAudioLevels(PVOID Id, UINT Left, UINT Right);
 void				vJoyDevSetAvail(UINT id, controls * ctrl);
 void				SetButtonValues(UINT id, BTNArr * BtnVals);
 void				SetMappingData(Mapping * m);
+void				AddLine2ModList(MOD * mod, LPCTSTR SelType);
 
 public ref class CtrlWindow : Window
 {
@@ -277,6 +278,9 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		SetMappingData((Mapping *)wParam);
 		break;
 
+	case WMSPP_PRCS_SETMOD:
+		AddLine2ModList((MOD *)(wParam), (LPCTSTR)(lParam));
+		break;
 	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));
@@ -362,6 +366,12 @@ void SetMappingData(Mapping * map)
 	DWORD AxisMap = *map->pAxisMap;
 	BYTE * ButtonMap = map->ButtonArray->data();
 	WPFPageHost::hostedPage->SetMappingData(AxisMap,  (IntPtr)ButtonMap);
+}
+
+void AddLine2ModList(MOD * mod, LPCTSTR SelType)
+{
+	WPFPageHost::hostedPage->AddModulation(gcnew System::String(mod->Name), gcnew System::String(mod->Type), gcnew System::String(mod->Subtype));
+	WPFPageHost::hostedPage->SetSelectedModulation(gcnew System::String(SelType));
 }
 
 // TODO: Use this function to coordinate moving of windows

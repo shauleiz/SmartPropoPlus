@@ -52,3 +52,42 @@ struct controls
 	BOOL axis[8];	// Axis-mask: axis[0] indicates if X exists ... axis[7] refers to SL1
 };
 
+struct MOD {
+	LPCTSTR Type;		// Unique identifier of the modulation. Examples are PPMW, AIR1 …
+	LPCTSTR Subtype;	// PPM/PCM
+	LPCTSTR Name;		// User friendly name of the modulation to be desplayd.
+	LPVOID func;		// This is the function of type PP that implements the modulation. Called by ProcessWave().
+};
+
+#define MOD_TYPE_PPM	_T("PPM")
+#define MOD_TYPE_PPMP	_T("PPMPOS")
+#define MOD_TYPE_PPMN	_T("PPMNEG")
+#define MOD_TYPE_PPMW	_T("PPMW")
+#define MOD_TYPE_JR 	_T("JR")
+#define MOD_TYPE_FUT	_T("FUT")
+#define MOD_TYPE_AIR1	_T("AIR1")
+#define MOD_TYPE_AIR2	_T("AIR2")
+#define MOD_TYPE_WAL	_T("WAL")
+
+#define MOD_NAME_PPM	_T("PPM (Generic)")
+#define MOD_NAME_PPMP	_T("PPM (Positive)")
+#define MOD_NAME_PPMN	_T("PPM (Negative)")
+#define MOD_NAME_PPMW	_T("PPM (Walkera)")
+#define MOD_NAME_JR 	_T("JR (PCM)")
+#define MOD_NAME_FUT	_T("Futaba (PCM)")
+#define MOD_NAME_AIR1	_T("Sanwa/Air (PCM1)")
+#define MOD_NAME_AIR2	_T("Sanwa/Air (PCM2)")
+#define MOD_NAME_WAL	_T("Walkera (PCM)")
+
+
+#define MOD_DEF_STR  {\
+						MOD_TYPE_PPM, MOD_NAME_PPM,\
+						MOD_TYPE_PPMP, MOD_NAME_PPMP,\
+						MOD_TYPE_PPMN, MOD_NAME_PPMN,\
+						MOD_TYPE_PPMW, MOD_NAME_PPMW,\
+						MOD_TYPE_JR,  MOD_NAME_JR,\
+						MOD_TYPE_FUT, MOD_NAME_FUT,\
+						MOD_TYPE_AIR1,MOD_NAME_AIR1,\
+						MOD_TYPE_AIR2,MOD_NAME_AIR2,\
+						MOD_TYPE_WAL,MOD_NAME_WAL,\
+						NULL}

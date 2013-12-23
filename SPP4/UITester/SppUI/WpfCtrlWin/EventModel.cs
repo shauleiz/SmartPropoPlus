@@ -186,5 +186,28 @@ namespace CtrlWindowNS
 
 #endregion "vJoy Interface"
 
+#region Decoder
+
+        //Decoder: List of modulations
+        public ObservableCollection<DecoderItem> _DecoderCollection;
+        public ObservableCollection<DecoderItem> DecoderCollection
+        {
+            get { return _DecoderCollection; }
+        }
+
+        // Decoder list - Selected item
+        private DecoderItem _SelectedDecoder;
+        public DecoderItem SelectedDecoder
+        {
+            get
+            { return _SelectedDecoder; }
+
+            set
+            {
+                SetField(ref _SelectedDecoder, value, "SelectedDecoder");
+            }
+        }
+
+#endregion Decoder
     }
 }

@@ -63,6 +63,12 @@ IDC_TESTER MENU
         MENUITEM "Mapping - Default", IDM_MAP_DEFAULT
         MENUITEM "Mapping - Groups", IDM_MAP_GROUPS
     }
+    POPUP "Decode"
+    {
+        MENUITEM "Populate", IDM_DEC_POPULATE
+        MENUITEM "Select PPM (Gen)", IDM_DEC_PPMGEN
+        MENUITEM "Select PCM (JR)", IDM_DEC_PCMJR
+    }
     POPUP "&Help"
     {
         MENUITEM "&About ...", IDM_ABOUT
