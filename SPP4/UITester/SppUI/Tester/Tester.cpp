@@ -26,6 +26,7 @@ TCHAR DefaultChannel=TEXT('U');
 WCHAR * DefaultJackId = NULL;
 bool AutoBitrate, AutoChannel;
 UINT vJoyDeviseSelected = 0;
+LPTSTR ModSelected = NULL;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -44,6 +45,7 @@ void SetvJoyInputSlope(bool GoingUp, HWND hDlg);
 void SetChannelMapping(bool Default, HWND hDlg);
 void DecoderPopulate(HWND hDlg);
 void DecoderSelect(LPCTSTR sel, HWND hDlg);
+void DisplayMod(void);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -328,6 +330,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//SendMessage(hTopUiWin, WMSPP_MAP_UPDT, wParam, lParam);
 		break;
 
+	case WMSPP_DLG_MOD:
+		ModSelected = _wcsdup((LPCTSTR)wParam);
+		DisplayMod();
+		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -465,7 +472,13 @@ void DisplayvJoyStat(void)
 	UpdateWindow(hMainAppWnd);
 }
 
-
+void DisplayMod(void)
+{
+	std::wstring str;
+	str = L"Selected Decoder: " + std::wstring(ModSelected);
+	SetWindowText(hMainAppWnd, str.c_str());
+	UpdateWindow(hMainAppWnd);
+}
 void SetAvailableControls(UINT id, HWND hDlg, int stat)
 {
 	controls ctrls;

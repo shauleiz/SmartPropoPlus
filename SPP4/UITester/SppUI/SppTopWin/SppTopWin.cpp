@@ -298,6 +298,7 @@ void CtrlAudioChanging(int bitrate, WCHAR channel);
 void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
 void CtrlvJoyDeviceChanging(UINT id);
 void CtrlvJoyMapAxisChanging(int AxisId, int NewSrcCh);
+void CtrlDecoderChanging(System::String ^ DecoderName);
 
 static void GetHwnd(Object^ data)
 {
@@ -315,6 +316,7 @@ static void GetHwnd(Object^ data)
 	ctrlpage->OnAudioAutoChanged += gcnew CtrlWindowNS::CtrlWindow::AudioAutoChanging(CtrlAudioAutoChanging);
 	ctrlpage->OnvJoyDeviceChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyDeviceChanging(CtrlvJoyDeviceChanging);
 	ctrlpage->OnvJoyMapAxisChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyMapAxisChanging(CtrlvJoyMapAxisChanging);
+	ctrlpage->OnDecoderChanged += gcnew CtrlWindowNS::CtrlWindow::DecoderChanging(CtrlDecoderChanging);
 }
 
 // Add line to the list of audio devices
@@ -442,4 +444,11 @@ void CtrlvJoyMapAxisChanging(int AxisId, int NewSrcCh)
 	// Send message
 	AxisMap = NewSrcCh<< (4*(7-AxisId));
 	SendMessage(hAppWin, WMSPP_DLG_MAP,(WPARAM)&m, 0);
+}
+
+// Selected decoder (modulation) has changed
+void CtrlDecoderChanging(System::String ^ DecoderName)
+{
+	pin_ptr<const wchar_t> wname = PtrToStringChars(DecoderName);
+	SendMessage(hAppWin, WMSPP_DLG_MOD, (WPARAM)wname, 0);
 }
