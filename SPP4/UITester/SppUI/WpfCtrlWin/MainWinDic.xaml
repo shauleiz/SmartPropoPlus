@@ -177,4 +177,32 @@
         </Style.Triggers>-->
     </Style>
 
+    <!-- vJoy Input Channels Style -->
+    <Style TargetType="ctrl:ChannelCtrl" x:Key="VJOY_DECODER_CH_STYLE">
+        <Setter Property="IsEnabled" Value="True" />
+        <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
+        <Setter Property="ChannelName" Value="{Binding Path=Name}" />
+        <Setter Property="Height" Value="Auto" />
+        <Setter Property="Width" Value="Auto" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="Margin" Value="0,5,0,0" />
+        <Setter Property="BarColor" Value="Turquoise" />
+        <Setter Property="ToolTip">
+            <Setter.Value>
+                <ToolTip
+                    Content="{Binding Path=Name}"
+                    ContentStringFormat="Joystick Input Channel {0}"
+                    >
+                    <ToolTip.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                            <GradientStop Color="#FF89BDB2" Offset="1"/>
+                            <GradientStop Color="#FFABECE9"/>
+                            <GradientStop Color="#FFBAE7EC" Offset="0.503"/>
+                        </LinearGradientBrush>
+                    </ToolTip.Background>
+                </ToolTip>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

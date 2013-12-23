@@ -290,6 +290,46 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+                <Grid x:Name="DecoderChannelGrid"   Grid.Row="2" Grid.Column="1" Background="#338DF5A0" HorizontalAlignment="Left" Width="479.966" Margin="5,0,0,5" Grid.ColumnSpan="2"  >
+                    <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
+                    <ItemsControl ItemsSource="{Binding Path=vJoyInputCollection}" HorizontalAlignment="Left" Width="478.966" Margin="0,0,-198.966,0" >
+                        <ItemsControl.ItemContainerStyle>
+                            <Style>
+                                <Setter Property="Grid.Column" Value="{Binding Path=Id}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid ShowGridLines="True" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Viewbox>
+                                    <ctrl:ChannelCtrl Style="{StaticResource VJOY_DECODER_CH_STYLE}" /></Viewbox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
 
             </Grid>
         </Expander>
