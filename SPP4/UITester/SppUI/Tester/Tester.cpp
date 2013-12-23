@@ -43,6 +43,7 @@ void SetAxesSlope(UINT id, bool GoingUp, HWND hDlg);
 void SetvJoyInputSlope(bool GoingUp, HWND hDlg);
 void SetChannelMapping(bool Default, HWND hDlg);
 void DecoderPopulate(HWND hDlg);
+void DecoderSelect(LPCTSTR sel, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -275,6 +276,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case IDM_DEC_POPULATE:
 			DecoderPopulate(hTopUiWin);
+			break;
+
+		case IDM_DEC_PPMGEN:
+			DecoderSelect(_T("PPM"), hTopUiWin);
+			break;
+
+		case IDM_DEC_PCMJR:
+			DecoderSelect(_T("JR"), hTopUiWin);
 			break;
 
 		default:
@@ -588,8 +597,25 @@ void DecoderPopulate(HWND hDlg)
 			mode.Subtype =  _T("PPM");
 		else
 			mode.Subtype =  _T("PCM");
-	
-		SendMessage(hDlg, WMSPP_PRCS_SETMOD, (WPARAM)&mode, (LPARAM)(modedef[0]));
-	};
 
+		SendMessage(hDlg, WMSPP_PRCS_SETMOD, (WPARAM)&mode, (LPARAM)(modedef[0]));
+	}
+}
+
+void DecoderSelect(LPCTSTR sel, HWND hDlg)
+{
+	MOD mode;
+	LPCTSTR modedef[] = MOD_DEF_STR;
+
+	for (int i=0; i<9; i++)
+	{
+		mode.Type = modedef[2*i];
+		mode.Name = modedef[2*i+1];
+		if (i<4)
+			mode.Subtype =  _T("PPM");
+		else
+			mode.Subtype =  _T("PCM");
+
+		SendMessage(hDlg, WMSPP_PRCS_SETMOD, (WPARAM)&mode, (LPARAM)sel);
+		}
 }

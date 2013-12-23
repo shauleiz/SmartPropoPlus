@@ -282,7 +282,7 @@
                         </TransformGroup>
                     </Label.RenderTransform>
                 </Label>
-                <ListView Grid.Column="1" Margin="5,5,0,5" Background="White" SelectionMode="Single" ItemsSource="{Binding DecoderCollection}"  SelectedItem="{Binding SelectedDecoder}" HorizontalAlignment="Left" Width="280" >
+                <ListView Grid.Column="1" Margin="5,5,0,5" Background="White" SelectionMode="Single" ItemsSource="{Binding DecoderCollection}"  SelectedItem="{Binding SelectedDecoder}" SelectionChanged="Decoder_SelectionChanged" HorizontalAlignment="Left" Width="280" >
                     <ListView.View>
                         <GridView>
                             <GridViewColumn  Header="Type" DisplayMemberBinding="{Binding Subtype}" Width="50"/>

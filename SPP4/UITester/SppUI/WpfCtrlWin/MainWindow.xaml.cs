@@ -625,6 +625,19 @@ namespace CtrlWindowNS
         }
 
 
+        // List of decoders - selection changed - Scroll into view
+        private void Decoder_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListView list = e.OriginalSource as ListView;
+            int index = list.SelectedIndex;
+            list.ScrollIntoView(list.SelectedItem);
+            ListViewItem lvitem = list.ItemContainerGenerator.ContainerFromItem(index) as ListViewItem;
+            if (lvitem != null)
+                lvitem.Focus();
+
+        }
+
+
     }
     
 #endregion Attached Event
