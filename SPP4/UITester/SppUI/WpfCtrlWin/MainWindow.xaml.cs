@@ -30,6 +30,8 @@ namespace CtrlWindowNS
         public delegate void vJoyMapAxisChanging(int AxisId, int NewSrcCh);
         public event vJoyMapAxisChanging OnvJoyMapAxisChanged;
 
+        public delegate void DecoderChanging(string Type);
+        public event DecoderChanging OnDecoderChanged;
 
 #region General
         public CtrlWindow()
@@ -629,12 +631,8 @@ namespace CtrlWindowNS
         private void Decoder_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListView list = e.OriginalSource as ListView;
-            int index = list.SelectedIndex;
             list.ScrollIntoView(list.SelectedItem);
-            ListViewItem lvitem = list.ItemContainerGenerator.ContainerFromItem(index) as ListViewItem;
-            if (lvitem != null)
-                lvitem.Focus();
-
+            OnDecoderChanged((list.SelectedItem as DecoderItem).Name);
         }
 
 
