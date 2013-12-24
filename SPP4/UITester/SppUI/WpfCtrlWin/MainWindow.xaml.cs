@@ -280,6 +280,12 @@ namespace CtrlWindowNS
             
         }
 
+        // Set number of raw (transmitter) channels
+        public void SetNumberRawCh(uint nCh)
+        {
+            _event.nTransmitterChannels = nCh;
+        }
+
         /// <summary>
         /// Refresh all Map Target arrays in Input Collection
         /// </summary>

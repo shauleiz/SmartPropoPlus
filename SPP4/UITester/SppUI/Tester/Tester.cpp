@@ -46,6 +46,7 @@ void SetChannelMapping(bool Default, HWND hDlg);
 void DecoderPopulate(HWND hDlg);
 void DecoderSelect(LPCTSTR sel, HWND hDlg);
 void DisplayMod(void);
+void SetNuChannels(int n, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -286,6 +287,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case IDM_DEC_PCMJR:
 			DecoderSelect(_T("JR"), hTopUiWin);
+			break;
+
+		case IDM_N_CHANNELS16:
+			SetNuChannels(16, hTopUiWin);
+			break;
+
+		case IDM_N_CHANNELS8:
+			SetNuChannels(8, hTopUiWin);
 			break;
 
 		default:
@@ -631,4 +640,9 @@ void DecoderSelect(LPCTSTR sel, HWND hDlg)
 
 		SendMessage(hDlg, WMSPP_PRCS_SETMOD, (WPARAM)&mode, (LPARAM)sel);
 		}
+}
+
+void SetNuChannels(int n, HWND hDlg)
+{
+	PostMessage(hDlg, WMSPP_PRCS_NRCHMNT, n, 0);
 }
