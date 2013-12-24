@@ -281,6 +281,12 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WMSPP_PRCS_SETMOD:
 		AddLine2ModList((MOD *)(wParam), (LPCTSTR)(lParam));
 		break;
+
+	case WMSPP_PRCS_NRCHMNT:
+		WPFPageHost::hostedPage->SetNumberRawCh((UINT)wParam);
+		break;
+
+
 	//case 12347:
 		//_private->Clock->Set_YYY();
 		//_bindingwin->MainPage->Set_YYY(gcnew System::String("12345"));

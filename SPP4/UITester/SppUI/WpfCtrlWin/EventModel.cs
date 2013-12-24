@@ -208,6 +208,13 @@ namespace CtrlWindowNS
             }
         }
 
+        private uint _nTransmitterChannels = 0;
+        public uint nTransmitterChannels
+        {
+            get { return _nTransmitterChannels; }
+            set { SetField(ref _nTransmitterChannels, value, "nTransmitterChannels"); }
+        }
+
 #endregion Decoder
     }
 }

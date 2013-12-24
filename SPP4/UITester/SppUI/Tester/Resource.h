@@ -35,3 +35,5 @@
 #define IDM_DEC_PPMGEN                          40023
 #define IDM_DEC_POPULATE                        40024
 #define IDM_DEC_PCMJR                           40025
+#define IDM_N_CHANNELS16                        40026
+#define IDM_N_CHANNELS8                         40027
