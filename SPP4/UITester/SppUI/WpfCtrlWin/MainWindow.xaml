@@ -465,16 +465,31 @@
                     <Grid Width="503" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="76*"/>
-                            <ColumnDefinition Width="407*"/>
-                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="277*"/>
+                            <ColumnDefinition Width="117"/>
+                            <ColumnDefinition Width="33"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Filter: " Height="16"  />
-                        <TextBox Grid.Column="1" BorderBrush="Beige" Text="{Binding SelectedDecoder.Name}" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" />
-                        <Image  Grid.Column="2" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
+                        <TextBlock Grid.Column="0" Text="Filter: " Height="16" Margin="3,3.98"  />
+                        <TextBox Grid.Column="1" BorderBrush="Beige" Text="{Binding SelectedDecoder.Name}" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3" Width="30" />
+                        <Image  Grid.Column="3" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
+                        <CheckBox Content="Enable Filter" Grid.Column="1" HorizontalAlignment="Left" Margin="107.006,3,0,0" VerticalAlignment="Top" Height="15.098" Width="83.995"/>
                     </Grid>
                 </Expander.Header>
                 <Grid Height="Auto"  x:Name="FilterTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
-
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="26*"/>
+                        <RowDefinition Height="40*"/>
+                        <RowDefinition Height="33*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="67*"/>
+                        <ColumnDefinition Width="175*"/>
+                        <ColumnDefinition Width="211*"/>
+                        <ColumnDefinition Width="92*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..."/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="- Filter File -" Height="17.96" Margin="3,12"/>
+                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195"/>
                 </Grid>
             </Expander>
             <Expander x:Name="vJoyExpander"    VerticalAlignment="Top" Width="540" BorderBrush="#FFF1A988" Background="#FFF1F185"  BorderThickness="2" HorizontalAlignment="Right">
