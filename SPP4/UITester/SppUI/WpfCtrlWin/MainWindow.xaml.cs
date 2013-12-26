@@ -105,11 +105,11 @@ namespace CtrlWindowNS
             {
                 _event.SelectedJack = item;
                 int index = _event._AudioDeviceCollection.IndexOf(item);
-                Audio_LB.SelectedIndex = index;
-                Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
-                ListViewItem lvitem = Audio_LB.ItemContainerGenerator.ContainerFromItem(index) as ListViewItem;
-                if (lvitem != null)
-                    lvitem.Focus();
+                //Audio_LB.SelectedIndex = index;
+                //Audio_LB.ScrollIntoView(Audio_LB.SelectedItem);
+                //ListViewItem lvitem = Audio_LB.ItemContainerGenerator.ContainerFromItem(index) as ListViewItem;
+                //if (lvitem != null)
+                //    lvitem.Focus();
             };
         }
 
@@ -639,6 +639,14 @@ namespace CtrlWindowNS
             ListView list = e.OriginalSource as ListView;
             list.ScrollIntoView(list.SelectedItem);
             OnDecoderChanged((list.SelectedItem as DecoderItem).Name);
+        }
+
+
+        // Start Windows sound selector
+        private void Audio_Click(object sender, RoutedEventArgs e)
+        {
+            //Process.Start("cmd", "/C control.exe mmsys.cpl,,1");
+            Process.Start("control.exe", "mmsys.cpl,,1");
         }
 
 
