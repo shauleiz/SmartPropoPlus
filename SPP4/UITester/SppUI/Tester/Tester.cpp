@@ -47,6 +47,7 @@ void DecoderPopulate(HWND hDlg);
 void DecoderSelect(LPCTSTR sel, HWND hDlg);
 void DisplayMod(void);
 void SetNuChannels(int n, HWND hDlg);
+void SetFilter(int n, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -295,6 +296,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case IDM_N_CHANNELS8:
 			SetNuChannels(8, hTopUiWin);
+			break;
+
+		case IDM_FLTR_INIT:
+			SendMessage(hTopUiWin, FILTER_NUM, 0, 0);
+			break;
+
+
+		case IDM_FLTR_FILE2:
+			SetFilter(2, hTopUiWin);
+			break;
+
+		case IDM_FLTR_FILE5:
+			SetFilter(5, hTopUiWin);
 			break;
 
 		default:
@@ -645,4 +659,27 @@ void DecoderSelect(LPCTSTR sel, HWND hDlg)
 void SetNuChannels(int n, HWND hDlg)
 {
 	PostMessage(hDlg, WMSPP_PRCS_NRCHMNT, n, 0);
+}
+
+void SetFilter(int n,  HWND hDlg)
+{
+	LPCTSTR Name[2] = {L"File 2", L"File 5"};
+	LPCTSTR Filter2[2] = {L"Filter 1/2", L"Filter 2/2"};
+	LPCTSTR Filter5[5] = {L"Filter 1/5", L"Filter 2/5", L"Filter 3/5", L"Filter 4/5", L"Filter 5/5"};
+	int Id2[2] = {123,124};
+	int Id5[5] = {153, 154, 155, 156, 157};
+
+	if (n==2)
+	{
+		SendMessage(hDlg, FILTER_NUM, n, (LPARAM)Name[0]);
+		for (int i=0; i<n; i++)
+			SendMessage(hDlg, FILTER_ADDW, Id2[i], (LPARAM)Filter2[i]);
+	};
+
+	if (n==5)
+	{
+		SendMessage(hDlg, FILTER_NUM, n, (LPARAM)Name[0]);
+		for (int i=0; i<n; i++)
+			SendMessage(hDlg, FILTER_ADDW, Id5[i], (LPARAM)Filter5[i]);
+	};
 }

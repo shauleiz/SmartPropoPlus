@@ -216,5 +216,45 @@ namespace CtrlWindowNS
         }
 
 #endregion Decoder
+
+#region Filter
+
+        // List of filters in a filter file
+        public ObservableCollection<FilterItem> _FilterCollection;
+        public ObservableCollection<FilterItem> FilterCollection
+        {
+            get { return _FilterCollection; }
+        }
+
+        // Current Filter
+        private FilterItem _SelectedFilter;
+        public FilterItem SelectedFilter
+        {
+            get
+            { return _SelectedFilter; }
+
+            set
+            { 
+                SetField(ref _SelectedFilter, value, "SelectedFilter");
+            }
+        }
+
+        // Current Filter File (DLL)
+        private string _FilterFileName;
+        public string FilterFileName
+        {
+            get { return _FilterFileName; }
+            set { SetField(ref _FilterFileName, value, "FilterFileName"); }
+        }
+
+        // Is filtering enabled?
+        private bool _IsEnabledFilter;
+        public bool IsEnabledFilter
+        {
+            get { return _IsEnabledFilter; }
+            set { SetField(ref _IsEnabledFilter, value, "IsEnabledFilter"); }
+        }
+
+#endregion Filter
     }
 }

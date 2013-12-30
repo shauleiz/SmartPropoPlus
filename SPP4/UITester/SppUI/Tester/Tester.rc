@@ -72,6 +72,12 @@ IDC_TESTER MENU
         MENUITEM "16 Channels", IDM_N_CHANNELS16
         MENUITEM "8 Channels", IDM_N_CHANNELS8
     }
+    POPUP "Filter"
+    {
+        MENUITEM "Initialize", IDM_FLTR_INIT
+        MENUITEM "File 5.dll", IDM_FLTR_FILE5
+        MENUITEM "File 2.dll", IDM_FLTR_FILE2
+    }
     POPUP "&Help"
     {
         MENUITEM "&About ...", IDM_ABOUT

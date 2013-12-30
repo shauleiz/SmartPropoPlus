@@ -300,7 +300,7 @@
                             <CheckBox Content="Auto" Padding="4,-1,0,10" IsChecked="{Binding IsNotAutoChannel, Converter={StaticResource ResourceKey=InvConverter}}"   Checked="Audio_CheckBox_Click" Unchecked="Audio_CheckBox_Click" />
                             <RadioButton Name="LeftRB" Content="Left" IsEnabled="{Binding IsNotAutoChannel}" IsChecked="{Binding AudioChannel, Converter={StaticResource ResourceKey=ChannelLeftConverter}}" RenderTransformOrigin="1.513,0.592" Margin="32.214,0,10,0" VerticalContentAlignment="Center"  Checked="Audio_RB_Checked"/>
                             <RadioButton Name="RightRB" Content="Right" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelRightConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
-                            <RadioButton Name="MonoRB" Content="Mono" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelMonoConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>
+                            <!--<RadioButton Name="MonoRB" Content="Mono" IsEnabled="{Binding IsNotAutoChannel}"  IsChecked="{Binding AudioChannel, Converter={StaticResource ChannelMonoConverter}}" HorizontalAlignment="Left" Width="66.992" VerticalContentAlignment="Center" Margin="32.214,0,-10,0"  Checked="Audio_RB_Checked"/>-->
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Grid.Column="2" Header="Audio Level" HorizontalAlignment="Left" Height="102" Margin="5,5,0,5" Grid.Row="2" VerticalAlignment="Top" Width="241">
@@ -472,7 +472,6 @@
                         <TextBlock Grid.Column="0" Text="Filter: " Height="16" Margin="3,3.98"  />
                         <TextBox Grid.Column="1" BorderBrush="Beige" Text="{Binding SelectedDecoder.Name}" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3" Width="30" />
                         <Image  Grid.Column="3" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
-                        <CheckBox Content="Enable Filter" Grid.Column="1" HorizontalAlignment="Left" Margin="107.006,3,0,0" VerticalAlignment="Top" Height="15.098" Width="83.995"/>
                     </Grid>
                 </Expander.Header>
                 <Grid Height="Auto"  x:Name="FilterTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
@@ -489,7 +488,8 @@
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..."/>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="- Filter File -" Height="17.96" Margin="3,12"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195"/>
+                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" Text="- Select Filter -" />
+                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0"/>
                 </Grid>
             </Expander>
             <Expander x:Name="vJoyExpander"    VerticalAlignment="Top" Width="540" BorderBrush="#FFF1A988" Background="#FFF1F185"  BorderThickness="2" HorizontalAlignment="Right">

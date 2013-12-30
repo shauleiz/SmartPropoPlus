@@ -71,6 +71,10 @@ namespace CtrlWindowNS
 
                 _DecoderCollection = new ObservableCollection<DecoderItem>(),
 
+                SelectedFilter = new FilterItem {Name = "", Id = -1},
+                FilterFileName = "" ,
+                _FilterCollection = new ObservableCollection<FilterItem>(),
+
             };
         }
 
@@ -541,7 +545,61 @@ namespace CtrlWindowNS
 
 #endregion Decoder Interface
 
-        #region Attached Event
+#region Filter Interface
+
+        /// <summary>
+        /// Sets the current filter file name (Display name)
+        /// If string is empty then clear data
+        /// </summary>
+        /// <param name="FilterFileName">Display Name of Filter file (DLL)</param>
+        public void SetFilterFileName(string Name)
+        {
+            // Valid?
+            if (Name.Length > 0)
+                _event.FilterFileName = Name;
+            else
+                _event.FilterFileName = "";
+        }
+
+        /// <summary>
+        /// Reset the collection of filters - call before populating (when switching filter file)
+        /// </summary>
+        /// <param name="n">Ignored</param>
+        public void ResetFilterCollection(int n)
+        {
+            _event._FilterCollection.Clear();
+        }
+
+        /// <summary>
+        /// Updates property IsEnabledFilter
+        /// </summary>
+        /// <param name="enable"></param>
+        public void IsEnabledFilter(bool enable)
+        {
+            _event.IsEnabledFilter = enable;
+        }
+
+        /// <summary>
+        /// Add a filter to the collection of filters
+        /// Note that a collection represents the filters encapsulated in a specific Filter File
+        /// Every filter is identified by a unique ID and a Filter (Friendly) Name
+        /// </summary>
+        /// <param name="FilterID">Filter Unique ID</param>
+        /// <param name="FilterName"> Filter (Friendly) Name</param>
+        public void AddFilter(int FilterID, string FilterName)
+        {
+            // Search collection for filter with current FilterID - if exists, just exit
+            foreach (FilterItem element in  _event._FilterCollection)
+                if (element.Id.Equals(FilterID)) return;
+
+            // Insert new filter to collection
+            FilterItem item = new FilterItem() { Id = FilterID, Name =  FilterName};
+            _event._FilterCollection.Add(item);
+        }
+
+#endregion Filter Interface
+
+#region Attached Event
         // One of the Audio radio buttons was checked - Call event OnAudioChanged
         private void Audio_RB_Checked(object sender, RoutedEventArgs e)
         {
@@ -654,7 +712,7 @@ namespace CtrlWindowNS
     
 #endregion Attached Event
 
-    #region Data Structures
+#region Data Structures
     public class AudioLine
     {
         public string DeviceName { get; set; }
@@ -697,7 +755,6 @@ namespace CtrlWindowNS
         }
     }
 
-#if true
     /// <summary>
     /// Object of this class represents an array of level-monitors
     /// Used to display Axis-level and channel level
@@ -729,7 +786,6 @@ namespace CtrlWindowNS
             }
         }
     }
-#endif
 
     [StructLayout(LayoutKind.Sequential, Pack = 2)]
     public class vJoyButtonsVal : INotifyPropertyChanged
@@ -911,9 +967,15 @@ namespace CtrlWindowNS
         public string Subtype  { get; set; }
     }
 
+    public class FilterItem
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
+    }
+
 #endregion Data Structures
 
-    #region Converters
+#region Converters
 
     /// Compare two string 
     /// If strings are identical (but not "0") then return Visibility.Visible
