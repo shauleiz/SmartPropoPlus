@@ -37,3 +37,6 @@
 #define IDM_DEC_PCMJR                           40025
 #define IDM_N_CHANNELS16                        40026
 #define IDM_N_CHANNELS8                         40027
+#define IDM_FLTR_INIT                           40028
+#define IDM_FLTR_FILE5                          40029
+#define IDM_FLTR_FILE2                          40030

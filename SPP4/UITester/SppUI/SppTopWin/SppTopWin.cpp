@@ -50,6 +50,8 @@ void				vJoyDevSetAvail(UINT id, controls * ctrl);
 void				SetButtonValues(UINT id, BTNArr * BtnVals);
 void				SetMappingData(Mapping * m);
 void				AddLine2ModList(MOD * mod, LPCTSTR SelType);
+void				InitFilter(int nFilters, LPTSTR Name);
+void				AddFilter(int FilterID, LPCWSTR FilterName);
 
 public ref class CtrlWindow : Window
 {
@@ -286,6 +288,14 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		WPFPageHost::hostedPage->SetNumberRawCh((UINT)wParam);
 		break;
 
+	case FILTER_NUM:
+		InitFilter((int)wParam, (LPTSTR)lParam);
+		break;
+
+	case FILTER_ADDW:
+		AddFilter((int)wParam, (LPTSTR)lParam);
+		break;
+
 
 	//case 12347:
 		//_private->Clock->Set_YYY();
@@ -380,6 +390,19 @@ void AddLine2ModList(MOD * mod, LPCTSTR SelType)
 {
 	WPFPageHost::hostedPage->AddModulation(gcnew System::String(mod->Name), gcnew System::String(mod->Type), gcnew System::String(mod->Subtype));
 	WPFPageHost::hostedPage->SetSelectedModulation(gcnew System::String(SelType));
+}
+
+void InitFilter(int nFilters, LPTSTR FilterFileName)
+{
+	WPFPageHost::hostedPage->SetFilterFileName(gcnew System::String(FilterFileName));		
+	WPFPageHost::hostedPage->ResetFilterCollection(nFilters);
+	if (!nFilters)
+		WPFPageHost::hostedPage->IsEnabledFilter(false);
+}
+
+void AddFilter(int FilterID, LPCWSTR FilterName)
+{
+	WPFPageHost::hostedPage->AddFilter(FilterID, gcnew System::String(FilterName));
 }
 
 // TODO: Use this function to coordinate moving of windows
