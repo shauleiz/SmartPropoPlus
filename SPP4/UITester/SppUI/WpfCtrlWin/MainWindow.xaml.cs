@@ -563,21 +563,26 @@ namespace CtrlWindowNS
 
         /// <summary>
         /// Reset the collection of filters - call before populating (when switching filter file)
+        /// Sets a dummy "- Select FIlter -" first item
+        /// Selects the dummy first item
         /// </summary>
         /// <param name="n">Ignored</param>
         public void ResetFilterCollection(int n)
         {
             _event._FilterCollection.Clear();
+            FilterItem item = new FilterItem() { Id = -1, Name = "- Select Filter -" };
+            _event._FilterCollection.Add(item);
+            SelFilter(-1);
         }
 
         /// <summary>
         /// Updates property IsEnabledFilter
         /// </summary>
         /// <param name="enable"></param>
-        public void IsEnabledFilter(bool enable)
-        {
-            _event.IsEnabledFilter = enable;
-        }
+        //public void IsEnabledFilter(bool enable)
+        //{
+        //    _event.IsEnabledFilter = enable;
+        //}
 
         /// <summary>
         /// Add a filter to the collection of filters
@@ -595,6 +600,24 @@ namespace CtrlWindowNS
             // Insert new filter to collection
             FilterItem item = new FilterItem() { Id = FilterID, Name =  FilterName};
             _event._FilterCollection.Add(item);
+        }
+
+        public void SelFilter(int FilterId)
+        {
+            if (_event._FilterCollection != null)
+            {
+                foreach (FilterItem item in _event._FilterCollection)
+                {
+                    if (item.Id.Equals(FilterId))
+                    {
+                        _event.SelectedFilter = item;
+                        return;
+                    };
+                }
+
+                // Did not find filter
+                SelFilter(-1);
+            };
         }
 
 #endregion Filter Interface

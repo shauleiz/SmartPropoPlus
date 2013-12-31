@@ -487,9 +487,18 @@
                         <ColumnDefinition Width="92*"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..."/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="- Filter File -" Height="17.96" Margin="3,12"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" Text="- Select Filter -" />
-                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12"/>
+                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="{Binding Name}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+
+                    </ComboBox>
+                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}"/>
                 </Grid>
             </Expander>
             <Expander x:Name="vJoyExpander"    VerticalAlignment="Top" Width="540" BorderBrush="#FFF1A988" Background="#FFF1F185"  BorderThickness="2" HorizontalAlignment="Right">

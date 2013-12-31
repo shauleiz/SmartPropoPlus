@@ -296,6 +296,11 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		AddFilter((int)wParam, (LPTSTR)lParam);
 		break;
 
+	case FILTER_SELCTED:
+		WPFPageHost::hostedPage->SelFilter((int)wParam);
+		break;
+
+
 
 	//case 12347:
 		//_private->Clock->Set_YYY();
@@ -396,8 +401,8 @@ void InitFilter(int nFilters, LPTSTR FilterFileName)
 {
 	WPFPageHost::hostedPage->SetFilterFileName(gcnew System::String(FilterFileName));		
 	WPFPageHost::hostedPage->ResetFilterCollection(nFilters);
-	if (!nFilters)
-		WPFPageHost::hostedPage->IsEnabledFilter(false);
+	//if (!nFilters)
+	//	WPFPageHost::hostedPage->IsEnabledFilter(false);
 }
 
 void AddFilter(int FilterID, LPCWSTR FilterName)

@@ -674,12 +674,14 @@ void SetFilter(int n,  HWND hDlg)
 		SendMessage(hDlg, FILTER_NUM, n, (LPARAM)Name[0]);
 		for (int i=0; i<n; i++)
 			SendMessage(hDlg, FILTER_ADDW, Id2[i], (LPARAM)Filter2[i]);
+		//SendMessage(hDlg, FILTER_SELCTED, Id2[0], 0 );
 	};
 
 	if (n==5)
 	{
-		SendMessage(hDlg, FILTER_NUM, n, (LPARAM)Name[0]);
+		SendMessage(hDlg, FILTER_NUM, n, (LPARAM)Name[1]);
 		for (int i=0; i<n; i++)
 			SendMessage(hDlg, FILTER_ADDW, Id5[i], (LPARAM)Filter5[i]);
+		SendMessage(hDlg, FILTER_SELCTED, Id5[2], 0 );
 	};
 }
