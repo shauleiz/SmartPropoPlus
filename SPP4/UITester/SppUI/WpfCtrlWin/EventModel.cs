@@ -224,6 +224,7 @@ namespace CtrlWindowNS
         public ObservableCollection<FilterItem> FilterCollection
         {
             get { return _FilterCollection; }
+            set { SetField(ref _FilterCollection, value, "FilterCollection"); }
         }
 
         // Current Filter
@@ -234,7 +235,22 @@ namespace CtrlWindowNS
             { return _SelectedFilter; }
 
             set
-            { 
+            {
+                IsValidFilter = true;
+                IsEnabledFilter = true;
+
+                if (value == null)
+                {
+                    IsValidFilter = false;
+                    return;
+                };
+
+                if (value.Id == -1 || value.Name == null || value.Name.Length == 0)
+                {
+                    value.Id = -1;
+                    IsValidFilter = false;
+                };
+                
                 SetField(ref _SelectedFilter, value, "SelectedFilter");
             }
         }
@@ -244,15 +260,48 @@ namespace CtrlWindowNS
         public string FilterFileName
         {
             get { return _FilterFileName; }
-            set { SetField(ref _FilterFileName, value, "FilterFileName"); }
+            set 
+            {
+                IsValidFilterFile = true;
+                if (value == null || value.Length == 0)
+                {
+                    value = "- Enter Filter File -";
+                    IsValidFilterFile = false;
+                };
+                SetField(ref _FilterFileName, value, "FilterFileName"); 
+            }
         }
+
+        // Valid Filter File
+        private bool _IsValidFilterFile = false;
+        public bool IsValidFilterFile
+        {
+            get { return _IsValidFilterFile; }
+            set { SetField(ref _IsValidFilterFile, value, "IsValidFilterFile"); }
+        }
+
+        // Valid Selected Filter
+        private bool _IsValidFilter = false;
+        public bool IsValidFilter
+        {
+            get { return _IsValidFilter; }
+            set 
+            {
+                IsEnabledFilter = false;
+                SetField(ref _IsValidFilter, value, "IsValidFilter"); 
+            }
+        }
+
 
         // Is filtering enabled?
         private bool _IsEnabledFilter;
         public bool IsEnabledFilter
         {
             get { return _IsEnabledFilter; }
-            set { SetField(ref _IsEnabledFilter, value, "IsEnabledFilter"); }
+            set 
+            {
+                SetField(ref _IsEnabledFilter, value, "IsEnabledFilter"); 
+            }
         }
 
 #endregion Filter
