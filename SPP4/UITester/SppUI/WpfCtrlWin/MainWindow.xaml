@@ -379,14 +379,14 @@
                         <Image  Grid.Column="4" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
                     </Grid>
                 </Expander.Header>
-                <Grid Height="272"  x:Name="DecoderTopGrid" Grid.IsSharedSizeScope="True" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="535.14" Background="#FFE3EED3">
+                <Grid Height="272"  x:Name="DecoderTopGrid" Grid.IsSharedSizeScope="True" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="535.14" Background="#FFE4F2EC">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55*"/>
                         <RowDefinition Height="8"/>
                         <RowDefinition Height="41*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition MinWidth="50" Width="Auto" SharedSizeGroup="LabelColumn" />
                         <ColumnDefinition Width="367*"/>
                         <ColumnDefinition Width="128*"/>
                     </Grid.ColumnDefinitions>
@@ -400,7 +400,7 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
-                    <Label Content="Channels" HorizontalAlignment="Center" Height="49.042" Margin="-7.566,101.943,284.592,49.015" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Grid.RowSpan="3" >
+                    <Label Content="Channels" HorizontalAlignment="Center" Height="45.042" Margin="-13.209,18.693,317.45,49.015" VerticalAlignment="Center" Width="105.449" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Background="#338DF5A0" Grid.Row="2" >
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -462,34 +462,33 @@
             </Expander>
             <Expander x:Name="FilterExpander"  VerticalAlignment="Top" Width="540" BorderBrush="#FFF1A988" Background="#FFC5F185"  BorderThickness="2" HorizontalAlignment="Right">
                 <Expander.Header>
-                    <Grid Width="503" >
+                    <Grid Width="503" Height="24" >
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="76*"/>
+                            <ColumnDefinition Width="76*" />
                             <ColumnDefinition Width="277*"/>
                             <ColumnDefinition Width="117"/>
                             <ColumnDefinition Width="33"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Filter: " Height="16" Margin="3,3.98"  />
-                        <TextBox Grid.Column="1" BorderBrush="Beige" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3"  Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverter}}" Text="{Binding SelectedFilter.Name}" d:IsHidden="True" />
+                        <TextBox Grid.Column="1" BorderBrush="Beige" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3"  Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverter}}" Text="{Binding SelectedFilter.Name}" />
                         <TextBox Grid.Column="1" BorderBrush="Transparent" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3"  Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverterNeg}}" Text="No Filter"  />
                         <Image  Grid.Column="3" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
                     </Grid>
                 </Expander.Header>
-                <Grid Height="Auto"  x:Name="FilterTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
+                <Grid Height="200"  x:Name="FilterTopGrid" Grid.IsSharedSizeScope="True" Background="#FFE4F2E9" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="26*"/>
-                        <RowDefinition Height="40*"/>
-                        <RowDefinition Height="33*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="67*"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
                         <ColumnDefinition Width="175*"/>
                         <ColumnDefinition Width="211*"/>
                         <ColumnDefinition Width="92*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..." Click="Browse_Clicked"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12" IsReadOnly="True" AllowDrop="True"  PreviewDrop="FilterFile_Drop" PreviewDragOver="FilterFile_DragOver" PreviewDragEnter="FilterFile_DragEnter"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" SelectionChanged="FilterCB_SelectionChanged">
+                    <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..." Click="Browse_Clicked"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12" IsReadOnly="True" AllowDrop="True"  PreviewDrop="FilterFile_Drop" PreviewDragOver="FilterFile_DragOver" PreviewDragEnter="FilterFile_DragEnter"/>
+                    <ComboBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" SelectionChanged="FilterCB_SelectionChanged" VerticalAlignment="Center">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -498,7 +497,69 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" Checked="Filter_Checked" Unchecked="Filter_UnChecked"/>
+                    <CheckBox Grid.Row="0" Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"   Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" Checked="Filter_Checked" Unchecked="Filter_UnChecked"/>
+                    <Grid Grid.Row="2" Grid.IsSharedSizeScope="True" Grid.ColumnSpan="4" Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="50" SharedSizeGroup="LabelColumn" />
+                            <ColumnDefinition Width="488*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Output"   HorizontalAlignment="Right" Height="49.042" Margin="-9.432,16.105,397.848,84.853" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                            <Label.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform X="39.962" Y="-39.962"/>
+                                </TransformGroup>
+                            </Label.RenderTransform>
+                        </Label>
+                        <ItemsControl ItemsSource="{Binding vJoyInputCollection}" Grid.Column="1" Margin="10,10,0,10" HorizontalAlignment="Left" Width="477.97"  >
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Grid.Column" Value="{Binding Id}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Grid ShowGridLines="True" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                            <ColumnDefinition SharedSizeGroup="LevelBar" Width="*" MinWidth="15" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Rectangle  Style="{StaticResource VJOY_INPUT_RECT_STYLE}"/>
+                                        <ctrl:ChannelCtrl
+                    						BarBgColor="#330F3E3C" 
+                    						Grid.Row="1" 
+                    						Style="{StaticResource VJOY_INPUT_CH_STYLE}" 
+                    						MouseEnter="MouseEntervJoyInputCh"  
+                    						MouseLeave="MouseLeavevJoyInputCh"
+                    						MouseMove="MouseMovevJoyInputCh"
+                                        />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
                 </Grid>
             </Expander>
             <Expander x:Name="vJoyExpander"    VerticalAlignment="Top" Width="540" BorderBrush="#FFF1A988" Background="#FFF1F185"  BorderThickness="2" HorizontalAlignment="Right">
@@ -537,13 +598,13 @@
                         <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition MinWidth="70" SharedSizeGroup="LabelColumn"/>
                         <ColumnDefinition Width="272*"/>
                         <ColumnDefinition Width="223*"/>
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="InputGrid"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  >
                         <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
-                        <ItemsControl ItemsSource="{Binding vJoyInputCollection}" >
+                        <ItemsControl ItemsSource="{Binding vJoyInputCollection}"  Visibility="Collapsed">
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="Grid.Column" Value="{Binding Id}" />
@@ -590,7 +651,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
-                    <Label Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,-4.39,197.108,67.348" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                    <Label Visibility="Collapsed" Content="Input Channels"   HorizontalAlignment="Center" Height="49.042" Margin="-15.057,-4.39,197.108,67.348" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
