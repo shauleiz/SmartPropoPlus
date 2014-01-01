@@ -486,8 +486,8 @@
                         <ColumnDefinition Width="211*"/>
                         <ColumnDefinition Width="92*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..."/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12"/>
+                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..." Click="Browse_Clicked"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12" IsReadOnly="True" AllowDrop="True"  PreviewDrop="FilterFile_Drop" PreviewDragOver="FilterFile_DragOver" PreviewDragEnter="FilterFile_DragEnter"/>
                     <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -630,7 +630,7 @@
                                             <RowDefinition  Height="30"/>
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
-                                        <ctrl:ChannelCtrl  AllowDrop="True"  DragOver="DragOver_vJoyAxisRect" DragLeave="DragLeave_vJoyAxisRect" Drop="Drop_vJoyAxisRect" DragEnter="DragEnter_vJoyAxisRect"  BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"  Style="{StaticResource VJOY_AXES_STYLE}"/>
+                                        <ctrl:ChannelCtrl  AllowDrop="True"   Drop="Drop_vJoyAxisRect" BarBgColor="#330F3E3C" BarColor="Turquoise" Grid.Row="1"  Style="{StaticResource VJOY_AXES_STYLE}"/>
                                         <TextBox x:Name="MapSourceCh" IsEnabled="{Binding Implemented}" Text="{Binding MapSource}" Grid.Row="0" VerticalContentAlignment="Center" Padding="1" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" KeyDown="MapSourceKeyDown" TextChanged="MapSourceChanged" MaxWidth="20" />
                                         <Rectangle Style="{StaticResource VJOY_AXIS_RECT_STYLE}"   Grid.Row="0" Grid.RowSpan="2" />
                                     </Grid>
