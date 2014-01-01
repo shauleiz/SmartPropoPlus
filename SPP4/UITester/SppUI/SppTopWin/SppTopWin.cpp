@@ -320,6 +320,7 @@ void CtrlAudioAutoChanging(bool AutoBitrateChecked, bool AutoChannelChecked);
 void CtrlvJoyDeviceChanging(UINT id);
 void CtrlvJoyMapAxisChanging(int AxisId, int NewSrcCh);
 void CtrlDecoderChanging(System::String ^ DecoderName);
+System::String ^  CtrlFilterFileChanging(System::String ^ DecoderName);
 
 static void GetHwnd(Object^ data)
 {
@@ -338,6 +339,7 @@ static void GetHwnd(Object^ data)
 	ctrlpage->OnvJoyDeviceChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyDeviceChanging(CtrlvJoyDeviceChanging);
 	ctrlpage->OnvJoyMapAxisChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyMapAxisChanging(CtrlvJoyMapAxisChanging);
 	ctrlpage->OnDecoderChanged += gcnew CtrlWindowNS::CtrlWindow::DecoderChanging(CtrlDecoderChanging);
+	ctrlpage->OnFilterFileChanged += gcnew CtrlWindowNS::CtrlWindow::FilterFileChanging(CtrlFilterFileChanging);
 }
 
 // Add line to the list of audio devices
@@ -485,4 +487,15 @@ void CtrlDecoderChanging(System::String ^ DecoderName)
 {
 	pin_ptr<const wchar_t> wname = PtrToStringChars(DecoderName);
 	SendMessage(hAppWin, WMSPP_DLG_MOD, (WPARAM)wname, 0);
+}
+
+// 
+System::String ^ CtrlFilterFileChanging(System::String ^ FilterName)
+{
+	pin_ptr<const wchar_t> wname = PtrToStringChars(FilterName);
+	LRESULT info = SendMessage(hAppWin, WMSPP_DLG_FLTRFILE , (WPARAM)wname, 0);
+	if (!info)
+		return System::String::Empty;
+	else
+		return gcnew System::String((LPTSTR)info);
 }

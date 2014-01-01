@@ -33,6 +33,10 @@ namespace CtrlWindowNS
         public delegate void DecoderChanging(string Type);
         public event DecoderChanging OnDecoderChanged;
 
+        public delegate string FilterFileChanging(string FileName);
+        public event FilterFileChanging OnFilterFileChanged;
+
+
 #region General
         public CtrlWindow()
         {
@@ -680,9 +684,6 @@ namespace CtrlWindowNS
             }
         }
 
-        private void DragEnter_vJoyAxisRect(object sender, DragEventArgs e)
-        {
-        }
 
         private void Drop_vJoyAxisRect(object sender, DragEventArgs e)
         {
@@ -703,16 +704,6 @@ namespace CtrlWindowNS
             }
         }
 
-        private void DragLeave_vJoyAxisRect(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void DragOver_vJoyAxisRect(object sender, DragEventArgs e)
-        {
-
-        }
-
 
         // List of decoders - selection changed - Scroll into view
         private void Decoder_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -728,6 +719,66 @@ namespace CtrlWindowNS
         {
             //Process.Start("cmd", "/C control.exe mmsys.cpl,,1");
             Process.Start("control.exe", "mmsys.cpl,,1");
+        }
+
+        
+        // Based on http://stackoverflow.com/questions/10315188/open-file-dialog-and-select-a-file-using-wpf-controls-and-c
+        /// <summary>
+        /// Browse Filter File button Clicked
+        /// Open dialog box and send full path to CU
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Browse_Clicked(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".dll";
+            dlg.Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*";
+
+            // Set dialog title
+            dlg.Title = "Select Filter File";
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                _event.FilterFileName = OnFilterFileChanged(dlg.FileName);
+            }
+        }
+
+        // Filter file dropped to target
+        private void FilterFile_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string [] FileName = (string [])e.Data.GetData(DataFormats.FileDrop);
+                _event.FilterFileName = OnFilterFileChanged(FileName[0]);
+            }
+        }
+
+        private void FilterFile_DragOver(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void FilterFile_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
         }
 
 
