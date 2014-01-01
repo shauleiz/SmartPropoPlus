@@ -470,7 +470,8 @@
                             <ColumnDefinition Width="33"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Filter: " Height="16" Margin="3,3.98"  />
-                        <TextBox Grid.Column="1" BorderBrush="Beige" Text="{Binding SelectedDecoder.Name}" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3" Width="30" />
+                        <TextBox Grid.Column="1" BorderBrush="Beige" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3"  Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverter}}" Text="{Binding SelectedFilter.Name}" d:IsHidden="True" />
+                        <TextBox Grid.Column="1" BorderBrush="Transparent" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3"  Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverterNeg}}" Text="No Filter"  />
                         <Image  Grid.Column="3" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
                     </Grid>
                 </Expander.Header>
@@ -488,7 +489,7 @@
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..." Click="Browse_Clicked"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12" IsReadOnly="True" AllowDrop="True"  PreviewDrop="FilterFile_Drop" PreviewDragOver="FilterFile_DragOver" PreviewDragEnter="FilterFile_DragEnter"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}">
+                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" SelectionChanged="FilterCB_SelectionChanged">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -496,9 +497,8 @@
                                 </Grid>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
-
                     </ComboBox>
-                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}"/>
+                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" Checked="Filter_Checked" Unchecked="Filter_UnChecked"/>
                 </Grid>
             </Expander>
             <Expander x:Name="vJoyExpander"    VerticalAlignment="Top" Width="540" BorderBrush="#FFF1A988" Background="#FFF1F185"  BorderThickness="2" HorizontalAlignment="Right">
@@ -506,13 +506,14 @@
                     <Grid Width="503" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="76*"/>
-                            <ColumnDefinition Width="407*"/>
+                            <ColumnDefinition Width="81*"/>
+                            <ColumnDefinition Width="326*"/>
                             <ColumnDefinition Width="20"/>
                         </Grid.ColumnDefinitions>
-                        <Image  Grid.Column="2" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
+                        <Image  Grid.Column="3" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
                         <TextBlock Grid.Column="0" Text="vJoy Device: " Height="16"  />
                         <!--<TextBlock Grid.Column="1" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0}'}"  />-->
-                        <ComboBox x:Name="vJoyDeviceCB" Grid.Column="1" Margin="0,0,357,0"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice, Mode=TwoWay}" SelectionChanged="vJoyDeviceCB_SelectionChanged">
+                        <ComboBox x:Name="vJoyDeviceCB" Grid.Column="1" Margin="0,0,31.046,0"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice, Mode=TwoWay}" SelectionChanged="vJoyDeviceCB_SelectionChanged">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>

@@ -35,6 +35,8 @@
     <local:InverseBooleanConverter x:Key="InvConverter" />
     <local:StringCompareConverter x:Key="StringCompare" />
     <local:StringCompareConverter x:Key="StringCompareAxis"/>
+    <local:CombiningConverter x:Key="boolConverterNeg" Converter1="{StaticResource InvConverter}" Converter2="{StaticResource boolConverter}" />
+
 
 
     <!-- Based on:  http://wpftutorial.net/DebugDataBinding.html -->
