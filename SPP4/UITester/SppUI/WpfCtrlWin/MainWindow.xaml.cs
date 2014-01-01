@@ -35,6 +35,8 @@ namespace CtrlWindowNS
 
         public delegate string FilterFileChanging(string FileName);
         public event FilterFileChanging OnFilterFileChanged;
+        public delegate void FilterChanging(int FilterId);
+        public event FilterChanging OnFilterChanged;
 
 
 #region General
@@ -781,6 +783,36 @@ namespace CtrlWindowNS
             }
         }
 
+        // Filter combo-box Selection Changed
+        // Send ID of selected Filter (or -1 if not valid)
+        private void FilterCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int selected_id = -1;
+            if (_event.SelectedFilter != null)
+                selected_id = _event.SelectedFilter.Id;
+                
+            OnFilterChanged(selected_id);
+        }
+
+        private void Filter_Checked(object sender, RoutedEventArgs e)
+        {
+            int selected_id = -1;
+            if (_event.SelectedFilter != null)
+            {
+                selected_id = _event.SelectedFilter.Id;
+                _event.IsEnabledFilter = true;
+            }
+                
+            OnFilterChanged(selected_id);
+        }
+
+        private void Filter_UnChecked(object sender, RoutedEventArgs e)
+        {
+            _event.IsEnabledFilter = false;
+            int selected_id = -1;
+            OnFilterChanged(selected_id);
+        }
+
 
     }
     
@@ -1293,6 +1325,31 @@ namespace CtrlWindowNS
 
     
 #endif
+    /// <summary>
+    /// This converter combines two converters
+    /// It executes 'Converter2' on the output of 'Converter1'
+    /// Based on Natrium's: http://stackoverflow.com/questions/1594357/wpf-how-to-use-2-converters-in-1-binding
+    /// </summary>
+    public class CombiningConverter : IValueConverter
+    {
+        public IValueConverter Converter1 { get; set; }
+        public IValueConverter Converter2 { get; set; }
+
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            object convertedValue = Converter1.Convert(value, targetType, parameter, culture);
+            return Converter2.Convert(convertedValue, targetType, parameter, culture);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
     #endregion // Converters
 
     // Based on http://www.thomaslevesque.com/2011/03/21/wpf-how-to-bind-to-data-when-the-datacontext-is-not-inherited

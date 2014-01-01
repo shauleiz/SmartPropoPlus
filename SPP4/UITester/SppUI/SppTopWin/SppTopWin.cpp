@@ -321,6 +321,7 @@ void CtrlvJoyDeviceChanging(UINT id);
 void CtrlvJoyMapAxisChanging(int AxisId, int NewSrcCh);
 void CtrlDecoderChanging(System::String ^ DecoderName);
 System::String ^  CtrlFilterFileChanging(System::String ^ DecoderName);
+void CtrlFilterChanging(int id);
 
 static void GetHwnd(Object^ data)
 {
@@ -340,6 +341,7 @@ static void GetHwnd(Object^ data)
 	ctrlpage->OnvJoyMapAxisChanged += gcnew CtrlWindowNS::CtrlWindow::vJoyMapAxisChanging(CtrlvJoyMapAxisChanging);
 	ctrlpage->OnDecoderChanged += gcnew CtrlWindowNS::CtrlWindow::DecoderChanging(CtrlDecoderChanging);
 	ctrlpage->OnFilterFileChanged += gcnew CtrlWindowNS::CtrlWindow::FilterFileChanging(CtrlFilterFileChanging);
+	ctrlpage->OnFilterChanged += gcnew CtrlWindowNS::CtrlWindow::FilterChanging(CtrlFilterChanging);
 }
 
 // Add line to the list of audio devices
@@ -498,4 +500,9 @@ System::String ^ CtrlFilterFileChanging(System::String ^ FilterName)
 		return System::String::Empty;
 	else
 		return gcnew System::String((LPTSTR)info);
+}
+
+void CtrlFilterChanging(int FilterId)
+{
+	SendMessage(hAppWin, WMSPP_DLG_FILTER, (WPARAM)FilterId, 0);
 }

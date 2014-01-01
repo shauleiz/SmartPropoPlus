@@ -300,9 +300,11 @@ namespace CtrlWindowNS
             get { return _IsEnabledFilter; }
             set 
             {
-                SetField(ref _IsEnabledFilter, value, "IsEnabledFilter"); 
+                SetField(ref _IsEnabledFilter, value, "IsEnabledFilter");
             }
         }
+
+
 
 #endregion Filter
     }

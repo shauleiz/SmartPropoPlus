@@ -361,6 +361,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WMSPP_DLG_FLTRFILE:
 			return (LRESULT)((LPCTSTR)wParam);
 
+		case WMSPP_DLG_FILTER:
+			break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
