@@ -585,37 +585,35 @@
                         </Grid.ColumnDefinitions>
                         <Image  Grid.Column="3" Source="http://www.c-sharpcorner.com/images/csharp/view.gif" HorizontalAlignment="Right" Margin="0,9,2,3" Width="18"/>
                         <TextBlock Grid.Column="0" Text="vJoy Device: " Height="16"  />
+                        <TextBox Grid.Column="1" Text="{Binding SelectedvjDevice.vj_DeviceNumber}" BorderBrush="Beige" Background="Transparent" Foreground="#FF2379DF" HorizontalAlignment="Left" MinWidth="30" IsReadOnly="True" FontWeight="SemiBold" Height="17.96" Margin="3,3,0,3"  />
                         <!--<TextBlock Grid.Column="1" Text="{Binding Path=SelectedJack.DeviceName, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0}'}"  />-->
-                        <ComboBox x:Name="vJoyDeviceCB" Grid.Column="1" Margin="0,0,31.046,0"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice, Mode=TwoWay}" SelectionChanged="vJoyDeviceCB_SelectionChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <TextBlock Text="{Binding vj_DeviceNumber}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                            <!-- 
-                        <ComboBoxItem Name="cbi0" IsSelected="True">++ None Selected++</ComboBoxItem>
-                        <ComboBoxItem Name="cbi1">Item1</ComboBoxItem>
-                        <ComboBoxItem Name="cbi2">Item2</ComboBoxItem>
-                        <ComboBoxItem Name="cbi3">Item3</ComboBoxItem> 
-                        -->
-                        </ComboBox>
                     </Grid>
                 </Expander.Header>
                 <Grid Height="Auto"  x:Name="JoyTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"/>
                         <RowDefinition Height="5"/>
-                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="272*"/>
                         <ColumnDefinition Width="223*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid x:Name="InputGrid"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  Visibility="Collapsed">
-                        <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
+                    <Grid Background="LemonChiffon" Grid.Row="1" Grid.ColumnSpan="3"  />
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="2" >
+                        <TextBlock Text="Select vJoy Device: "/>
+                        <ComboBox x:Name="vJoyDeviceCB"   ItemsSource="{Binding vJoyDeviceCollection, Mode=TwoWay}"  SelectedItem="{Binding SelectedvjDevice, Mode=TwoWay}" SelectionChanged="vJoyDeviceCB_SelectionChanged" Grid.RowSpan="2"  VerticalAlignment="Center" MaxDropDownHeight="100" Margin="0,10">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="{Binding vj_DeviceNumber}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    </StackPanel>
+                        <Grid x:Name="InputGrid"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  Visibility="Collapsed">
                         <ItemsControl ItemsSource="{Binding TxOutputCollection}" >
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
@@ -651,12 +649,12 @@
                                     <Grid>
                                         <Rectangle  Style="{StaticResource VJOY_INPUT_RECT_STYLE}"/>
                                         <ctrl:ChannelCtrl
-        									BarBgColor="#330F3E3C" 
-        									Grid.Row="1" 
-        									Style="{StaticResource VJOY_INPUT_CH_STYLE}" 
-        									MouseEnter="MouseEntervJoyInputCh"  
-        									MouseLeave="MouseLeavevJoyInputCh"
-        									MouseMove="MouseMovevJoyInputCh"
+                							BarBgColor="#330F3E3C" 
+                							Grid.Row="1" 
+                							Style="{StaticResource VJOY_INPUT_CH_STYLE}" 
+                							MouseEnter="MouseEntervJoyInputCh"  
+                							MouseLeave="MouseLeavevJoyInputCh"
+                							MouseMove="MouseMovevJoyInputCh"
                                         />
                                     </Grid>
                                 </DataTemplate>
@@ -673,7 +671,7 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
-                    <Grid Grid.Column="1" x:Name="JoyAxisGrid" HorizontalAlignment="Left" Height="145.967" Margin="0,13.033,0,0" Grid.Row="2" VerticalAlignment="Top" Width="243" Background="#33E6C80C">
+                    <Grid Grid.Column="1" x:Name="JoyAxisGrid" HorizontalAlignment="Left" Height="145.967" Margin="0,13.033,0,0" VerticalAlignment="Top" Width="243" Background="#33E6C80C">
                         <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
                         <ItemsControl ItemsSource="{Binding vJoyAxisCollection}" >
                             <ItemsControl.ItemContainerStyle>
@@ -713,7 +711,7 @@
                         </ItemsControl>
                     </Grid>
                     <!--<Rectangle Grid.Row="1" Fill="#FFDCD9D9" Grid.ColumnSpan="3" />-->
-                    <Label Content="vJoy Axes &amp; Buttons"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center"  Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                    <Label Content="vJoy Axes &amp; Buttons"   HorizontalAlignment="Right" Height="49.042" Margin="-9.413,22.585,174.863,97.373" VerticalAlignment="Center" Width="156.55" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -723,7 +721,7 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
-                    <Grid x:Name="ButtonGrid" Grid.Column="2" Background="#4CADD8E6" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="203">
+                    <Grid x:Name="ButtonGrid" Grid.Column="2" Background="#4CADD8E6" HorizontalAlignment="Left" Height="148.967" Margin="10,10,0,0" VerticalAlignment="Top" Width="203">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="*"/>
