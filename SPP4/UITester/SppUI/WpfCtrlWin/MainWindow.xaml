@@ -476,31 +476,31 @@
                     </Grid>
                 </Expander.Header>
                 <StackPanel Orientation="Vertical">
-                <Grid Height="Auto"  x:Name="FilterTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="26*"/>
-                        <RowDefinition Height="40*"/>
-                        <RowDefinition Height="33*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="67*"/>
-                        <ColumnDefinition Width="175*"/>
-                        <ColumnDefinition Width="211*"/>
-                        <ColumnDefinition Width="92*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..." Click="Browse_Clicked"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12" IsReadOnly="True" AllowDrop="True"  PreviewDrop="FilterFile_Drop" PreviewDragOver="FilterFile_DragOver" PreviewDragEnter="FilterFile_DragEnter"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" SelectionChanged="FilterCB_SelectionChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <TextBlock Text="{Binding Name}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" Checked="Filter_Checked" Unchecked="Filter_UnChecked"/>
-                </Grid>
+                    <Grid Height="Auto"  x:Name="FilterTopGrid" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26*"/>
+                            <RowDefinition Height="40*"/>
+                            <RowDefinition Height="33*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="67*"/>
+                            <ColumnDefinition Width="175*"/>
+                            <ColumnDefinition Width="211*"/>
+                            <ColumnDefinition Width="92*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,11,0,11" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="19.96" Width="49.927" Content="Browse..." Click="Browse_Clicked"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FilterFileName}" Height="17.96" Margin="3,12" IsReadOnly="True" AllowDrop="True"  PreviewDrop="FilterFile_Drop" PreviewDragOver="FilterFile_DragOver" PreviewDragEnter="FilterFile_DragEnter"/>
+                        <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,10" Width="195" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}" ItemsSource="{Binding FilterCollection, Mode=TwoWay}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" SelectionChanged="FilterCB_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <CheckBox Content="Enable" Grid.Column="3" HorizontalAlignment="Left"  VerticalAlignment="Center"  Grid.Row="1" Margin="10,0,0,0" IsChecked="{Binding IsEnabledFilter}" IsEnabled="{Binding IsValidFilter}" Visibility="{Binding IsValidFilterFile, Converter={StaticResource boolConverter}}" Checked="Filter_Checked" Unchecked="Filter_UnChecked"/>
+                    </Grid>
                     <Grid Height="Auto"  x:Name="JoyTopGrid_Copy" Grid.IsSharedSizeScope="True" Background="Beige" VerticalAlignment="Bottom" HorizontalAlignment="right" Width="544.966" Margin="0" Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverter}}" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*"/>
@@ -510,8 +510,18 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="272*"/>
-                            <ColumnDefinition Width="223*"/>
                         </Grid.ColumnDefinitions>
+                        <!--<Rectangle Height="100" Fill="#FFDCD9D9" VerticalAlignment="Top" />-->
+                        <Label  RenderTransformOrigin="0.603,-1.504" Margin="-23,10,0,-10" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Width="105" Content="Filter Output" Height="60.96" HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <Label.LayoutTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Label.LayoutTransform>
+                        </Label>
                         <Grid x:Name="InputGrid1"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  >
                             <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
                             <ItemsControl ItemsSource="{Binding vJoyInputCollection}" >
@@ -549,29 +559,18 @@
                                         <Grid>
                                             <Rectangle  Style="{StaticResource VJOY_INPUT_RECT_STYLE}"/>
                                             <ctrl:ChannelCtrl
-                							BarBgColor="#330F3E3C" 
-                							Grid.Row="1" 
-                							Style="{StaticResource VJOY_INPUT_CH_STYLE}" 
-                							MouseEnter="MouseEntervJoyInputCh"  
-                							MouseLeave="MouseLeavevJoyInputCh"
-                							MouseMove="MouseMovevJoyInputCh"
+                    							BarBgColor="#330F3E3C" 
+                    							Grid.Row="1" 
+                    							Style="{StaticResource VJOY_INPUT_CH_STYLE}" 
+                    							MouseEnter="MouseEntervJoyInputCh"  
+                    							MouseLeave="MouseLeavevJoyInputCh"
+                    							MouseMove="MouseMovevJoyInputCh"
                                         />
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </Grid>
-                        <Label Content="Filter Output"   HorizontalAlignment="Center" Height="49.042" Margin="-10.066,-5.39,192.098,68.348" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
-                            <Label.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform/>
-                                    <SkewTransform/>
-                                    <RotateTransform Angle="90"/>
-                                    <TranslateTransform X="39.962" Y="-39.962"/>
-                                </TransformGroup>
-                            </Label.RenderTransform>
-                        </Label>
-                        <!--<Rectangle Grid.Row="1" Fill="#FFDCD9D9" Grid.ColumnSpan="3" />-->
                     </Grid>
                 </StackPanel>
             </Expander>
