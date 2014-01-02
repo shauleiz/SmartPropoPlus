@@ -273,7 +273,7 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		break;
 
 	case WMSPP_PRCS_RCHMNT:
-		WPFPageHost::hostedPage->SetProcessedChData((UINT)wParam, (UINT)lParam);
+		WPFPageHost::hostedPage->SetRawChData((UINT)wParam, (UINT)lParam);
 		break;
 
 	case WMSPP_MAP_UPDT:
@@ -300,6 +300,9 @@ LRESULT CALLBACK TopWinWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		WPFPageHost::hostedPage->SelFilter((int)wParam);
 		break;
 
+	case WMSPP_PRCS_PCHMNT:
+		WPFPageHost::hostedPage->SetProcessedChData((UINT)wParam, (UINT)lParam);
+		break;
 
 
 	//case 12347:

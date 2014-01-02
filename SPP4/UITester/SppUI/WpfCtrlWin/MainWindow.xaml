@@ -386,11 +386,11 @@
                         <RowDefinition Height="41*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="367*"/>
-                        <ColumnDefinition Width="128*"/>
+                        <ColumnDefinition Width="36"/>
+                        <ColumnDefinition Width="374*"/>
+                        <ColumnDefinition Width="125*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Decoder" HorizontalAlignment="Center" Height="49.042" Margin="-10.233,-2.557,287.259,63.515" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
+                    <Label Content="Decoder" HorizontalAlignment="Center" Height="33.042" Margin="-21.668,26.068,291.824,92.14" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" >
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -400,7 +400,7 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
-                    <Label Content="Channels" HorizontalAlignment="Center" Height="49.042" Margin="-7.566,101.943,284.592,49.015" VerticalAlignment="Center" Width="139.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Grid.RowSpan="3" >
+                    <Label Content="Channels" HorizontalAlignment="Center" Height="30.042" Margin="-20.501,26.193,328.657,56.515" VerticalAlignment="Center" Width="101.949" RenderTransformOrigin="0,0.5" VerticalContentAlignment="Center" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Grid.Row="2" >
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -420,7 +420,7 @@
                     </ListView>
                     <Grid x:Name="DecoderChannelGrid"   Grid.Row="2" Grid.Column="1" Background="#338DF5A0" HorizontalAlignment="Left" Width="479.966" Margin="5,0,0,5" Grid.ColumnSpan="2"  >
                         <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
-                        <ItemsControl ItemsSource="{Binding vJoyInputCollection}" HorizontalAlignment="Left" Width="478.966" Margin="0,0,-198.966,0" >
+                        <ItemsControl ItemsSource="{Binding TxOutputCollection}" HorizontalAlignment="Left" Width="478.966" Margin="0,0,-198.966,0" >
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="Grid.Column" Value="{Binding Id}" />
@@ -524,7 +524,7 @@
                         </Label>
                         <Grid x:Name="InputGrid1"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  >
                             <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
-                            <ItemsControl ItemsSource="{Binding vJoyInputCollection}" >
+                            <ItemsControl ItemsSource="{Binding FilterOutputCollection}" >
                                 <ItemsControl.ItemContainerStyle>
                                     <Style>
                                         <Setter Property="Grid.Column" Value="{Binding Id}" />
@@ -616,7 +616,7 @@
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="InputGrid"  HorizontalAlignment="Left"  Grid.ColumnSpan="2" Grid.Column="1"  Width="484.966" Background="#33FF90A7"  Visibility="Collapsed">
                         <!-- Based on http://stackoverflow.com/questions/2913854/wpf-dynamic-layout-with-itemscontrol-and-grid -->
-                        <ItemsControl ItemsSource="{Binding vJoyInputCollection}" >
+                        <ItemsControl ItemsSource="{Binding TxOutputCollection}" >
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="Grid.Column" Value="{Binding Id}" />

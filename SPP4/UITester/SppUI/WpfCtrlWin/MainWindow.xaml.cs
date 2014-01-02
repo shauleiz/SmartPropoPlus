@@ -49,7 +49,8 @@ namespace CtrlWindowNS
 
             // Data initialization
             InitvJoyAxes();
-            InitvJoyInputChs(16);
+            InitTxOutputChs(16);
+            InitFilterOutputChs(15);
             InitvJoyButtons(32);
 
             this.DataContext = _event;
@@ -74,6 +75,8 @@ namespace CtrlWindowNS
                 _vJoyAxisCollection = new ObservableCollection<LevelMonitor>(),
                 _vJoyInputCollection = new ObservableCollection<LevelMonitor>(),
                 _vJoyButtonCollection = new ObservableCollection<BoolMonitor>(),
+                _FilterOutputCollection = new ObservableCollection<LevelMonitor>(),
+                _TxOutputCollection = new ObservableCollection<LevelMonitor>(),
 
                 _DecoderCollection = new ObservableCollection<DecoderItem>(),
 
@@ -220,15 +223,15 @@ namespace CtrlWindowNS
         }
 
 
-        // Update the position of the progress bar that corresponds to the processed channel
-        public void SetProcessedChData(uint iCh, uint data)
+        // Update the position of the progress bar that corresponds to the raw channel
+        public void SetRawChData(uint iCh, uint data)
         {
-            if (_event._vJoyInputCollection == null || _event._vJoyInputCollection.Count <= iCh)
+            if (_event._TxOutputCollection == null || _event._TxOutputCollection.Count <= iCh)
                 return;
-            _event._vJoyInputCollection[(int)iCh].Level = data;
+            _event._TxOutputCollection[(int)iCh].Level = data;
 
             // Refresh view
-            ICollectionView view = CollectionViewSource.GetDefaultView(_event._vJoyInputCollection);
+            ICollectionView view = CollectionViewSource.GetDefaultView(_event._TxOutputCollection);
             view.Refresh();
         }
 
@@ -417,22 +420,41 @@ namespace CtrlWindowNS
             _event._vJoyAxisCollection.Add(item);
         }
 
-        // Initialize data collection of input channels to vJoy
-        public void InitvJoyInputChs(int nOfChs)
+        // Initialize data collection of transmitter channels
+        public void InitTxOutputChs(int nOfChs)
         {
-            if (_event == null || _event._vJoyInputCollection == null)
+            if (_event == null || _event.TxOutputCollection == null)
                 return;
             
             LevelMonitor item;
 
-            _event._vJoyInputCollection.Clear();
+            _event.TxOutputCollection.Clear();
 
             for (int i = 0; i < nOfChs; i++)
             {
                 item = new LevelMonitor(i, (i + 1).ToString());
-                _event._vJoyInputCollection.Add(item);
+                _event.TxOutputCollection.Add(item);
             }
         }
+
+        // Initialize data collection of filter output channels
+        public void InitFilterOutputChs(int nOfChs)
+        {
+            if (_event == null || _event.FilterOutputCollection == null)
+                return;
+
+            LevelMonitor item;
+
+            _event.FilterOutputCollection.Clear();
+
+            for (int i = 0; i < nOfChs; i++)
+            {
+                item = new LevelMonitor(i, (i + 1).ToString());
+                _event.FilterOutputCollection.Add(item);
+            }
+        }
+
+
 
         // Initialize data collection of vJoy buttons
         public void InitvJoyButtons(int nOfBtns)
@@ -625,6 +647,18 @@ namespace CtrlWindowNS
                 SelFilter(-1);
             };
         }
+
+        public void SetProcessedChData(uint iCh, uint data)
+        {
+            if (_event._FilterOutputCollection == null || _event._FilterOutputCollection.Count <= iCh)
+                return;
+            _event._FilterOutputCollection[(int)iCh].Level = data;
+
+            // Refresh view
+            ICollectionView view = CollectionViewSource.GetDefaultView(_event._FilterOutputCollection);
+            view.Refresh();
+        }
+
 
 #endregion Filter Interface
 

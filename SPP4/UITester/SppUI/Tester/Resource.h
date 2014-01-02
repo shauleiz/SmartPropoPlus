@@ -40,3 +40,5 @@
 #define IDM_FLTR_INIT                           40028
 #define IDM_FLTR_FILE5                          40029
 #define IDM_FLTR_FILE2                          40030
+#define IDM_FLTR_LO2HI                          40031
+#define IDM_FLTR_HI2LO                          40032

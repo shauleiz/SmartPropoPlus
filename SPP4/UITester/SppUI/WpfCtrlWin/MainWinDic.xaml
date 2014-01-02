@@ -91,7 +91,7 @@
             <Setter.Value>
                 <ToolTip
                     Content="{Binding Path=Name}"
-                    ContentStringFormat="Joystick Input Channel {0}"
+                    ContentStringFormat="Filter Output Channel {0}"
                     >
                     <ToolTip.Background>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
