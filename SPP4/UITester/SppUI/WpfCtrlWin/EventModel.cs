@@ -171,7 +171,21 @@ namespace CtrlWindowNS
         public ObservableCollection<LevelMonitor> vJoyInputCollection
         {
             get { return _vJoyInputCollection; }
-            set { SetField(ref _vJoyInputCollection, value, "vJoyInputChannel"); }
+            set { SetField(ref _vJoyInputCollection, value, "vJoyInputCollection"); }
+        }
+
+        public ObservableCollection<LevelMonitor> _TxOutputCollection;
+        public ObservableCollection<LevelMonitor> TxOutputCollection
+        {
+            get { return _TxOutputCollection; }
+            set { SetField(ref _TxOutputCollection, value, "TxOutputCollection"); }
+        }
+
+        public ObservableCollection<LevelMonitor> _FilterOutputCollection;
+        public ObservableCollection<LevelMonitor> FilterOutputCollection
+        {
+            get { return _FilterOutputCollection; }
+            set { SetField(ref _FilterOutputCollection, value, "FilterOutputCollection"); }
         }
 
         // BoolMonitor

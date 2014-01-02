@@ -77,6 +77,9 @@ IDC_TESTER MENU
         MENUITEM "Initialize", IDM_FLTR_INIT
         MENUITEM "File 5.dll", IDM_FLTR_FILE5
         MENUITEM "File 2.dll", IDM_FLTR_FILE2
+        MENUITEM SEPARATOR
+        MENUITEM "Filter Lo2Hi", IDM_FLTR_LO2HI
+        MENUITEM "Filter Hi2Lo", IDM_FLTR_HI2LO
     }
     POPUP "&Help"
     {

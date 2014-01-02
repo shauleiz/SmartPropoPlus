@@ -48,6 +48,7 @@ void DecoderSelect(LPCTSTR sel, HWND hDlg);
 void DisplayMod(void);
 void SetNuChannels(int n, HWND hDlg);
 void SetFilter(int n, HWND hDlg);
+void SetFilterOutputSlope(bool GoingUp, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					   _In_opt_ HINSTANCE hPrevInstance,
@@ -311,6 +312,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetFilter(5, hTopUiWin);
 			break;
 
+		case IDM_FLTR_LO2HI:
+			SetFilterOutputSlope(true, hTopUiWin);
+			break;
+
+		case IDM_FLTR_HI2LO:
+			SetFilterOutputSlope(false, hTopUiWin);
+			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -579,6 +587,26 @@ void SetvJoyInputSlope(bool GoingUp, HWND hDlg)
 	{
 		ChannelValue+=Step;
 		PostMessage(hDlg, WMSPP_PRCS_RCHMNT, i, ChannelValue);
+	};
+}
+
+void SetFilterOutputSlope(bool GoingUp, HWND hDlg)
+{
+	UINT32 nChannels = 16;
+	UINT32 MaxRange = 100;
+	int Step = MaxRange/nChannels;
+	UINT32 ChannelValue=0;
+
+	if (!GoingUp)
+	{
+		Step = -1*Step;
+		ChannelValue = MaxRange;
+	}
+
+	for (int i=0; i<16; i++)
+	{
+		ChannelValue+=Step;
+		PostMessage(hDlg, WMSPP_PRCS_PCHMNT, i, ChannelValue);
 	};
 }
 
