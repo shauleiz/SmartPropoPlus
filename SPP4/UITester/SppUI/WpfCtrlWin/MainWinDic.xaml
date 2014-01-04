@@ -15,6 +15,7 @@
     </DataTemplate>
 
     <Geometry  x:Key="CTRL_PATH1">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z</Geometry >
+    <Geometry  x:Key="CTRL_PATH2">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 </Geometry >
 
 
     <!-- Enables access to DataContext from just any control -->
@@ -35,6 +36,8 @@
     <local:InverseBooleanConverter x:Key="InvConverter" />
     <local:StringCompareConverter x:Key="StringCompare" />
     <local:StringCompareConverter x:Key="StringCompareAxis"/>
+    <local:StringCompareConverterCond x:Key="StringCompareCond"/>
+    <local:StringCompareConverterCond x:Key="StringCompareCondInv" Inv="True"/>
     <local:CombiningConverter x:Key="boolConverterNeg" Converter1="{StaticResource InvConverter}" Converter2="{StaticResource boolConverter}" />
 
 
@@ -78,7 +81,7 @@
     </Style>
 
     <!-- vJoy Input Channels Style -->
-    <Style TargetType="ctrl:ChannelCtrl" x:Key="VJOY_INPUT_CH_STYLE">
+    <Style TargetType="ctrl:ChannelCtrl" x:Key="FILTER_CH_STYLE">
         <Setter Property="IsEnabled" Value="True" />
         <Setter Property="ChannelLevel" Value="{Binding Path=Level}" />
         <Setter Property="ChannelName" Value="{Binding Path=Name}" />
@@ -134,7 +137,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Rectangle"  x:Key="VJOY_INPUT_RECT_STYLE">
+    <Style TargetType="Rectangle"  x:Key="FILTER_OUTPUT_RECT_STYLE">
         <Setter Property="MinWidth" Value="15" />
         <Setter Property="MinHeight" Value="80" />
         <Setter Property="Fill" Value="Transparent" />
@@ -146,10 +149,32 @@
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Visibility">
             <Setter.Value>
-            <MultiBinding Converter="{StaticResource StringCompare}">
-                <Binding Path="Name" />
-                <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
-            </MultiBinding>
+                <MultiBinding Converter="{StaticResource StringCompareCond}">
+                    <Binding Path="Name" />
+                    <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
+                    <Binding Path="Data.IsEnabledFilter" Source="{StaticResource proxy}" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Rectangle"  x:Key="TX_OUTPUT_RECT_STYLE">
+        <Setter Property="MinWidth" Value="15" />
+        <Setter Property="MinHeight" Value="80" />
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="Stroke" Value="Green" />
+        <Setter Property="StrokeThickness" Value="3" />
+        <Setter Property="RadiusX" Value="3" />
+        <Setter Property="RadiusY" Value="3" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Visibility">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource StringCompareCondInv}">
+                    <Binding Path="Name" />
+                    <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
+                    <Binding Path="Data.IsEnabledFilter" Source="{StaticResource proxy}" />
+                </MultiBinding>
             </Setter.Value>
         </Setter>
     </Style>

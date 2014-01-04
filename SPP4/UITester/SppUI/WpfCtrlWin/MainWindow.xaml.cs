@@ -68,6 +68,7 @@ namespace CtrlWindowNS
                 IsNotAutoBitrate = true,
                 IsNotAutoChannel = true,
                 HoveredvjInput = "0",
+                IsEnabledFilter = false,
 
                 SelectedvjDevice = new vJoyDevice { vj_DeviceNumber = 0, vj_nAxes = 0, vj_nButtons = 0 },
                 _vJoyDeviceCollection = new ObservableCollection<vJoyDevice>(),
@@ -449,7 +450,7 @@ namespace CtrlWindowNS
 
             for (int i = 0; i < nOfChs; i++)
             {
-                item = new LevelMonitor(i, (i + 1).ToString());
+                item = new LevelMonitor(i, "f"+(i + 1).ToString());
                 _event.FilterOutputCollection.Add(item);
             }
         }
@@ -1155,6 +1156,62 @@ namespace CtrlWindowNS
             return output;
         }
     }
+
+    /// Conditional Compare two string 
+    /// If strings are identical (but not "0") AND condition is 'true' then return Visibility.Visible
+    /// Else return Visibility.Collapsed
+    [ValueConversion(typeof(object), typeof(Visibility))]
+    public class StringCompareConverterCond : IMultiValueConverter
+    {
+        public bool Inv { get; set; }
+        public StringCompareConverterCond()
+        {
+            // set defaults
+            Inv = false;
+        }
+
+       public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            string Val0;
+
+            if (Inv == false)
+            {
+                if ((values[2] as bool? == null) || ((bool)values[2] == false))
+                    return Visibility.Collapsed;
+            };
+
+           if (Inv == true &&  ((bool)values[2] == true))
+                    return Visibility.Collapsed;
+
+            string param = parameter as string;
+            if (param != null && param.Equals("Axis") && (values[0] is int))
+            {
+                int i = (int)values[0];
+                if (i == 0 || values[0].Equals("0"))
+                    return Visibility.Collapsed;
+                Val0 = i.ToString();
+            }
+            else
+                Val0 = (string)values[0];
+
+            if (Val0 != null && !Val0.Equals("0"))
+            {
+                if (Val0.Equals(values[1]))
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] output = { "Not", "Implemented" };
+            return output;
+        }
+    }
+
 
     // Boolean to Color converter - may be overriden in the dictionary
     [ValueConversion(typeof(bool), typeof(Brush))]
