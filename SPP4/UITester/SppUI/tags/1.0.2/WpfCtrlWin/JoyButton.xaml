@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="WpfCtrlWin.JoyButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="25" d:DesignWidth="25">
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Ellipse x:Name="BackGround" Width="20.763" Height="20.763" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2.5,2.5,1.737,1.737" ToolTip="Bg">
+            <Ellipse.Fill>
+                <RadialGradientBrush>
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FF7E5669" Offset="1"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+        <Ellipse x:Name="OuterRing" Width="23" Height="23" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="{Binding  StringFormat='This is Button {0}%'}" Cursor="UpArrow">
+            <Ellipse.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FFBDAAAA" Offset="0.536"/>
+                    <GradientStop Color="#FF0E0202" Offset="0.944"/>
+                </LinearGradientBrush>
+            </Ellipse.Stroke>
+        </Ellipse>
+        <Label x:Name="ButtonNumber" Content="?" Height="20"  Width="20" Foreground="Black" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MinWidth="3" MinHeight="3" Padding="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Grid>
+</UserControl>
