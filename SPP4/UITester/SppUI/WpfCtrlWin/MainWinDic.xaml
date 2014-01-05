@@ -170,10 +170,9 @@
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Visibility">
             <Setter.Value>
-                <MultiBinding Converter="{StaticResource StringCompareCondInv}">
+                <MultiBinding Converter="{StaticResource StringCompare}">
                     <Binding Path="Name" />
                     <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
-                    <Binding Path="Data.IsEnabledFilter" Source="{StaticResource proxy}" />
                 </MultiBinding>
             </Setter.Value>
         </Setter>
