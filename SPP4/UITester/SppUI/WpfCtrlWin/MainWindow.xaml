@@ -301,6 +301,14 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        <Rectangle Visibility="{Binding IsEnabledFilter, Converter={StaticResource boolConverter}}" ToolTip="Information only">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="#4C9B9999" Offset="1"/>
+                                    <GradientStop Color="#4CFFFFFF"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
                     </Grid>
 
                 </Grid>
