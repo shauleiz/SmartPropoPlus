@@ -13,6 +13,7 @@
 
     <Geometry  x:Key="CTRL_PATH1">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z</Geometry >
     <Geometry  x:Key="CTRL_PATH2">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20</Geometry >
+    <Geometry  x:Key="CTRL_PATH3">M0 40 L0 5 A5 5 0 0 1 5 0 L80 0 A5 5 0 0 1 85 5 L85 15 A5 5 0 0 0 90 20 L200 20 A10 10 0 0 1 210 30 L210 40</Geometry >
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="HeaderBrush" Color="Black"/>
