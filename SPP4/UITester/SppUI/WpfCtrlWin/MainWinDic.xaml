@@ -3,10 +3,7 @@
                     xmlns:local="clr-namespace:CtrlWindowNS"
                     xmlns:ctrl="clr-namespace:WpfCtrlWin"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Strings (begin)-->
-    <sys:String x:Key="applicationTitle">SmartPropoPlus Wizard</sys:String>
-    <sys:String x:Key="AudioLable">Audio Input:</sys:String>
-    <!-- Strings (end) -->
+ 
 
     <!-- Graphical elements -->
     <DataTemplate x:Key="jack_image">

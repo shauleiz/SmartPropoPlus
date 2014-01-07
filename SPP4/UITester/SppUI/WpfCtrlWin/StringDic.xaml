@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Strings (English) for main page -->
+    <sys:String x:Key="applicationTitle">SmartPropoPlus Wizard</sys:String>
+    <sys:String x:Key="AudioLable">Audio Input:</sys:String>
+    <sys:String x:Key="HAudioLable">Audio:</sys:String>
+    <sys:String x:Key="BitRate">Bit Rate</sys:String>
+    <sys:String x:Key="BitRateAuto">Auto</sys:String>
+    <sys:String x:Key="BitRate8">8 bit</sys:String>
+    <sys:String x:Key="BitRate16">16 bit</sys:String>
+    <sys:String x:Key="AudioCh">Audio Channel</sys:String>
+    <sys:String x:Key="ChAuto">Auto</sys:String>
+    <sys:String x:Key="ChLeft">Left</sys:String>
+    <sys:String x:Key="ChRight">Right</sys:String>
+    <sys:String x:Key="LevelGrp">Audio Level</sys:String>
+    <sys:String x:Key="LevelLeft">Left</sys:String>
+    <sys:String x:Key="LevelRight">Right</sys:String>
+    <sys:String x:Key="HDecoderLable">Decoder:</sys:String>
+    <sys:String x:Key="DecNorCh">Number of Channels:</sys:String>
+    <sys:String x:Key="DecListType">Type</sys:String>
+    <sys:String x:Key="DecListDecoder">Decoder</sys:String>
+    <sys:String x:Key="DecSideLableDecoder">Decoder</sys:String>
+    <sys:String x:Key="DecSideLableChannels">Channels</sys:String>
+    <sys:String x:Key="HFilterLable">Filter:</sys:String>
+    <sys:String x:Key="FilterNoFilter">No Filter</sys:String>
+    <sys:String x:Key="FilterBrowseBtn">Browse...</sys:String>
+    <sys:String x:Key="FilterEnableCB">Enable</sys:String>
+    <sys:String x:Key="FilterSideLableOut">Filter Output</sys:String>
+    <sys:String x:Key="HvJoyLable">vJoy Device:</sys:String>
+    <sys:String x:Key="FilterSideLable">vJoy Axes &amp; Buttons</sys:String>
+    <sys:String x:Key="FilterBtnLable">Buttons</sys:String>
+    <sys:String x:Key="FilterSelect">Select vJoy Device:</sys:String>
+    <sys:String x:Key="StyleJoyBtn">Joystick Button {0} - m. {1}</sys:String>
+
+</ResourceDictionary>
