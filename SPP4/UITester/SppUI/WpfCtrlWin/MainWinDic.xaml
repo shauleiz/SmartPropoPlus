@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:CtrlWindowNS"
                     xmlns:ctrl="clr-namespace:WpfCtrlWin"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
- 
+
 
     <!-- Graphical elements -->
     <DataTemplate x:Key="jack_image">
@@ -12,13 +12,31 @@
     </DataTemplate>
 
     <Geometry  x:Key="CTRL_PATH1">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 z</Geometry >
-    <Geometry  x:Key="CTRL_PATH2">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20 </Geometry >
+    <Geometry  x:Key="CTRL_PATH2">M27,20  L100,20  A5 5 0 0 0 105 15 L105 10 A5 5 0 0 1 110 5 L175 5 A5 5 0 0 1 180 10 L180,80 A7,7,0,0,1,173,87 L27,87  A7,7,0,0,1,20,80 L20,27 A7,7,0,0,1,27,20</Geometry >
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="HeaderBrush" Color="Black"/>
+    <!-- Expander Brushes -->
+    <SolidColorBrush x:Key="BgAudioExpander" Color="#FF85F1D4"/>
+    <SolidColorBrush x:Key="BgDecodeExpander" Color="#FF8FF185"/>
+    <SolidColorBrush x:Key="BgFilterExpander" Color="#FFC5F185"/>
+    <SolidColorBrush x:Key="BgvJoyExpander" Color="#FFF1F185"/>
+    <LinearGradientBrush x:Key="CBgAudioExpander"  EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#FFECF3F3"/>
+        <GradientStop Color="#FFC3F9EB" Offset="0.992"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="CBgDecodeExpander" Color="#FFE3EED3"/>
+    <SolidColorBrush x:Key="CBgFilterExpander" Color="Beige"/>
+    <SolidColorBrush x:Key="CBgvJoyExpander"  Color="Beige"/>
+
+    <SolidColorBrush x:Key="AudioBtnBorder" Color="#FF747EDC"/>
+    
 
 
     <!-- Enables access to DataContext from just any control -->
     <!--Based on http://www.thomaslevesque.com/2011/03/21/wpf-how-to-bind-to-data-when-the-datacontext-is-not-inherited -->
     <local:BindingProxy x:Key="proxy" Data="{Binding}" />
-    
+
     <!-- Converter instances (begin) -->
     <!-- Based on: http://stackoverflow.com/questions/3887684/in-wpf-how-do-i-set-a-buttons-click-event-to-change-a-grids-visibility -->
     <BooleanToVisibilityConverter x:Key="boolConverter" />
@@ -43,7 +61,7 @@
     <local:DatabindingDebugConverter x:Key="debugConverter" />
     <!-- Converters instances (end) -->
 
-    
+
     <!-- Styles -->
     <!-- vJoy Button Style -->
     <Style TargetType="ctrl:JoyButton" x:Key="VJOY_BUTTONS">
@@ -59,10 +77,10 @@
                             <!-- TODO: Replace with meaningful data -->
                             <MultiBinding StringFormat="Joystick Button {0} - m. {1}">
                                 <Binding Path="Name" />
-                                <Binding Path="Name" /> 
+                                <Binding Path="Name" />
                             </MultiBinding>
                         </TextBlock.Text>
-                    </TextBlock>                   
+                    </TextBlock>
                 </ToolTip>
             </Setter.Value>
         </Setter>
@@ -187,10 +205,10 @@
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Visibility">
             <Setter.Value>
-            <MultiBinding Converter="{StaticResource StringCompare}" ConverterParameter="Axis">
-                <Binding Path="MapSource" />
-                <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
-            </MultiBinding>
+                <MultiBinding Converter="{StaticResource StringCompare}" ConverterParameter="Axis">
+                    <Binding Path="MapSource" />
+                    <Binding Path="Data.HoveredvjInput" Source="{StaticResource proxy}" />
+                </MultiBinding>
             </Setter.Value>
         </Setter>
         <!--<Style.Triggers>
@@ -228,4 +246,47 @@
         </Setter>
     </Style>
 
+    <!-- General Grid style -->
+    <Style x:Key="Grid_ControlStyle" TargetType="Grid">
+        <Style.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="3"/>
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <!-- General Expander Style -->
+    <Style TargetType="Expander">
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Width" Value="540"/>
+        <Setter Property="BorderBrush" Value="#FFF1A988"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+
+        <Style.Resources>
+            <Style TargetType="TextBox">
+                <Setter Property="BorderBrush" Value="Beige"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+                <Setter Property="ToolTipService.Placement"  Value="Left"/>
+                <Setter Property="MinWidth"  Value="30" />
+                <Setter Property="Foreground"  Value="#FF2379DF" />
+                <Setter Property="FontWeight"  Value="SemiBold" />
+                <Setter Property="Height"  Value="18" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    
 </ResourceDictionary>
