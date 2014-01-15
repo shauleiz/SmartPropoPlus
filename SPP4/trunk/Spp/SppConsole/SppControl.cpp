@@ -17,6 +17,7 @@
 #include "WinMessages.h"
 #include "vJoyMonitor.h"
 
+#pragma region Globals
 
 // Globals
 HWND hDialog;
@@ -42,6 +43,9 @@ bool AutoChannel;
 OperatState OperatStateMachine = S0;
 WORD Flags = FLG_NONE;
 
+#pragma endregion Globals
+
+#pragma region Declarations
 // Declarations
 void		CaptureDevicesPopulate(HWND hDlg);
 HINSTANCE	FilterPopulate(HWND hDlg);
@@ -67,6 +71,8 @@ void		PulseScope(BOOL start);
 WORD		GetStartMode(LPTSTR lpCmdLine);
 void		SetNotificationIcon(LPCTSTR);
 void		ComputeOperatState(void);
+
+#pragma endregion Declarations
 
 
 LRESULT CALLBACK MainWindowProc(

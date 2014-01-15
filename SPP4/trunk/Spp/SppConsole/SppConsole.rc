@@ -32,13 +32,13 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
             VALUE "FileDescription", "SmartPropoPlus"
             VALUE "FileVersion", FILEVER
             VALUE "InternalName", "SppConsole.exe"
-            VALUE "LegalCopyright", "Copyright © 2006-2013 Shaul Eizikovich"
+            VALUE "LegalCopyright", "Copyright © 2006-2014 Shaul Eizikovich"
             VALUE "LegalTrademarks", ""
             VALUE "OriginalFilename", "SppConsole.EXE"
-            VALUE "PrivateBuild", ""
+            VALUE "PrivateBuild", "0.0.3.1"
             VALUE "ProductName", "SmartPropoPlus Application"
             VALUE "ProductVersion", PRODVER
-            VALUE "SpecialBuild", ""
+            VALUE "SpecialBuild", "0.0.3.1"
         }
     }
     BLOCK "VarFileInfo"
