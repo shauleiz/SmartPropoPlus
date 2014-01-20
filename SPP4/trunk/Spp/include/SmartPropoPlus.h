@@ -309,6 +309,7 @@ struct MOD {
 	LPCTSTR Type;		// Unique identifier of the modulation. Examples are PPMW, AIR1 …
 	LPCTSTR Subtype;	// PPM/PCM
 	LPCTSTR Name;		// User friendly name of the modulation to be desplayd.
+	UINT	Qreset;		// Quality Resetter: Reset to this value everytime data sent to vJoy
 	PP func;			// This is the function of type PP that implements the modulation. Called by ProcessWave().
 };
 

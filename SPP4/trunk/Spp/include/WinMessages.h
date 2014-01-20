@@ -76,6 +76,7 @@ UINT const WMSPP_DLG_ICONFD	=			BASE_SUB+50;			// Inform CU that GUI became icon
 UINT const WMSPP_STAT_UPDT	=			BASE_SUB+51;			// Inform GUI of CU status. wParam=Status, lParam=Message
 UINT const FILTER_ADDA		=			BASE_SUB+52;			// The payload is: Filter Index and Pointer to filter name (ASCII)
 UINT const FILTER_ADDW		=			BASE_SUB+53;			// The payload is: Filter Index and Pointer to filter name (WCHAR)
+UINT const WMSPP_DLG_SCAN	=			BASE_SUB+54;			// Button SCAN was pressed
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

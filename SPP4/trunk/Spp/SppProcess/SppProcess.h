@@ -80,7 +80,7 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 #define PPMW_TRIG	870.0 // PPM inter packet  separator pulse ( = 4.5mSec)
 #define PPMW_SEP	65.3
 #define PPM_JITTER	5.0
-#define SANWA1_MIN	34.83
+#define SANWA1_MIN	30
 #define SANWA2_MIN	52.24
 #define PCMW_SYNC	243.809
 
@@ -210,6 +210,7 @@ private:
 	JOYSTICK_POSITION m_vJoyPosition;
 	UINT m_PosQual;
 	UINT m_JoyQual;
+	UINT m_PosQualReset;
 };
 
 

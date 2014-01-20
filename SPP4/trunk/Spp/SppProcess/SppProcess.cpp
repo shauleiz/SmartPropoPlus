@@ -52,7 +52,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_PulseMonitor(NULL),
 	m_PulseScopeObj(NULL),
 	m_PosQual(0),
-	m_JoyQual(0)
+	m_JoyQual(0),
+	m_PosQualReset(100)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -103,6 +104,7 @@ SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 
 	MOD tmp = it->second;
 	m_CurrentPP =  tmp.func;
+	m_PosQualReset = tmp.Qreset;
 
 	return;
 }
@@ -612,6 +614,7 @@ bool  CSppProcess::InitModulationSelect(void)
 	MOD tmp = it->second;
 	m_SelectedMod = Type;
 	m_CurrentPP = tmp.func;
+	m_PosQualReset = tmp.Qreset;
 
 	return true;
 }
@@ -634,6 +637,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPM;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPM;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Positive)
@@ -641,6 +645,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPMP;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPMP;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Negative)
@@ -648,6 +653,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPMN;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPMN;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Walkera)
@@ -655,6 +661,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPMW;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPMW;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// JR (PCM)
@@ -662,6 +669,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_JR;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_JR;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// Futaba (PCM)
@@ -669,13 +677,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_FUT;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_FUT;
-	m_ModulationMap.emplace(tmp.Type, tmp);
-
-	// Futaba (PCM)
-	tmp.func =  [=] (int width, BOOL input) {this->ProcessPulseFutabaPcm(width, input);};
-	tmp.Name = MOD_NAME_FUT;
-	tmp.Subtype =  _T("PCM");
-	tmp.Type = MOD_TYPE_FUT;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// Sanwa/Air (PCM1)
@@ -683,6 +685,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_AIR1;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_AIR1;
+	tmp.Qreset = 500;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// Sanwa/Air (PCM2)
@@ -690,6 +693,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_AIR2;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_AIR2;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 
@@ -698,6 +702,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_WAL;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_WAL;
+	tmp.Qreset = 100;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	return (int)m_ModulationMap.size();
@@ -1419,8 +1424,24 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && i++%10 && !( _strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm1(%d)", tbuffer, width);
 
-		pulse = (int)(width/SANWA1_MIN); // Width to bits
-		if (pulse == 4)  // 4-bit pulse marks a bigining of a data chunk
+#if 0
+	pulse = (int)(width/SANWA1_MIN); // Width to bits
+
+#endif // 0
+
+	if (width<25)
+		return;
+	else if (width<50)
+		pulse=1;
+	else if (width<90)
+		pulse=2;
+	else if (width<130)
+		pulse=3;
+	else
+		pulse=4;
+
+
+	if (pulse == 4)  // 4-bit pulse marks a bigining of a data chunk
 		{
 			if (!input)
 			{
@@ -2056,7 +2077,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	int n_ch = 0;
 
 	// Mark quality of Position data as excellent
-	m_PosQual = 100;
+	m_PosQual = m_PosQualReset;
 
 	if (!m_vJoyReady)
 		return;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SmartPropoPlus.h"
 #include "SppDbg.h"
-
+#include <errno.h>
 
 SppDbg::SppDbg(void) :
 	m_FileDbgInSig(NULL)
@@ -25,8 +25,18 @@ void SppDbg::StartDbgInputSignal(void)
 
 void SppDbg::StartDbgPulse(void)
 {
+	TCHAR lpTempPathBuffer[MAX_PATH];
 
-	memcpy_s(m_FileDbgPulseName, MAX_PATH,  L"SPPDBGPULSE.TXT", sizeof( L"SPPDBGPULSE.TXT"));
+	DWORD dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+                           lpTempPathBuffer); // buffer for path 
+
+	    //  Generates a temporary file name. 
+    UINT uRetVal = GetTempFileName(lpTempPathBuffer, // directory for tmp files
+                              TEXT("PULSE"),     // temp file name prefix 
+                              0,                // create unique name 
+                              m_FileDbgPulseName);  // buffer for name 
+
+	//memcpy_s(m_FileDbgPulseName, MAX_PATH,  L"C:/SPPDBGPULSE.TXT", sizeof( L"C:/SPPDBGPULSE.TXT"));
 	if (!m_FileDbgPulse)
 		_wfopen_s(&m_FileDbgPulse,m_FileDbgPulseName, L"w+"); 
 }
@@ -61,11 +71,11 @@ void SppDbg::StopDbgPulse(void)
 		return;
 
 	OPENFILENAME ofn;
-	fclose(m_FileDbgPulse);
+	int closed = fclose(m_FileDbgPulse);
 
 	// Get destination file
 	char szFileName[MAX_PATH] = "";
-	memcpy_s(szFileName, MAX_PATH, m_FileDbgPulseName, MAX_PATH);
+	memcpy_s(szFileName, MAX_PATH, L"SPPDBGPULSE.TXT", MAX_PATH);
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn); 
     ofn.hwndOwner = NULL;
@@ -77,7 +87,8 @@ void SppDbg::StopDbgPulse(void)
 	GetSaveFileName(&ofn);
 
 	// Move tempfile to selected destination
-	BOOL moved = MoveFileEx(m_FileDbgPulseName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING);
+	BOOL moved = MoveFileEx(m_FileDbgPulseName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED);
+	DWORD err = GetLastError();
 }
 
 // Data packet arrives with raw input signal (Digital Audio)
