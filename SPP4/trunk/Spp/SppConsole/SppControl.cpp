@@ -541,12 +541,18 @@ LRESULT CALLBACK MainWindowProc(
 			else
 				return 0;
 			break;
+
+
+		// Start scanning for correct modulation
+		case WMSPP_DLG_SCAN:
+			break;
  
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
     } 
     return 0; 
 }
+
 
 // Start/Stop monitoring the pulse data using Pulse Scope
 void PulseScope(BOOL start)

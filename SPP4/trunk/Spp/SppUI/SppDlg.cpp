@@ -551,6 +551,11 @@ void SppDlg::ShowButtonMapWindow(void)
 	m_BtnsDlg->Show();
 }
 
+void SppDlg::ScanMod(void)
+{
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_SCAN , 0, 0);
+}
+
 // Tell the parent window (Main application)
 // to show/hide log window
 void  SppDlg::ShowLogWindow(WORD cb)
@@ -1164,6 +1169,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (LOWORD(wParam)  == IDC_BTN_MAPBTNS && HIWORD(wParam) == BN_CLICKED )
 		{
 			DialogObj->ShowButtonMapWindow();
+			break;
+		}
+
+		if (LOWORD(wParam)  == IDC_BTN_SCAN && HIWORD(wParam) == BN_CLICKED )
+		{
+			DialogObj->ScanMod();
 			break;
 		}
 

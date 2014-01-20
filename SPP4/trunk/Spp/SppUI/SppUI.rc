@@ -201,9 +201,9 @@ FONT 8, "Ms Shell Dlg"
     PUSHBUTTON      "Start", IDC_STREAM, 19, 439, 47, 14
     AUTOCHECKBOX    "Auto", IDC_AUD_AUTO, 243, 356, 31, 8
     AUTOCHECKBOX    "Auto", IDC_CH_AUTO, 296, 356, 31, 8
-    AUTOCHECKBOX    "Auto", IDC_MOD_AUTO, 17, 244, 31, 8
     AUTOCHECKBOX    "Pulse Scope", IDC_PLS_SCOPE, 294, 204, 56, 8
     PUSHBUTTON      "Hide", IDC_HIDE, 271, 439, 20, 14
+    PUSHBUTTON      "Scan", IDC_BTN_SCAN, 29, 241, 37, 11, BS_FLAT
 }
 
 
@@ -321,7 +321,7 @@ IDC_SPPCONSOLE ACCELERATORS
 // Icon resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_W8             ICON           "SppControlW8.ico"
+IDI_S0             ICON           "SppControlS0.ico"
 
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -333,8 +333,8 @@ IDI_SPPCONSOLE     ICON           "SppControl.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_S0             ICON           "SppControlS0.ico"
+IDI_W10            ICON           "SppControlW10.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_W10            ICON           "SppControlW10.ico"
+IDI_W8             ICON           "SppControlW8.ico"

@@ -66,7 +66,7 @@ public: // Called from window procedure
 	void Iconified(bool);
 	void OnNotificationIcon( WPARAM wParam, LPARAM lParam);
 	void SppStatusChanged( WPARAM wParam, LPARAM lParam);
-
+	void ScanMod(void);
 
 
 
