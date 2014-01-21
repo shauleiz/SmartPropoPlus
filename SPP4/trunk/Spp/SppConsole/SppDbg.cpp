@@ -17,8 +17,18 @@ SppDbg::~SppDbg(void)
 
 void SppDbg::StartDbgInputSignal(void)
 {
+	TCHAR lpTempPathBuffer[MAX_PATH];
 
-	memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", sizeof( L"SPPDBGINSIG.TXT"));
+	DWORD dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+                           lpTempPathBuffer); // buffer for path 
+
+	    //  Generates a temporary file name. 
+    UINT uRetVal = GetTempFileName(lpTempPathBuffer, // directory for tmp files
+                              TEXT("SIG"),     // temp file name prefix 
+                              0,                // create unique name 
+                              m_FileDbgInSigName);  // buffer for name 
+
+	//memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", sizeof( L"SPPDBGINSIG.TXT"));
 	if (!m_FileDbgInSig)
 		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+"); 
 }
@@ -51,7 +61,7 @@ void SppDbg::StopDbgInputSignal(void)
 
 	// Get destination file
 	char szFileName[MAX_PATH] = "";
-	memcpy_s(szFileName, MAX_PATH, m_FileDbgInSigName, MAX_PATH);
+	memcpy_s(szFileName, MAX_PATH, L"SPPDBGINSIG.TXT", MAX_PATH);
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn); 
     ofn.hwndOwner = NULL;
@@ -63,7 +73,7 @@ void SppDbg::StopDbgInputSignal(void)
 	GetSaveFileName(&ofn);
 
 	// Move tempfile to selected destination
-	BOOL moved = MoveFileEx(m_FileDbgInSigName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING);
+	BOOL moved = MoveFileEx(m_FileDbgInSigName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED);
 }
 void SppDbg::StopDbgPulse(void)
 {
