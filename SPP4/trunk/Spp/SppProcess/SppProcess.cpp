@@ -693,7 +693,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_AIR2;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_AIR2;
-	tmp.Qreset = 100;
+	tmp.Qreset = 500;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 
@@ -1424,10 +1424,6 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && i++%10 && !( _strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm1(%d)", tbuffer, width);
 
-#if 0
-	pulse = (int)(width/SANWA1_MIN); // Width to bits
-
-#endif // 0
 
 	if (width<25)
 		return;
@@ -1521,8 +1517,16 @@ void CSppProcess::ProcessPulseAirPcm2(int width, BOOL input)
 	if (gDebugLevel>=2 && gCtrlLogFile && !(i++%50) && !(_strtime_s( tbuffer, 9 )))
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulseAirPcm2(Width=%d, input=%d)", tbuffer, width, input);
 
-		pulse = (int)(width/SANWA2_MIN); // Width to bits
-		if (pulse == 7)  // 4-bit pulse marks a biginind of a data chunk
+	if (width<10)
+		return;
+	if (width<70)
+		pulse =1;
+	else if (width<140)
+		pulse=2;
+	else
+		pulse = 7;
+
+	if (pulse == 7)  // 4-bit pulse marks a biginind of a data chunk
 		{
 			if (!input)
 			{
@@ -2011,7 +2015,10 @@ int  __fastcall  CSppProcess::Convert20bits(int in)
 __inline  int  CSppProcess::smooth(int orig, int newval)
 {
 	if (newval<0)
+	{
+		m_PosQual=0;
 		return orig;
+	}
 
 	if ((orig-newval > 100) || (newval-orig > 100))
 		return (newval+orig)/2;
