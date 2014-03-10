@@ -60,17 +60,28 @@ DEFINE_GUID(GUID_DEVINTERFACE_VJOY, 0x781EF630, 0x72B2, 0x11d2, 0xB8, 0x52, 0x00
 #define	DOS_FILE_NAME				"\\\\.\\"DEVICENAME_STRING
 #define VJOY_INTERFACE				L"Device_"
 
+// Version parts
+#define VER_X_	0
+#define VER_H_	2
+#define VER_M_	0
+#define VER_L_	3
+
+#define STRINGIFY_1(x)   #x
+#define STRINGIFY(x)     STRINGIFY_1(x)
+#define PASTE(x, y) x##y
+#define MAKEWIDE(x) PASTE(L,x)
+
 // Device Attributes
 //
 #define VENDOR_N_ID		0x1234
 #define	PRODUCT_N_ID	0xBEAD
-#define	VERSION_N		0x0202
+#define	VERSION_N	(VER_L_ + 0x10*VER_M_ + 0x100*VER_H_ + 0x1000*VER_X_)
 
 // Device Strings
 //
 #define VENDOR_STR_ID		L"Shaul Eizikovich"
 #define PRODUCT_STR_ID		L"vJoy - Virtual Joystick"
-#define	SERIALNUMBER_STR	L"2.0.2"
+#define	SERIALNUMBER_STR	MAKEWIDE(STRINGIFY(VER_H_)) L"." MAKEWIDE(STRINGIFY(VER_M_)) L"."  MAKEWIDE(STRINGIFY(VER_L_))
 
 // Function codes;
 #define LOAD_POSITIONS	0x910
@@ -161,3 +172,5 @@ typedef struct _JOYSTICK_POSITION
 
 
 #endif
+
+
