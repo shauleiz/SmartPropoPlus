@@ -252,10 +252,10 @@ SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 
 	// Increment counter - on tenth call: Reset counter and m_PosUpdateCounter and update value;
 	CallCounter++;
-	if (CallCounter>10)
+	if (CallCounter>2)
 	{
 		// Update value
-		quality = m_PosUpdateCounter * m_PosUpdateCounterFactor / 10 ; 
+		quality = m_PosUpdateCounter * m_PosUpdateCounterFactor / 2 ; 
 		if (quality>100)
 			quality=100;
 
