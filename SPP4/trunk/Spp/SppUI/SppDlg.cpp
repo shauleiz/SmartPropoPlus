@@ -319,6 +319,22 @@ void SppDlg::SetNumberRawCh(UINT nCh)
 	};
 }
 
+// Update the decoder quality value in the GUI
+void SppDlg::SetDecoderQuality(UINT Quality)
+{
+	static UINT prevVal=100;
+
+	// Prevent flicker
+	if (prevVal == Quality)
+		return;
+	prevVal = Quality;
+
+	// Update text of static frame
+	HWND hFrame = GetDlgItem(m_hDlg,  IDC_SIG_DEC);
+	wstring txt = L"Signal Decoder ( Quality: " + to_wstring(Quality) + L")";
+	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+}
+
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 {
@@ -1255,6 +1271,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_PRCS_NRCHMNT:
 		DialogObj->SetNumberRawCh((UINT)wParam);
+		break;
+
+	case WMSPP_DECD_QLT:
+		DialogObj->SetDecoderQuality((UINT)wParam);
 		break;
 
 	case WMSPP_PRCS_ALIVE:

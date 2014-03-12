@@ -77,6 +77,8 @@ UINT const WMSPP_STAT_UPDT	=			BASE_SUB+51;			// Inform GUI of CU status. wParam
 UINT const FILTER_ADDA		=			BASE_SUB+52;			// The payload is: Filter Index and Pointer to filter name (ASCII)
 UINT const FILTER_ADDW		=			BASE_SUB+53;			// The payload is: Filter Index and Pointer to filter name (WCHAR)
 UINT const WMSPP_DLG_SCAN	=			BASE_SUB+54;			// Button SCAN was pressed
+UINT const WMSPP_DECD_QLT	=			BASE_SUB+55;			// Decoder Quality: Payload is the quality in the range 0-100
+UINT const WMSPP_JOY_QLT	=			BASE_SUB+56;			// Joystick data Quality: Payload is the quality in the range 0-100
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
