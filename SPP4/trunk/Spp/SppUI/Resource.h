@@ -43,6 +43,7 @@
 #define IDC_STREAM                              1023
 #define IDC_AUD_AUTO                            1024
 #define IDC_CH_LOG                              1081
+#define IDC_SIG_DEC                             40000
 #define IDM_DISPLAY_WIZARD                      40000
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001

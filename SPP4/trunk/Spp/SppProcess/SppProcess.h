@@ -208,9 +208,9 @@ private:
 	class CPulseScope * m_PulseScopeObj;
 	UINT m_nChannels;
 	JOYSTICK_POSITION m_vJoyPosition;
-	UINT m_PosQual;
 	UINT m_JoyQual;
-	UINT m_PosQualReset;
+	UINT m_PosUpdateCounter;
+	UINT m_PosUpdateCounterFactor;
 };
 
 

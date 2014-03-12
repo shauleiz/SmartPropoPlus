@@ -51,9 +51,9 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_nChannels(0),
 	m_PulseMonitor(NULL),
 	m_PulseScopeObj(NULL),
-	m_PosQual(0),
-	m_JoyQual(0),
-	m_PosQualReset(100)
+	m_PosUpdateCounter(0),
+	m_PosUpdateCounterFactor(25),
+	m_JoyQual(0)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -104,8 +104,7 @@ SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 
 	MOD tmp = it->second;
 	m_CurrentPP =  tmp.func;
-	m_PosQualReset = tmp.Qreset;
-
+	m_PosUpdateCounterFactor = tmp.Qreset;
 	return;
 }
 
@@ -245,9 +244,26 @@ SPPMAIN_API void CSppProcess::SetAudioObj(class CSppAudio * Audio)
 // Return the calculated value of the Quality of Position data
 // 0 means that the data is worthless
 // 100  means that the data is excellent
+// Called every 109-110mS (Meassured)
+// Calculate a new value once in 10 calls
 SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 {
-	return m_PosQual;
+	static UINT CallCounter=0, quality = 100;
+
+	// Increment counter - on tenth call: Reset counter and m_PosUpdateCounter and update value;
+	CallCounter++;
+	if (CallCounter>10)
+	{
+		// Update value
+		quality = m_PosUpdateCounter * m_PosUpdateCounterFactor / 10 ; 
+		if (quality>100)
+			quality=100;
+
+		// Reset
+		CallCounter = m_PosUpdateCounter=0;
+	}
+		
+	return quality;
 }
 
 // Return the calculated value of the Quality of Joystick communication
@@ -572,11 +588,6 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
 		{
-			// Gradual degradation in the quality of Position data
-			// If the quality is good it is repared inside m_CurrentPP
-			if (m_PosQual)
-				m_PosQual--;
-
 			// Gradual degradation in the quality of joystick communication
 			// If the quality is good it is repared inside m_CurrentPP
 			if (m_JoyQual)
@@ -614,7 +625,7 @@ bool  CSppProcess::InitModulationSelect(void)
 	MOD tmp = it->second;
 	m_SelectedMod = Type;
 	m_CurrentPP = tmp.func;
-	m_PosQualReset = tmp.Qreset;
+	m_PosUpdateCounterFactor = tmp.Qreset;
 
 	return true;
 }
@@ -637,7 +648,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPM;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPM;
-	tmp.Qreset = 100;
+	tmp.Qreset = 25;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Positive)
@@ -645,7 +656,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPMP;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPMP;
-	tmp.Qreset = 100;
+	tmp.Qreset = 25;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Negative)
@@ -653,7 +664,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPMN;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPMN;
-	tmp.Qreset = 100;
+	tmp.Qreset = 25;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Walkera)
@@ -661,7 +672,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_PPMW;
 	tmp.Subtype =  _T("PPM");
 	tmp.Type = MOD_TYPE_PPMW;
-	tmp.Qreset = 100;
+	tmp.Qreset = 25;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// JR (PCM)
@@ -669,7 +680,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_JR;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_JR;
-	tmp.Qreset = 100;
+	tmp.Qreset = 50;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// Futaba (PCM)
@@ -677,7 +688,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_FUT;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_FUT;
-	tmp.Qreset = 100;
+	tmp.Qreset = 25;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// Sanwa/Air (PCM1)
@@ -685,7 +696,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_AIR1;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_AIR1;
-	tmp.Qreset = 500;
+	tmp.Qreset = 25;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// Sanwa/Air (PCM2)
@@ -693,7 +704,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_AIR2;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_AIR2;
-	tmp.Qreset = 500;
+	tmp.Qreset = 35;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 
@@ -702,7 +713,7 @@ int CSppProcess::InitModulationMap(void)
 	tmp.Name = MOD_NAME_WAL;
 	tmp.Subtype =  _T("PCM");
 	tmp.Type = MOD_TYPE_WAL;
-	tmp.Qreset = 100;
+	tmp.Qreset = 50;
 	m_ModulationMap.emplace(tmp.Type, tmp);
 
 	return (int)m_ModulationMap.size();
@@ -825,6 +836,8 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (/*sync == 0 && */width > PPM_TRIG) {
         sync = 1;
+		if (datacount)
+			m_PosUpdateCounter++;
 		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
@@ -918,6 +931,8 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (input &&  width > PPM_TRIG) {
         sync = 1;
+		if (datacount)
+			m_PosUpdateCounter++;
 		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
@@ -1008,6 +1023,8 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (!input && width > PPM_TRIG) {
         sync = 1;
+		if (datacount)
+			m_PosUpdateCounter++;
 		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
@@ -1099,6 +1116,8 @@ void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
 	/* sync is detected at the end of a very long pulse (over  4.5mSec) */
     if (width > PPMW_TRIG) {
         sync = 1;
+		if (datacount)
+			m_PosUpdateCounter++;
 		m_nChannels = datacount;
         datacount = 0;
 		Polarity = input;
@@ -1222,6 +1241,8 @@ void CSppProcess::ProcessPulseFutabaPcm(int width, BOOL input)
 	*/
     if (sync == 0 && width == 18) {
         sync = 1;
+		if (datacount)
+			m_PosUpdateCounter++;
         bit = 0;
         bitstream = 0;
         bitcount = 0;
@@ -1354,6 +1375,8 @@ void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
 
     if (sync == 0 && (int)floor(2.0 * width / PW_JR + 0.5) == 5) {
         sync = 1;
+		if (datacount >= 8)
+			m_PosUpdateCounter++;
         bitstream = 0;
         bitcount = -1;
         datacount = 0;
@@ -1408,7 +1431,7 @@ void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
 */
 void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 {
-	int pulse;
+	static int pulse;
 	static int sync;
 	static int datacount = 0;
     static unsigned int bitcount = 0;
@@ -1457,12 +1480,17 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 
 				
 				SendPPJoy(fixed_n_channel-1, m_Position);
+
+				
 			};
 			sync = 1;		// Sync bit is set for the first 10 bits of the chunk (No channel data here)
 			bitstream = 0;
 			bitcount = -1;
 			chunk = input;	// Mark chunk polarity - 0: Low channels, 1: High channels
 			//return 0;
+				
+			if (datacount == 5 && width<160)
+				m_PosUpdateCounter++;
 		};
 		
 		if (sync) 
@@ -1544,7 +1572,11 @@ void CSppProcess::ProcessPulseAirPcm2(int width, BOOL input)
 
 				m_nChannels = 6;
 				SendPPJoy(m_nChannels, m_Position);
+
+				if (width<420 && width>390)
+					m_PosUpdateCounter++;
 			};
+
 			sync = 1;		// Sync bit is set for the first 10 bits of the chunk (No channel data here)
 			bitstream = 0;
 			bitcount = -1;
@@ -2014,12 +2046,6 @@ int  __fastcall  CSppProcess::Convert20bits(int in)
 
 __inline  int  CSppProcess::smooth(int orig, int newval)
 {
-	if (newval<0)
-	{
-		m_PosQual=0;
-		return orig;
-	}
-
 	if ((orig-newval > 100) || (newval-orig > 100))
 		return (newval+orig)/2;
 
@@ -2082,9 +2108,6 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	int i, k;
 	int ch[MAX_JS_CH];
 	int n_ch = 0;
-
-	// Mark quality of Position data as excellent
-	m_PosQual = m_PosQualReset;
 
 	if (!m_vJoyReady)
 		return;

@@ -588,6 +588,11 @@ void ComputeOperatState(void)
 	// Get the qulity of the joystick communication - Higher than 90 is good quality
 	JoyQual = Spp->GetJoystickCommQuality();
 
+
+	// Infor GUI of quality
+	SendMessage(hDialog, WMSPP_DECD_QLT,PosQual, 0);
+	SendMessage(hDialog, WMSPP_JOY_QLT,JoyQual, 0);
+
 	// State Feed (W10)
 	// Perfect conditions, all is functioning
 	// Joystick communication is very good (JoyQual>=75)
