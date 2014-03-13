@@ -324,7 +324,6 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 	std::vector<int> buf;
 	UINT iPrevBuf, size, SyncPulseSize=0;
 	UINT SyncPulse[MAX_N_SYNCS] = {0};
-	int iSyncPulse = 0;
 
 	// Make an internal copy of the previous buffer to work on.
 	iPrevBuf = (m_vPulsesIndex-1)*(m_vPulsesIndex-1);
@@ -340,6 +339,7 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 
 	///// Here we start the detection (Pulse length is normalized to 192K sampling rate).
 	//
+#pragma region Loop: Get the length of the sync pulse
 	// Find the size of the sync pulse
 	for (UINT i=0; i<size; i++)
 	{
@@ -356,13 +356,10 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 			SyncPulseSize = pulse;
 
 	}; // for loop: Find the size of the sync pulse
+#pragma endregion
 
-	/// If this is a long (Over 6mS) sync pulse then it is a PPM encoding
-	if (SyncPulseSize>1152)
-	{  // PPM
+#pragma region Find the first and second sync pulses
 		UINT iSyncPulse[2]={0};
-
-		// Find the first and second sync pulses
 		// This will enable us to constract a frame and extract all data from it
 		for (UINT i=0; i<size; i++)
 		{
@@ -370,7 +367,7 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 			UINT pulse = abs(buf[i]);
 
 			// The synch pulse size changes with the movement of the stick
-			if (pulse >= SyncPulseSize-50)
+			if (pulse >= SyncPulseSize*0.95)
 			{
 				if (!iSyncPulse[0])
 					iSyncPulse[0] = i;
@@ -381,17 +378,24 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 			};
 		}; // for loop
 
+#pragma endregion
+
+	/// If this is a long (Over 3mS) sync pulse then it is a PPM encoding
+	if (SyncPulseSize>576)
+	{  // PPM
+		
 		if (!iSyncPulse[1])
 			return ERROR_INVALID_DATA; // Sync pulses are NOT of the same polarity
 
-		// Make sure that this is really a PPM signal bu verifying that
+#pragma region Make sure that this is really a PPM signal
+		// Make sure that this is really a PPM signal by verifying that
 		// 1. Sync pulses are of the same polarity
 		// 2. The Separators are of the same size and around 0.5mS
 
 		// 1.
 		if ((buf[iSyncPulse[0]] * buf[iSyncPulse[1]]) < 0)
 			return ERROR_INVALID_DATA; // Sync pulses are NOT of the same polarity
-		 // 2.
+		// 2.
 		UINT separator[3] = {abs(buf[iSyncPulse[1] -1]), abs(buf[iSyncPulse[1] -3]), abs(buf[iSyncPulse[1] -5])};
 		UINT avrage_separator = (separator[0] + separator[1] + separator[2])/3;
 		if (separator[0] > avrage_separator*1.1)
@@ -407,6 +411,8 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 		if (separator[2] < avrage_separator*0.9)
 			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
 
+#pragma endregion
+
 		// Walkera PPM or normal PPM?
 		if (avrage_separator > 90)
 			Type = MOD_TYPE_PPMW;
@@ -414,10 +420,41 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 			Type = MOD_TYPE_PPM;
 		
 		return S_OK;// PPM OK
-	}; // PPM
+
+	}  // PPM
+	else
+	{  // PCM
+
+		// Calculate frame period
+		UINT Acc=0;
+		for (UINT i=iSyncPulse[0]+1; i<=iSyncPulse[1]; i++)
+			Acc += abs(buf[i]);
+
+
+#pragma region Futaba PCM
+		// Futaba PCM
+		if (
+			//Sync Pulse is 2.7mS  +/- 5%
+				(SyncPulseSize <= 1.05*518) &&
+				(SyncPulseSize >= 0.95*518) &&
+
+				//Sync pulses polarity alternate
+				//((buf[iSyncPulse[0]] * buf[iSyncPulse[1]]) < 0) &&
+
+				//Period is 28mS +/- 5%
+				(Acc <= 5376*1.05) &&
+				(Acc >= 5376*0.95)
+				)
+		{
+			Type = MOD_TYPE_FUT;
+			return S_OK;
+		}
+#pragma endregion
+
+	}; //PCM
 
 	// DEBUG
-	return S_OK;
+	return ERROR_INVALID_DATA;
 }
 
 /*
