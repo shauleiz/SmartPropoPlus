@@ -86,6 +86,7 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 
 #define MAX_JS_CH	12
 #define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
+#define MAX_BUF_SIZE 10000
 
 
 
@@ -154,6 +155,8 @@ private:
 	void SetDefaultBtnMap(array <BYTE, 128>& BtnMap);
 	BOOL SetAxisDelayed(LONG Value, UINT Axis);
 	BOOL SetBtnDelayed(BOOL Value, UCHAR nBtn);
+	void StorePulse(UINT PulseLength, bool Negative);
+	HRESULT DetectCurrentEncoding(TCHAR*& Type);
 
 
 private:	// Walkera (PCM) helper functions
@@ -211,6 +214,8 @@ private:
 	UINT m_JoyQual;
 	UINT m_PosUpdateCounter;
 	UINT m_PosUpdateCounterFactor;
+	std::vector<int> m_vPulses[2];
+	UINT m_vPulsesIndex;
 };
 
 

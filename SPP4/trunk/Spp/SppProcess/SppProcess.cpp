@@ -53,7 +53,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_PulseScopeObj(NULL),
 	m_PosUpdateCounter(0),
 	m_PosUpdateCounterFactor(25),
-	m_JoyQual(0)
+	m_JoyQual(0),
+	m_vPulsesIndex(0)
 {
 	UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
 	for (UINT i=0; i<nCh; i++)
@@ -61,6 +62,9 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 
 	SetDefaultBtnMap(m_BtnMapping);
 	m_vJoyPosition.bDevice = 0;
+
+	m_vPulses[0].clear();
+	m_vPulses[1].clear();
 }
 
 SPPMAIN_API CSppProcess::~CSppProcess()
@@ -262,7 +266,12 @@ SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 		// Reset
 		CallCounter = m_PosUpdateCounter=0;
 	}
-		
+	
+	// DEBUG Only
+	TCHAR * Decoder;
+	HRESULT res;
+	res = DetectCurrentEncoding(Decoder);
+
 	return quality;
 }
 
@@ -274,11 +283,147 @@ SPPMAIN_API int  CSppProcess::GetJoystickCommQuality(void)
 	return m_JoyQual;
 }
 
+// Store pulse in pulse buffer for future analysis
+// Select buffer according to value of member m_vPulsesIndex
+void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
+{
+	static UINT vPulsesIndex;
+
+	// Case we need to start a new buffer
+	if (vPulsesIndex != m_vPulsesIndex)
+	{
+		vPulsesIndex = m_vPulsesIndex;
+		m_vPulses[vPulsesIndex].clear();
+	};
+
+	// If negative pulse then negate value
+	if (Negative)
+		m_vPulses[vPulsesIndex].push_back(0-PulseLength);
+	else
+		m_vPulses[vPulsesIndex].push_back(PulseLength);
+
+	// Safety valse - if buffer becomes too large just switch buffers
+	if (m_vPulses[vPulsesIndex].size() > MAX_BUF_SIZE)
+	{
+		if (m_vPulsesIndex) 
+			m_vPulsesIndex=0;
+		else
+			m_vPulsesIndex=1;
+	};
+}
+
+// Detect the current encoding of the transmitter signal (Modulation)
+// Changes the Type of the encoding (e.g. MOD_TYPE_PPM) if detected or NULL if failed to detect
+// Return values:
+//	S_OK: Type was found and valid
+//  ERROR_INVALID_DATA: Data is invalid of insufficient - Type is invalid
+//  
+ HRESULT CSppProcess::DetectCurrentEncoding(TCHAR*& Type)
+{
+#define MAX_N_SYNCS 4
+	std::vector<int> buf;
+	UINT iPrevBuf, size, SyncPulseSize=0;
+	UINT SyncPulse[MAX_N_SYNCS] = {0};
+	int iSyncPulse = 0;
+
+	// Make an internal copy of the previous buffer to work on.
+	iPrevBuf = (m_vPulsesIndex-1)*(m_vPulsesIndex-1);
+	if (m_vPulses[iPrevBuf].size()<100)
+		return ERROR_INVALID_DATA; // Not enough data to work on
+	else
+		buf = m_vPulses[iPrevBuf];
+
+	// Last sanity check
+	if (buf.size()<100)
+		return ERROR_INVALID_DATA; // Not enough data to work on
+	size = (UINT)buf.size();
+
+	///// Here we start the detection (Pulse length is normalized to 192K sampling rate).
+	//
+	// Find the size of the sync pulse
+	for (UINT i=0; i<size; i++)
+	{
+		// Absolute values only
+		UINT pulse = abs(buf[i]);
+
+		// Ignore if pulse is terribly long
+		if (pulse > 4224)
+			continue;
+
+		// Detect longest pulses that are under 22mS (4224 ticks)
+		// If pulse  longer than the length of the sync pulse size then replace. 
+		if (pulse > SyncPulseSize)
+			SyncPulseSize = pulse;
+
+	}; // for loop: Find the size of the sync pulse
+
+	/// If this is a long (Over 6mS) sync pulse then it is a PPM encoding
+	if (SyncPulseSize>1152)
+	{  // PPM
+		UINT iSyncPulse[2]={0};
+
+		// Find the first and second sync pulses
+		// This will enable us to constract a frame and extract all data from it
+		for (UINT i=0; i<size; i++)
+		{
+			// Absolute values only
+			UINT pulse = abs(buf[i]);
+
+			// The synch pulse size changes with the movement of the stick
+			if (pulse >= SyncPulseSize-50)
+			{
+				if (!iSyncPulse[0])
+					iSyncPulse[0] = i;
+				else if (!iSyncPulse[1])
+					iSyncPulse[1] = i;
+				else
+					break;
+			};
+		}; // for loop
+
+		if (!iSyncPulse[1])
+			return ERROR_INVALID_DATA; // Sync pulses are NOT of the same polarity
+
+		// Make sure that this is really a PPM signal bu verifying that
+		// 1. Sync pulses are of the same polarity
+		// 2. The Separators are of the same size and around 0.5mS
+
+		// 1.
+		if ((buf[iSyncPulse[0]] * buf[iSyncPulse[1]]) < 0)
+			return ERROR_INVALID_DATA; // Sync pulses are NOT of the same polarity
+		 // 2.
+		UINT separator[3] = {abs(buf[iSyncPulse[1] -1]), abs(buf[iSyncPulse[1] -3]), abs(buf[iSyncPulse[1] -5])};
+		UINT avrage_separator = (separator[0] + separator[1] + separator[2])/3;
+		if (separator[0] > avrage_separator*1.1)
+			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
+		if (separator[1] > avrage_separator*1.1)
+			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
+		if (separator[2] > avrage_separator*1.1)
+			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
+		if (separator[0] < avrage_separator*0.9)
+			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
+		if (separator[1] < avrage_separator*0.9)
+			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
+		if (separator[2] < avrage_separator*0.9)
+			return ERROR_INVALID_DATA; // separator pulses are NOT of the same size
+
+		// Walkera PPM or normal PPM?
+		if (avrage_separator > 90)
+			Type = MOD_TYPE_PPMW;
+		else
+			Type = MOD_TYPE_PPM;
+		
+		return S_OK;// PPM OK
+	}; // PPM
+
+	// DEBUG
+	return S_OK;
+}
+
 /*
 	Tests status of the global data block 10 times a second
 	If changed the make the required change in the operation of this unit
 */
-
 void CSppProcess::MonitorCapture(void)
 {
 	HRESULT hr = S_OK;
@@ -595,7 +740,12 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 
 			// Call the correct function ProcessPulseXXX() 
 			m_CurrentPP(PulseLength, negative);
+
+		// Store pulse in buffer for analysis and debug
+		// TODO: Add conditions
+		StorePulse(PulseLength, negative);
 		}
+
 
 		if (m_fPulseMonitor && PulseLength>3)
 			m_fPulseMonitor(m_iPulseMonitor, PulseLength, negative, 0, m_PulseMonitor);
