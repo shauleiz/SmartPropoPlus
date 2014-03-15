@@ -1,4 +1,4 @@
-// SppProcess.cpp : Defines the exported functions for the DLL application.
+﻿// SppProcess.cpp : Defines the exported functions for the DLL application.
 //
 
 #include "stdafx.h"
@@ -433,23 +433,99 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 
 #pragma region Futaba PCM
 		// Futaba PCM
-		if (
+		if 
+			(
 			//Sync Pulse is 2.7mS  +/- 5%
-				(SyncPulseSize <= 1.05*518) &&
-				(SyncPulseSize >= 0.95*518) &&
+			(SyncPulseSize <= 1.05*518) &&
+			(SyncPulseSize >= 0.95*518) &&
 
-				//Sync pulses polarity alternate
-				//((buf[iSyncPulse[0]] * buf[iSyncPulse[1]]) < 0) &&
+			//Sync pulses polarity alternate
+			//((buf[iSyncPulse[0]] * buf[iSyncPulse[1]]) < 0) &&
 
-				//Period is 28mS +/- 5%
-				(Acc <= 5376*1.05) &&
-				(Acc >= 5376*0.95)
-				)
+			//Period is 28mS +/- 5%
+			(Acc <= 5376*1.05) &&
+			(Acc >= 5376*0.95)
+			)
 		{
 			Type = MOD_TYPE_FUT;
 			return S_OK;
 		}
 #pragma endregion
+
+#pragma region Sanwa/Airtronics PCM1
+		// Sanwa/Airtronics PCM1
+		else if 
+			(
+			// Search Sync Pulse (length:  0.78mS) for the entire buffer
+			(SyncPulseSize <= 1.05*150) &&
+			(SyncPulseSize >= 0.95*150) && 
+
+			//Period is 14mS +/- 5%
+			(Acc <= 2688*1.05) &&
+			(Acc >= 2688*0.95)
+			)
+		{
+			Type = MOD_TYPE_AIR1;
+			return S_OK;
+		}
+#pragma endregion
+
+#pragma region Sanwa/Airtronics PCM2
+		// Sanwa/Airtronics PCM2
+		else if 
+			(
+			// Search Sync Pulse (length:  2.1mS) for the entire buffer
+			(SyncPulseSize <= 1.05*403) &&
+			(SyncPulseSize >= 0.95*403) && 
+
+			//Period is 22mS +/- 5%
+			(Acc <= 4224*1.05) &&
+			(Acc >= 4224*0.95)
+			)
+		{
+			Type = MOD_TYPE_AIR2;
+			return S_OK;
+		}
+#pragma endregion
+
+#pragma region JR PCM
+		// JR PCM
+		// The sync pulse is not the longest so we look for sync pulses of  0.4125mS
+		// This will enable us to constract a frame and extract all data from it
+		iSyncPulse[0] = iSyncPulse[1] = Acc =0;
+		for (UINT i=0; i<size; i++)
+		{
+			// Absolute values only
+			UINT pulse = abs(buf[i]);
+
+			// The synch pulse size changes with the movement of the stick
+			if ((pulse >= 79*0.95) && (pulse <= 79*1.05))
+			{
+				if (!iSyncPulse[0])
+					iSyncPulse[0] = i;
+				else if (!iSyncPulse[1])
+					iSyncPulse[1] = i;
+				else
+					break;
+			};
+		}; // for loop
+
+		// Calculate frame period
+		for (UINT i=iSyncPulse[0]+1; i<=iSyncPulse[1]; i++)
+			Acc += abs(buf[i]);
+
+		if 
+			//Period is 44mS +/- 5%
+			(
+				(Acc <= 8448*1.05) &&
+				(Acc >= 8448*0.95)
+			)
+		{
+			Type = MOD_TYPE_JR;
+			return S_OK;
+		};  
+#pragma endregion
+
 
 	}; //PCM
 
