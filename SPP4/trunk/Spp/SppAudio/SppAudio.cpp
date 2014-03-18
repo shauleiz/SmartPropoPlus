@@ -1678,7 +1678,7 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		}; 
 
 		// Detect glitch in data (Unused in Vista)
-		if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
+		if (flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
 		{
 			m_pCaptureClient->ReleaseBuffer(packetLength);
 			hr = AUDCLNT_E_BUFFER_ERROR;
