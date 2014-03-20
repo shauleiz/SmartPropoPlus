@@ -65,6 +65,9 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 
 	m_vPulses[0].clear();
 	m_vPulses[1].clear();
+
+	m_DecoderStruct.start = m_DecoderStruct.stop = m_DecoderStruct.running = m_DecoderStruct.forever = FALSE;
+	m_DecoderStruct.timeout = FALSE;
 }
 
 SPPMAIN_API CSppProcess::~CSppProcess()
@@ -267,11 +270,6 @@ SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 		CallCounter = m_PosUpdateCounter=0;
 	}
 	
-	// DEBUG Only
-	TCHAR * Decoder;
-	HRESULT res;
-	res = DetectCurrentEncoding(Decoder);
-
 	return quality;
 }
 
@@ -283,11 +281,121 @@ SPPMAIN_API int  CSppProcess::GetJoystickCommQuality(void)
 	return m_JoyQual;
 }
 
+// Start (TRUE), search until detection (FALSE), or until timeout (3000mS)
+
+// Start/Stop scanning for encoding type
+// Parameters:
+//	Start: TRUE(start)/FALSE(stop)
+//	Forever: TRUE(Scan until requested to stop)/False(Scan until detection or timeout)
+//  Timeout: 0(No timeout)/Positive number(Timeout in milliSeconds)
+SPPMAIN_API void  CSppProcess::SetDecoderScanning(BOOL Start, BOOL Forever, int Timeout)
+{
+	// It is assumed that PollChannels() is running
+	if (!m_chMonitor) // TODO: Warning message
+		return;
+
+	// Stop?
+	if (!Start && m_DecoderStruct.running)
+	{
+		m_DecoderStruct.start = FALSE;
+		m_DecoderStruct.stop = TRUE;
+		m_DecoderStruct.rstbuf = TRUE;
+		return;
+	};
+
+	// Start?
+	if (Start && !m_DecoderStruct.running)
+	{
+		if (Forever)
+		{
+			m_DecoderStruct.forever = TRUE;
+			m_DecoderStruct.timeout = FALSE;
+		} // Forever
+		else
+		{ // Not Forever 
+			if (Timeout)
+			{
+				std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+				m_DecoderStruct.expire = now + std::chrono::milliseconds(Timeout);			
+				m_DecoderStruct.timeout = TRUE;
+			} // Timeout
+			else
+			{  // No timeout
+				m_DecoderStruct.timeout = FALSE;
+			}; // No timeout
+
+		m_DecoderStruct.forever = FALSE;
+		};// Not Forever
+
+		m_DecoderStruct.rstbuf = TRUE;
+		m_DecoderStruct.stop   = FALSE;
+		m_DecoderStruct.start  = TRUE;
+	}; // Start
+}
+
+
+// Wrapper to DetectCurrentEncoding()
+// Called repetedly, and calls DetectCurrentEncoding() according to external requests and internal status
+inline void  CSppProcess::GetEncoding(void)
+{
+	TCHAR * Decoder = NULL;
+	HRESULT res = S_OK;
+
+	// If request to start (and not running) then set 'running' and remove request
+	if (!m_DecoderStruct.running && m_DecoderStruct.start)
+	{
+		m_DecoderStruct.start = FALSE;
+		m_DecoderStruct.running = TRUE;
+	} else
+
+	// If request to stop and running then reset 'running' and instruct to clear buffers
+	if (m_DecoderStruct.running && m_DecoderStruct.stop)
+	{
+		m_DecoderStruct.rstbuf = TRUE;
+		m_DecoderStruct.running = FALSE;
+		m_DecoderStruct.stop = FALSE;
+		return;
+	}
+
+	// Here we do the Detection
+	if (m_DecoderStruct.running)
+		res = DetectCurrentEncoding(Decoder);
+	else
+		return;
+
+	// Detected - inform higher levels
+	// Stop if not to run forever
+	if (res == S_OK)
+	{
+		SendMessage(m_hParentWnd, WMSPP_PRCS_DCDR,  (WPARAM)Decoder, 0);
+		if (m_DecoderStruct.forever)
+			m_DecoderStruct.rstbuf = TRUE;
+		else
+			m_DecoderStruct.stop = TRUE;
+
+	}
+
+	// Timeout?
+	if (m_DecoderStruct.timeout && m_DecoderStruct.expire < std::chrono::system_clock::now())
+		m_DecoderStruct.stop;
+}
+
 // Store pulse in pulse buffer for future analysis
 // Select buffer according to value of member m_vPulsesIndex
 void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 {
 	static UINT vPulsesIndex;
+
+	
+	if (m_DecoderStruct.rstbuf)
+	{
+		m_vPulses[0].clear();
+		m_vPulses[1].clear();
+		m_DecoderStruct.rstbuf = FALSE;
+	};
+
+	if (!m_DecoderStruct.running)
+		return;
 
 	// Case we need to start a new buffer
 	if (vPulsesIndex != m_vPulsesIndex)
@@ -302,7 +410,7 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 	else
 		m_vPulses[vPulsesIndex].push_back(PulseLength);
 
-	// Safety valse - if buffer becomes too large just switch buffers
+	// Safety valve - if buffer becomes too large just switch buffers
 	if (m_vPulses[vPulsesIndex].size() > MAX_BUF_SIZE)
 	{
 		if (m_vPulsesIndex) 
@@ -692,7 +800,10 @@ void CSppProcess::PollChannels(void)
 			};
 		}; // For loop (Processed)
 
-		
+	
+		// Evaliate the pulses to determine the correct encoder
+		 GetEncoding();
+
 	Sleep_For(20); // MilliSec
 
 	// Once in a while reset value of channels to ensure refresh of the GUI

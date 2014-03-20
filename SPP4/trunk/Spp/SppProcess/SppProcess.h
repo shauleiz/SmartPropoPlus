@@ -65,6 +65,17 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 	int * value;		// Pointer to data buffer ; ch>n>=0 ; value[n] holds channel (n+1) 
 } JS_CHANNELS, * PJS_CHANNELS;
 
+typedef struct _DECODER_DETECT
+{
+	BOOL start;		// Request to start
+	BOOL stop;		// Request to stop
+	BOOL running;	// State: Detection is on/off
+	BOOL rstbuf;	// Reset buffers
+	BOOL forever;	// Exit only on request stop - Ignore result and expiry
+	BOOL timeout;	// Exit when 'expire' time reached (or on detection)
+	std::chrono::steady_clock::time_point expire; // Timepoint of expiry (Ignore if 0)
+} DECODER_DETECT, * PDECODER_DETECT;
+
 
 // Definition of some time limits
 // All values are in number of samples normalized to 192K samples per second
@@ -86,7 +97,7 @@ typedef struct _JS_CHANNELS	// Joystick channel data
 
 #define MAX_JS_CH	12
 #define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
-#define MAX_BUF_SIZE 10000
+#define MAX_BUF_SIZE 1000
 
 
 
@@ -114,7 +125,7 @@ public:
 	SPPMAIN_API bool RegisterPulseMonitor(int index, bool Register);
 	SPPMAIN_API int  GetPositionDataQuality(void);
 	SPPMAIN_API int  GetJoystickCommQuality(void);
-
+	SPPMAIN_API void SetDecoderScanning(BOOL Start, BOOL Forever, int Timeout);
 
 
 private:
@@ -157,6 +168,7 @@ private:
 	BOOL SetBtnDelayed(BOOL Value, UCHAR nBtn);
 	void StorePulse(UINT PulseLength, bool Negative);
 	HRESULT DetectCurrentEncoding(TCHAR*& Type);
+	inline void  GetEncoding(void);
 
 
 private:	// Walkera (PCM) helper functions
@@ -216,6 +228,7 @@ private:
 	UINT m_PosUpdateCounterFactor;
 	std::vector<int> m_vPulses[2];
 	UINT m_vPulsesIndex;
+	DECODER_DETECT m_DecoderStruct;
 };
 
 

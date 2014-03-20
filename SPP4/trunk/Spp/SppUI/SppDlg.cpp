@@ -567,9 +567,44 @@ void SppDlg::ShowButtonMapWindow(void)
 	m_BtnsDlg->Show();
 }
 
+//  Button SCAN was pressed
 void SppDlg::ScanMod(void)
 {
+	// Notify CU that it SCAN button was pressed.
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_SCAN , 0, 0);
+}
+
+// Button pressed: Reply was received from CU - Now change GUI to match
+void SppDlg::SelectDecoder(LPCTSTR Decoder)
+{
+	int list[2] = {IDC_LIST_PPM, IDC_LIST_PCM};
+	HWND hList;
+	int count=0;
+	LPCTSTR iData;
+	int SelList=-1, SelItem=-1;
+
+	for (int l=0; l<2; l++)
+	{ // Loop on both lists (PPM/PCM)
+		// Get a list (PPM/PCM)
+		hList = GetDlgItem(m_hDlg,  list[l]);
+
+		// Get the number of entries in the list
+		count = (int)SendMessage(hList, LB_GETCOUNT , 0, 0);
+
+		// Reset selection
+		SendMessage(hList, LB_SETCURSEL , -1, 0);
+
+		// Go over the list - if data maches the set Slected.
+		for (int i=0; i<count; i++)
+		{ // Loop on list members
+			iData = (LPCTSTR)SendMessage(hList, LB_GETITEMDATA, i, 0);
+			if (!wcscmp(iData,Decoder))
+			{
+				SendMessage(hList, LB_SETCURSEL , i, 0);
+				break;
+			}
+		};  // Loop on list members
+	}; // Loop on both lists (PPM/PCM)
 }
 
 // Tell the parent window (Main application)
@@ -1358,6 +1393,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->OnNotificationIcon(wParam,  lParam);
 		break;
 
+	case WMSPP_PRCS_DCDR:
+		if (wParam && !lParam)
+			DialogObj->SelectDecoder((LPCTSTR)wParam);
+		break;
 
 	}
 	return (INT_PTR)FALSE;
