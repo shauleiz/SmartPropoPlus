@@ -364,6 +364,18 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->SelectMod((LPCTSTR)wParam);
 			break;
 
+		case WMSPP_PRCS_DCDR:
+			if (wParam && !lParam)
+			{
+				Conf->SelectModulation((LPTSTR)wParam);
+				if (Spp)
+					Spp->SelectMod((LPCTSTR)wParam);
+			};
+			SendMessage(hDialog, uMsg, wParam, lParam);
+
+			break;
+
+
 		case WMSPP_DLG_MONITOR:
 			if (Spp)
 				Spp->MonitorChannels((BOOL)wParam);
@@ -545,6 +557,9 @@ LRESULT CALLBACK MainWindowProc(
 
 		// Start scanning for correct modulation
 		case WMSPP_DLG_SCAN:
+			if (Spp)
+				// Start (TRUE), search until detection (FALSE), or until timeout (3000mS)
+				Spp->SetDecoderScanning(TRUE, FALSE, 3000); // TODO: Replace 3000 with defined constant
 			break;
  
         default: 

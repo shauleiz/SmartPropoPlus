@@ -68,7 +68,7 @@ public: // Called from window procedure
 	void OnNotificationIcon( WPARAM wParam, LPARAM lParam);
 	void SppStatusChanged( WPARAM wParam, LPARAM lParam);
 	void ScanMod(void);
-
+	void SelectDecoder(LPCTSTR Decoder);
 
 
 private:
