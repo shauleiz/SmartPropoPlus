@@ -210,6 +210,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 
 #define AUTOCHANNEL	0x0001
 #define AUTOBITRATE	0x0002
+#define AUTODECODE	0x0004
 
 // Command line flags
 #define FLG_NONE	0x0000

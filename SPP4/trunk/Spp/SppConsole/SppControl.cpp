@@ -511,6 +511,12 @@ LRESULT CALLBACK MainWindowProc(
 				Conf->SetAutoBitRate(((WORD)lParam & AUTOBITRATE)!=0);
 				AutoBitRate = (((WORD)lParam & AUTOBITRATE)!=0);
 			}
+
+			if ((WORD)wParam & AUTODECODE)
+			{
+				Conf->SetAutoDecoder((WORD)lParam);
+				// DEBUG DecoderAuto();
+			}
 			break;
 
 

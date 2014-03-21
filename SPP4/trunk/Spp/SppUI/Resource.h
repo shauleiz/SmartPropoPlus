@@ -47,6 +47,7 @@
 #define IDM_DISPLAY_WIZARD                      40000
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
+#define IDC_DEC_AUTO                            40002
 #define IDS_I_STARTSPPPRS                       40002
 #define IDS_W_FILTERDLL                         40003
 #define IDS_I_FILTERDLL                         40004

@@ -79,6 +79,7 @@ public:
 	wstring			GetSelectedModulation(void);
 	string			GetSubTypeModulationSelected();
 	wstring			GetNameModulationSelected();
+	bool			SetAutoDecoder(bool);
 
 	// Audio
 	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, bool select=false);
@@ -131,6 +132,10 @@ private:
 	string			GetSubTypeModulation(wstring Type);
 	wstring			GetNameModulation(wstring Type);
 	TiXmlHandle		GetModulationHandle(wstring Type);
+	void			SetModulationAttrib(LPTSTR Attrib, LPTSTR Value);
+	wstring			GetModulationAttrib(LPTSTR Attrib);
+	void			RemoveModulationAttrib(LPTSTR Attrib); // TODO: Implement
+
 	TiXmlHandle		GetAudioHandle(LPTSTR Id);
 	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=8, LPTSTR Channel=L"Left", bool select=false);
 	bool			SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR Value);
