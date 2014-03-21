@@ -399,16 +399,12 @@ UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
 		return 0;
 }
 
-
-// SelectModulation - Set the selected modulation (by Type)
-// Change the 'selected' attribute of 'Modulations'
-// No testing if this type exists
-bool CSppConfig::SelectModulation(LPTSTR Type)
+void CSppConfig::SetModulationAttrib(LPTSTR Attrib, LPTSTR Value)
 {
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
-		return false;
+		return ;
 	TiXmlHandle RootHandle( root );
 
 	// If Section 'Modulations' does not exist - create it
@@ -420,12 +416,23 @@ bool CSppConfig::SelectModulation(LPTSTR Type)
 	};
 	
 	// If selected==true - assign id to the attribute 'selected'
-	Modulations->SetAttribute(SPP_SELECT, utf8_encode(wstring(Type)));
+	Modulations->SetAttribute(utf8_encode(wstring(Attrib)), utf8_encode(wstring(Value)));
 #ifdef _DEBUG
 	m_doc.SaveFile();
 #endif
+}
+
+// SelectModulation - Set the selected modulation (by Type)
+// Change the 'selected' attribute of 'Modulations'
+// No testing if this type exists
+bool CSppConfig::SelectModulation(LPTSTR Type)
+{
+	// If selected==true - assign id to the attribute 'selected'
+	SetModulationAttrib(TEXT(SPP_SELECT), Type);
 	return true;
 }
+
+
 // AddModulation - Create/Replace a modulation entry (Optionally mark it as the selected modulation)
 //
 // Parameters:
@@ -492,28 +499,32 @@ bool CSppConfig::AddModulation(PVOID data)
 	return AddModulation( Type,  SubType,  Name);
 }
 
-// GetSelectedModulation - Get the selected modulation type
-// Return the Type (PPMW, AIR1 ...) according to the 'selected' attribute
-// If absent - return an empty string
-wstring  CSppConfig::GetSelectedModulation(void)
+wstring CSppConfig::GetModulationAttrib(LPTSTR Attrib)
 {
-
-	wstring selected =  wstring(L"");
+	wstring value =  wstring(L"");
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
-		return selected;
+		return value;
 
 	TiXmlHandle RootHandle( root );
 
 	// Get 'Modulations' and get its 'selected' attribute
 	TiXmlElement* Modulations = RootHandle.FirstChild( SPP_MODS ).ToElement();
 	if (!Modulations)
-		return selected;
-	const char * attr = Modulations->Attribute(SPP_SELECT);
+		return value;
+	const char * attr = Modulations->Attribute(utf8_encode(wstring(Attrib)).c_str());
 	if (attr)
-		selected = wstring(utf8_decode(string(attr)));
-	return selected;
+		value = wstring(utf8_decode(string(attr)));
+	return value;
+}
+
+// GetSelectedModulation - Get the selected modulation type
+// Return the Type (PPMW, AIR1 ...) according to the 'selected' attribute
+// If absent - return an empty string
+wstring  CSppConfig::GetSelectedModulation(void)
+{
+	return GetModulationAttrib(TEXT(SPP_SELECT));
 }
 
 // GetModulationHandle - find a modulation element by 'Type'
@@ -578,6 +589,19 @@ string CSppConfig::GetSubTypeModulationSelected()
 wstring CSppConfig::GetNameModulationSelected()
 {
 	return GetNameModulation(GetSelectedModulation());
+}
+
+bool CSppConfig::SetAutoDecoder(bool AutoMode)
+{
+		if (AutoMode)
+	{
+		//// Auto mode
+	}
+	else
+	{
+		//// Manual mode
+	};
+	return true;
 }
 
 // AddAudioDevice - Add reference to an audio device

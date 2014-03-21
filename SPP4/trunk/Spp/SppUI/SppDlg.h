@@ -69,7 +69,7 @@ public: // Called from window procedure
 	void SppStatusChanged( WPARAM wParam, LPARAM lParam);
 	void ScanMod(void);
 	void SelectDecoder(LPCTSTR Decoder);
-
+	void AutoDecParams(void);
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);

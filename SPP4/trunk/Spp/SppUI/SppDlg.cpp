@@ -727,7 +727,7 @@ void SppDlg::AudioChannelParams(void)
 
 }
 
-// Called when one of the 'Auto' checkboxs are changed
+// Called when one of the 'Auto' checkboxs for audio are changed
 // ctrl is the ID of the checkbox
 // Updates CU of the current audio setup
 // Gets the new value of the checkbox and sends it to the CU
@@ -749,6 +749,16 @@ void SppDlg::AutoParams(WORD ctrl)
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, mask, 0);
 }
 
+// Called when the Decoder's auto checkbox is changed
+// Updates CU of the current decoder-detection setup
+// Gets the new value of the checkbox and sends it to the CU
+void SppDlg::AutoDecParams(void)
+{
+	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_DEC_AUTO))
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 1);
+	else
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 0);
+}
 
 // Clear channel display
 void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
@@ -1246,6 +1256,14 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			DialogObj->AutoParams(IDC_AUD_AUTO);
 			break;
 		}
+
+		if  (LOWORD(wParam)  == IDC_DEC_AUTO) 
+		{
+			DialogObj->AutoDecParams();
+			break;
+		}
+
+
 
 		if (LOWORD(wParam)  == IDC_VJOY_DEVICE && HIWORD(wParam) == CBN_SELENDOK  )
 		{
