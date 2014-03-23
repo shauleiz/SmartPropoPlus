@@ -47,7 +47,6 @@
 #define IDM_DISPLAY_WIZARD                      40000
 #define IDS_APP_TITLE                           40000
 #define IDS_F_STARTSPPPRS                       40001
-#define IDC_DEC_AUTO                            40002
 #define IDS_I_STARTSPPPRS                       40002
 #define IDS_W_FILTERDLL                         40003
 #define IDS_I_FILTERDLL                         40004
@@ -142,7 +141,6 @@
 #define IDS_I_RESTAUDIO                         40072
 #define IDS_E_RESTAUDIO_NOAUDIO                 40073
 #define IDC_TXT_CHPP10                          40074
-#define IDS_E_RESTAUDIO_NOSPP                   40074
 #define IDS_E_RESTAUDIO_SSFAIL                  40075
 #define IDC_TXT_CHPP11                          40076
 #define IDS_E_RESTAUDIO_NOID                    40076
@@ -199,3 +197,5 @@
 #define IDC_PLS_SCOPE                           40148
 #define IDC_HIDE                                40149
 #define IDC_BTN_SCAN                            40152
+#define IDC_DEC_AUTO                            40153
+#define IDS_E_RESTAUDIO_NOSPP                   40174

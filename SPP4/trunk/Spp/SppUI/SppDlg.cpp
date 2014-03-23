@@ -558,15 +558,6 @@ void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 	};
 }
 
-void SppDlg::ShowButtonMapWindow(void)
-{
-	if (!m_BtnsDlg)
-		return;
-
-	vJoySelected(GetDlgItem(m_hDlg,IDC_VJOY_DEVICE));
-	m_BtnsDlg->Show();
-}
-
 //  Button SCAN was pressed
 void SppDlg::ScanMod(void)
 {
@@ -606,6 +597,51 @@ void SppDlg::SelectDecoder(LPCTSTR Decoder)
 		};  // Loop on list members
 	}; // Loop on both lists (PPM/PCM)
 }
+
+// CU informed of state of Auto-detection of decoder
+// If Automode true then:
+// - Check the checkbox (IDC_DEC_AUTO)
+// - Hide scan button (IDC_BTN_SCAN)
+// If Automode false then:
+// - Un-Check the checkbox
+// - Show scan button
+void SppDlg::DecoderAuto(bool automode)
+{
+	HWND hBtn = GetDlgItem(m_hDlg,  IDC_BTN_SCAN);
+
+	if (automode)
+	{
+		CheckDlgButton(m_hDlg,  IDC_DEC_AUTO, BST_CHECKED);
+		ShowWindow(hBtn, SW_HIDE);
+	}
+	else
+	{
+		CheckDlgButton(m_hDlg,  IDC_DEC_AUTO, BST_UNCHECKED);
+		ShowWindow(hBtn, SW_SHOW);
+	};
+}
+
+// Called when the Decoder's auto checkbox is changed
+// Updates CU of the current decoder-detection setup
+// Gets the new value of the checkbox and sends it to the CU
+void SppDlg::AutoDecParams(void)
+{
+	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_DEC_AUTO))
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 1);
+	else
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 0);
+}
+
+void SppDlg::ShowButtonMapWindow(void)
+{
+	if (!m_BtnsDlg)
+		return;
+
+	vJoySelected(GetDlgItem(m_hDlg,IDC_VJOY_DEVICE));
+	m_BtnsDlg->Show();
+}
+
+
 
 // Tell the parent window (Main application)
 // to show/hide log window
@@ -747,17 +783,6 @@ void SppDlg::AutoParams(WORD ctrl)
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, mask, AUTOBITRATE|AUTOCHANNEL);
 	else
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, mask, 0);
-}
-
-// Called when the Decoder's auto checkbox is changed
-// Updates CU of the current decoder-detection setup
-// Gets the new value of the checkbox and sends it to the CU
-void SppDlg::AutoDecParams(void)
-{
-	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_DEC_AUTO))
-		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 1);
-	else
-		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 0);
 }
 
 // Clear channel display
@@ -1131,6 +1156,8 @@ void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 		LPCTSTR mod = (LPCTSTR)SendMessage(hNew, LB_GETITEMDATA, SelNew, NULL);
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_MOD, (WPARAM)mod, 0);
 
+		// Make sure decoder selection is manual
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 0);
 	};
 }
 
@@ -1415,6 +1442,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (wParam && !lParam)
 			DialogObj->SelectDecoder((LPCTSTR)wParam);
 		break;
+
+	case SET_DEC_AUTO:
+		DialogObj->DecoderAuto((bool)wParam);
+		break;
+
 
 	}
 	return (INT_PTR)FALSE;
