@@ -519,6 +519,24 @@ wstring CSppConfig::GetModulationAttrib(LPTSTR Attrib)
 	return value;
 }
 
+void  CSppConfig::RemoveModulationAttrib(LPTSTR Attrib)
+{
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	if (!root)
+		return;
+
+	TiXmlHandle RootHandle( root );
+
+	// Get 'Modulations' and get its 'selected' attribute
+	TiXmlElement* Modulations = RootHandle.FirstChild( SPP_MODS ).ToElement();
+	if (!Modulations)
+		return;
+
+	string strAttrib = utf8_encode(((wstring)Attrib).c_str());
+	Modulations->RemoveAttribute(strAttrib.c_str());
+}
+
 // GetSelectedModulation - Get the selected modulation type
 // Return the Type (PPMW, AIR1 ...) according to the 'selected' attribute
 // If absent - return an empty string
@@ -591,18 +609,48 @@ wstring CSppConfig::GetNameModulationSelected()
 	return GetNameModulation(GetSelectedModulation());
 }
 
+// Set the Modulation attributes according to the state of "AutoMode"
+// If AutoMode is TRUE then
+// - Attribute "Manual" used to backup former (manual) value
+// If AutoMode is FALSE then
+// - Attribute "Manual" (if exists) moved to attribute "Selected" 
+// - Attribute "Manual" removed
+
 bool CSppConfig::SetAutoDecoder(bool AutoMode)
 {
 		if (AutoMode)
 	{
 		//// Auto mode
+		wstring  manual = GetSelectedModulation();
+		if (manual.length())
+			SetModulationAttrib(TEXT(SPP_BACKUP), (LPTSTR)manual.c_str());
+		else
+			SetModulationAttrib(TEXT(SPP_BACKUP), TEXT(" "));
 	}
 	else
 	{
 		//// Manual mode
+		wstring bu = GetModulationAttrib(TEXT(SPP_BACKUP));
+		if (bu.length())
+			SetModulationAttrib(TEXT(SPP_SELECT), (LPTSTR)bu.c_str());
+		RemoveModulationAttrib(TEXT(SPP_BACKUP));
 	};
 	return true;
 }
+
+bool CSppConfig::IsDecoderAuto(void)
+{
+	wstring bu, sl;
+
+	// Get attribute "Manual" (If does not exist or too short - return)
+	bu = GetModulationAttrib(TEXT(SPP_BACKUP));
+	sl = GetModulationAttrib(TEXT(SPP_SELECT));
+	if (sl.length() && !bu.length())
+		return false;
+	else
+		return true;
+}
+
 
 // AddAudioDevice - Add reference to an audio device
 // Parameters:

@@ -71,7 +71,7 @@ void		PulseScope(BOOL start);
 WORD		GetStartMode(LPTSTR lpCmdLine);
 void		SetNotificationIcon(LPCTSTR);
 void		ComputeOperatState(void);
-
+void		DecoderAuto(HWND hDlg);
 #pragma endregion Declarations
 
 
@@ -234,6 +234,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Start Pulse Scope according to config file
 	SetPulseScope(hDialog);
+
+	// Start searching for correct decoder according to config file
+	DecoderAuto(hDialog);
 
 	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hwnd);
@@ -515,7 +518,7 @@ LRESULT CALLBACK MainWindowProc(
 			if ((WORD)wParam & AUTODECODE)
 			{
 				Conf->SetAutoDecoder((WORD)lParam);
-				// DEBUG DecoderAuto();
+				DecoderAuto(hDialog);
 			}
 			break;
 
@@ -916,6 +919,36 @@ void AudioLevelWatch()
 		};
 	};
 
+}
+
+/*
+	Decoder auto-detection
+	Get auto state from configuration file (Conf->IsDecoderAuto()) 
+	Inform GUI of the state by sending message (SET_DEC_AUTO).
+	If auto state is on then instruct SppProcess to constatly scan encoding method (Spp->SetDecoderScanning(TRUE, TRUE, 0))
+*/
+void DecoderAuto(HWND hDlg)
+{
+	// Return if configuration file is not loaded
+	if (!Conf)
+		return;
+
+	// Get the auto-state of the decoder
+	bool Auto = Conf->IsDecoderAuto();
+	Conf->SetAutoDecoder(Auto);
+
+	// Send state to GUI
+	SendMessage(hDlg, SET_DEC_AUTO, (WPARAM)Auto, 0);
+
+	// Instruct SppProcess to constatly scan encoding method/Stop scanning
+	if (Spp)
+	{
+		if (Auto)
+			Spp->SetDecoderScanning(TRUE, TRUE, 0);
+		else
+			Spp->SetDecoderScanning(FALSE, TRUE, 0);
+
+	};
 }
 
 // Get all audio capture devices 

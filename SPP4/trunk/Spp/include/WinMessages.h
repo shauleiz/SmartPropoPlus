@@ -80,6 +80,7 @@ UINT const WMSPP_DLG_SCAN	=			BASE_SUB+54;			// Button SCAN was pressed
 UINT const WMSPP_DECD_QLT	=			BASE_SUB+55;			// Decoder Quality: Payload is the quality in the range 0-100
 UINT const WMSPP_JOY_QLT	=			BASE_SUB+56;			// Joystick data Quality: Payload is the quality in the range 0-100
 UINT const WMSPP_PRCS_DCDR	=			BASE_SUB+57;			// Send detected encoding: WPARAM = encoder/NULL, LPARAM = 0:Valid, 1:Not found, 2:Timeout reached
+UINT const SET_DEC_AUTO		=			BASE_SUB+58;			// Send decoding auto mode: WPARAM = Auto true/false
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

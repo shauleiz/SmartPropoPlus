@@ -68,8 +68,10 @@ public: // Called from window procedure
 	void OnNotificationIcon( WPARAM wParam, LPARAM lParam);
 	void SppStatusChanged( WPARAM wParam, LPARAM lParam);
 	void ScanMod(void);
-	void SelectDecoder(LPCTSTR Decoder);
+	void SelectDecoder(LPCTSTR);
 	void AutoDecParams(void);
+	void DecoderAuto(bool);
+
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
