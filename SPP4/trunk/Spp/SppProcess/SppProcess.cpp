@@ -278,6 +278,12 @@ SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 // 100  means that the data is excellent
 SPPMAIN_API int  CSppProcess::GetJoystickCommQuality(void)
 {
+	if (m_JoyQual)
+		m_JoyQual-=10;
+
+	if (m_JoyQual>100)
+		m_JoyQual=100;
+ 		
 	return m_JoyQual;
 }
 
@@ -960,16 +966,11 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
 		{
-			// Gradual degradation in the quality of joystick communication
-			// If the quality is good it is repared inside m_CurrentPP
-			if (m_JoyQual)
-				m_JoyQual--;
 
 			// Call the correct function ProcessPulseXXX() 
 			m_CurrentPP(PulseLength, negative);
 
 		// Store pulse in buffer for analysis and debug
-		// TODO: Add conditions
 		StorePulse(PulseLength, negative);
 		}
 
@@ -2519,9 +2520,26 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	BOOL updated = UpdateVJD(rID, &m_vJoyPosition);
 
 
-	// Mark quality of joystick connection as excellent
+	// Calculate quality of joystick data
+	static UINT count=0;
+	static std::chrono::system_clock::time_point tPrev = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point tNow = std::chrono::system_clock::now();
+	std::chrono::duration<double> delta = std::chrono::system_clock::duration::zero();
 	if (updated)
-		m_JoyQual=100;
+	{
+		count++;
+		if (count>=20)
+		{
+			delta = tNow-tPrev;
+			tPrev = tNow;
+			count = 0;
+			double c = delta.count();
+			m_JoyQual = (UINT)(100/c);
+		};
+	}
+	else
+		m_JoyQual=0;
+
 }
 
 void CSppProcess::ButtonMappingChanged(BTNArr* BtnMap, UINT nBtn, UINT vJoyId)

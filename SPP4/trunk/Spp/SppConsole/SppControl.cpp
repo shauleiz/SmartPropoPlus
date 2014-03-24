@@ -590,6 +590,7 @@ void PulseScope(BOOL start)
 // Compute the state of the Operation state machine
 // When state computed, OperatStateMachine is updated
 // When state seems to be stable an appropreate message is sent to GUI
+// State machine defined: https://docs.google.com/document/d/17zp6J4uAuh13n_Rg7E_8qoVE0qjtG7FfbYEtF9Yuo-c/edit#heading=h.ba01j0box48e
 void ComputeOperatState(void)
 {
 	UINT PosQual=0;
