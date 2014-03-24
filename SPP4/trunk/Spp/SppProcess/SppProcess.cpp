@@ -375,9 +375,12 @@ inline void  CSppProcess::GetEncoding(void)
 
 	}
 
-	// Timeout?
+	// Timeout? - Inform CU
 	if (m_DecoderStruct.timeout && m_DecoderStruct.expire < std::chrono::system_clock::now())
-		m_DecoderStruct.stop;
+	{
+		m_DecoderStruct.stop = TRUE;
+		SendMessage(m_hParentWnd, WMSPP_PRCS_DCDR,  (WPARAM)NULL, 0);
+	};
 }
 
 // Store pulse in pulse buffer for future analysis

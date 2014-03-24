@@ -598,6 +598,12 @@ void SppDlg::SelectDecoder(LPCTSTR Decoder)
 	}; // Loop on both lists (PPM/PCM)
 }
 
+// Button pressed: Timeout reached meaning detection failed
+void SppDlg::SelectDecoderFailed(void)
+{
+	MessageBox(m_hDlg, CN_NO_DECODER, CN_NO_DECODER_HDR, MB_OK|MB_ICONWARNING|MB_TOPMOST);
+}
+
 // CU informed of state of Auto-detection of decoder
 // If Automode true then:
 // - Check the checkbox (IDC_DEC_AUTO)
@@ -1441,6 +1447,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_PRCS_DCDR:
 		if (wParam && !lParam)
 			DialogObj->SelectDecoder((LPCTSTR)wParam);
+		else if (!wParam)
+			DialogObj->SelectDecoderFailed();
 		break;
 
 	case SET_DEC_AUTO:
