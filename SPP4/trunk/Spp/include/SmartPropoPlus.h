@@ -188,6 +188,8 @@ For further details please go to the SmartPropoPlus Home using the link below."
 /* SPP Console messages */
 #define CN_NO_INTERSPPCONSOLE	TEXT("wWinMain(): WM_INTERSPPCONSOLE = %u - cannot register window message INTERSPPCONSOLE")
 #define CN_NO_INTERSPPAPPS		TEXT("wWinMain(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS")
+#define CN_NO_DECODER			TEXT("Could not detect the encoding of the input signal\r\nTry to select the decoder manually")
+#define CN_NO_DECODER_HDR		TEXT("Encoding Detection")
 
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1
