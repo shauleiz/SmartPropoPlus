@@ -33,7 +33,8 @@
 #define MAIN_CLASS_NAME TEXT("Main_Window_Class_Name")
 #define MAIN_WND_TITLE TEXT("Main Window (Debug Mode)")
 #define	DEF_BITRATE	8
-#define DEF_CHANNEL	TEXT("Left")
+#define DEF_CHANNEL1	TEXT("Mono")
+#define DEF_CHANNEL2	TEXT("Left")
 
 static UINT NEAR WM_INTERSPPCONSOLE;
 static UINT NEAR WM_INTERSPPAPPS;

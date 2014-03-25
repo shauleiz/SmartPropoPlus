@@ -812,14 +812,18 @@ void AudioLevelWatch()
 	if (BitRate==-1)
 		BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
 
-
+	// Get the number of channels (Stereo/Mono)
+	int nChannels = Audio->GetNumberChannels((PVOID)AudioId);
 
 	// Get the audio levels of the selected audio device
 	AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
 	AudioLevel[1] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 1));
 
 	// Inform GUI
-	SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
+	if (nChannels == 1)
+		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],101));
+	else
+		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
 
 	// Wrong Channel?
 	// Change channel to the other channel if the other channel is much louder:
@@ -827,17 +831,24 @@ void AudioLevelWatch()
 	// 2. The other channel level is very high (>95)
 	// 3. The current channel is low (<50)
 
+
 	// If channel selection is automatic - test if the correct channel is selected
 	if (AutoChannel)
 	{	
 		if (isRight && AudioLevel[0]>=LEVEL_VHI && AudioLevel[1]<LEVEL_LO)
 		{// Right channel selected and the left channel gives a good signal then switch to Left signal
-			Conf->SetDefaultChannel(TEXT("Left"));
+			if (nChannels>1)
+				Conf->SetDefaultChannel(TEXT("Left"));
+			else
+				Conf->SetDefaultChannel(TEXT("Mono"));
 			Spp->SetAudioChannel(true);
 			Spp->AudioChanged();
 			isRight=0;
 			WentAutoCh=true;
-			SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
+			if (nChannels>1)
+				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
+			else
+				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'M');
 		}
 		else if (!isRight && AudioLevel[1]>=LEVEL_VHI && AudioLevel[0]<LEVEL_LO)
 		{// Left channel selected and the right channel gives a good signal then switch to Left signal
@@ -859,10 +870,15 @@ void AudioLevelWatch()
 			Spp->SetAudioChannel(!right);
 			isRight=-1;
 			WentAutoCh=false;
-			if (right)
-				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'R');
+			if (nChannels == 1)
+				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'M');
 			else
-				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
+			{
+				if (right)
+					SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'R');
+				else
+					SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'L');
+			}
 			SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOCHANNEL,0);
 			Spp->AudioChanged();
 		};
@@ -1015,8 +1031,14 @@ void CaptureDevicesPopulate(HWND hDlg)
 			WCHAR * Channel =  _wcsdup(Conf->GetAudioDeviceChannel(jack.id).c_str());
 			if (!BitRate)
 				BitRate = DEF_BITRATE;
-			if (!wcslen(Channel))
-				Channel = DEF_CHANNEL;
+
+			if (!wcslen(Channel) && jack.nChannels != 1)
+					Channel = DEF_CHANNEL2;
+
+			if (jack.nChannels == 1)
+					Channel = DEF_CHANNEL1;
+
+
 			SendMessage(hDlg, SET_AUDIO_PARAMS, (WPARAM)BitRate, (LPARAM)(Channel[0]));
 
 			// Auto/Manual channel selection
