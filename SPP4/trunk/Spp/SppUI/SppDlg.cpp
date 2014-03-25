@@ -245,8 +245,13 @@ void SppDlg::DisplayAudioLevels(HWND hDlg, PVOID Id, UINT Left, UINT Right)
 {
 	HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
 
+	wstring str;
+	if (Right>100) // If Right channel is over 100 then this is a mono device
+		str = to_wstring(Left); // Mono
+	else
+		str = to_wstring(Left) + L"/" +  to_wstring(Right);
+
 	// Get item index of by Id
-	wstring str = to_wstring(Left) + L"/" +  to_wstring(Right);
 	int i = FindItemById(hAudioList, (LPCTSTR)Id);
 	if (i<0)
 		return;
@@ -696,12 +701,26 @@ void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 	else if (Bitrate == 16)
 		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_16);
 
-	if (Channel == TEXT('L'))
-		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_LEFT);
-	else if (Channel == TEXT('R'))
-		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_RIGHT);
-	else if (Channel == TEXT('M'))
-		CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_MONO);
+	if (Channel)
+	{
+		if (Channel == TEXT('M'))
+		{
+			CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_MONO);
+			ShowWindow(GetDlgItem(m_hDlg,  IDC_LEFT), SW_HIDE);
+			ShowWindow(GetDlgItem(m_hDlg,  IDC_RIGHT), SW_HIDE);
+			ShowWindow(GetDlgItem(m_hDlg,  IDC_MONO), SW_SHOW);
+		}
+		else
+		{
+			ShowWindow(GetDlgItem(m_hDlg,  IDC_LEFT), SW_SHOW);
+			ShowWindow(GetDlgItem(m_hDlg,  IDC_RIGHT), SW_SHOW);
+			ShowWindow(GetDlgItem(m_hDlg,  IDC_MONO), SW_HIDE);
+			if (Channel == TEXT('L'))
+				CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_LEFT);
+			else if (Channel == TEXT('R'))
+				CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_RIGHT);
+		}
+	};
 }
 
 void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
@@ -1059,7 +1078,10 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 	item.lParam = (LPARAM)jack->id;
 	int i = ListView_InsertItem(hAudioList, &item);
 
-	ListView_SetItemText(hAudioList, i, 1, TEXT("0/0")); // TODO: Replace later with real stuff
+	if (jack->nChannels == 1)
+		ListView_SetItemText(hAudioList, i, 1, TEXT("0"))
+	else
+		ListView_SetItemText(hAudioList, i, 1, TEXT("0/0")); 
 
 	// Set the default jack as focused (and selected)
 	if (jack->Default)
