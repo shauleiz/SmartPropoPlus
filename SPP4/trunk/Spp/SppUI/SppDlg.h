@@ -1,8 +1,22 @@
 #pragma once
+#define TAB_IDS {IDD_GENERAL}
+
+#include "SppTabGen.h"
+#include "SppTabAudio.h"
+
 class SppBtnsDlg;
 
 class SppDlg
 {
+
+typedef struct tag_dlghdr {  // Based on http://msdn.microsoft.com/en-us/library/windows/desktop/hh298366(v=vs.85).aspx
+    HWND hwndTab;       // tab control 
+    SppTab Display;   // current child dialog box 
+    RECT rcDisplay;     // display rectangle for the tab control 
+	SppTab TabGen, TabAudio, TabDcdr, TabFltr, TabJoy, TabAdvnc;
+} DLGHDR; 
+
+
 public:
 	SppDlg(void);
 	SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd);
@@ -72,13 +86,15 @@ public: // Called from window procedure
 	void SelectDecoderFailed(void);
 	void AutoDecParams(void);
 	void DecoderAuto(bool);
+	int InitTabs(HWND);
+	void OnSelChanged(HWND hDlg);
 
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
 	void ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color);
 	int FindItemById(HWND hListView, LPCTSTR Id);
-
+	DLGTEMPLATE* DoLockDlgRes(LPCTSTR lpszResName);
 	//DWORD WINAPI  StartDlg(LPVOID hInstance);
 
 private:
@@ -92,5 +108,6 @@ private:
 	HANDLE	m_hThread;
 	HWND	m_ConsoleWnd;
 	SppBtnsDlg * m_BtnsDlg;
+	DLGHDR m_hrsrc;
 };
 
