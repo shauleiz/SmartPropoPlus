@@ -11,9 +11,9 @@ class SppDlg
 
 typedef struct tag_dlghdr {  // Based on http://msdn.microsoft.com/en-us/library/windows/desktop/hh298366(v=vs.85).aspx
     HWND hwndTab;       // tab control 
-    SppTab Display;   // current child dialog box 
+    SppTab * Display;   // current child dialog box 
     RECT rcDisplay;     // display rectangle for the tab control 
-	SppTab TabGen, TabAudio, TabDcdr, TabFltr, TabJoy, TabAdvnc;
+	SppTab * TabGen, * TabAudio, * TabDcdr, * TabFltr, * TabJoy, * TabAdvnc;
 } DLGHDR; 
 
 
@@ -88,6 +88,7 @@ public: // Called from window procedure
 	void DecoderAuto(bool);
 	int InitTabs(HWND);
 	void OnSelChanged(HWND hDlg);
+	void RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam);
 
 
 private:
