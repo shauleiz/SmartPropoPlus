@@ -27,8 +27,9 @@ INT_PTR CALLBACK MsgHndlTabGenDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 	switch (message)
 	{
 	case WM_INITDIALOG:
-		SetWindowPos(hDlg, HWND_TOP,20,40, 0, 0,SWP_NOSIZE); 
 		DialogObj = (SppTabGen *)lParam;
+
+		DialogObj->SetPosition(hDlg) ;
 
 		return (INT_PTR)TRUE;
 

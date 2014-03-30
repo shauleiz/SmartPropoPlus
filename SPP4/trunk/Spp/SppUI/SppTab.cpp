@@ -18,16 +18,16 @@ SppTab::SppTab(void)
 {
 }
 
-SppTab::SppTab(HINSTANCE hInstance, HWND TopDlgWnd, int Id, DLGPROC MsgHndlDlg) : 
+SppTab::SppTab(HINSTANCE hInstance, HWND ParentWnd, int Id, DLGPROC MsgHndlDlg) : 
 	m_hDlg(0),
 	m_DlgId(-1)
 {
 	m_hInstance = hInstance;
-	m_TopDlgWnd = TopDlgWnd;
+	m_TopDlgWnd = GetParent(ParentWnd);
 	m_DlgId = Id;
 
 	// Create the dialog box (Hidden) 
-	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(m_DlgId), m_TopDlgWnd, MsgHndlDlg, (LPARAM)this);	
+	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(m_DlgId), ParentWnd, MsgHndlDlg, (LPARAM)this);	
 
 	return;
 }
@@ -58,6 +58,11 @@ void SppTab::Hide()
 	ShowWindow(m_hDlg, SW_HIDE);
 }
 
+// Set the dialog box inside the tab control
+void SppTab::SetPosition(HWND hDlg)
+{
+	SetWindowPos(hDlg, HWND_TOP,20,40, 0, 0,SWP_NOSIZE);
+}
 
 INT_PTR CALLBACK MsgHndlTabDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {

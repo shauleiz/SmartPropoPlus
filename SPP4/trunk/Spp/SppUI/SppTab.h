@@ -11,8 +11,9 @@ public:
 	HWND GetHandle(void);
 	int  GetId(void);
 	int  GetTabText(LPTSTR Text, int TextSize);
+	void SetPosition(HWND hDlg);
 
-private:
+protected:
 	HWND m_hDlg;	// Handle to the tab dialog box
 	int	m_DlgId;	// ID of the dialog box resource
 	HINSTANCE m_hInstance;

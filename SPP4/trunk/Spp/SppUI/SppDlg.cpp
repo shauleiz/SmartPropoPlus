@@ -10,9 +10,10 @@
 #include "SppBtnsDlg.h"
 #include "SppDlg.h"
 
-
-
 #define MAX_LOADSTRING 100
+
+// TODO: Remove all the following defines when done with tab development
+#define TAB_AUDIO_ON	1
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -244,17 +245,17 @@ int SppDlg::InitTabs(HWND hDlg)
 	int iTab=0;
 
 	// General
-	m_hrsrc.TabGen =   SppTabGen(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.TabGen =   new SppTabGen(m_hInstance, m_hrsrc.hwndTab);
 	m_hrsrc.Display = m_hrsrc.TabGen;
 	tie.pszText = TEXT("General");
-	tie.lParam = m_hrsrc.Display.GetId();
+	tie.lParam = m_hrsrc.Display->GetId();
     TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
 
 	// Audio
-	m_hrsrc.TabAudio = SppTabAudio(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.TabAudio = new SppTabAudio(m_hInstance, m_hrsrc.hwndTab);
 	m_hrsrc.Display = m_hrsrc.TabAudio;
 	tie.pszText = TEXT("Input");
-	tie.lParam = m_hrsrc.Display.GetId();
+	tie.lParam = m_hrsrc.Display->GetId();
     TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
 
 	// Select the tab (Tab 0)
@@ -279,17 +280,17 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 		return;
 
 	// Hide all dialog boxes but one - according to ID
-	m_hrsrc.TabGen.Hide();
-	m_hrsrc.TabAudio.Hide();
+	m_hrsrc.TabGen->Hide();
+	m_hrsrc.TabAudio->Hide();
 
 	switch (tie.lParam)
 	{
 	case IDD_GENERAL:
-		m_hrsrc.TabGen.Show();
+		m_hrsrc.TabGen->Show();
 		break;
 
 	case IDD_AUDIO:
-		m_hrsrc.TabAudio.Show();
+		m_hrsrc.TabAudio->Show();
 		break;
 
 	};
@@ -333,6 +334,10 @@ void SppDlg::InitAudioDisplay(HWND hDlg)
 // Levels are in the range 0-100
 void SppDlg::DisplayAudioLevels(HWND hDlg, PVOID Id, UINT Left, UINT Right)
 {
+
+#if TAB_AUDIO_ON
+	((SppTabAudio *)m_hrsrc.TabAudio)->DisplayAudioLevels( Id,  Left,  Right);
+#else
 	HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
 
 	wstring str;
@@ -348,7 +353,7 @@ void SppDlg::DisplayAudioLevels(HWND hDlg, PVOID Id, UINT Left, UINT Right)
 
 	// Set text in the format L/R (e.g. 98/3)
 	ListView_SetItemText(hAudioList, i , 1, (LPTSTR)str.c_str());
-
+#endif
 }
 
 // Find audio item in list view by its id
@@ -786,6 +791,9 @@ void  SppDlg::vJoyMapping(void)
 // If Channel="" or Channel=NULL then don't change
 void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 {
+#if TAB_AUDIO_ON
+	((SppTabAudio *)m_hrsrc.TabAudio)->AudioChannelParams(Bitrate,  Channel);
+#else
 	if (Bitrate == 8)
 		CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_8);
 	else if (Bitrate == 16)
@@ -811,10 +819,14 @@ void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 				CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_RIGHT);
 		}
 	};
+#endif
 }
 
 void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 {
+#if TAB_AUDIO_ON
+	((SppTabAudio *)m_hrsrc.TabAudio)->AudioAutoParams( Mask,  Flags);
+#else
 	// Auto channel selection
 	if (Mask&AUTOCHANNEL)
 	{
@@ -855,6 +867,7 @@ void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 			CheckDlgButton(m_hDlg,  IDC_AUD_AUTO, BST_UNCHECKED);
 		}
 	}
+#endif
 }
 
 // Get the parameters of the audio (8/16 bits Left/Right/Mono)
@@ -1577,12 +1590,20 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->DecoderAuto(wParam != 0);
 		break;
 
+	case WMSPP_DLG_AUTO:
+	case WMSPP_DLG_CHNL:
+		DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
+		break;
+
 
 	}
 	return (INT_PTR)FALSE;
 }
 
-
+void SppDlg::RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	SendMessage(m_ConsoleWnd, message,  wParam,  lParam);
+}
 
 HWND SppDlg::GetHandle(void)
 {
