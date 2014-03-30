@@ -41,6 +41,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 	// Add icon to system tray
 	m_tnid.cbSize = 0;
 	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, NULL);
+
 	return;
 }
 
@@ -99,6 +100,7 @@ bool SppDlg::MsgLoop(void)
 
 	return true;
 }
+
 
 // TaskBarAddIcon - adds an icon to the notification area. 
 // Returns TRUE if successful, or FALSE otherwise. 
@@ -182,6 +184,20 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 	};
 }
 
+// Loads and locks a dialog box template resource. 
+// Returns the address of the locked dialog box template resource. 
+// lpszResName - name of the resource. 
+// Based on: http://msdn.microsoft.com/en-us/library/windows/desktop/hh298366(v=vs.85).aspx
+DLGTEMPLATE*  SppDlg::DoLockDlgRes(LPCTSTR lpszResName)
+{
+    HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
+
+    // Note that g_hInst is the global instance handle
+    HGLOBAL hglb = LoadResource(m_hInstance, hrsrc);  
+    return (DLGTEMPLATE *) LockResource(hglb); 
+
+}
+
 // Handle messages from notification icon
 void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
 {
@@ -205,6 +221,80 @@ void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
 	}
 }
 
+// Initialize the tab control
+int SppDlg::InitTabs(HWND hDlg)
+{
+	TCITEM tie;
+
+	// Initialize structure that represents tabs
+	m_hrsrc.hwndTab = GetDlgItem(hDlg,  IDC_TABS);
+	if (!m_hrsrc.hwndTab) // TODO: Add log
+		return 0;
+
+	// Get the tab rectangle
+	BOOL GotRect = GetWindowRect(m_hrsrc.hwndTab, &m_hrsrc.rcDisplay);
+	if (!GotRect) // TODO: Add log
+		return 0;
+
+	// Create child dialogs and tabs
+	tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
+	tie.iImage = -1;
+
+	// Creating dialog boxes that will be associated with tabs.
+	int iTab=0;
+
+	// General
+	m_hrsrc.TabGen =   SppTabGen(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.Display = m_hrsrc.TabGen;
+	tie.pszText = TEXT("General");
+	tie.lParam = m_hrsrc.Display.GetId();
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+
+	// Audio
+	m_hrsrc.TabAudio = SppTabAudio(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.Display = m_hrsrc.TabAudio;
+	tie.pszText = TEXT("Input");
+	tie.lParam = m_hrsrc.Display.GetId();
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+
+	// Select the tab (Tab 0)
+	TabCtrl_SetCurSel(m_hrsrc.hwndTab,0);
+	OnSelChanged(hDlg);
+
+	return 2;
+}
+
+// Changed selection of tab control
+void  SppDlg::OnSelChanged(HWND hDlg)
+{
+	// Get the current selection - extract the ID
+	int iTab = TabCtrl_GetCurSel(m_hrsrc.hwndTab);
+	if (iTab<0)
+		return;
+
+	TCITEM tie;
+	tie.mask = TCIF_PARAM;
+	BOOL sTab = TabCtrl_GetItem(m_hrsrc.hwndTab, iTab, &tie);
+	if (!sTab)
+		return;
+
+	// Hide all dialog boxes but one - according to ID
+	m_hrsrc.TabGen.Hide();
+	m_hrsrc.TabAudio.Hide();
+
+	switch (tie.lParam)
+	{
+	case IDD_GENERAL:
+		m_hrsrc.TabGen.Show();
+		break;
+
+	case IDD_AUDIO:
+		m_hrsrc.TabAudio.Show();
+		break;
+
+	};
+
+}
 
 void  SppDlg::CleanAudioList(void)
 {
@@ -1189,7 +1279,9 @@ void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 	};
 }
 
-// Message handler for spp dialog box.
+
+
+// Message handler for top spp dialog box.
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppDlg * DialogObj = NULL;
@@ -1204,11 +1296,19 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			return  (INT_PTR)TRUE;
 		}
 
+				
+		if (((LPNMHDR)lParam)->idFrom  == IDC_TABS)
+		{
+			DialogObj->OnSelChanged(hDlg);
+			return  (INT_PTR)TRUE;
+		}
+
 		return (INT_PTR)TRUE;
 
 
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
+		DialogObj->InitTabs(hDlg); // Initialize the tab control
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
@@ -1474,7 +1574,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case SET_DEC_AUTO:
-		DialogObj->DecoderAuto((bool)wParam);
+		DialogObj->DecoderAuto(wParam != 0);
 		break;
 
 

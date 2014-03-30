@@ -27,6 +27,15 @@
     <ClInclude Include="SppBtnsDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SppTab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SppTabGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SppTabAudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SppDlg.cpp">
@@ -39,6 +48,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SppBtnsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SppTab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SppTabGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SppTabAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

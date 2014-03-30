@@ -5,6 +5,8 @@
 
 #pragma once
 
+#define DIRECTINPUT_VERSION 0x0800
+
 using namespace std;
 
 #include "targetver.h"

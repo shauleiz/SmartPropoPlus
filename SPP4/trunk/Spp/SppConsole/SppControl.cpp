@@ -517,7 +517,7 @@ LRESULT CALLBACK MainWindowProc(
 
 			if ((WORD)wParam & AUTODECODE)
 			{
-				Conf->SetAutoDecoder((WORD)lParam);
+				Conf->SetAutoDecoder((WORD)lParam != 0);
 				DecoderAuto(hDialog);
 			}
 			break;
