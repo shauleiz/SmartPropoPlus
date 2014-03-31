@@ -3,6 +3,7 @@
 
 #include "SppTabGen.h"
 #include "SppTabAudio.h"
+#include "SppTabDcdr.h"
 
 class SppBtnsDlg;
 

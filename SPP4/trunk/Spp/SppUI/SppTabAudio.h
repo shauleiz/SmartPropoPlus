@@ -12,8 +12,6 @@ public:
 	void AutoParams(WORD ctrl);
 	void AudioChannelParams(void);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
-protected:
-public:
 	void AudioAutoParams(WORD Mask, WORD Flags);
 };
 

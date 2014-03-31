@@ -14,6 +14,7 @@
 
 // TODO: Remove all the following defines when done with tab development
 #define TAB_AUDIO_ON	1
+#define TAB_DCDR_ON	1
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -258,6 +259,13 @@ int SppDlg::InitTabs(HWND hDlg)
 	tie.lParam = m_hrsrc.Display->GetId();
     TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
 
+	// Decoder
+	m_hrsrc.TabDcdr = new SppTabDcdr(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.Display = m_hrsrc.TabDcdr;
+	tie.pszText = TEXT("Decoder");
+	tie.lParam = m_hrsrc.Display->GetId();
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+
 	// Select the tab (Tab 0)
 	TabCtrl_SetCurSel(m_hrsrc.hwndTab,0);
 	OnSelChanged(hDlg);
@@ -282,7 +290,9 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	// Hide all dialog boxes but one - according to ID
 	m_hrsrc.TabGen->Hide();
 	m_hrsrc.TabAudio->Hide();
+	m_hrsrc.TabDcdr->Hide();
 
+	// Show only the selected dialog box
 	switch (tie.lParam)
 	{
 	case IDD_GENERAL:
@@ -293,6 +303,9 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 		m_hrsrc.TabAudio->Show();
 		break;
 
+	case IDD_DECODE:
+		m_hrsrc.TabDcdr->Show();
+		break;
 	};
 
 }
@@ -383,18 +396,25 @@ int SppDlg::FindItemById(HWND hListView, LPCTSTR Id)
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetRawChData(UINT iCh, UINT data)
 {
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetRawChData( iCh,  data);
+#else
+
 	// Check if this channel is supported
 	if (iCh > (IDC_CH8-IDC_CH1))
 		return;
 
 	HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
 	SendMessage(hCh, PBM_SETPOS, data, 0);
-
+#endif
 }
 
 // Update the number of raw channels
 void SppDlg::SetNumberRawCh(UINT nCh)
 {
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetNumberRawCh(nCh);
+#endif	
 	static UINT prevVal=100;
 
 	// Prevent flicker
@@ -631,6 +651,11 @@ void SppDlg::AddLine2FilterListW(int FilterID, LPCWSTR FilterName)
 
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 {
+		
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->AddLine2DcdrList( mod,  SelType);
+#endif	
+
 	if (!mod)
 		return;
 
@@ -673,7 +698,9 @@ void SppDlg::SelectDecoder(LPCTSTR Decoder)
 	int count=0;
 	LPCTSTR iData;
 	int SelList=-1, SelItem=-1;
-
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->SelectDecoder( Decoder);
+#endif
 	for (int l=0; l<2; l++)
 	{ // Loop on both lists (PPM/PCM)
 		// Get a list (PPM/PCM)
@@ -713,6 +740,10 @@ void SppDlg::SelectDecoderFailed(void)
 // - Show scan button
 void SppDlg::DecoderAuto(bool automode)
 {
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->DecoderAuto( automode);
+#endif
+
 	HWND hBtn = GetDlgItem(m_hDlg,  IDC_BTN_SCAN);
 
 	if (automode)
@@ -732,10 +763,14 @@ void SppDlg::DecoderAuto(bool automode)
 // Gets the new value of the checkbox and sends it to the CU
 void SppDlg::AutoDecParams(void)
 {
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->AutoDecParams( );
+#else
 	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_DEC_AUTO))
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 1);
 	else
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 0);
+#endif
 }
 
 void SppDlg::ShowButtonMapWindow(void)
@@ -948,7 +983,7 @@ void  SppDlg::SetPulseScope(bool cb)
 // Start/Stop monitoring Raw & processed channels
 void  SppDlg::MonitorCh(bool cb)
 {
-	
+
 	// Set checkbox
 	HWND hChkBox = GetDlgItem(m_hDlg,  IDC_CH_MONITOR);
 	if (!hChkBox)
@@ -1592,6 +1627,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_DLG_AUTO:
 	case WMSPP_DLG_CHNL:
+	case WMSPP_DLG_MOD:
+	case WMSPP_DLG_SCAN:
 		DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 		break;
 
