@@ -22,15 +22,15 @@ extern "C"
 #define MOD_TYPE_AIR2	_T("AIR2")
 #define MOD_TYPE_WAL	_T("WAL")
 
-#define MOD_NAME_PPM	_T("PPM (Generic)")
-#define MOD_NAME_PPMP	_T("PPM (Positive)")
-#define MOD_NAME_PPMN	_T("PPM (Negative)")
-#define MOD_NAME_PPMW	_T("PPM (Walkera)")
-#define MOD_NAME_JR 	_T("JR (PCM)")
-#define MOD_NAME_FUT	_T("Futaba (PCM)")
-#define MOD_NAME_AIR1	_T("Sanwa/Air (PCM1)")
-#define MOD_NAME_AIR2	_T("Sanwa/Air (PCM2)")
-#define MOD_NAME_WAL	_T("Walkera (PCM)")
+#define MOD_NAME_PPM	_T("Standard")
+#define MOD_NAME_PPMP	_T("Positive")
+#define MOD_NAME_PPMN	_T("Negative")
+#define MOD_NAME_PPMW	_T("Walkera")
+#define MOD_NAME_JR 	_T("JR/Graupner")
+#define MOD_NAME_FUT	_T("Futaba")
+#define MOD_NAME_AIR1	_T("Sanwa/Airtronics [1]")
+#define MOD_NAME_AIR2	_T("Sanwa/Airtronics [2]")
+#define MOD_NAME_WAL	_T("Walkera")
 
 #define MOD_DEF_STR  {\
 						MOD_TYPE_PPM, MOD_NAME_PPM,\
