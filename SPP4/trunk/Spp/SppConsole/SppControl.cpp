@@ -835,8 +835,8 @@ void AudioLevelWatch()
 	// If channel selection is automatic - test if the correct channel is selected
 	if (AutoChannel)
 	{	
-		if (isRight && AudioLevel[0]>=LEVEL_VHI && AudioLevel[1]<LEVEL_LO)
-		{// Right channel selected and the left channel gives a good signal then switch to Left signal
+		if (isRight && AudioLevel[0]>AudioLevel[1] && AudioLevel[1]<LEVEL_LO)
+		{// Right channel selected and the left channel gives a stronger signal then switch to Left signal
 			if (nChannels>1)
 				Conf->SetDefaultChannel(TEXT("Left"));
 			else
@@ -850,8 +850,8 @@ void AudioLevelWatch()
 			else
 				SendMessage(hDialog, SET_AUDIO_PARAMS,0, 'M');
 		}
-		else if (!isRight && AudioLevel[1]>=LEVEL_VHI && AudioLevel[0]<LEVEL_LO)
-		{// Left channel selected and the right channel gives a good signal then switch to Left signal
+		else if (!isRight && AudioLevel[1]>AudioLevel[0] && AudioLevel[0]<LEVEL_LO)
+		{// Left channel selected and the right channel gives a stronger signal then switch to Left signal
 			Conf->SetDefaultChannel(TEXT("Right"));
 			Spp->SetAudioChannel(false);
 			Spp->AudioChanged();
