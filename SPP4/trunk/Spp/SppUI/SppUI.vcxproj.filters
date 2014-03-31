@@ -36,6 +36,9 @@
     <ClInclude Include="SppTabAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SppTabDcdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SppDlg.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SppTabAudio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SppTabDcdr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
