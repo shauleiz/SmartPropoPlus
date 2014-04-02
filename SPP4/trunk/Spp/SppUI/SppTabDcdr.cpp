@@ -225,7 +225,7 @@ void SppTabDcdr::SetRawChData(UINT iCh, UINT data)
 {
 
 	// Check if this channel is supported
-	UINT count = sizeof(g_BarId);
+	UINT count = sizeof(g_BarId)/sizeof(int);
 	if (iCh >= count)
 		return;
 

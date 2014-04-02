@@ -166,6 +166,7 @@
     <ClInclude Include="SppTab.h" />
     <ClInclude Include="SppTabAudio.h" />
     <ClInclude Include="SppTabDcdr.h" />
+    <ClInclude Include="SppTabFltr.h" />
     <ClInclude Include="SppTabGen.h" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +176,7 @@
     <ClCompile Include="SppTab.cpp" />
     <ClCompile Include="SppTabAudio.cpp" />
     <ClCompile Include="SppTabDcdr.cpp" />
+    <ClCompile Include="SppTabFltr.cpp" />
     <ClCompile Include="SppTabGen.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>

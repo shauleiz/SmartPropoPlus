@@ -4,6 +4,7 @@
 #include "SppTabGen.h"
 #include "SppTabAudio.h"
 #include "SppTabDcdr.h"
+#include "SppTabFltr.h"
 
 class SppBtnsDlg;
 
@@ -89,7 +90,7 @@ public: // Called from window procedure
 	void DecoderAuto(bool);
 	int InitTabs(HWND);
 	void OnSelChanged(HWND hDlg);
-	void RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam);
 
 
 private:
