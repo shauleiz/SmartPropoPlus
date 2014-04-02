@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Windows.h"
 #include "Windowsx.h"
 #include "SmartPropoPlus.h"
 #include "WinMessages.h"
@@ -14,7 +15,8 @@
 
 // TODO: Remove all the following defines when done with tab development
 #define TAB_AUDIO_ON	1
-#define TAB_DCDR_ON	1
+#define TAB_DCDR_ON		1
+#define TAB_FLTR_ON		1
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -129,6 +131,7 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
     tnid.hIcon =	m_hIcon;// Load system tray icon
 	tnid.uVersion = NOTIFYICON_VERSION_4;
 
+	LPTSTR lpszTitle = TEXT("SmartPropoPlus Message");
 	// Tool Tip
     if (lpszTip)
 	{
@@ -142,7 +145,7 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
 	if (lpszInfo)
 	{
         hr = StringCbCopyN(tnid.szInfo, sizeof(tnid.szInfo), lpszInfo, sizeof(tnid.szInfo));
-        hr = StringCbCopyN(tnid.szInfoTitle, sizeof(tnid.szInfoTitle), TEXT("SmartPropoPlus Message"), sizeof(tnid.szInfoTitle));
+        hr = StringCbCopyN(tnid.szInfoTitle, sizeof(tnid.szInfoTitle), lpszTitle, sizeof(tnid.szInfoTitle));
 		tnid.dwInfoFlags = NIIF_NONE;
 		tnid.uFlags |= NIF_INFO;
 	}
@@ -186,19 +189,22 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 	};
 }
 
+#if 0
 // Loads and locks a dialog box template resource. 
 // Returns the address of the locked dialog box template resource. 
 // lpszResName - name of the resource. 
 // Based on: http://msdn.microsoft.com/en-us/library/windows/desktop/hh298366(v=vs.85).aspx
 DLGTEMPLATE*  SppDlg::DoLockDlgRes(LPCTSTR lpszResName)
 {
-    HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
+	HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
 
-    // Note that g_hInst is the global instance handle
-    HGLOBAL hglb = LoadResource(m_hInstance, hrsrc);  
-    return (DLGTEMPLATE *) LockResource(hglb); 
+	// Note that g_hInst is the global instance handle
+	HGLOBAL hglb = LoadResource(m_hInstance, hrsrc);  
+	return (DLGTEMPLATE *) LockResource(hglb); 
 
 }
+
+#endif // 0
 
 // Handle messages from notification icon
 void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
@@ -266,6 +272,13 @@ int SppDlg::InitTabs(HWND hDlg)
 	tie.lParam = m_hrsrc.Display->GetId();
     TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
 
+	// Filter
+	m_hrsrc.TabFltr = new SppTabFltr(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.Display = m_hrsrc.TabFltr;
+	tie.pszText = TEXT("Filter");
+	tie.lParam = m_hrsrc.Display->GetId();
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+
 	// Select the tab (Tab 0)
 	TabCtrl_SetCurSel(m_hrsrc.hwndTab,0);
 	OnSelChanged(hDlg);
@@ -291,6 +304,7 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	m_hrsrc.TabGen->Hide();
 	m_hrsrc.TabAudio->Hide();
 	m_hrsrc.TabDcdr->Hide();
+	m_hrsrc.TabFltr->Hide();
 
 	// Show only the selected dialog box
 	switch (tie.lParam)
@@ -306,7 +320,12 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	case IDD_DECODE:
 		m_hrsrc.TabDcdr->Show();
 		break;
+
+	case IDD_FILTER:
+		m_hrsrc.TabFltr->Show();
+		break;
 	};
+
 
 }
 
@@ -1629,7 +1648,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_DLG_CHNL:
 	case WMSPP_DLG_MOD:
 	case WMSPP_DLG_SCAN:
-		DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
+	case WMSPP_DLG_FLTRFILE:
+		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 		break;
 
 
@@ -1637,9 +1657,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	return (INT_PTR)FALSE;
 }
 
-void SppDlg::RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT SppDlg::RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	SendMessage(m_ConsoleWnd, message,  wParam,  lParam);
+	LRESULT res = SendMessage(m_ConsoleWnd, message,  wParam,  lParam);
+	SetWindowLongPtr (m_hDlg, 0, res);
+	return TRUE;
 }
 
 HWND SppDlg::GetHandle(void)
@@ -1673,6 +1695,7 @@ void SppDlg::InitFilterDisplay(HWND hDlg)
 // CU tests file - if valid then file name (NOT full path) is displayed
 void SppDlg::OnFilterFileBrowse(void)
 {
+
 	OPENFILENAME ofn;       // common dialog box structure
 	TCHAR szFile[MAX_PATH];       // buffer for file name
 

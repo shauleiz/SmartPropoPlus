@@ -26,8 +26,9 @@ FILTER_API PJS_CHANNELS  PASCAL ProcessChannels(PJS_CHANNELS data, int max, int 
 FILTER_API int PASCAL GetNumberOfFilters()
 {
 	FilterItem * item;
+	int size = sizeof(ListOfFilters)/sizeof(ListOfFilters[0]);
 
-	for (int i=0; i < 127 ; i++)
+	for (int i=0; i < size ; i++)
 	{
 		item = &(ListOfFilters[i]);
 		if (!item || !(item->Function))

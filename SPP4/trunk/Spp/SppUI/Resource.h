@@ -51,6 +51,7 @@
 #define IDC_AUD_AUTO                            1024
 #define IDC_CH_LOG                              1081
 #define IDC_SIG_DEC                             40000
+#define IDC_SIG_DECOD                           40000
 #define IDC_WIZ                                 40000
 #define IDM_DISPLAY_WIZARD                      40000
 #define IDP_JACK_PIC                            40000
@@ -93,6 +94,7 @@
 #define IDC_JOY_FRAME                           40010
 #define IDC_LIST_PCM                            40010
 #define IDS_I_FILTERSELOK                       40010
+#define IDC_TXT_CH10                            40011
 #define IDS_JOY_DEVID                           40011
 #define IDS_W_VJOYMISSING                       40011
 #define IDC_LIST_PPM                            40012
@@ -120,11 +122,17 @@
 #define IDS_E_INITEP1                           40019
 #define IDC_CH8                                 40020
 #define IDS_I_INITPLSOBJ5                       40020
+#define IDC_TXT_CH11                            40021
 #define IDS_I_CHANGE_DEFDEV                     40021
+#define IDC_TXT_CH12                            40022
 #define IDS_W_CHANGE_DEFDEV                     40022
+#define IDC_TXT_CH13                            40023
 #define IDS_CHANGE_ENDEV                        40023
+#define IDC_TXT_CH14                            40024
 #define IDS_W_ISCAP_IDNOTFOUND                  40024
+#define IDC_TXT_CH15                            40025
 #define IDS_E_ISCAP_EPNOTFOUND                  40025
+#define IDC_TXT_CH16                            40026
 #define IDS_W_ISEXT_IDNOTFOUND                  40026
 #define IDS_W_ISEXT_TOPO                        40027
 #define IDS_W_ISEXT_NOCONN                      40028
