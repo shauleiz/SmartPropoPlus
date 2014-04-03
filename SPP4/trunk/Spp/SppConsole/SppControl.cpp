@@ -1256,7 +1256,7 @@ LPVOID SelectFilterFile(LPCTSTR FilterPath)
 	wchar_t * out = new TCHAR[MAX_PATH];
 	DWORD FilterVer = GetFilterFileVersion((LPTSTR)FilterPath);
 	if (FilterVer == -1)
-		return _wcsdup(TEXT("Illegal Filter File"));
+		return NULL;
 
 	// Convert version to string
 	wstring strVer = to_wstring((FilterVer>>24) & 0xFF) + L"." + to_wstring((FilterVer>>16) & 0xFF) + L"." + to_wstring((FilterVer>>8) & 0xFF) + L"." + to_wstring((FilterVer>>0) & 0xFF);
