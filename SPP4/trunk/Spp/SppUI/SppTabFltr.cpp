@@ -71,7 +71,10 @@ void SppTabFltr::SetRawChData(UINT iCh, UINT data)
 		return;
 
 	HWND hCh = GetDlgItem(m_hDlg,  g_BarId[iCh]);
-	SendMessage(hCh, PBM_SETPOS, data, 0);
+	if (IsWindowEnabled(hCh))
+		SendMessage(hCh, PBM_SETPOS, data, 0);
+	else
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
 }
 
 // Update the position of the progress bar that corresponds to the channel
@@ -84,13 +87,22 @@ void SppTabFltr::SetProcessedChData(UINT iCh, UINT data)
 		return;
 
 	HWND hCh = GetDlgItem(m_hDlg,  g_oBarId[iCh]);
-	SendMessage(hCh, PBM_SETPOS, data, 0);
+	if (IsWindowEnabled(hCh))
+		SendMessage(hCh, PBM_SETPOS, data, 0);
+	else
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
 }
 
 void SppTabFltr::ShowArrayOfItems(HWND hDlg, int nCmdShow, const int items[], UINT size)
 {
 	for (UINT i=0; i<size; i++)
 		ShowWindow(GetDlgItem(hDlg,  items[i]), nCmdShow);
+}
+
+void SppTabFltr::ShowArrayOfItems(HWND hDlg, bool Enable, const int items[], UINT size)
+{
+	for (UINT i=0; i<size; i++)
+		EnableWindow(GetDlgItem(hDlg,  items[i]), Enable);
 }
 
 void SppTabFltr::ShowChannelArea(HWND hDlg, int nCmdShow)
@@ -102,6 +114,18 @@ void SppTabFltr::ShowChannelArea(HWND hDlg, int nCmdShow)
 	ShowArrayOfItems( hDlg, nCmdShow, g_oBarId, sizeof(g_BarId)/sizeof(int));
 	ShowArrayOfItems( hDlg, nCmdShow, g_oTitleId, sizeof(g_TitleId)/sizeof(int));
 }
+
+void SppTabFltr::ShowChannelArea(HWND hDlg, bool Enable)
+{
+	EnableWindow(GetDlgItem(hDlg, IDC_RAW_CHANNELS), Enable);
+	EnableWindow(GetDlgItem(hDlg, IDC_OUT_CHANNELS), Enable);
+	ShowArrayOfItems( hDlg, Enable, g_BarId, sizeof(g_BarId)/sizeof(int));
+	ShowArrayOfItems( hDlg, Enable, g_TitleId, sizeof(g_TitleId)/sizeof(int));
+	ShowArrayOfItems( hDlg, Enable, g_oBarId, sizeof(g_BarId)/sizeof(int));
+	ShowArrayOfItems( hDlg, Enable, g_oTitleId, sizeof(g_TitleId)/sizeof(int));
+}
+
+
 #pragma endregion
 
 
@@ -168,7 +192,7 @@ void SppTabFltr::SelFilter(int FilterId)
 			int res = ComboBox_SetCurSel(hCombo, i);
 			// Checks the checkbox
 			Button_SetCheck(hFilterCB, BST_CHECKED);
-			ShowChannelArea( m_hDlg, SW_SHOW);
+			ShowChannelArea( m_hDlg, true);
 			break;
 		};
 		i++;
@@ -198,7 +222,7 @@ void SppTabFltr::InitFilter(int nFilters, LPTSTR FilterName)
 		ComboBox_Enable(hCombo, FALSE);
 		HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
 		Button_SetCheck(hFilterCB, BST_UNCHECKED);
-		ShowChannelArea( m_hDlg, SW_HIDE);
+		ShowChannelArea( m_hDlg, false);
 	};
 }
 
@@ -244,11 +268,11 @@ void SppTabFltr::EnableFilter(BOOL cb)
 	if (Enable)
 	{
 		UpdateFilter();
-		ShowChannelArea( m_hDlg, SW_SHOW);
+		ShowChannelArea( m_hDlg, true);
 	}
 	else
 	{
-		ShowChannelArea( m_hDlg, SW_HIDE);
+		ShowChannelArea( m_hDlg, false);
 		SendMessage(m_TopDlgWnd, WMSPP_DLG_FILTER, (WPARAM)-1, 0);
 \
 	};
@@ -273,7 +297,7 @@ void SppTabFltr::UpdateFilter(void)
 	// Checks the checkbox
 	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
 	Button_SetCheck(hFilterCB, BST_CHECKED);
-	ShowChannelArea( m_hDlg, SW_SHOW);
+	ShowChannelArea( m_hDlg, true);
 }
 
 #pragma endregion
@@ -297,7 +321,7 @@ void SppTabFltr::InitFilterDisplay(HWND hDlg)
 	// Just remove everything
 	ShowWindow(hFilterCB, SW_HIDE);
 	ShowWindow(hFilters, SW_HIDE);
-	ShowChannelArea( hDlg, SW_HIDE);
+	ShowChannelArea( hDlg, false);
 }
 
 
