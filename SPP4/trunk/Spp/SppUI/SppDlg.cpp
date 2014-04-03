@@ -416,6 +416,10 @@ int SppDlg::FindItemById(HWND hListView, LPCTSTR Id)
 void  SppDlg::SetRawChData(UINT iCh, UINT data)
 {
 #if TAB_DCDR_ON
+	((SppTabFltr *)m_hrsrc.TabFltr)->SetRawChData( iCh,  data);
+#endif
+
+#if TAB_DCDR_ON
 	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetRawChData( iCh,  data);
 #else
 
@@ -477,6 +481,10 @@ void SppDlg::SetDecoderQuality(UINT Quality)
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 {
+#if TAB_FLTR_ON
+	((SppTabFltr *)m_hrsrc.TabFltr)->SetProcessedChData(iCh, data);
+#endif
+
 	// Check if this channel is supported
 	if (iCh > (IDC_CHPP8-IDC_CHPP1))
 		return;
@@ -596,6 +604,9 @@ void SppDlg::OnStreamStopStart(void)
 // Set the selected filter to be displayed in the filter Combo Box
 void SppDlg::SelFilter(int FilterId)
 {
+#if TAB_FLTR_ON
+	((SppTabFltr *)m_hrsrc.TabFltr)->SelFilter(FilterId);
+#else
 	// Get the index of the filter (By ID)
 	int i=0, data;
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
@@ -612,11 +623,14 @@ void SppDlg::SelFilter(int FilterId)
 		};
 		i++;
 	};
+#endif
 }
 
 void SppDlg::InitFilter(int nFilters, LPTSTR FilterName)
 {
-
+#if TAB_FLTR_ON
+	((SppTabFltr *)m_hrsrc.TabFltr)->InitFilter( nFilters,  FilterName);
+#else
 	// Clear Filter display
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
 	SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
@@ -638,10 +652,14 @@ void SppDlg::InitFilter(int nFilters, LPTSTR FilterName)
 		HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
 		Button_SetCheck(hFilterCB, BST_UNCHECKED);
 	};
+#endif
 }
 
 void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 {
+#if TAB_FLTR_ON
+	((SppTabFltr *)m_hrsrc.TabFltr)->AddLine2FilterListA( FilterID,  FilterName);
+#else
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
 
 	ComboBox_Enable(hFilterList, TRUE);
@@ -654,16 +672,22 @@ void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 
 	int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterNameW ); 
 	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
+#endif
 }
 
 void SppDlg::AddLine2FilterListW(int FilterID, LPCWSTR FilterName)
 {
+#if TAB_FLTR_ON
+	((SppTabFltr *)m_hrsrc.TabFltr)->AddLine2FilterListW( FilterID,  FilterName);
+#else
+
 	HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
 
 	ComboBox_Enable(hFilterList, TRUE);
 
 	int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterName ); 
 	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
+#endif
 }
 
 
@@ -1649,6 +1673,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_DLG_MOD:
 	case WMSPP_DLG_SCAN:
 	case WMSPP_DLG_FLTRFILE:
+	case WMSPP_DLG_FILTER:
 		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 		break;
 
