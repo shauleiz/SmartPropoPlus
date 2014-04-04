@@ -1,4 +1,13 @@
 #pragma once
+//#define STRICT
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0800
+#endif
+#define _CRT_SECURE_NO_DEPRECATE
+#ifndef _WIN32_DCOM
+#define _WIN32_DCOM
+#endif
+
 #include <vector>
 #include <thread>
 #include <set>

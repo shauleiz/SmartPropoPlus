@@ -17,6 +17,7 @@
 #define TAB_AUDIO_ON	1
 #define TAB_DCDR_ON		1
 #define TAB_FLTR_ON		1
+#define TAB_JOY_ON		1
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -279,6 +280,13 @@ int SppDlg::InitTabs(HWND hDlg)
 	tie.lParam = m_hrsrc.Display->GetId();
     TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
 
+	// Joystick
+	m_hrsrc.TabJoy = new SppTabJoy(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.Display = m_hrsrc.TabJoy;
+	tie.pszText = TEXT("Joystick");
+	tie.lParam = m_hrsrc.Display->GetId();
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+
 	// Select the tab (Tab 0)
 	TabCtrl_SetCurSel(m_hrsrc.hwndTab,0);
 	OnSelChanged(hDlg);
@@ -305,6 +313,7 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	m_hrsrc.TabAudio->Hide();
 	m_hrsrc.TabDcdr->Hide();
 	m_hrsrc.TabFltr->Hide();
+	m_hrsrc.TabJoy->Hide();
 
 	// Show only the selected dialog box
 	switch (tie.lParam)
@@ -323,6 +332,10 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 
 	case IDD_FILTER:
 		m_hrsrc.TabFltr->Show();
+		break;
+
+	case IDD_JOY:
+		m_hrsrc.TabJoy->Show();
 		break;
 	};
 
@@ -497,6 +510,10 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 // Update the frame text of the vJoy device vJoy axes
 void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickDevFrame( iDev);
+#endif
+
 	static UINT id=0;
 	if (id == iDev)
 		return;
@@ -518,6 +535,9 @@ void SppDlg::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
 // Update the position of the  progress bar that corresponds to the vJoy axis
 void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickAxisData( iDev,  Axis,  AxisValue);
+#endif
 	int IdItem;
 
 	switch (Axis)
@@ -1135,6 +1155,9 @@ void SppDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
 // Enable/disable controls according to vJoy device settings
 void SppDlg::EnableControls(UINT id, controls * ctrl)
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->EnableControls( id,   ctrl);
+#else
 	UINT ch= IDC_X;
 	UINT edt = IDC_SRC_X;
 	HWND hCh, hEdt;
@@ -1172,6 +1195,7 @@ void SppDlg::EnableControls(UINT id, controls * ctrl)
 	} while (ch<=IDC_SL1);
 
 	SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
+#endif
 }
 
 
@@ -1293,29 +1317,41 @@ void  SppDlg::vJoySelected(HWND hCb)
 // Remove all vJoy Entries
 void  SppDlg::vJoyRemoveAll()
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->vJoyRemoveAll( );
+#else
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
 	SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
+#endif
 }
 
 // Add vJoy device entry to combo box
 // Set the id as item data
 void  SppDlg::vJoyDevAdd(UINT id)
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->vJoyDevAdd( id);
+#else
 	wstring vjoyid = L"vJoy " + to_wstring(id);
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
 	int index = (int)SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
 	SendMessage(hCombo,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)id ); 
+#endif
 }
 
 // Set the selected vJoy device
 void  SppDlg::vJoyDevSelect(UINT id)
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->vJoyDevSelect( id);
+#else
 	wstring vjoyid = L"vJoy " + to_wstring(id);
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
 	int index = (int)SendMessage(hCombo,(UINT) CB_FINDSTRINGEXACT ,(WPARAM) -1,(LPARAM)(vjoyid.data()) ); 
 	if (index == CB_ERR)
 		return;
 	index =  (int)SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
+#endif
 }
 
 // Informs Parent window (CU) that the user pressed OK or Cancel button
@@ -1674,6 +1710,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_DLG_SCAN:
 	case WMSPP_DLG_FLTRFILE:
 	case WMSPP_DLG_FILTER:
+	case WMSPP_DLG_VJOYSEL:
 		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 		break;
 

@@ -168,6 +168,7 @@
     <ClInclude Include="SppTabDcdr.h" />
     <ClInclude Include="SppTabFltr.h" />
     <ClInclude Include="SppTabGen.h" />
+    <ClInclude Include="SppTabJoy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SppBtnsDlg.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="SppTabDcdr.cpp" />
     <ClCompile Include="SppTabFltr.cpp" />
     <ClCompile Include="SppTabGen.cpp" />
+    <ClCompile Include="SppTabJoy.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
