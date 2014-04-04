@@ -5,8 +5,8 @@
 #include "SppTabAudio.h"
 #include "SppTabDcdr.h"
 #include "SppTabFltr.h"
+#include "SppTabJoy.h"
 
-class SppBtnsDlg;
 
 class SppDlg
 {

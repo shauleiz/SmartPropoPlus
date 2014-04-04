@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <vector>
 #include "Windowsx.h"
 #include "Commctrl.h"
 #include "resource.h"

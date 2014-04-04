@@ -119,13 +119,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>X64;_DEBUG;_LIB;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AssemblerListingLocation>$(ProjectDir)$(Platform)Debug_STL</AssemblerListingLocation>
-      <ProgramDataBaseFileName>.\Debug_STL/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>$(ProjectDir)$(Platform)Debug_STL/</AssemblerListingLocation>
+      <ProgramDataBaseFileName>$(ProjectDir)$(Platform)Debug_STL/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ObjectFileName>$(ProjectDir)$(Platform)Debug_STL/</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
