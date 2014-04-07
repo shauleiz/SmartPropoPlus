@@ -499,7 +499,7 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 #endif
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetProcessedChData(iCh, data);
-#endif
+#else
 
 	// Check if this channel is supported
 	if (iCh > (IDC_CHPP8-IDC_CHPP1))
@@ -507,6 +507,7 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 
 	HWND hCh = GetDlgItem(m_hDlg,  IDC_CHPP1+iCh);
 	SendMessage(hCh, PBM_SETPOS, data, 0);
+#endif
 
 }
 
@@ -515,7 +516,7 @@ void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 {
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickDevFrame( iDev);
-#endif
+#else
 
 	static UINT id=0;
 	if (id == iDev)
@@ -526,12 +527,17 @@ void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axis data";
 
 	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+#endif
 
 }
 
 void SppDlg::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
 {
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickBtnData( iDev,  BtnValue);
+#else
 	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_JMON_BTN, iDev, (LPARAM)BtnValue);
+#endif
 }
 
 
@@ -540,7 +546,7 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickAxisData( iDev,  Axis,  AxisValue);
-#endif
+#else
 	int IdItem;
 
 	switch (Axis)
@@ -576,6 +582,7 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 
 	HWND hCh = GetDlgItem(m_hDlg, IdItem);
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
+#endif
 }
 
 void SppDlg::EnableFilter(BOOL cb)
@@ -839,6 +846,7 @@ void SppDlg::AutoDecParams(void)
 #endif
 }
 
+#if !TAB_JOY_ON
 void SppDlg::ShowButtonMapWindow(void)
 {
 	if (!m_BtnsDlg)
@@ -847,7 +855,7 @@ void SppDlg::ShowButtonMapWindow(void)
 	vJoySelected(GetDlgItem(m_hDlg,IDC_VJOY_DEVICE));
 	m_BtnsDlg->Show();
 }
-
+#endif
 
 
 // Tell the parent window (Main application)
@@ -879,6 +887,7 @@ void  SppDlg::RecordInSignal(WORD cb)
 
 }
 
+#if !TAB_JOY_ON
 // Mapping button clicked
 // Send all mapping info to the control unit
 void  SppDlg::vJoyMapping(void)
@@ -886,6 +895,7 @@ void  SppDlg::vJoyMapping(void)
 	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_SEND,0, 0);
 	
 }
+#endif
 
 // Set the parameters of the audio (8/16 bits Left/Right/Mono)
 // If Bitrate = 0 then don't change
@@ -1147,13 +1157,13 @@ void SppDlg::UpdateFilter(void)
 	Button_SetCheck(hFilterCB, BST_CHECKED);
 }
 
-
+#if !TAB_JOY_ON
 // Fill-in the actual button-mapping data - pass message to button-mapping dialog
 void SppDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
 {
 	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, nButtons);
 }
-
+#endif
 
 // Enable/disable controls according to vJoy device settings
 void SppDlg::EnableControls(UINT id, controls * ctrl)
@@ -1446,7 +1456,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->InitTabs(hDlg); // Initialize the tab control
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
+#if !TAB_JOY_ON
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
+#endif
 		DialogObj->InitAudioDisplay(hDlg); // Initialize audio source display
 		return (INT_PTR)TRUE;
 
@@ -1511,6 +1523,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		};
 		
+#if !TAB_JOY_ON
 		if (LOWORD(wParam)  == IDC_BTN_MAP && HIWORD(wParam) == BN_CLICKED )
 		{
 			DialogObj->vJoyMapping();
@@ -1522,6 +1535,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			DialogObj->ShowButtonMapWindow();
 			break;
 		}
+#endif
 
 		if (LOWORD(wParam)  == IDC_BTN_SCAN && HIWORD(wParam) == BN_CLICKED )
 		{
@@ -1740,12 +1754,13 @@ HWND SppDlg::GetHandle(void)
 	return m_hDlg;
 }
 
+#if !TAB_JOY_ON
 // Create Button mapping dialog box
 void SppDlg::CreateBtnsDlg(HWND hDlg)
 {
 	m_BtnsDlg = new SppBtnsDlg(m_hInstance, hDlg);
 }
-
+#endif
 
 // Initialize Filters section
 void SppDlg::InitFilterDisplay(HWND hDlg)

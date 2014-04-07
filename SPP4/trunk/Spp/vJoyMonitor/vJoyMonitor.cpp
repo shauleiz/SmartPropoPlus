@@ -560,7 +560,7 @@ void CvJoyMonitor::PollingThread(Device * dev)
 
 			// Buttons
 			if (state.rgbButtons != prevState.rgbButtons)
-				PostButtonValue(iDevice, btnState);
+				SendButtonValue(iDevice, btnState);
 
 			// Update
 			btnPrevState = btnState;
@@ -804,9 +804,9 @@ void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, iDev + (Axis<<16), AxisValue);
 }
 
-void CvJoyMonitor::PostButtonValue(UCHAR iDev,  BTNArr btnState)
+void CvJoyMonitor::SendButtonValue(UCHAR iDev,  BTNArr btnState)
 {
-	PostMessage(m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState);
+	SendMessageTimeout (m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState, SMTO_ABORTIFHUNG, 1000, 0);
 }
 
 #ifdef _DEBUG

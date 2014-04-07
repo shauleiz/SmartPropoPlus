@@ -24,6 +24,7 @@
 #define IDD_FILTER                              147
 #define IDD_JOY                                 149
 #define IDD_ADVANCE                             151
+#define IDB_GREYDOT                             153
 #define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001

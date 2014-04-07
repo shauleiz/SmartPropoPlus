@@ -14,6 +14,10 @@
 // Bitmap resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDB_GREYDOT        BITMAP         ".\\bitmap4.bmp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_GREENDOT       BITMAP         "bitmap2.bmp"
 
 
