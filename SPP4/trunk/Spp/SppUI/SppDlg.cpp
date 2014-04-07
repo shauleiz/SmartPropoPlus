@@ -497,6 +497,9 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 #if TAB_FLTR_ON
 	((SppTabFltr *)m_hrsrc.TabFltr)->SetProcessedChData(iCh, data);
 #endif
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetProcessedChData(iCh, data);
+#endif
 
 	// Check if this channel is supported
 	if (iCh > (IDC_CHPP8-IDC_CHPP1))
@@ -1243,6 +1246,10 @@ void SppDlg::SendMappingData(BTNArr* aButtonMap, UINT nButtons)
 void SppDlg::SetMappingData(Mapping * Map)
 {
 
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetMappingData(Map);
+#else
+
 	UINT id = IDC_SRC_SL1;
 	HWND hEdtBox;
 	UINT channel;
@@ -1261,6 +1268,7 @@ void SppDlg::SetMappingData(Mapping * Map)
 	};
 
 	SetButtonsMappingData(Map->ButtonArray, Map->nButtons);
+#endif
 }
 
 
@@ -1711,6 +1719,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_DLG_FLTRFILE:
 	case WMSPP_DLG_FILTER:
 	case WMSPP_DLG_VJOYSEL:
+	case WMSPP_DLG_MAP:
 		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 		break;
 
