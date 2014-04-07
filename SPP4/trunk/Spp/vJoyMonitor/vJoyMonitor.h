@@ -148,7 +148,7 @@ private:
 	static void _CentralThread(CvJoyMonitor * This);
 	static void _PollingThread(CvJoyMonitor * This, Device * dev);
 	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
-	void PostButtonValue(UCHAR iDev,  BTNArr btnState);
+	void SendButtonValue(UCHAR iDev,  BTNArr btnState);
 
 // Private members
 private:

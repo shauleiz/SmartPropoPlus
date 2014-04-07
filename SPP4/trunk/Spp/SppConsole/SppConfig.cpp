@@ -904,12 +904,12 @@ TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 	TiXmlHandle RootHandle( root );
 
 	// Get Section 'Audio'
-	TiXmlElement* Audio = RootHandle.FirstChild( SPP_AUDIO ).ToElement();
-	if (!Audio)
+	TiXmlElement* eAudio = RootHandle.FirstChild( SPP_AUDIO ).ToElement();
+	if (!eAudio)
 		return  TiXmlHandle(0);
 
 	// Create/Replace 'Audio_Device' element (By ID)
-	TiXmlHandle AudioHandle( Audio );
+	TiXmlHandle AudioHandle( eAudio );
 	TiXmlHandle	DevHandle = GetByKey(AudioHandle, SPP_AUDDEV, SPP_AUDID, str_Id);
 	if (!DevHandle.ToElement())
 		return TiXmlHandle(0);
