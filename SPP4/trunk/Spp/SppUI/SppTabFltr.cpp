@@ -7,9 +7,7 @@
 #include "SppTabFltr.h"
 
 //Globals
-const int g_BarId[] = {IDC_CH1,IDC_CH2,IDC_CH3,IDC_CH4,IDC_CH5,IDC_CH6,IDC_CH7,IDC_CH8};
 const int g_TitleId[] = {IDC_TXT_CH1,IDC_TXT_CH2,IDC_TXT_CH3,IDC_TXT_CH4,IDC_TXT_CH5,IDC_TXT_CH6,IDC_TXT_CH7,IDC_TXT_CH8};
-const int g_oBarId[] = {IDC_CHPP1,IDC_CHPP2,IDC_CHPP3,IDC_CHPP4,IDC_CHPP5,IDC_CHPP6,IDC_CHPP7,IDC_CHPP8};
 const int g_oTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
 
 INT_PTR CALLBACK	MsgHndlTabFltrDlg(HWND, UINT, WPARAM, LPARAM);
@@ -32,31 +30,13 @@ SppTabFltr::~SppTabFltr(void)
 // Init Raw channel progress bar
 void SppTabFltr::MonitorCh(HWND hDlg)
 {
-	const DWORD Color = 0xFF00; // Green
-	HWND hCh;
-
-	for (auto id : g_BarId)
-	{
-		hCh = GetDlgItem(hDlg,  id);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000);	// Range: 0-1023
-		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
-		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	// Green
-	};
+	InitBars(hDlg, 0xFF00, m_vRawBarId);
 }
 
 // Init the pospprocessed channel progress bars
 void SppTabFltr::MonitorPpCh(HWND hDlg)
 {
-	const DWORD Color = 0xFF0000; // Blue
-	HWND hCh;
-
-	for (auto id : g_oBarId)
-	{
-		hCh = GetDlgItem(hDlg,  id);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000);	// Range: 0-1023
-		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
-		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	// Green
-	};
+	InitBars(hDlg, 0xFF0000, m_vPpBarId);
 }
 
 void SppTabFltr::SetNumberProcCh(UINT nCh)
@@ -69,11 +49,11 @@ void SppTabFltr::SetRawChData(UINT iCh, UINT data)
 {
 
 	// Check if this channel is supported
-	UINT count = sizeof(g_BarId)/sizeof(int);
+	UINT count = m_vRawBarId.size();
 	if (iCh >= count)
 		return;
 
-	HWND hCh = GetDlgItem(m_hDlg,  g_BarId[iCh]);
+	HWND hCh = GetDlgItem(m_hDlg,  m_vRawBarId[iCh]);
 	if (IsWindowEnabled(hCh))
 		SendMessage(hCh, PBM_SETPOS, data, 0);
 	else
@@ -85,47 +65,40 @@ void SppTabFltr::SetProcessedChData(UINT iCh, UINT data)
 {
 
 	// Check if this channel is supported
-	UINT count = sizeof(g_oBarId)/sizeof(int);
+	UINT count =  m_vPpBarId.size();
 	if (iCh >= count)
 		return;
 
-	HWND hCh = GetDlgItem(m_hDlg,  g_oBarId[iCh]);
+	HWND hCh = GetDlgItem(m_hDlg,  m_vPpBarId[iCh]);
 	if (IsWindowEnabled(hCh))
 		SendMessage(hCh, PBM_SETPOS, data, 0);
 	else
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 }
 
-void SppTabFltr::ShowArrayOfItems(HWND hDlg, int nCmdShow, const int items[], UINT size)
-{
-	for (UINT i=0; i<size; i++)
-		ShowWindow(GetDlgItem(hDlg,  items[i]), nCmdShow);
-}
-
-void SppTabFltr::ShowArrayOfItems(HWND hDlg, bool Enable, const int items[], UINT size)
-{
-	for (UINT i=0; i<size; i++)
-		EnableWindow(GetDlgItem(hDlg,  items[i]), Enable);
-}
 
 void SppTabFltr::ShowChannelArea(HWND hDlg, int nCmdShow)
 {
 	ShowWindow(GetDlgItem(hDlg,  IDC_RAW_CHANNELS), nCmdShow);
 	ShowWindow(GetDlgItem(hDlg,  IDC_OUT_CHANNELS), nCmdShow);
-	ShowArrayOfItems( hDlg, nCmdShow, g_BarId, sizeof(g_BarId)/sizeof(int));
+	ShowArrayOfItems( hDlg, nCmdShow, m_vRawBarId);
 	ShowArrayOfItems( hDlg, nCmdShow, g_TitleId, sizeof(g_TitleId)/sizeof(int));
-	ShowArrayOfItems( hDlg, nCmdShow, g_oBarId, sizeof(g_BarId)/sizeof(int));
+	ShowArrayOfItems( hDlg, nCmdShow, m_vPpBarId);
 	ShowArrayOfItems( hDlg, nCmdShow, g_oTitleId, sizeof(g_TitleId)/sizeof(int));
+	ResetArrayOfBars(hDlg, m_vRawBarId);
+	ResetArrayOfBars(hDlg, m_vPpBarId);
 }
 
 void SppTabFltr::ShowChannelArea(HWND hDlg, bool Enable)
 {
 	EnableWindow(GetDlgItem(hDlg, IDC_RAW_CHANNELS), Enable);
 	EnableWindow(GetDlgItem(hDlg, IDC_OUT_CHANNELS), Enable);
-	ShowArrayOfItems( hDlg, Enable, g_BarId, sizeof(g_BarId)/sizeof(int));
+	ShowArrayOfItems( hDlg, Enable, m_vRawBarId);
 	ShowArrayOfItems( hDlg, Enable, g_TitleId, sizeof(g_TitleId)/sizeof(int));
-	ShowArrayOfItems( hDlg, Enable, g_oBarId, sizeof(g_BarId)/sizeof(int));
+	ShowArrayOfItems( hDlg, Enable, m_vPpBarId);
 	ShowArrayOfItems( hDlg, Enable, g_oTitleId, sizeof(g_TitleId)/sizeof(int));
+	ResetArrayOfBars(hDlg, m_vRawBarId);
+	ResetArrayOfBars(hDlg, m_vPpBarId);
 }
 
 

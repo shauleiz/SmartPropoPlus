@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <vector>
 #include "Windowsx.h"
 #include "Commctrl.h"
 #include "resource.h"
@@ -7,23 +8,21 @@
 #include "SppTabDcdr.h"
 
 // GLobals
-const int g_BarId[] = 
-{IDC_CH1,IDC_CH2,IDC_CH3,IDC_CH4,IDC_CH5,IDC_CH6,IDC_CH7,IDC_CH8,\
-IDC_CH9,IDC_CH10,IDC_CH11,IDC_CH12,IDC_CH13,IDC_CH14,IDC_CH15,IDC_CH16};
-
 INT_PTR CALLBACK	MsgHndlTabDcdrDlg(HWND, UINT, WPARAM, LPARAM);
 
 SppTabDcdr::SppTabDcdr(void)
 {
 }
 
-SppTabDcdr::SppTabDcdr(HINSTANCE hInstance, HWND TopDlgWnd) : SppTab( hInstance,  TopDlgWnd,  IDD_DECODE, MsgHndlTabDcdrDlg)
-{
+SppTabDcdr::SppTabDcdr(HINSTANCE hInstance, HWND TopDlgWnd) : 
+	SppTab( hInstance,  TopDlgWnd,  IDD_DECODE, MsgHndlTabDcdrDlg)
+{	
 }
 
 SppTabDcdr::~SppTabDcdr(void)
 {
 }
+
 
 #pragma region Encoding detection and auto selection
 // CU informed of state of Auto-detection of decoder
@@ -204,20 +203,11 @@ void SppTabDcdr::SetNumberRawCh(UINT nCh)
 #pragma endregion
 
 #pragma region Transmitter channel data Progress bars
+
 // Init Raw channel progress bar
 void SppTabDcdr::MonitorCh(HWND hDlg)
 {
-	const DWORD Color = 0xFF00; // Green
-	HWND hCh;
-
-	for (auto id : g_BarId)
-	{
-		hCh = GetDlgItem(hDlg,  id);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000);	// Range: 0-1023
-		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
-		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	// Green
-	};
-
+	InitBars(hDlg, 0xFF00, m_vRawBarId);
 }
 
 // Update data in one of the transmitter channel progress bars
@@ -225,12 +215,15 @@ void SppTabDcdr::SetRawChData(UINT iCh, UINT data)
 {
 
 	// Check if this channel is supported
-	UINT count = sizeof(g_BarId)/sizeof(int);
+	UINT count = m_vRawBarId.size();
 	if (iCh >= count)
 		return;
 
-	HWND hCh = GetDlgItem(m_hDlg,  g_BarId[iCh]);
-	SendMessage(hCh, PBM_SETPOS, data, 0);
+	HWND hCh = GetDlgItem(m_hDlg,  m_vRawBarId[iCh]);
+	if (IsWindowEnabled(hCh))
+		SendMessage(hCh, PBM_SETPOS, data, 0);
+	else
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
 }
 
 #pragma endregion
@@ -241,6 +234,7 @@ INT_PTR CALLBACK MsgHndlTabDcdrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 	switch (message)
 	{
+
 	case WM_INITDIALOG:
 		DialogObj = (SppTabDcdr *)lParam;
 		DialogObj->SetPosition(hDlg) ;
