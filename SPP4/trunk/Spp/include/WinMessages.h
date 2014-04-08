@@ -21,7 +21,8 @@ UINT const WMAPP_GUI_AUDIO	=			WM_APP + 202;			// Information destination: Audio
 UINT const WMSPP_PRCS_RCHMNT=			WM_APP + 203;			// Raw Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
 UINT const WMSPP_PRCS_PCHMNT=			WM_APP + 204;			// Processed Channel data is ready to be monitored. The payload: Wparam is channel index, Lparam is channel value
 UINT const WMSPP_PRCS_NRCHMNT=			WM_APP + 205;			// Number of Raw. The payload: Wparam is number of channel.
-UINT const WMSPP_PRCS_ALIVE =			WM_APP + 206;			// Processing is/isn't alice. The payload: Wparam is true(alive)/false(not processing)
+UINT const WMSPP_PRCS_NPCHMNT=			WM_APP + 206;			// Number of Processed. The payload: Wparam is number of channel.
+UINT const WMSPP_PRCS_ALIVE =			WM_APP + 207;			// Processing is/isn't alive. The payload: Wparam is true(alive)/false(not processing)
 
 UINT const BASE_SUB			=			WM_APP + 1000;			// Base value
 UINT const POPULATE_JACKS	=			BASE_SUB+1;				// The payload is a pointer to struct jack_info

@@ -54,6 +54,7 @@
 #define IDC_OUT_CHANNELS                        40000
 #define IDC_SIG_DEC                             40000
 #define IDC_SIG_DECOD                           40000
+#define IDC_SPP_OUT                             40000
 #define IDC_WIZ                                 40000
 #define IDM_DISPLAY_WIZARD                      40000
 #define IDP_JACK_PIC                            40000

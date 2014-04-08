@@ -21,6 +21,7 @@ public:
 	void SetProcessedChData(UINT iCh, UINT data);
 	void MonitorCh(HWND hDlg);
 	void MonitorPpCh(HWND hDlg);
+	void SetNumberProcCh(UINT nCh);
 
 protected:
 	void ShowRawCh(HWND hDlg, int nCmdShow);
@@ -31,5 +32,8 @@ protected:
 	void ShowRawChTitle(HWND hDlg, bool enable);
 	void ShowArrayOfItems(HWND hDlg, bool enable, const int items[], UINT size);
 	void ShowChannelArea(HWND hDlg, bool enable);
+
+protected:
+	UINT m_nProcCh;
 };
 
