@@ -26,11 +26,9 @@ public:
 protected:
 	void ShowRawCh(HWND hDlg, int nCmdShow);
 	void ShowRawChTitle(HWND hDlg, int nCmdShow);
-	void ShowArrayOfItems(HWND hDlg, int nCmdShow, const int items[], UINT size);
 	void ShowChannelArea(HWND hDlg, int nCmdShow);
 	void ShowRawCh(HWND hDlg, bool enable);
 	void ShowRawChTitle(HWND hDlg, bool enable);
-	void ShowArrayOfItems(HWND hDlg, bool enable, const int items[], UINT size);
 	void ShowChannelArea(HWND hDlg, bool enable);
 
 protected:

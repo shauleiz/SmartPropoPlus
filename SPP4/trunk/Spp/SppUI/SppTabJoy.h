@@ -22,6 +22,7 @@ public:
 	void SetJoystickDevFrame(UCHAR iDev);
 	void InitJoyMonitor(HWND hDlg);
 	void MonitorPpCh(HWND hDlg);
+	void MonitorCh(HWND hDlg);
 	void SetProcessedChData(UINT iCh, UINT data);	
 	void SetMappingData(Mapping * Map);
 	void SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons);

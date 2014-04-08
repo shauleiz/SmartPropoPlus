@@ -10,9 +10,8 @@
 
 // GLobals
 INT_PTR CALLBACK	MsgHndlTabJoyDlg(HWND, UINT, WPARAM, LPARAM);
-
-const int g_oBarId[] = {IDC_X,IDC_Y,IDC_Z,IDC_RX,IDC_RY,IDC_RZ,IDC_SL0,IDC_SL1};
-const int g_iBarId[] = {IDC_CHPP1,IDC_CHPP2,IDC_CHPP3,IDC_CHPP4,IDC_CHPP5,IDC_CHPP6,IDC_CHPP7,IDC_CHPP8};
+const int g_RawTitleId[] = {IDC_TXT_CH1,IDC_TXT_CH2,IDC_TXT_CH3,IDC_TXT_CH4,IDC_TXT_CH5,IDC_TXT_CH6,IDC_TXT_CH7,IDC_TXT_CH8};
+const int g_PpTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
 
 
 SppTabJoy::SppTabJoy(void)
@@ -21,6 +20,7 @@ SppTabJoy::SppTabJoy(void)
 
 SppTabJoy::SppTabJoy(HINSTANCE hInstance, HWND TopDlgWnd) : SppTab( hInstance,  TopDlgWnd,  IDD_JOY, MsgHndlTabJoyDlg)
 {
+	m_nProcCh = 100; // Improbable number of Post-processed channels
 }
 
 SppTabJoy::~SppTabJoy(void)
@@ -79,6 +79,25 @@ void  SppTabJoy::vJoySelected(HWND hCb)
 
 
 #pragma region Progress Bars
+
+// Init the progress bars that monitor the feedback from the joystick
+void SppTabJoy::InitJoyMonitor(HWND hDlg)
+{	
+	InitBars(hDlg, 0xFF, m_vJoyBarId);
+}
+
+// Init the pospprocessed channel progress bars
+void SppTabJoy::MonitorPpCh(HWND hDlg)
+{
+	InitBars(hDlg, 0xFF0000, m_vPpBarId);
+}
+
+// Init Raw channel progress bar
+void SppTabJoy::MonitorCh(HWND hDlg)
+{
+	InitBars(hDlg, 0xFF00, m_vRawBarId);
+}
+
 // Update the position of the  progress bar that corresponds to the vJoy axis
 void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
@@ -119,8 +138,68 @@ void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
+// Update the position of the progress bar that corresponds to the processed channel
+void SppTabJoy::SetProcessedChData(UINT iCh, UINT data)
+{
+	// Check if this channel is supported
+	UINT count = m_vPpBarId.size();
+	if (iCh >= count)
+		return;
+
+	HWND hCh = GetDlgItem(m_hDlg,  m_vPpBarId[iCh]);
+	if (IsWindowEnabled(hCh))
+		SendMessage(hCh, PBM_SETPOS, data, 0);
+	else
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+}
+
+// Update the position of the progress bar that corresponds to the raw channel
+void SppTabJoy::SetRawChData(UINT iCh, UINT data)
+{
+	// Check if this channel is supported
+	UINT count = m_vRawBarId.size();
+	if (iCh >= count)
+		return;
+
+	HWND hCh = GetDlgItem(m_hDlg,  m_vRawBarId[iCh]);
+	if (IsWindowEnabled(hCh))
+		SendMessage(hCh, PBM_SETPOS, data, 0);
+	else
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+}
+
+// Get the number of Post-processed (Filtered) channels
+// Zero means - filter not used
 void SppTabJoy::SetNumberProcCh(UINT nCh)
 {
+	// If Number of Post-processed (Filtered) channels did not change - Do Nothing
+	if (m_nProcCh == nCh)
+		return;
+
+	// If nCh is 0 then hide PP bars and frame and show Raw bars and frame
+	// If m_nProcCh is 0 then do the oposite
+	if (!nCh)
+	{
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS), SW_SHOW);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vRawBarId);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vRawTitleId);
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_SPP_OUT), SW_HIDE);
+		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vPpBarId);
+		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vPpTitleId);
+	}
+	else
+	{
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS), SW_HIDE);
+		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vRawBarId);
+		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vRawTitleId);
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_SPP_OUT), SW_SHOW);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vPpBarId);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vPpTitleId);
+	}
+	ResetArrayOfBars(m_hDlg, m_vRawBarId);
+	ResetArrayOfBars(m_hDlg, m_vPpBarId);
+
+	// Change
 	m_nProcCh = nCh;
 }
 
@@ -138,60 +217,9 @@ void SppTabJoy::SetJoystickDevFrame(UCHAR iDev)
 	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
 }
 
-void SppTabJoy::InitJoyMonitor(HWND hDlg)
-{
-	const DWORD Color = 0xFF; // Red
-	HWND hCh;
-
-	for (auto id : g_oBarId)
-	{
-		hCh = GetDlgItem(hDlg,  id);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0xFFff0000);	// Range: 0-32K
-		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
-		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	// Red
-	};
-
-}
-
-// Update the position of the progress bar that corresponds to the processed channel
-void SppTabJoy::SetProcessedChData(UINT iCh, UINT data)
-{
-
-	// Check if this channel is supported
-	UINT count = sizeof(g_iBarId)/sizeof(int);
-	if (iCh >= count)
-		return;
-
-	HWND hCh = GetDlgItem(m_hDlg,  g_iBarId[iCh]);
-	if (IsWindowEnabled(hCh))
-		SendMessage(hCh, PBM_SETPOS, data, 0);
-	else
-		SendMessage(hCh, PBM_SETPOS, 0, 0);
-}
-
-// Init the pospprocessed channel progress bars
-void SppTabJoy::MonitorPpCh(HWND hDlg)
-{
-	const DWORD Color = 0xFF0000; // Blue
-	HWND hCh;
-
-	for (auto id : g_iBarId)
-	{
-		hCh = GetDlgItem(hDlg,  id);
-		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000);	// Range: 0-1023
-		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
-		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	// Blue
-	};
-}
-
-
-// Update the position of the progress bar that corresponds to the raw channel
-void SppTabJoy::SetRawChData(UINT iCh, UINT data)
-{
-}
-
 #pragma endregion
 
+#pragma region Mapping of Joystick buttons and axes
 // Fill-in the actual mapping data
 void SppTabJoy::SetMappingData(Mapping * Map)
 {
@@ -248,19 +276,19 @@ void SppTabJoy::SendMappingData(BTNArr* aButtonMap, UINT nButtons)
 	// Go on all entries and get value. Empty is considered as channel 0
 	// The value has to be one/two digits - is pusshed onto the DWORD to be sent
 	do {
-	((WORD *)Buffer)[0]=4;
-	out=0;
-	HWND hEdtBox = GetDlgItem(m_hDlg,  id);
-	nTchar = Edit_GetLine(hEdtBox, 1, &Buffer, 3);
-	if (nTchar == 1 || nTchar == 2)
-	{
-		Buffer[nTchar] = NULL;
-		out = _tstoi(Buffer);
-	}
- 	if (out>0xF)
+		((WORD *)Buffer)[0]=4;
 		out=0;
-	AxesMap = (AxesMap<<4 | out);
-	id++;
+		HWND hEdtBox = GetDlgItem(m_hDlg,  id);
+		nTchar = Edit_GetLine(hEdtBox, 1, &Buffer, 3);
+		if (nTchar == 1 || nTchar == 2)
+		{
+			Buffer[nTchar] = NULL;
+			out = _tstoi(Buffer);
+		}
+		if (out>0xF)
+			out=0;
+		AxesMap = (AxesMap<<4 | out);
+		id++;
 	} while (id <= IDC_SRC_SL1);
 
 	m.pAxisMap = &AxesMap;
@@ -292,7 +320,7 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 	if (index == CB_ERR)
 		return;
 
-		// Extract the device id from the item's data
+	// Extract the device id from the item's data
 	int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
 	if (id != SelId)
 		return;
@@ -334,6 +362,8 @@ void SppTabJoy::ShowButtonMapWindow(void)
 }
 
 
+#pragma endregion
+
 INT_PTR CALLBACK MsgHndlTabJoyDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppTabJoy * DialogObj = NULL;
@@ -345,6 +375,7 @@ INT_PTR CALLBACK MsgHndlTabJoyDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 		DialogObj->SetPosition(hDlg) ;
 		DialogObj->InitJoyMonitor(hDlg); // Init joystick monitor progress bar
 		DialogObj->MonitorPpCh(hDlg); // Init joystick feeder progress bar
+		DialogObj->MonitorCh(hDlg); // Init Raw channels progress bar
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
 		return (INT_PTR)TRUE;
 

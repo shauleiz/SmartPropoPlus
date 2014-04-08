@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Vector"
 #include "Windows.h"
 #include "Windowsx.h"
 #include "SmartPropoPlus.h"

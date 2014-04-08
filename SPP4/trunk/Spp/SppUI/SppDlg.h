@@ -101,7 +101,7 @@ private:
 	DLGTEMPLATE* DoLockDlgRes(LPCTSTR lpszResName);
 	//DWORD WINAPI  StartDlg(LPVOID hInstance);
 
-private:
+protected:
 	MSG m_msg;
 	HACCEL m_hAccelTable;
 	HWND m_hDlg;
