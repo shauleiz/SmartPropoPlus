@@ -13,7 +13,7 @@ public:
 
 public:
 	void vJoyRemoveAll(void);
-	void  vJoyDevAdd(UINT id);
+	void vJoyDevAdd(UINT id);
 	void vJoyDevSelect(UINT id);
 	void vJoySelected(HWND hCb);
 	void EnableControls(UINT id, controls * ctrl);
@@ -29,8 +29,11 @@ public:
 	void SendMappingData(BTNArr* aButtonMap, UINT nButtons);
 	void SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue);
 	void ShowButtonMapWindow(void);
+	void SetNumberProcCh(UINT nCh);
+	void SetRawChData(UINT iCh, UINT data);
 
 protected:
 	SppBtnsDlg * m_BtnsDlg;
+	UINT m_nProcCh;
 };
 

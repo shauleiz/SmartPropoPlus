@@ -109,6 +109,7 @@ SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 	if (it == m_ModulationMap.end())
 		return;
 
+	lock_guard<recursive_mutex> lock_Decode(m_mx_Decode);
 	MOD tmp = it->second;
 	m_CurrentPP =  tmp.func;
 	m_PosUpdateCounterFactor = tmp.Qreset;
@@ -798,16 +799,23 @@ void CSppProcess::PollChannels(void)
 		// Send the number of actual raw channels
 		PostMessage(m_hParentWnd, WMSPP_PRCS_NRCHMNT, m_nChannels, 0);
 
-		 //For every Processed channel, check if changed
-		 //If changed, POST message at the parent
-		for  (UINT i=0; i<nCh; i++)
+		if (ProcessChannels)
 		{
-			if (vPrcChannels[i] != m_PrcChannel[i])
+			PostMessage(m_hParentWnd, WMSPP_PRCS_NPCHMNT, nCh, 0);
+			
+			//For every Processed channel, check if changed
+			//If changed, POST message at the parent
+			for  (UINT i=0; i<nCh; i++)
 			{
-				vPrcChannels[i] = m_PrcChannel[i];
-				PostMessage(m_hParentWnd, WMSPP_PRCS_PCHMNT, i,vPrcChannels[i]);
-			};
-		}; // For loop (Processed)
+				if (vPrcChannels[i] != m_PrcChannel[i])
+				{
+					vPrcChannels[i] = m_PrcChannel[i];
+					PostMessage(m_hParentWnd, WMSPP_PRCS_PCHMNT, i,vPrcChannels[i]);
+				};
+			}; // For loop (Processed)
+		}
+		else
+			PostMessage(m_hParentWnd, WMSPP_PRCS_NPCHMNT, 0, 0);
 
 	
 		// Evaliate the pulses to determine the correct encoder
@@ -966,12 +974,13 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		// TODO (?): Very short pulses are ignored (Glitch)
 		if (PulseLength/*>3*/)
 		{
+			lock_guard<recursive_mutex> lock_Decode(m_mx_Decode);
 
 			// Call the correct function ProcessPulseXXX() 
 			m_CurrentPP(PulseLength, negative);
 
-		// Store pulse in buffer for analysis and debug
-		StorePulse(PulseLength, negative);
+			// Store pulse in buffer for analysis and debug
+			StorePulse(PulseLength, negative);
 		}
 
 
@@ -991,6 +1000,8 @@ Exit:
 // Assign PP function accordingly
 bool  CSppProcess::InitModulationSelect(void)
 {
+	lock_guard<recursive_mutex> lock_Decode(m_mx_Decode);
+
 	LPTSTR Type = (LPTSTR)SendMessage(m_hParentWnd, WMSPP_PRCS_GETMOD, 0 , 0);
 	if (!Type || !wcslen(Type))
 		Type = L"PPM";

@@ -37,6 +37,7 @@ public: // Called from window procedure
 	void AddLine2ModList(MOD * mod, LPCTSTR SelType);
 	void SetRawChData(UINT iCh, UINT data);
 	void SetNumberRawCh(UINT nCh);
+	void SetNumberProcCh(UINT nCh);
 	void SetDecoderQuality(UINT Quality);
 	void SetProcessedChData(UINT iCh, UINT data);
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);

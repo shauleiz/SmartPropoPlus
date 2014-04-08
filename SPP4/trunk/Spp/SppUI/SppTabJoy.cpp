@@ -119,6 +119,11 @@ void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
+void SppTabJoy::SetNumberProcCh(UINT nCh)
+{
+	m_nProcCh = nCh;
+}
+
 // Update the frame text of the vJoy device vJoy axes
 void SppTabJoy::SetJoystickDevFrame(UCHAR iDev)
 {
@@ -148,7 +153,7 @@ void SppTabJoy::InitJoyMonitor(HWND hDlg)
 
 }
 
-// Update the position of the progress bar that corresponds to the channel
+// Update the position of the progress bar that corresponds to the processed channel
 void SppTabJoy::SetProcessedChData(UINT iCh, UINT data)
 {
 
@@ -177,6 +182,12 @@ void SppTabJoy::MonitorPpCh(HWND hDlg)
 		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
 		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	// Blue
 	};
+}
+
+
+// Update the position of the progress bar that corresponds to the raw channel
+void SppTabJoy::SetRawChData(UINT iCh, UINT data)
+{
 }
 
 #pragma endregion

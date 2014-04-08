@@ -428,8 +428,12 @@ int SppDlg::FindItemById(HWND hListView, LPCTSTR Id)
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetRawChData(UINT iCh, UINT data)
 {
-#if TAB_DCDR_ON
+#if TAB_FLTR_ON
 	((SppTabFltr *)m_hrsrc.TabFltr)->SetRawChData( iCh,  data);
+#endif
+
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetRawChData( iCh,  data);
 #endif
 
 #if TAB_DCDR_ON
@@ -443,6 +447,11 @@ void  SppDlg::SetRawChData(UINT iCh, UINT data)
 	HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
 	SendMessage(hCh, PBM_SETPOS, data, 0);
 #endif
+}
+void SppDlg::SetNumberProcCh(UINT nCh)
+{
+	((SppTabFltr *)m_hrsrc.TabFltr)->SetNumberProcCh( nCh);
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetNumberProcCh( nCh);
 }
 
 // Update the number of raw channels
@@ -1628,6 +1637,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_PRCS_NRCHMNT:
 		DialogObj->SetNumberRawCh((UINT)wParam);
+		break;
+
+	case WMSPP_PRCS_NPCHMNT:
+		DialogObj->SetNumberProcCh((UINT)wParam);
 		break;
 
 	case WMSPP_DECD_QLT:

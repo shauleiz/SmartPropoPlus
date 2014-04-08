@@ -423,6 +423,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_JMON_AXIS:
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_NRCHMNT:
+		case WMSPP_PRCS_NPCHMNT:
 		case WMSPP_PRCS_PCHMNT:
 		case WMSPP_PRCS_ALIVE:
 		SendMessage(hDialog, uMsg, wParam, lParam);

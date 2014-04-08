@@ -59,6 +59,10 @@ void SppTabFltr::MonitorPpCh(HWND hDlg)
 	};
 }
 
+void SppTabFltr::SetNumberProcCh(UINT nCh)
+{
+	m_nProcCh = nCh;
+}
 
 // Update data in one of the transmitter channel progress bars
 void SppTabFltr::SetRawChData(UINT iCh, UINT data)
