@@ -461,6 +461,9 @@ void SppDlg::SetNumberRawCh(UINT nCh)
 #if TAB_DCDR_ON
 	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetNumberRawCh(nCh);
 #endif	
+#if TAB_JOY_ON
+	((SppTabJoy *)m_hrsrc.TabJoy)->SetNumberRawCh(nCh);
+#endif	
 	static UINT prevVal=100;
 
 	// Prevent flicker
