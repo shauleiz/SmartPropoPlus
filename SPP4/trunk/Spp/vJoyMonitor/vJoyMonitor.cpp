@@ -555,7 +555,7 @@ void CvJoyMonitor::PollingThread(Device * dev)
 				PostAxisValue(iDevice, HID_USAGE_SL1, state.rglSlider[1]);
 
 			// Copy the button values to an array
-			for (int iBtn=0; iBtn<128; iBtn++)
+			for (int iBtn=0; iBtn<MAX_BUTTONS; iBtn++)
 				btnState[iBtn] = state.rgbButtons[iBtn];
 
 			// Buttons
