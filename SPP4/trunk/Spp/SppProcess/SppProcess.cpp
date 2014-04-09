@@ -2637,7 +2637,7 @@ void CSppProcess::MappingChanged(Mapping* m, UINT vJoyId)
 	AxisMappingChanged(m->pAxisMap, m->nAxes, vJoyId);
 }
 
-void CSppProcess::SetDefaultBtnMap(array <BYTE, 128>& BtnMap)
+void CSppProcess::SetDefaultBtnMap(array <BYTE, MAX_BUTTONS>& BtnMap)
 {
 	auto size = BtnMap.size();
 	for (UINT i=0; i<size; i++)

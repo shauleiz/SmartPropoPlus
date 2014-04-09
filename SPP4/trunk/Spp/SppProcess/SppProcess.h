@@ -163,7 +163,7 @@ private:
 	void SendDbgPulse(USHORT sample, bool negative, UINT rawPulseLength, UINT PulseLength);
 	int InitModulationMap(void);
 	bool InitModulationSelect(void);
-	void SetDefaultBtnMap(array <BYTE, 128>& BtnMap);
+	void SetDefaultBtnMap(array <BYTE, MAX_BUTTONS>& BtnMap);
 	BOOL SetAxisDelayed(LONG Value, UINT Axis);
 	BOOL SetBtnDelayed(BOOL Value, UCHAR nBtn);
 	void StorePulse(UINT PulseLength, bool Negative);
@@ -213,7 +213,7 @@ private:
 	BOOL m_DbgPulse;
 	BOOL m_ChangeCapture;
 	DWORD m_Mapping;
-	array <BYTE, 128> m_BtnMapping;
+	array <BYTE, MAX_BUTTONS> m_BtnMapping;
 	MODMAP m_ModulationMap;
 	LPTSTR	m_SelectedMod;
 	PP m_CurrentPP;

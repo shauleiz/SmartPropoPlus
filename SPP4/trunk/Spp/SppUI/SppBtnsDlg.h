@@ -14,7 +14,7 @@ public:
 	SppBtnsDlg(HINSTANCE hInstance, HWND	ConsoleWnd);
 	virtual ~SppBtnsDlg(void);
 	HWND GetHandle(void);
-	void SetButtonsMappingData(array<BYTE, 128>* aButtonMap, UINT nButtons);
+	void SetButtonsMappingData(array<BYTE, MAX_BUTTONS>* aButtonMap, UINT nButtons);
 	void SendButtonsMappingData(void);
 	void Show(void);
 	void EnableControls(UINT id, controls * ctrl);

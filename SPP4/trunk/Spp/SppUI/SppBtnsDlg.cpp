@@ -170,16 +170,17 @@ void SppBtnsDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
 }
 
 // Create controls on dialog box
-// Four colums of 32 button-controls
+// Two colums of 8 button-controls
 // For each button dispaly Button number and an edit box
 // The edit box will accept channel number (1-24)
+// Unimplemented buttons will be seen but disabled
 void SppBtnsDlg::CreateControls(UINT nButtons)
 {
 	// Set the upper-left corner as starting point
 	POINT OrigPt;
 	OrigPt.x = OrigPt.y = 10;
 
-	for (UINT i=1; i<=nButtons; i++)
+	for (UINT i=1; i<=MAX_BUTTONS; i++)
 	{
 		CreateButtonLable(i);
 		CreateChannelEdit(i);
