@@ -21,6 +21,7 @@ SppTabJoy::SppTabJoy(void)
 SppTabJoy::SppTabJoy(HINSTANCE hInstance, HWND TopDlgWnd) : SppTab( hInstance,  TopDlgWnd,  IDD_JOY, MsgHndlTabJoyDlg)
 {
 	m_nProcCh = 100; // Improbable number of Post-processed channels
+	m_nRawCh = 0;
 }
 
 SppTabJoy::~SppTabJoy(void)
@@ -168,6 +169,20 @@ void SppTabJoy::SetRawChData(UINT iCh, UINT data)
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 }
 
+// Get the number of raw channels
+void SppTabJoy::SetNumberRawCh(UINT nCh)
+{
+	if (m_nRawCh == nCh)
+		return;
+
+	// Change
+	m_nRawCh = nCh;
+
+	if (!m_nProcCh)
+		UpdateChannelView(true, m_nRawCh);
+
+}
+
 // Get the number of Post-processed (Filtered) channels
 // Zero means - filter not used
 void SppTabJoy::SetNumberProcCh(UINT nCh)
@@ -176,32 +191,52 @@ void SppTabJoy::SetNumberProcCh(UINT nCh)
 	if (m_nProcCh == nCh)
 		return;
 
-	// If nCh is 0 then hide PP bars and frame and show Raw bars and frame
-	// If m_nProcCh is 0 then do the oposite
-	if (!nCh)
-	{
-		ShowWindow(GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS), SW_SHOW);
-		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vRawBarId);
-		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vRawTitleId);
-		ShowWindow(GetDlgItem(m_hDlg,  IDC_SPP_OUT), SW_HIDE);
-		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vPpBarId);
-		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vPpTitleId);
-	}
+	// Change
+	m_nProcCh = nCh;
+
+	if (m_nProcCh)
+		UpdateChannelView(false, m_nProcCh);
 	else
-	{
-		ShowWindow(GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS), SW_HIDE);
-		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vRawBarId);
-		ShowArrayOfItems( m_hDlg, SW_HIDE, m_vRawTitleId);
-		ShowWindow(GetDlgItem(m_hDlg,  IDC_SPP_OUT), SW_SHOW);
-		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vPpBarId);
-		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vPpTitleId);
-	}
+		UpdateChannelView(true, m_nRawCh);
+
+}
+
+// Update the display of the Raw/PP bars and related controls
+// Parameters: 
+//	Raw	- true: Display Raw channels / false: Display PP Channels
+//	Ch	- Number of channels to display
+void SppTabJoy::UpdateChannelView(bool Raw, UINT nCh)
+{
+
+	// Remove every thing
+	ShowWindow(GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS), SW_HIDE);
+	ShowArrayOfItems( m_hDlg, SW_HIDE, m_vRawBarId);
+	ShowArrayOfItems( m_hDlg, SW_HIDE, m_vRawTitleId);
+	ShowWindow(GetDlgItem(m_hDlg,  IDC_SPP_OUT), SW_HIDE);
+	ShowArrayOfItems( m_hDlg, SW_HIDE, m_vPpBarId);
+	ShowArrayOfItems( m_hDlg, SW_HIDE, m_vPpTitleId);
+
+	// Reset all data
 	ResetArrayOfBars(m_hDlg, m_vRawBarId);
 	ResetArrayOfBars(m_hDlg, m_vPpBarId);
 
-	// Change
-	m_nProcCh = nCh;
+	// If Raw - Display frame, the required bars and titls
+	if (Raw)
+	{
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS), SW_SHOW);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vRawBarId, nCh);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vRawTitleId, nCh);
+	}
+
+	// If PP - Display frame, the required bars and titls
+	else
+	{
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_SPP_OUT), SW_SHOW);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vPpBarId, nCh);
+		ShowArrayOfItems( m_hDlg, SW_SHOW, m_vPpTitleId, nCh);
+	};
 }
+
 
 // Update the frame text of the vJoy device vJoy axes
 void SppTabJoy::SetJoystickDevFrame(UCHAR iDev)
@@ -310,7 +345,7 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 {
 	UINT ch= IDC_X;
 	UINT edt = IDC_SRC_X;
-	HWND hCh, hEdt;
+	HWND hCh, hEdt, hTtl;
 	UINT iAxis=0;
 
 	////// Verify correct vJoy device
@@ -335,6 +370,11 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
 		UpdateWindow(hCh);
 
+		// Bar titles
+		hTtl = GetDlgItem(m_hDlg,  m_vJoyTitleId[iAxis]);
+		EnableWindow(hTtl, ctrl->axis[edt-IDC_SRC_X]);
+		UpdateWindow(hTtl);
+
 		// Map edit fields
 		hEdt = GetDlgItem(m_hDlg,  edt);
 		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
@@ -342,6 +382,7 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 
 		ch++;
 		edt++;
+		iAxis++;
 	} while (ch<=IDC_SL1);
 
 	SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);

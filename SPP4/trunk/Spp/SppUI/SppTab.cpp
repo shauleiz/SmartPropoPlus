@@ -29,6 +29,9 @@ const int g_RawTitleId[] = {IDC_TXT_CH1,IDC_TXT_CH2,IDC_TXT_CH3,IDC_TXT_CH4,IDC_
 // IDs of post-processed (filtered) titles (A...H) 
 const int g_PpTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
 
+// IDs of oystick monitoring titles (X...SL1) 
+const int g_JoyTitleId[] = {IDC_TXT_X,IDC_TXT_Y,IDC_TXT_Z,IDC_TXT_RX,IDC_TXT_RY,IDC_TXT_RZ,IDC_TXT_SL0,IDC_TXT_SL1};
+
 
 INT_PTR CALLBACK	MsgHndlTabDlg(HWND, UINT, WPARAM, LPARAM);
 
@@ -43,6 +46,7 @@ SppTab::SppTab(HINSTANCE hInstance, HWND ParentWnd, int Id, DLGPROC MsgHndlDlg) 
 	m_vPpBarId(g_PpBarId, g_PpBarId+sizeof(g_PpBarId)/ sizeof(int)),
 	m_vJoyBarId(g_JoyBarId, g_JoyBarId+sizeof(g_JoyBarId)/ sizeof(int)),
 	m_vRawTitleId(g_RawTitleId, g_RawTitleId+sizeof(g_RawTitleId)/ sizeof(int)),
+	m_vJoyTitleId(g_JoyTitleId, g_JoyTitleId+sizeof(g_JoyTitleId)/ sizeof(int)),
 	m_vPpTitleId(g_PpTitleId, g_PpTitleId+sizeof(g_PpTitleId)/ sizeof(int))
 {
 	m_hInstance = hInstance;
@@ -87,10 +91,20 @@ void SppTab::ShowArrayOfItems(HWND hDlg, int nCmdShow, const int items[], UINT s
 		ShowWindow(GetDlgItem(hDlg,  items[i]), nCmdShow);
 }
 
-void SppTab::ShowArrayOfItems(HWND hDlg, int nCmdShow, std::vector<const int> items)
+// Show/Hide the first 'size' dialog items in a given vector if IDs
+// If size=0 or if size too big then do it to the entire vector
+void SppTab::ShowArrayOfItems(HWND hDlg, int nCmdShow, std::vector<const int> items, UINT size)
 {
-	for (auto item : items)
-		ShowWindow(GetDlgItem(hDlg,  item), nCmdShow);
+	if (!size || size>items.size())
+	{
+		for (auto item : items)
+			ShowWindow(GetDlgItem(hDlg,  item), nCmdShow);
+	}
+	else
+	{
+		for (UINT i=0; i<size; i++)
+			ShowWindow(GetDlgItem(hDlg,  items[i]), nCmdShow);
+	}
 }
 
 void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, const int items[], UINT size)
@@ -99,10 +113,23 @@ void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, const int items[], UINT si
 		EnableWindow(GetDlgItem(hDlg,  items[i]), Enable);
 }
 
-void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, std::vector<const int> items)
+// Enable/Disable the first 'size' dialog items in a given vector if IDs - Disable the rest
+// If size=0 or if size too big then do it to the entire vector
+void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, std::vector<const int> items, UINT size)
 {
-	for (auto item : items)
-		EnableWindow(GetDlgItem(hDlg,  item), Enable);
+	if (!size || size>items.size())
+	{
+		for (auto item : items)
+			EnableWindow(GetDlgItem(hDlg,  item), Enable);
+	}
+	else
+	{
+		for (auto item : items)
+			EnableWindow(GetDlgItem(hDlg,  item), false);
+		for (UINT i=0; i<size; i++)
+			EnableWindow(GetDlgItem(hDlg,  items[i]), Enable);
+	}
+
 }
 
 void SppTab::ResetArrayOfBars(HWND hDlg, const int items[], UINT size)

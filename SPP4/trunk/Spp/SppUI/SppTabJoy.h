@@ -31,10 +31,14 @@ public:
 	void SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue);
 	void ShowButtonMapWindow(void);
 	void SetNumberProcCh(UINT nCh);
+	void SetNumberRawCh(UINT nCh);
 	void SetRawChData(UINT iCh, UINT data);
 
 protected:
+	void UpdateChannelView(bool Raw, UINT nCh);
+
 	SppBtnsDlg * m_BtnsDlg;
 	UINT m_nProcCh;
+	UINT m_nRawCh;
 };
 
