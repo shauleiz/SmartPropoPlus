@@ -200,7 +200,7 @@ HWND SppBtnsDlg::CreateStatics(const HWND hParent,const HINSTANCE hInst,DWORD dw
 		rc.left,                      //position: left
 		rc.top,                       //position: top
 		rc.right-rc.left,              //width
-		rc.bottom,                    //height
+		rc.bottom-rc.top,                    //height
 		hParent,                      //parent window handle
 		//control's ID
 		reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
@@ -231,21 +231,22 @@ HWND SppBtnsDlg::CreateEdit(const HWND hParent,const HINSTANCE hInst,DWORD dwSty
 // Place control in columns of 32
 void SppBtnsDlg::CreateButtonLable(UINT iButton)
 {
+
 	// Constants
 	UINT RowSpace = ROWSPACE;			// Space between rows
 	UINT ColSpace = COLSPACE;		// Space between columns
 	RECT rc = {10,10,80,30};	// Text rectangle
 
 	// Location
-	UINT iCol = (iButton-1)/32; // Zero-based column index
-	UINT iRow = (iButton-1)%32; // Zero-based row index
+	UINT iCol = (iButton-1)/8; // Zero-based column index
+	UINT iRow = (iButton-1)%8; // Zero-based row index
 	rc.top+=iRow*RowSpace;
 	rc.bottom+=iRow*RowSpace;
 	rc.left+=iCol*ColSpace;
 	rc.right+=iCol*ColSpace;
 
 	wstring caption = TEXT("Button") + to_wstring(iButton);
-	CreateStatics(m_hDlg, m_hInstance, SS_SIMPLE, rc, ID_BASE_STATIC+iButton, caption.c_str());
+	CreateStatics(m_hDlg, m_hInstance, 0 , rc, ID_BASE_STATIC+iButton, caption.c_str());
 }
 
 void SppBtnsDlg::CreateIndicator(UINT iButton)
@@ -256,8 +257,8 @@ void SppBtnsDlg::CreateIndicator(UINT iButton)
 	RECT rc = {0,13,9,30};	// Text rectangle
 
 	// Location
-	UINT iCol = (iButton-1)/32; // Zero-based column index
-	UINT iRow = (iButton-1)%32; // Zero-based row index
+	UINT iCol = (iButton-1)/8; // Zero-based column index
+	UINT iRow = (iButton-1)%8; // Zero-based row index
 	rc.top+=iRow*RowSpace;
 	rc.bottom+=iRow*RowSpace;
 	rc.left+=iCol*ColSpace;
@@ -284,8 +285,8 @@ void SppBtnsDlg::CreateChannelEdit(UINT iButton)
 	RECT rc = {85,10,120,30};	// Text rectangle
 
 	// Location
-	UINT iCol = (iButton-1)/32; // Zero-based column index
-	UINT iRow = (iButton-1)%32; // Zero-based row index
+	UINT iCol = (iButton-1)/8; // Zero-based column index
+	UINT iRow = (iButton-1)%8; // Zero-based row index
 	rc.top+=iRow*RowSpace;
 	rc.bottom+=iRow*RowSpace;
 	rc.left+=iCol*ColSpace;
@@ -338,7 +339,7 @@ void SppBtnsDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i+1);
 		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i+1);
 		LONG StyleEdit = GetWindowLong( hEdit, GWL_STYLE);
-		if (!(StyleEdit & WS_VISIBLE))
+		if ((StyleEdit & WS_DISABLED))
 			continue;
 
 		if ((*BtnVals)[i])
@@ -367,15 +368,15 @@ void SppBtnsDlg::EnableControls(UINT id, controls * ctrl)
 		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i);
 		if (ctrl->nButtons < i)
 		{
-			ShowWindow(hEdit, SW_HIDE);
-			ShowWindow(hLable, SW_HIDE);
+			EnableWindow(hEdit, false);
+			EnableWindow(hLable, false);
 			ShowWindow(hGreenDot, SW_HIDE);
 			ShowWindow(hRedDot, SW_HIDE);
 		}
 		else
 		{
-			ShowWindow(hEdit, SW_SHOW);
-			ShowWindow(hLable, SW_SHOW);
+			EnableWindow(hEdit, true);
+			EnableWindow(hLable, true);
 			ShowWindow(hGreenDot, SW_SHOW);
 			ShowWindow(hRedDot, SW_SHOW);
 		};

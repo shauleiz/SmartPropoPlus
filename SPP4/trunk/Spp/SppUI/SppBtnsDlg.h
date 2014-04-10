@@ -2,7 +2,7 @@
 
 #define ROWSPACE 25			// Space between rows
 #define COLSPACE 130		// Space between columns
-#define ID_BASE_STATIC		123432
+#define ID_BASE_STATIC		123332
 #define ID_BASE_CH			133432
 #define ID_BASE_GREENDOT	143432
 #define ID_BASE_REDDOT		153432
