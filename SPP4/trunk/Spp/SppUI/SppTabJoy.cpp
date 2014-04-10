@@ -82,6 +82,54 @@ void  SppTabJoy::vJoySelected(HWND hCb)
 
 #pragma region Progress Bars
 
+// Enable/disable controls according to vJoy device settings
+void SppTabJoy::EnableControls(UINT id, controls * ctrl)
+{
+	UINT ch= IDC_X;
+	UINT edt = IDC_SRC_X;
+	HWND hCh, hEdt, hTtl;
+	UINT iAxis=0;
+
+	////// Verify correct vJoy device
+	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
+	// Get the index of the selected vJoy device
+	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
+	if (index == CB_ERR)
+		return;
+
+	// Extract the device id from the item's data
+	int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
+	if (id != SelId)
+		return;
+	////// Verified
+
+	// Go over all axes
+	do 
+	{
+		// Axis bars
+		hCh = GetDlgItem(m_hDlg,  ch);
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
+		UpdateWindow(hCh);
+
+		// Bar titles
+		hTtl = GetDlgItem(m_hDlg,  m_vJoyTitleId[iAxis]);
+		EnableWindow(hTtl, ctrl->axis[edt-IDC_SRC_X]);
+		UpdateWindow(hTtl);
+
+		// Map edit fields
+		hEdt = GetDlgItem(m_hDlg,  edt);
+		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
+		UpdateWindow(hEdt);
+
+		ch++;
+		edt++;
+		iAxis++;
+	} while (ch<=IDC_SL1);
+
+	SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
+}
+
 // Init the progress bars that monitor the feedback from the joystick
 void SppTabJoy::InitJoyMonitor(HWND hDlg)
 {	
@@ -344,53 +392,6 @@ void SppTabJoy::CreateBtnsDlg(HWND hDlg)
 }
 
 
-// Enable/disable controls according to vJoy device settings
-void SppTabJoy::EnableControls(UINT id, controls * ctrl)
-{
-	UINT ch= IDC_X;
-	UINT edt = IDC_SRC_X;
-	HWND hCh, hEdt, hTtl;
-	UINT iAxis=0;
-
-	////// Verify correct vJoy device
-	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
-	// Get the index of the selected vJoy device
-	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
-	if (index == CB_ERR)
-		return;
-
-	// Extract the device id from the item's data
-	int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
-	if (id != SelId)
-		return;
-	////// Verified
-
-	// Go over all axes
-	do 
-	{
-		// Axis bars
-		hCh = GetDlgItem(m_hDlg,  ch);
-		SendMessage(hCh, PBM_SETPOS, 0, 0);
-		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
-		UpdateWindow(hCh);
-
-		// Bar titles
-		hTtl = GetDlgItem(m_hDlg,  m_vJoyTitleId[iAxis]);
-		EnableWindow(hTtl, ctrl->axis[edt-IDC_SRC_X]);
-		UpdateWindow(hTtl);
-
-		// Map edit fields
-		hEdt = GetDlgItem(m_hDlg,  edt);
-		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
-		UpdateWindow(hEdt);
-
-		ch++;
-		edt++;
-		iAxis++;
-	} while (ch<=IDC_SL1);
-
-	SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
-}
 
 void SppTabJoy::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
 {
