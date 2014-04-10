@@ -22,6 +22,7 @@ SppTabJoy::SppTabJoy(HINSTANCE hInstance, HWND TopDlgWnd) : SppTab( hInstance,  
 {
 	m_nProcCh = 100; // Improbable number of Post-processed channels
 	m_nRawCh = 0;
+	m_CurJoy = 0; // Current displayed joystick: None
 }
 
 SppTabJoy::~SppTabJoy(void)
@@ -84,7 +85,7 @@ void  SppTabJoy::vJoySelected(HWND hCb)
 // Init the progress bars that monitor the feedback from the joystick
 void SppTabJoy::InitJoyMonitor(HWND hDlg)
 {	
-	InitBars(hDlg, 0xFF, m_vJoyBarId);
+	InitBars(hDlg, 0xFF, m_vJoyBarId,0xFFFF0000);
 }
 
 // Init the pospprocessed channel progress bars
@@ -103,6 +104,9 @@ void SppTabJoy::MonitorCh(HWND hDlg)
 void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
 	int IdItem;
+
+	if (m_CurJoy != iDev)
+		return;
 
 	switch (Axis)
 	{
@@ -245,7 +249,7 @@ void SppTabJoy::SetJoystickDevFrame(UCHAR iDev)
 	if (id == iDev)
 		return;
 
-	id = iDev;
+	m_CurJoy = id = iDev;
 	HWND hFrame = GetDlgItem(m_hDlg,  IDC_VJOY_AXES);
 	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axis data";
 
@@ -390,7 +394,8 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 
 void SppTabJoy::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
 {
-	SendMessage(m_BtnsDlg->GetHandle(), WMSPP_JMON_BTN, iDev, (LPARAM)BtnValue);
+	if (iDev == m_CurJoy)
+		SendMessage(m_BtnsDlg->GetHandle(), WMSPP_JMON_BTN, iDev, (LPARAM)BtnValue);
 }
 
 void SppTabJoy::ShowButtonMapWindow(void)

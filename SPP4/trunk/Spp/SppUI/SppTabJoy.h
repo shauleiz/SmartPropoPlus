@@ -40,5 +40,6 @@ protected:
 	SppBtnsDlg * m_BtnsDlg;
 	UINT m_nProcCh;
 	UINT m_nRawCh;
+	UINT m_CurJoy;
 };
 
