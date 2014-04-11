@@ -1609,6 +1609,7 @@ int vJoyDevicesPopulate(HWND hDlg)
 	UINT selected;
 	int id;
 	bool match = false;
+	bool found = false;
 	VjdStat stat;
 	int DefId = 0;
 
@@ -1641,10 +1642,14 @@ int vJoyDevicesPopulate(HWND hDlg)
 		match =  (id == selected);
 		SendMessage(hDlg, VJOYDEV_ADD, id, (LPARAM)match);
 		nDev++;
+
+		// Indicate that there is a selected vJoy device (Sticky)
+		if (match)
+			found = true;
 	}; // For loop
 
 	// In case none was selected, select the first one
-	if (!match)
+	if (!found)
 	{
 		selected = DefId;
 		Conf->SelectvJoyDevice(selected);
