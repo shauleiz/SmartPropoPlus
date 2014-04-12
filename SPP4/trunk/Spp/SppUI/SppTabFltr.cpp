@@ -167,6 +167,7 @@ void SppTabFltr::SelFilter(int FilterId)
 			// Select
 			int res = ComboBox_SetCurSel(hCombo, i);
 			// Checks the checkbox
+			EnableWindow(hFilterCB, true);
 			Button_SetCheck(hFilterCB, BST_CHECKED);
 			ShowChannelArea( m_hDlg, true);
 			break;
@@ -182,6 +183,7 @@ void SppTabFltr::InitFilter(int nFilters, LPTSTR FilterName)
 	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
 	SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
 
+	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
 	// If there are filters then prepare data for selection
 	if (nFilters)
 	{
@@ -195,11 +197,12 @@ void SppTabFltr::InitFilter(int nFilters, LPTSTR FilterName)
 	}
 	else
 	{
-		ComboBox_Enable(hCombo, FALSE);
-		HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
+		ComboBox_Enable(hCombo, FALSE);		
 		Button_SetCheck(hFilterCB, BST_UNCHECKED);
 		ShowChannelArea( m_hDlg, false);
 	};
+
+	EnableWindow(hFilterCB, false);
 }
 
 void SppTabFltr::AddLine2FilterListA(int FilterID, const char * FilterName)
@@ -272,6 +275,7 @@ void SppTabFltr::UpdateFilter(void)
 
 	// Checks the checkbox
 	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
+	EnableWindow(hFilterCB, true);
 	Button_SetCheck(hFilterCB, BST_CHECKED);
 	ShowChannelArea( m_hDlg, true);
 }
