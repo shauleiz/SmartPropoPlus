@@ -919,6 +919,27 @@ void  SppDlg::vJoyMapping(void)
 // If Channel="" or Channel=NULL then don't change
 void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 {
+	static wstring sChannel=TEXT("???"), sBitrate=TEXT("/???");
+	wstring s;
+
+	if (Channel == TEXT('L'))
+		sChannel = TEXT("Left");
+	else
+	if (Channel == TEXT('R'))
+		sChannel = TEXT("Right");
+	else
+	if (Channel == TEXT('M'))
+		sChannel = TEXT("Mono");
+
+	if (Bitrate == 8)
+		sBitrate=TEXT("/8bit");
+	if (Bitrate == 16)
+		sBitrate=TEXT("/16bit");
+
+	s=sChannel+sBitrate;
+
+	Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_CHBITS),s.data());
+
 #if TAB_AUDIO_ON
 	((SppTabAudio *)m_hrsrc.TabAudio)->AudioChannelParams(Bitrate,  Channel);
 #else
@@ -1003,6 +1024,7 @@ void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 // Default will be 8bit/Left channel
 void SppDlg::AudioChannelParams(void)
 {
+
 	UCHAR bits = 8;
 	TCHAR Channel = TEXT('L');
 
@@ -1017,6 +1039,7 @@ void SppDlg::AudioChannelParams(void)
 	// Send message: wParam: Number of bits, lParam: channel L/R/M
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_CHNL, bits, Channel);
 
+	
 }
 
 // Called when one of the 'Auto' checkboxs for audio are changed
@@ -1306,6 +1329,10 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 	if (!jack->nChannels)
 		return;
 
+	// Print jack name to summary
+		if (jack->Default)
+			Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_SRC),jack->FriendlyName);
+
 	// Insert audio jack name
 	LV_ITEM item;
 	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE |LVIF_PARAM;
@@ -1326,7 +1353,6 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 	// Set the default jack as focused (and selected)
 	if (jack->Default)
 		ListView_SetItemState(hAudioList, i, 0xF|LVIS_FOCUSED, 0xF|LVIS_FOCUSED);
-
 
 }
 
@@ -1747,8 +1773,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->DecoderAuto(wParam != 0);
 		break;
 
-	case WMSPP_DLG_AUTO:
 	case WMSPP_DLG_CHNL:
+//		DialogObj->AudioChannelParams((UINT) wParam,  (WCHAR)lParam);
+		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
+//
+	case WMSPP_DLG_AUTO:
 	case WMSPP_DLG_MOD:
 	case WMSPP_DLG_SCAN:
 	case WMSPP_DLG_FLTRFILE:
