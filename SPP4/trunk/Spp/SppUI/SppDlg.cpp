@@ -737,7 +737,29 @@ void SppDlg::AddLine2FilterListW(int FilterID, LPCWSTR FilterName)
 #endif
 }
 
+LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
+{
+	if (!_tcscmp(Type,MOD_TYPE_PPM))
+		return MOD_FNAME_PPM;
+	if (!_tcscmp(Type,MOD_TYPE_PPMP))
+		return MOD_FNAME_PPMP;
+	if (!_tcscmp(Type,MOD_TYPE_PPMN))
+		return MOD_FNAME_PPMN;
+	if (!_tcscmp(Type,MOD_TYPE_PPMW))
+		return MOD_FNAME_PPMW;
+	if (!_tcscmp(Type,MOD_TYPE_JR))
+		return MOD_FNAME_JR;
+	if (!_tcscmp(Type,MOD_TYPE_FUT))
+		return MOD_FNAME_FUT;
+	if (!_tcscmp(Type,MOD_TYPE_AIR1))
+		return MOD_FNAME_AIR1;
+	if (!_tcscmp(Type,MOD_TYPE_AIR2))
+		return MOD_FNAME_AIR2;
+	if (!_tcscmp(Type,MOD_TYPE_WAL))
+		return MOD_FNAME_WAL;
 
+	return TEXT("--- ??? ---");
+}
 
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 {
@@ -758,7 +780,11 @@ void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 		int pos = (int)SendMessage(hPPMList, LB_ADDSTRING, 0, (LPARAM)mod->Name);
 		SendMessage(hPPMList, LB_SETITEMDATA, pos, (LPARAM) mod->Type); 
 		if (!wcscmp(SelType,mod->Type))
+		{
+			// Copy text to Info Pane
+			Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER), GetDecoderFullName(SelType));
 			SendMessage(hPPMList, LB_SETCURSEL , pos, 0); 
+		};
 	}
 	else
 	{ // PCM
@@ -769,7 +795,11 @@ void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 		int pos = (int)SendMessage(hPCMList, LB_ADDSTRING, 0, (LPARAM)mod->Name); 
 		SendMessage(hPCMList, LB_SETITEMDATA, pos, (LPARAM) mod->Type); 
 		if (!wcscmp(SelType,mod->Type))
-			SendMessage(hPCMList, LB_SETCURSEL , pos, 0); 
+		{
+			// Copy text to Info Pane
+			Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER), GetDecoderFullName(SelType));
+			SendMessage(hPCMList, LB_SETCURSEL , pos, 0);
+		};
 	};
 }
 
@@ -788,6 +818,9 @@ void SppDlg::SelectDecoder(LPCTSTR Decoder)
 	int count=0;
 	LPCTSTR iData;
 	int SelList=-1, SelItem=-1;
+
+	// Copy text to Info Pane
+	Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER), GetDecoderFullName(Decoder));
 #if TAB_DCDR_ON
 	((SppTabDcdr *)m_hrsrc.TabDcdr)->SelectDecoder( Decoder);
 #endif
@@ -1774,11 +1807,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_DLG_CHNL:
-//		DialogObj->AudioChannelParams((UINT) wParam,  (WCHAR)lParam);
 		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
-//
-	case WMSPP_DLG_AUTO:
+
 	case WMSPP_DLG_MOD:
+		Edit_SetText(GetDlgItem(DialogObj->GetHandle(),IDS_DECODER),  DialogObj->GetDecoderFullName((LPCTSTR)wParam));
+
+	case WMSPP_DLG_AUTO:
 	case WMSPP_DLG_SCAN:
 	case WMSPP_DLG_FLTRFILE:
 	case WMSPP_DLG_FILTER:

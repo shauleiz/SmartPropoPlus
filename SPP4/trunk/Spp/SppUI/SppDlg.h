@@ -92,6 +92,7 @@ public: // Called from window procedure
 	int InitTabs(HWND);
 	void OnSelChanged(HWND hDlg);
 	LRESULT RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam);
+	LPCTSTR GetDecoderFullName(LPCTSTR Type);
 
 
 private:

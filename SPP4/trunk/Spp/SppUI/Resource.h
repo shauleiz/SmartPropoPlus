@@ -78,10 +78,12 @@
 #define IDC_CH11                                40004
 #define IDD_AUDIO_SRC                           40004
 #define IDP_AUDIO_CONF                          40004
+#define IDS_DECODER                             40004
 #define IDS_I_FILTERDLL                         40004
 #define IDC_AUDIO_FRAME                         40005
 #define IDC_CH12                                40005
 #define IDC_LEVEL_M                             40005
+#define IDS_DECODER_NCH                         40005
 #define IDS_E_FILTERDLLVER                      40005
 #define IDC_CH13                                40006
 #define IDC_DECODE_FRAME                        40006
