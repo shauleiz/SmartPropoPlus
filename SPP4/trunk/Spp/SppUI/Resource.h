@@ -63,6 +63,7 @@
 #define IDC_CH9                                 40001
 #define IDC_LEVEL_L                             40001
 #define IDS_AUDIO_LINE                          40001
+#define IDS_AUDIO_SRC                           40001
 #define IDS_F_STARTSPPPRS                       40001
 #define IDC_CH10                                40002
 #define IDC_LEVEL_R                             40002
@@ -71,6 +72,7 @@
 #define IDS_I_STARTSPPPRS                       40002
 #define IDC_TXT_CH9                             40003
 #define IDS_AUDIO_BR                            40003
+#define IDS_AUDIO_CHBITS                        40003
 #define IDS_RIGHT                               40003
 #define IDS_W_FILTERDLL                         40003
 #define IDC_CH11                                40004

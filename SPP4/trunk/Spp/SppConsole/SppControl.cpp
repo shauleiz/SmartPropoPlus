@@ -796,22 +796,23 @@ void AudioLevelWatch()
 {
 	static bool WentAutoCh=true;
 	static bool WentAutoBr=true;
+	static WCHAR prevCh = L'';
+	static UINT  prevBr = 0;
 
 	if (!AudioId)
 		return; // TODO: Add log here - this is an error
 	// Initializing channel state
 	//if (isRight==-1)
 	//{
-		wstring ch = Conf->GetAudioDeviceChannel(const_cast<LPTSTR>(AudioId));
-		if (ch[0] == L'R' || ch[0] == L'r')
-			isRight=1;
-		else
-			isRight=0;
+	wstring ch = Conf->GetAudioDeviceChannel(const_cast<LPTSTR>(AudioId));
+	if (ch[0] == L'R' || ch[0] == L'r')
+		isRight=1;
+	else
+		isRight=0;
 	//};
 
 	// Initialize bit rate
-	if (BitRate==-1)
-		BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
+	BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
 
 	// Get the number of channels (Stereo/Mono)
 	int nChannels = Audio->GetNumberChannels((PVOID)AudioId);
@@ -825,6 +826,14 @@ void AudioLevelWatch()
 		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],101));
 	else
 		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
+
+	// Inform GUI of change in Channel or BitRate
+	if ((ch[0] != prevCh) || (BitRate != prevBr))
+	{
+		SendMessage(hDialog, SET_AUDIO_PARAMS,BitRate, ch[0]);
+		prevBr = BitRate;
+		prevCh = ch[0];
+	};
 
 	// Wrong Channel?
 	// Change channel to the other channel if the other channel is much louder:

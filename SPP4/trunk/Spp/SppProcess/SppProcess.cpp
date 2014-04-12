@@ -487,6 +487,8 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 			// The synch pulse size changes with the movement of the stick
 			if (pulse >= SyncPulseSize*0.95)
 			{
+				if (i<6)
+					break;
 				if (!iSyncPulse[0])
 					iSyncPulse[0] = i;
 				else if (!iSyncPulse[1])
