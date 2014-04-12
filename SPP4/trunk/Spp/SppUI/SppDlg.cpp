@@ -491,6 +491,9 @@ void SppDlg::SetNumberRawCh(UINT nCh)
 // Update the decoder quality value in the GUI
 void SppDlg::SetDecoderQuality(UINT Quality)
 {
+#if TAB_DCDR_ON
+	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetDecoderQuality(Quality);
+#else
 	static UINT prevVal=100;
 
 	// Prevent flicker
@@ -502,6 +505,7 @@ void SppDlg::SetDecoderQuality(UINT Quality)
 	HWND hFrame = GetDlgItem(m_hDlg,  IDC_SIG_DEC);
 	wstring txt = L"Signal Decoder ( Quality: " + to_wstring(Quality) + L")";
 	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+#endif
 }
 
 // Update the position of the progress bar that corresponds to the channel

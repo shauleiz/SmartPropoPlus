@@ -66,6 +66,23 @@ void SppTabDcdr::ScanEncoding(void)
 	SendMessage(m_TopDlgWnd, WMSPP_DLG_SCAN , 0, 0);
 }
 
+// Update the decoder quality value in the GUI
+void SppTabDcdr::SetDecoderQuality(UINT Quality)
+{
+	static UINT prevVal=100;
+
+	// Prevent flicker
+	if (prevVal == Quality)
+		return;
+	prevVal = Quality;
+
+	// Update text of static frame
+	HWND hFrame = GetDlgItem(m_hDlg,  IDC_SIG_DEC);
+	wstring txt = L"Signal Decoder ( Quality: " + to_wstring(Quality) + L")";
+	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+}
+
+
 #pragma endregion
 
 

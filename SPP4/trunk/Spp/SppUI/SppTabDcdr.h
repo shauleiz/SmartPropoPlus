@@ -20,6 +20,6 @@ public:
 	void ScanEncoding(void);
 	void SetNumberRawCh(UINT nCh);
 	void Init(HWND hDlg);
-
+	void SetDecoderQuality(UINT Quality);
 };
 
