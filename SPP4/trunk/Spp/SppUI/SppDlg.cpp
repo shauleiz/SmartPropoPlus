@@ -440,6 +440,7 @@ void  SppDlg::SetRawChData(UINT iCh, UINT data)
 #if TAB_DCDR_ON
 	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetRawChData( iCh,  data);
 #else
+#endif
 
 	// Check if this channel is supported
 	if (iCh > (IDC_CH8-IDC_CH1))
@@ -447,7 +448,6 @@ void  SppDlg::SetRawChData(UINT iCh, UINT data)
 
 	HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
 	SendMessage(hCh, PBM_SETPOS, data, 0);
-#endif
 }
 void SppDlg::SetNumberProcCh(UINT nCh)
 {
@@ -458,6 +458,8 @@ void SppDlg::SetNumberProcCh(UINT nCh)
 // Update the number of raw channels
 void SppDlg::SetNumberRawCh(UINT nCh)
 {
+
+	Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER_NCH), (to_wstring(nCh)+L" Channels").data());
 #if TAB_DCDR_ON
 	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetNumberRawCh(nCh);
 #endif	
