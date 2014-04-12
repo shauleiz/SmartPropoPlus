@@ -191,32 +191,6 @@ void SppTabDcdr::SelectDecoder(LPCTSTR Decoder)
 	}; // Loop on both lists (PPM/PCM)
 }
 
-// Update the number of raw channels
-void SppTabDcdr::SetNumberRawCh(UINT nCh)
-{
-	static UINT prevVal=100;
-
-	// Prevent flicker
-	if (prevVal == nCh)
-		return;
-	prevVal = nCh;
-
-	// Update text of static frame
-	HWND hFrame = GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS);
-	wstring txt = L"R/C Channels (" + to_wstring(nCh) + L")";
-	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
-
-	// Show only existing channels
-	for (UINT iCh=0; iCh<(IDC_CH8-IDC_CH1+1); iCh++)
-	{
-		HWND hCh = GetDlgItem(m_hDlg,  IDC_CH1+iCh);
-		if (iCh<nCh)
-			ShowWindow(hCh, SW_SHOW);
-		else
-			ShowWindow(hCh, SW_HIDE);
-		UpdateWindow(hCh);
-	};
-}
 #pragma endregion
 
 #pragma region Transmitter channel data Progress bars
@@ -243,6 +217,25 @@ void SppTabDcdr::SetRawChData(UINT iCh, UINT data)
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 }
 
+// Update the number of raw channels
+void SppTabDcdr::SetNumberRawCh(UINT nCh)
+{
+	static UINT prevVal=100;
+
+	// Prevent flicker
+	if (prevVal == nCh)
+		return;
+	prevVal = nCh;
+
+	// Update text of static frame
+	HWND hFrame = GetDlgItem(m_hDlg,  IDC_RAW_CHANNELS);
+	wstring txt = L"R/C Channels (" + to_wstring(nCh) + L")";
+	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
+
+	// Enable bars and titles for the existing channels only
+	ShowArrayOfItems( m_hDlg, true, m_vRawBarId,nCh);
+	ShowArrayOfItems( m_hDlg, true, m_vRawTitleId,nCh);
+}
 #pragma endregion
 
 INT_PTR CALLBACK MsgHndlTabDcdrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
