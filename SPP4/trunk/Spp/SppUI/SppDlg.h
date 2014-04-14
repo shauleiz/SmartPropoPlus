@@ -93,7 +93,7 @@ public: // Called from window procedure
 	void OnSelChanged(HWND hDlg);
 	LRESULT RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam);
 	LPCTSTR GetDecoderFullName(LPCTSTR Type);
-
+	void SetFilterInfo(LPTSTR,  LPTSTR);
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
