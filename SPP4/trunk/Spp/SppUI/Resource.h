@@ -88,6 +88,7 @@
 #define IDC_CH13                                40006
 #define IDC_DECODE_FRAME                        40006
 #define IDS_E_FILTERDLLNF                       40006
+#define IDS_FILTER                              40006
 #define IDS_MONO                                40006
 #define IDC_CH14                                40007
 #define IDS_I_FILTERDLLOK                       40007

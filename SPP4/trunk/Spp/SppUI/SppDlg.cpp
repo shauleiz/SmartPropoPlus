@@ -1232,6 +1232,22 @@ void SppDlg::UpdateFilter(void)
 	Button_SetCheck(hFilterCB, BST_CHECKED);
 }
 
+void SppDlg::SetFilterInfo(LPTSTR FileName,  LPTSTR FilterName)
+{
+
+	HWND h = GetDlgItem(m_hDlg, IDS_FILTER);
+	if (FilterName && FileName)
+	{
+		wstring  file = FileName;
+		wstring  fltr = FilterName;
+		wstring str = TEXT("Filter: ")+ fltr /*+ TEXT("   [File: ") + file + TEXT("]")*/;
+		Edit_SetText(h, str.data());
+	}
+	else
+		Edit_SetText(h, TEXT("--- No Filter ---"));
+	
+}
+
 #if !TAB_JOY_ON
 // Fill-in the actual button-mapping data - pass message to button-mapping dialog
 void SppDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
@@ -1797,6 +1813,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->OnNotificationIcon(wParam,  lParam);
 		break;
 
+	case WMSPP_DLG_FLTR:
+		DialogObj->SetFilterInfo((LPTSTR)wParam,  (LPTSTR)lParam);
+		break;
+
+
 	case WMSPP_PRCS_DCDR:
 		if (wParam && !lParam)
 			DialogObj->SelectDecoder((LPCTSTR)wParam);
@@ -1855,11 +1876,13 @@ void SppDlg::InitFilterDisplay(HWND hDlg)
 	HWND hFilterFile	= GetDlgItem(hDlg,  IDC_EDIT_FILTERFILE);
 	HWND hFilterCB		= GetDlgItem(hDlg,  IDC_CH_FILTER);
 	HWND hFilters		= GetDlgItem(hDlg,  IDC_COMBO_FILTERS);
+	HWND hFilterEdt		= GetDlgItem(hDlg, IDS_FILTER);
 
 	// Clear Filter File, Unselect checkbox and gray-out Selected Filters
 	Edit_SetText(hFilterFile, TEXT("Select Filter File"));
 	Button_SetCheck(hFilterCB, BST_UNCHECKED);
 	ComboBox_Enable(hFilters, FALSE);
+	Edit_SetText(hFilterEdt, TEXT("--- No Filter ---"));
 }
 
 // Respond to Browse button

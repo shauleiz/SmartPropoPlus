@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <string.h>
 #include "Windowsx.h"
 #include "Commctrl.h"
 #include "resource.h"
@@ -142,13 +143,14 @@ void SppTabFltr::OnFilterFileBrowse(void)
 	info = SendMessage(m_TopDlgWnd, WMSPP_DLG_FLTRFILE , (WPARAM)ofn.lpstrFile, 0);
 	if (!info)
 	{
-		MessageBox(m_hDlg, TEXT("Illegal DLL File"), TEXT("Filter File"), MB_ICONERROR); // TODO: Re[lace strings
+		MessageBox(m_hDlg, TEXT("Illegal DLL File"), TEXT("Filter File"), MB_ICONERROR); // TODO: Replace strings
 		return;
 	}
 
 	// Display File Name
 	HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
 	Edit_SetText(hFilterFile, (LPTSTR)info);
+	_tcscpy_s(&(m_FilterFileName[0]), sizeof(m_FilterFileName)/sizeof(TCHAR),(LPTSTR)info);
 	UpdateWindow(hFilterFile);
 	delete[] (LPVOID)info;
 }
@@ -166,14 +168,21 @@ void SppTabFltr::SelFilter(int FilterId)
 		{
 			// Select
 			int res = ComboBox_SetCurSel(hCombo, i);
+
 			// Checks the checkbox
 			EnableWindow(hFilterCB, true);
 			Button_SetCheck(hFilterCB, BST_CHECKED);
 			ShowChannelArea( m_hDlg, true);
+			
+			// Inform Parent
+			ComboBox_GetLBText (hCombo,i,m_FilterName);
+			m_FilterActive = true;
 			break;
 		};
 		i++;
 	};
+
+	SentFilterInfo2Parent();
 }
 
 void SppTabFltr::InitFilter(int nFilters, LPTSTR FilterName)
@@ -192,6 +201,7 @@ void SppTabFltr::InitFilter(int nFilters, LPTSTR FilterName)
 
 		// Display File name
 		HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
+		_tcscpy_s(&(m_FilterFileName[0]), sizeof(m_FilterFileName)/sizeof(TCHAR),FilterName);
 		Edit_SetText(hFilterFile, FilterName);
 		UpdateWindow(hFilterFile);
 	}
@@ -200,6 +210,8 @@ void SppTabFltr::InitFilter(int nFilters, LPTSTR FilterName)
 		ComboBox_Enable(hCombo, FALSE);		
 		Button_SetCheck(hFilterCB, BST_UNCHECKED);
 		ShowChannelArea( m_hDlg, false);
+		m_FilterActive = false;
+		SentFilterInfo2Parent();
 	};
 
 	EnableWindow(hFilterCB, false);
@@ -236,7 +248,7 @@ void SppTabFltr::AddLine2FilterListW(int FilterID, LPCWSTR FilterName)
 	SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
 }
 
-void SppTabFltr::EnableFilter(BOOL cb)
+void SppTabFltr::EnableFilter(int cb)
 {
 	// Get check state
 	HWND hCB = GetDlgItem(m_hDlg,  cb);
@@ -253,8 +265,11 @@ void SppTabFltr::EnableFilter(BOOL cb)
 	{
 		ShowChannelArea( m_hDlg, false);
 		SendMessage(m_TopDlgWnd, WMSPP_DLG_FILTER, (WPARAM)-1, 0);
-\
 	};
+
+	m_FilterActive = (Enable != 0);
+	SentFilterInfo2Parent();
+
 }
 
 // Get selected filter fro GUI (if any) and send its filter index to parent window
@@ -273,11 +288,17 @@ void SppTabFltr::UpdateFilter(void)
 	FilterId = (int)ComboBox_GetItemData (hFilterList, iCurSel);
 	SendMessage(m_TopDlgWnd, WMSPP_DLG_FILTER, (WPARAM)FilterId, 0);
 
+	// Inform Parent
+	ComboBox_GetLBText (hFilterList,iCurSel,m_FilterName);
+
+
 	// Checks the checkbox
 	HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
 	EnableWindow(hFilterCB, true);
 	Button_SetCheck(hFilterCB, BST_CHECKED);
 	ShowChannelArea( m_hDlg, true);
+	m_FilterActive = true;
+	SentFilterInfo2Parent();
 }
 
 #pragma endregion
@@ -302,9 +323,22 @@ void SppTabFltr::InitFilterDisplay(HWND hDlg)
 	ShowWindow(hFilterCB, SW_HIDE);
 	ShowWindow(hFilters, SW_HIDE);
 	ShowChannelArea( hDlg, false);
+
+	// Initialize status
+	m_FilterActive = false;
+	m_FilterFileName[0] = NULL;
+	m_FilterName[0] = NULL;
+
 }
 
-
+// Inform parent window of the currently selected filter
+void SppTabFltr::SentFilterInfo2Parent(void)
+{
+	if (m_FilterActive)
+		SendMessage(m_TopDlgWnd, WMSPP_DLG_FLTR , (WPARAM)m_FilterFileName, (LPARAM)m_FilterName);
+	else
+		SendMessage(m_TopDlgWnd, WMSPP_DLG_FLTR , (WPARAM)NULL, (LPARAM)NULL);
+}
 
 INT_PTR CALLBACK MsgHndlTabFltrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
