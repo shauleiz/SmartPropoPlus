@@ -92,8 +92,10 @@
 #define IDS_MONO                                40006
 #define IDC_CH14                                40007
 #define IDS_I_FILTERDLLOK                       40007
+#define IDS_JOY                                 40007
 #define IDB_AUDIO_VOL                           40008
 #define IDC_CH15                                40008
+#define IDC_STAT_AUDIO                          40008
 #define IDS_W_FILTERSELFAIL                     40008
 #define IDC_CH16                                40009
 #define IDC_LIST_AUDIOSRC                       40009
@@ -102,6 +104,7 @@
 #define IDC_JOY_FRAME                           40010
 #define IDC_LIST_PCM                            40010
 #define IDS_I_FILTERSELOK                       40010
+#define IDC_STAT_TX                             40011
 #define IDC_TXT_CH10                            40011
 #define IDS_JOY_DEVID                           40011
 #define IDS_W_VJOYMISSING                       40011
@@ -130,8 +133,10 @@
 #define IDS_E_INITEP1                           40019
 #define IDC_CH8                                 40020
 #define IDS_I_INITPLSOBJ5                       40020
+#define IDC_STAT_FILTER                         40021
 #define IDC_TXT_CH11                            40021
 #define IDS_I_CHANGE_DEFDEV                     40021
+#define IDC_STAT_VJOY                           40022
 #define IDC_TXT_CH12                            40022
 #define IDS_W_CHANGE_DEFDEV                     40022
 #define IDC_TXT_CH13                            40023

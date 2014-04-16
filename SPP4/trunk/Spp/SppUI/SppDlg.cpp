@@ -453,6 +453,17 @@ void SppDlg::SetNumberProcCh(UINT nCh)
 {
 	((SppTabFltr *)m_hrsrc.TabFltr)->SetNumberProcCh( nCh);
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetNumberProcCh( nCh);
+	// Show only existing channels
+	for (UINT iCh=0; iCh<(IDC_CHPP8-IDC_CHPP1+1); iCh++)
+	{
+		HWND hCh = GetDlgItem(m_hDlg,  IDC_CHPP1+iCh);
+		if (iCh<nCh)
+			ShowWindow(hCh, SW_SHOW);
+		else
+			ShowWindow(hCh, SW_HIDE);
+		UpdateWindow(hCh);
+	};
+
 }
 
 // Update the number of raw channels
@@ -519,6 +530,7 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetProcessedChData(iCh, data);
 #else
+#endif
 
 	// Check if this channel is supported
 	if (iCh > (IDC_CHPP8-IDC_CHPP1))
@@ -526,7 +538,6 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 
 	HWND hCh = GetDlgItem(m_hDlg,  IDC_CHPP1+iCh);
 	SendMessage(hCh, PBM_SETPOS, data, 0);
-#endif
 
 }
 
@@ -536,18 +547,23 @@ void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickDevFrame( iDev);
 #else
+#endif
 
-	static UINT id=0;
+	static UINT id=100;
+	wstring txt;
+
 	if (id == iDev)
 		return;
 	
 	id = iDev;
-	HWND hFrame = GetDlgItem(m_hDlg,  IDC_VJOY_AXES);
-	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axis data";
+
+	HWND hFrame = GetDlgItem(m_hDlg,  IDS_JOY);
+	if (id)
+		txt = L"vJoy device " + to_wstring(iDev);
+	else
+		txt = L"vJoy device is missing";
 
 	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
-#endif
-
 }
 
 void SppDlg::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
