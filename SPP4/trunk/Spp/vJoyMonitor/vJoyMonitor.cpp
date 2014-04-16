@@ -438,17 +438,24 @@ void CvJoyMonitor::PollDevice(wstring UniqueID)
 	mapDB::iterator iMap;
 	iMap = m_DeviceDB.find(UniqueID);
 	if( iMap == m_DeviceDB.end() )
+	{	// Inform that there's no device
+		PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, 0, 0);
 		return;
+	}
 
 	// Found
 	(*iMap).second->RqPolling = true;
+
+	// If does not exist - must infor higher level
+	if  (!(*iMap).second->Exist)
+		PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, 0, 0);
 
 	// Check is exists, polling requested  and not running 
 	if  (!(*iMap).second->Exist || (*iMap).second->isPolling)
 		return;
 
 
-		// Set cooperative level so nothing interrupts the flow
+	// Set cooperative level so nothing interrupts the flow
 	hr = (*iMap).second->pDeviceDI8->SetCooperativeLevel(NULL/*m_hDummyWnd*/, DISCL_NONEXCLUSIVE|DISCL_BACKGROUND);
 	if (hr != DI_OK)
 		return;

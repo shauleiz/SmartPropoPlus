@@ -293,13 +293,21 @@ void SppTabJoy::UpdateChannelView(bool Raw, UINT nCh)
 // Update the frame text of the vJoy device vJoy axes
 void SppTabJoy::SetJoystickDevFrame(UCHAR iDev)
 {
-	static UINT id=0;
+	static UINT id=100;
+	wstring txt;
+
 	if (id == iDev)
 		return;
 
 	m_CurJoy = id = iDev;
 	HWND hFrame = GetDlgItem(m_hDlg,  IDC_VJOY_AXES);
-	wstring txt = L"vJoy device " + to_wstring(iDev) + L" - Axis data";
+
+	if (m_CurJoy)
+	{
+		 txt = L"vJoy device " + to_wstring(iDev) + L" - Axis data";
+	}
+	else
+		 txt = L"vJoy device - Axis data";
 
 	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
 }
