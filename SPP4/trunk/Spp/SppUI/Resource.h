@@ -52,8 +52,6 @@
 #define IDC_AUD_AUTO                            1024
 #define IDC_CH_LOG                              1081
 #define IDC_OUT_CHANNELS                        40000
-#define IDC_SIG_DEC                             40000
-#define IDC_SIG_DECOD                           40000
 #define IDC_SPP_OUT                             40000
 #define IDC_WIZ                                 40000
 #define IDM_DISPLAY_WIZARD                      40000
@@ -98,7 +96,6 @@
 #define IDC_STAT_AUDIO                          40008
 #define IDS_W_FILTERSELFAIL                     40008
 #define IDC_CH16                                40009
-#define IDC_LIST_AUDIOSRC                       40009
 #define IDS_DECOD_NCH                           40009
 #define IDS_E_FILTERSELFAIL                     40009
 #define IDC_JOY_FRAME                           40010
@@ -147,6 +144,7 @@
 #define IDS_E_ISCAP_EPNOTFOUND                  40025
 #define IDC_TXT_CH16                            40026
 #define IDS_W_ISEXT_IDNOTFOUND                  40026
+#define IDC_SIG_DEC                             40027
 #define IDS_W_ISEXT_TOPO                        40027
 #define IDS_W_ISEXT_NOCONN                      40028
 #define IDS_W_ISEXT_NOTYPE                      40029
@@ -242,7 +240,6 @@
 #define IDC_BTN_MAP                             40124
 #define IDC_AUD_16                              40126
 #define IDC_LEFT                                40128
-#define IDC_MONO                                40130
 #define IDC_RIGHT                               40132
 #define IDC_VJOY_DEVICE                         40134
 #define IDC_VJOY_AXES                           40135

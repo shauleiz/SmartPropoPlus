@@ -1,12 +1,13 @@
 #pragma once
-#define TAB_IDS {IDD_GENERAL}
-
-#include "SppTabGen.h"
+//
+//#include "SppTabGen.h"
 #include "SppTabAudio.h"
 #include "SppTabDcdr.h"
 #include "SppTabFltr.h"
 #include "SppTabJoy.h"
 
+#define STOP	L"Sleep"
+#define START	L"Wake=up"
 
 class SppDlg
 {
@@ -15,7 +16,7 @@ typedef struct tag_dlghdr {  // Based on http://msdn.microsoft.com/en-us/library
     HWND hwndTab;       // tab control 
     SppTab * Display;   // current child dialog box 
     RECT rcDisplay;     // display rectangle for the tab control 
-	SppTab * TabGen, * TabAudio, * TabDcdr, * TabFltr, * TabJoy, * TabAdvnc;
+	SppTab /** TabGen,*/ * TabAudio, * TabDcdr, * TabFltr, * TabJoy, * TabAdvnc;
 } DLGHDR; 
 
 
