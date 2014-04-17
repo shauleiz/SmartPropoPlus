@@ -582,6 +582,7 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickAxisData( iDev,  Axis,  AxisValue);
 #else
+#endif
 	int IdItem;
 
 	switch (Axis)
@@ -617,7 +618,6 @@ void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 
 	HWND hCh = GetDlgItem(m_hDlg, IdItem);
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
-#endif
 }
 
 void SppDlg::EnableFilter(BOOL cb)
@@ -1278,23 +1278,24 @@ void SppDlg::EnableControls(UINT id, controls * ctrl)
 #if TAB_JOY_ON
 	((SppTabJoy *)m_hrsrc.TabJoy)->EnableControls( id,   ctrl);
 #else
+#endif
 	UINT ch= IDC_X;
 	UINT edt = IDC_SRC_X;
-	HWND hCh, hEdt;
+	HWND hCh;
 	UINT iAxis=0;
 
-	////// Verify correct vJoy device
-	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
-	// Get the index of the selected vJoy device
-	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
-	if (index == CB_ERR)
-		return;
+	//////// Verify correct vJoy device
+	//HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
+	//// Get the index of the selected vJoy device
+	//int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
+	//if (index == CB_ERR)
+	//	return;
 
-		// Extract the device id from the item's data
-	int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
-	if (id != SelId)
-		return;
-	////// Verified
+	//	// Extract the device id from the item's data
+	//int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
+	//if (id != SelId)
+	//	return;
+	//////// Verified
 
 	// Go over all axes
 	do 
@@ -1305,17 +1306,15 @@ void SppDlg::EnableControls(UINT id, controls * ctrl)
 		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
 		UpdateWindow(hCh);
 
-		// Map edit fields
-		hEdt = GetDlgItem(m_hDlg,  edt);
-		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
-		UpdateWindow(hEdt);
+		//// Map edit fields
+		//hEdt = GetDlgItem(m_hDlg,  edt);
+		//EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
+		//UpdateWindow(hEdt);
 
 		ch++;
 		edt++;
 	} while (ch<=IDC_SL1);
 
-	SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
-#endif
 }
 
 
