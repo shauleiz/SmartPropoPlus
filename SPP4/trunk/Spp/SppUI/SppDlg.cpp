@@ -253,12 +253,12 @@ int SppDlg::InitTabs(HWND hDlg)
 	// Creating dialog boxes that will be associated with tabs.
 	int iTab=0;
 
-	// General
-	m_hrsrc.TabGen =   new SppTabGen(m_hInstance, m_hrsrc.hwndTab);
-	m_hrsrc.Display = m_hrsrc.TabGen;
-	tie.pszText = TEXT("General");
-	tie.lParam = m_hrsrc.Display->GetId();
-    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+	//// General
+	//m_hrsrc.TabGen =   new SppTabGen(m_hInstance, m_hrsrc.hwndTab);
+	//m_hrsrc.Display = m_hrsrc.TabGen;
+	//tie.pszText = TEXT("General");
+	//tie.lParam = m_hrsrc.Display->GetId();
+ //   TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
 
 	// Audio
 	m_hrsrc.TabAudio = new SppTabAudio(m_hInstance, m_hrsrc.hwndTab);
@@ -310,7 +310,7 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 		return;
 
 	// Hide all dialog boxes but one - according to ID
-	m_hrsrc.TabGen->Hide();
+	//m_hrsrc.TabGen->Hide();
 	m_hrsrc.TabAudio->Hide();
 	m_hrsrc.TabDcdr->Hide();
 	m_hrsrc.TabFltr->Hide();
@@ -319,9 +319,9 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	// Show only the selected dialog box
 	switch (tie.lParam)
 	{
-	case IDD_GENERAL:
-		m_hrsrc.TabGen->Show();
-		break;
+	//case IDD_GENERAL:
+	//	m_hrsrc.TabGen->Show();
+	//	break;
 
 	case IDD_AUDIO:
 		m_hrsrc.TabAudio->Show();
@@ -343,38 +343,38 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 
 }
 
-void  SppDlg::CleanAudioList(void)
-{
-	HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
-	ListView_DeleteAllItems(hAudioList);
-}
+//void  SppDlg::CleanAudioList(void)
+//{
+//	HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
+//	ListView_DeleteAllItems(hAudioList);
+//}
 
-void SppDlg::InitAudioDisplay(HWND hDlg)
-{
-	CleanAudioList();
-
-	// Change style
-	HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
-	ListView_SetExtendedListViewStyle(hAudioList, LVS_EX_FULLROWSELECT);
-
-	// Set columns
-	LVCOLUMN lvc;
-	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-
-	// Add Device colum (0)
-	lvc.iSubItem = 0;
-    lvc.pszText = TEXT("Device");
-    lvc.cx = 250;               // Width of column in pixels.
-	lvc.fmt = LVCFMT_LEFT;  // Left-aligned column.
-	ListView_InsertColumn(hAudioList, 0, &lvc);
-
-	// Add audio level colum (1)
-	lvc.iSubItem = 1;
-    lvc.pszText = TEXT("L/R Levels");
-    lvc.cx = 80;               // Width of column in pixels.
-	lvc.fmt = LVCFMT_CENTER;  // Left-aligned column.
-	ListView_InsertColumn(hAudioList, 1, &lvc);
-}
+//void SppDlg::InitAudioDisplay(HWND hDlg)
+//{
+//	CleanAudioList();
+//
+//	// Change style
+//	HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
+//	ListView_SetExtendedListViewStyle(hAudioList, LVS_EX_FULLROWSELECT);
+//
+//	// Set columns
+//	LVCOLUMN lvc;
+//	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+//
+//	// Add Device colum (0)
+//	lvc.iSubItem = 0;
+//    lvc.pszText = TEXT("Device");
+//    lvc.cx = 250;               // Width of column in pixels.
+//	lvc.fmt = LVCFMT_LEFT;  // Left-aligned column.
+//	ListView_InsertColumn(hAudioList, 0, &lvc);
+//
+//	// Add audio level colum (1)
+//	lvc.iSubItem = 1;
+//    lvc.pszText = TEXT("L/R Levels");
+//    lvc.cx = 80;               // Width of column in pixels.
+//	lvc.fmt = LVCFMT_CENTER;  // Left-aligned column.
+//	ListView_InsertColumn(hAudioList, 1, &lvc);
+//}
 
 // Display the audio levels of channels (Left/Right)
 // Levels are in the range 0-100
@@ -647,9 +647,9 @@ void SppDlg::SetStreamingButton(BOOL isProcessingAudio)
 
 	HWND hStream = GetDlgItem(m_hDlg,  IDC_STREAM);
 	if (isProcessingAudio)
-		text = L"Stop";
+		text = STOP;
 	else
-		text = L"Start";
+		text = START;
 
 	SetWindowText(hStream, text);
 }
@@ -660,7 +660,7 @@ void SppDlg::OnStreamStopStart(void)
 	TCHAR buff[10];
 	BOOL Stream = TRUE;
 	GetWindowText(hStream, buff, 10);
-	if (!_tcscmp(buff, L"Stop"))
+	if (!_tcscmp(buff, STOP))
 		Stream = FALSE;
 
 	SendMessage(m_ConsoleWnd, WMSPP_DLG_STREAM , (WPARAM)Stream, 0);
@@ -1070,28 +1070,28 @@ void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 #endif
 }
 
-// Get the parameters of the audio (8/16 bits Left/Right/Mono)
-// Send them over to the application
-// Default will be 8bit/Left channel
-void SppDlg::AudioChannelParams(void)
-{
-
-	UCHAR bits = 8;
-	TCHAR Channel = TEXT('L');
-
-	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_AUD_16))
-		bits = 16;
-
-	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_RIGHT))
-		Channel = TEXT('R');
-	else if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_MONO))
-		Channel = TEXT('M');
-
-	// Send message: wParam: Number of bits, lParam: channel L/R/M
-	SendMessage(m_ConsoleWnd, WMSPP_DLG_CHNL, bits, Channel);
-
-	
-}
+//// Get the parameters of the audio (8/16 bits Left/Right/Mono)
+//// Send them over to the application
+//// Default will be 8bit/Left channel
+//void SppDlg::AudioChannelParams(void)
+//{
+//
+//	UCHAR bits = 8;
+//	TCHAR Channel = TEXT('L');
+//
+//	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_AUD_16))
+//		bits = 16;
+//
+//	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_RIGHT))
+//		Channel = TEXT('R');
+//	else if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_MONO))
+//		Channel = TEXT('M');
+//
+//	// Send message: wParam: Number of bits, lParam: channel L/R/M
+//	SendMessage(m_ConsoleWnd, WMSPP_DLG_CHNL, bits, Channel);
+//
+//	
+//}
 
 // Called when one of the 'Auto' checkboxs for audio are changed
 // ctrl is the ID of the checkbox
@@ -1107,7 +1107,7 @@ void SppDlg::AutoParams(WORD ctrl)
 	else 
 		return;
 
-	AudioChannelParams();
+	//AudioChannelParams();
 
 	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   ctrl))
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, mask, AUTOBITRATE|AUTOCHANNEL);
@@ -1390,35 +1390,36 @@ void SppDlg::SetMappingData(Mapping * Map)
 
 void  SppDlg::AddLine2AudioList(jack_info * jack)
 {
-	// Audio jack must have at least one audio channel (mono)
-	HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
-	if (!jack->nChannels)
-		return;
-
 	// Print jack name to summary
 		if (jack->Default)
 			Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_SRC),jack->FriendlyName);
 
-	// Insert audio jack name
-	LV_ITEM item;
-	item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE |LVIF_PARAM;
-	item.iItem = 0;
-	item.iSubItem = 0;
-	item.pszText = jack->FriendlyName;
-    item.stateMask = 0;
-    item.iSubItem  = 0;
-    item.state     = 0;
-	item.lParam = (LPARAM)jack->id;
-	int i = ListView_InsertItem(hAudioList, &item);
+	//// Audio jack must have at least one audio channel (mono)
+	//HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
+	//if (!jack->nChannels)
+	//	return;
 
-	if (jack->nChannels == 1)
-		ListView_SetItemText(hAudioList, i, 1, TEXT("0"))
-	else
-		ListView_SetItemText(hAudioList, i, 1, TEXT("0/0")); 
 
-	// Set the default jack as focused (and selected)
-	if (jack->Default)
-		ListView_SetItemState(hAudioList, i, 0xF|LVIS_FOCUSED, 0xF|LVIS_FOCUSED);
+	//// Insert audio jack name
+	//LV_ITEM item;
+	//item.mask = LVIF_TEXT | LVIF_IMAGE |LVIF_STATE |LVIF_PARAM;
+	//item.iItem = 0;
+	//item.iSubItem = 0;
+	//item.pszText = jack->FriendlyName;
+ //   item.stateMask = 0;
+ //   item.iSubItem  = 0;
+ //   item.state     = 0;
+	//item.lParam = (LPARAM)jack->id;
+	//int i = ListView_InsertItem(hAudioList, &item);
+
+	//if (jack->nChannels == 1)
+	//	ListView_SetItemText(hAudioList, i, 1, TEXT("0"))
+	//else
+	//	ListView_SetItemText(hAudioList, i, 1, TEXT("0/0")); 
+
+	//// Set the default jack as focused (and selected)
+	//if (jack->Default)
+	//	ListView_SetItemState(hAudioList, i, 0xF|LVIS_FOCUSED, 0xF|LVIS_FOCUSED);
 
 }
 
@@ -1568,7 +1569,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 #if !TAB_JOY_ON
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
 #endif
-		DialogObj->InitAudioDisplay(hDlg); // Initialize audio source display
+//		DialogObj->InitAudioDisplay(hDlg); // Initialize audio source display
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -1652,9 +1653,9 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
-		if  (LOWORD(wParam)  == IDC_AUD_8 || LOWORD(wParam)  == IDC_AUD_16 ||  LOWORD(wParam)  == IDC_LEFT || LOWORD(wParam)  == IDC_RIGHT || LOWORD(wParam)  == IDC_MONO) 
+		if  (LOWORD(wParam)  == IDC_AUD_8 || LOWORD(wParam)  == IDC_AUD_16 ||  LOWORD(wParam)  == IDC_LEFT || LOWORD(wParam)  == IDC_RIGHT /*|| LOWORD(wParam)  == IDC_MONO*/) 
 		{
-			DialogObj->AudioChannelParams();
+			//DialogObj->AudioChannelParams();
 			break;
 		}
 
@@ -1712,7 +1713,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 
 	case REM_ALL_JACK:
-		DialogObj->CleanAudioList();
+		// DialogObj->CleanAudioList();
 		break;
 
 	case POPULATE_JACKS:

@@ -93,8 +93,8 @@ void SppTabAudio::AudioChannelParams(void)
 
 	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_RIGHT))
 		Channel = TEXT('R');
-	else if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_MONO))
-		Channel = TEXT('M');
+	else if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_LEFT))
+		Channel = TEXT('L');
 
 	// Send message: wParam: Number of bits, lParam: channel L/R/M
 	SendMessage(m_TopDlgWnd, WMSPP_DLG_CHNL, bits, Channel);
@@ -142,19 +142,19 @@ void SppTabAudio::AudioAutoParams(WORD Mask, WORD Flags)
 	if (Mask&AUTOCHANNEL)
 	{
 		HWND hLeft = GetDlgItem(m_hDlg,  IDC_LEFT);
-		HWND hMono = GetDlgItem(m_hDlg,  IDC_MONO);
+		//HWND hMono = GetDlgItem(m_hDlg,  IDC_MONO);
 		HWND hRight = GetDlgItem(m_hDlg,  IDC_RIGHT);
 		if (Flags&AUTOCHANNEL)
 		{
 			EnableWindow(hLeft, FALSE);
-			EnableWindow(hMono, FALSE);
+			//EnableWindow(hMono, FALSE);
 			EnableWindow(hRight, FALSE);
 			CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_CHECKED);
 		}
 		else
 		{
 			EnableWindow(hLeft, TRUE);
-			EnableWindow(hMono, TRUE);
+			//EnableWindow(hMono, TRUE);
 			EnableWindow(hRight, TRUE);
 			CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_UNCHECKED);
 		}
@@ -198,7 +198,7 @@ INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			break;
 		}
 
-		if  (LOWORD(wParam)  == IDC_AUD_8 || LOWORD(wParam)  == IDC_AUD_16 ||  LOWORD(wParam)  == IDC_LEFT || LOWORD(wParam)  == IDC_RIGHT || LOWORD(wParam)  == IDC_MONO) 
+		if  (LOWORD(wParam)  == IDC_AUD_8 || LOWORD(wParam)  == IDC_AUD_16 ||  LOWORD(wParam)  == IDC_LEFT || LOWORD(wParam)  == IDC_RIGHT/* || LOWORD(wParam)  == IDC_MONO*/) 
 		{
 			DialogObj->AudioChannelParams();
 			break;
