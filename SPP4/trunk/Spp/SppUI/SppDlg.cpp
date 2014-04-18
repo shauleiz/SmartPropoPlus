@@ -1572,6 +1572,19 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 //		DialogObj->InitAudioDisplay(hDlg); // Initialize audio source display
 		return (INT_PTR)TRUE;
 
+	case WM_SYSCOMMAND:
+		if ((wParam & 0xFFF0) == SC_MINIMIZE)
+		{
+			SendMessage(DialogObj->GetHandle(),WM_COMMAND,IDC_HIDE,0);
+			return (INT_PTR)TRUE;
+		}
+
+		if ((wParam & 0xFFF0) == SC_CLOSE)
+		{
+			SendMessage(DialogObj->GetHandle(),WM_COMMAND,IDOK,0);
+			return (INT_PTR)TRUE;
+		}
+
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
