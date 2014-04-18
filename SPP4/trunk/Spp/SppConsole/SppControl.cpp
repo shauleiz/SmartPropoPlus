@@ -918,15 +918,16 @@ void AudioLevelWatch()
 			SendMessage(hDialog, SET_AUDIO_PARAMS,16, NULL);
 		}
 
-		// Very strong? change to 8 bits
-		else if (Level >LEVEL_VHI && BitRate==16)
+		// Changed. Always prefer 16 bits 
+		else if (/*Level >LEVEL_VHI && */BitRate!=16)
 		{
-			Conf->SetDefaultBitRate(8);
-			Audio->SetwBitsPerSample(8);
+			BitRate=16;
+			//BitRate=8;  //// Very strong? change to 8 bits (Removed)
+			Conf->SetDefaultBitRate(BitRate);
+			Audio->SetwBitsPerSample(BitRate);
 			Spp->AudioChanged();
-			BitRate=8;
 			WentAutoBr=true;
-			SendMessage(hDialog, SET_AUDIO_PARAMS,8, NULL);
+			SendMessage(hDialog, SET_AUDIO_PARAMS,BitRate, NULL);
 		}
 		SendMessage(hDialog, SET_AUDIO_AUTO, (WPARAM)AUTOBITRATE,  (WPARAM)AUTOBITRATE);
 		WentAutoBr=true;
