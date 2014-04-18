@@ -1566,7 +1566,7 @@ TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, wstring Valu
 	{
 		TiXmlHandle ChildHandle( ChildElement );
 		KeyElement = ChildHandle.FirstChild(Key).ToElement();
-		if (!KeyElement)
+		if (!KeyElement || !KeyElement->GetText())
 			continue;
 		string KeyStr = KeyElement->GetText();
 		if (KeyStr.empty())

@@ -42,7 +42,7 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 	m_Mapping(0x12345678),
 	m_iActiveProcessPulseFunc(0),
 	m_WaveNChannels(2),
-	m_WaveBitsPerSample(8),
+	m_WaveBitsPerSample(16),
 	m_WaveRate(192000), 
 	m_SelectedMod(TEXT("PPM")),
 	m_CurrentPP( [=] (int width, BOOL input) {return ;}),

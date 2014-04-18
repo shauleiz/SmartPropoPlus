@@ -7,7 +7,7 @@
 #include "SppTabJoy.h"
 
 #define STOP	L"Sleep"
-#define START	L"Wake=up"
+#define START	L"Wake-up"
 
 class SppDlg
 {
