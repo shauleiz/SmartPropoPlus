@@ -1782,7 +1782,10 @@ void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
 
     if (bitcount >= 8) {
         bitcount -= 8;
-        if ((data[datacount++] = jr_symbol[(bitstream >> bitcount) & 0xFF]) < 0) {
+        if ((data[datacount++] = jr_symbol[(bitstream >> bitcount) & 0xFF]) < 0) 
+		{
+			for (auto dt : data)
+				dt=0;
             sync = 0;
             return;
         }
@@ -1868,6 +1871,7 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 				m_Position[5] = smooth(m_Position[5], Convert15bits(data[2])); // Flaps (Ch6)
 				m_Position[6] = smooth(m_Position[6], Convert15bits(data[3])); // Aux1 (Ch7)
 				m_Position[7] = smooth(m_Position[7], Convert15bits(data[4])); // Aux2 (Ch8)
+
 
 				
 				SendPPJoy(fixed_n_channel-1, m_Position);
@@ -2503,6 +2507,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	if (!m_vJoyReady)
 		return;
 
+
 	/* Duplicate channel data */
 	memcpy(ch, Channel, MAX_JS_CH*sizeof(int));
 	n_ch = nChannels; 
@@ -2522,7 +2527,10 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	UINT iMapped;
 	for (i=0; /*i<=n_ch &&*/ i<=HID_USAGE_SL1-HID_USAGE_X;i++)
 	{
+
 		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
+		if (ch[iMapped-1]<0) // Test value
+			return;
 		writeOk =  SetAxisDelayed(32*ch[iMapped-1], HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
 	}
 

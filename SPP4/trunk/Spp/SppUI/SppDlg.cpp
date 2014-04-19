@@ -168,10 +168,10 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
 // CU informed GUI that status changed - Update notification icon
 void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 {
-	// Change Icon
+	// Change Icon and status text
 	if (wParam == S0)
 	{
-		TaskBarAddIcon(IDI_S0, CONSOLE_TT_S0, (LPTSTR)lParam);
+		TaskBarAddIcon(IDI_S0, CONSOLE_TT_S0, (LPTSTR)lParam);		
 		SetStreamingButton(false);
 	}
 	else if (wParam == W10)
@@ -189,6 +189,8 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, (LPTSTR)lParam);
 		SetStreamingButton(true);
 	};
+
+	SetWindowText(GetDlgItem(m_hDlg, IDS_STATUS_EDT), (LPTSTR)lParam);
 }
 
 #if 0

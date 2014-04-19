@@ -1713,6 +1713,7 @@ void SetNotificationIcon(LPCTSTR Message)
 }
 
 
+
 // Get the start mode out of the command line
 // Options are:
 // -n|-N	Normal mode (default)
