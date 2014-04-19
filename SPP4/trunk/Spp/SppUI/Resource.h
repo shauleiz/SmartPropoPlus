@@ -58,6 +58,7 @@
 #define IDP_JACK_PIC                            40000
 #define IDS_APP_TITLE                           40000
 #define IDS_LEFT                                40000
+#define IDS_STATUS_EDT                          40000
 #define IDC_CH9                                 40001
 #define IDC_LEVEL_L                             40001
 #define IDS_AUDIO_LINE                          40001
