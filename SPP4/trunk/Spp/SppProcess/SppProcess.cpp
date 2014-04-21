@@ -280,7 +280,7 @@ SPPMAIN_API int  CSppProcess::GetPositionDataQuality(void)
 SPPMAIN_API int  CSppProcess::GetJoystickCommQuality(void)
 {
 	if (m_JoyQual)
-		m_JoyQual-=10;
+		m_JoyQual-=5;
 
 	if (m_JoyQual>100)
 		m_JoyQual=100;
@@ -1207,6 +1207,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     static int data[14];		/* Array of pulse widthes in joystick values */
     static int datacount = 0;	/* pulse index (corresponds to channel index) */
 	static int former_sync = 0;
+	static bool prev_sep = false;
 	char tbuffer [9];
 	static int i = 0;
 	static int PrevWidth[14];	/* array of previous width values */
@@ -1218,11 +1219,22 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 		fprintf(gCtrlLogFile,"\n%s - ProcessPulsePpm(width=%d, input=%d)", tbuffer, width, input);
 
 	/* If pulse is a separator then go to the next one */
-	if (width < PPM_SEP|| former_sync)
+	if (width < PPM_SEP || former_sync)
 	{
+		prev_sep = true;
 		former_sync = 0;
 		return;
 	};
+
+	// Two separators in a row is an error - resseting
+	if ((width < PPM_SEP) && prev_sep)
+	{
+		prev_sep = true;
+		m_nChannels = 0;
+        datacount = 0;
+		return;
+	};
+
 
 	/* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
     if (/*sync == 0 && */width > PPM_TRIG) {
@@ -1232,11 +1244,26 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 		m_nChannels = datacount;
         datacount = 0;
 		former_sync = 1;
+		prev_sep = false;
 		return;
     }
 
     if (!sync) 
 		return; /* still waiting for sync */
+
+	// Two long pulse in a row is an error - resseting
+	if (width > PPM_SEP)
+	{
+		if (!prev_sep)
+		{
+			m_nChannels = 0;
+			datacount = 0;
+			prev_sep = false;
+			return;
+		}
+		else
+			prev_sep = false;
+	};
 
 	// Cancel jitter
 	if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
@@ -1287,7 +1314,8 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 	if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
 		fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
 
-	if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
+	if (datacount == 11)
+		sync = 0;			/* Reset sync after channel 12 */
 
     datacount++;
 	return;
@@ -2529,7 +2557,9 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	{
 
 		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
-		if (ch[iMapped-1]<0) // Test value
+		if ((int)iMapped>=nChannels)
+			continue;
+		if (ch[iMapped-1]<0) // Test value - if (-1) value is illegal
 			return;
 		writeOk =  SetAxisDelayed(32*ch[iMapped-1], HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
 	}
@@ -2549,7 +2579,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	if (updated)
 	{
 		count++;
-		if (count>=20)
+		if (count>=10)
 		{
 			delta = tNow-tPrev;
 			tPrev = tNow;
