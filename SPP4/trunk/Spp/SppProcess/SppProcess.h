@@ -223,7 +223,7 @@ private:
 	class CPulseScope * m_PulseScopeObj;
 	UINT m_nChannels;
 	JOYSTICK_POSITION m_vJoyPosition;
-	UINT m_JoyQual;
+	int m_JoyQual;
 	UINT m_PosUpdateCounter;
 	UINT m_PosUpdateCounterFactor;
 	std::vector<int> m_vPulses[2];
