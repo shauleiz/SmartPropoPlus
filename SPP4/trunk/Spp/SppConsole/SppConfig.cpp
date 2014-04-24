@@ -5,6 +5,7 @@
 #include "public.h"
 #include "SppProcess.h"
 #include "SppConfig.h"
+#include <vld.h>
 
 
 CSppConfig::CSppConfig(LPTSTR FileName) 

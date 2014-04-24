@@ -31,6 +31,9 @@ void SppDbg::StartDbgInputSignal(void)
 	//memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", sizeof( L"SPPDBGINSIG.TXT"));
 	if (!m_FileDbgInSig)
 		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+"); 
+
+		fprintf(m_FileDbgInSig,  "Start Logging raw input signal");
+
 }
 
 void SppDbg::StartDbgPulse(void)
@@ -122,7 +125,7 @@ void SppDbg::InputSignalReady(PBYTE buffer, PVOID info)
 	sInputSig = (InputSignalStruct *)info;
 
 	// Print packet header
-	fprintf(m_FileDbgInSig,  ">>> Packet %d, nCh %d, Bits %d, Frames %d\n",  sInputSig->dwCount, sInputSig->nChannels, sInputSig->wBitsPerSample,sInputSig->bSize);
+	fprintf(m_FileDbgInSig,  "\n>>> Packet %d, nCh %d, Bits %d, Frames %d\n",  sInputSig->dwCount, sInputSig->nChannels, sInputSig->wBitsPerSample,sInputSig->bSize);
 
 	// Print 32 frames per line.
 	// If 8-bit samples then print two-digit Hex
@@ -164,7 +167,7 @@ void SppDbg::InputSignalReady(PBYTE buffer, PVOID info)
 			fprintf(m_FileDbgInSig,  "%06d%c%06d",(((signed short *)buffer)[i]), sep, (((signed short *)buffer)[i+1]));
 			if (row == 32)
 			{
-				fprintf(m_FileDbgInSig,"\n");
+				//fprintf(m_FileDbgInSig,"\n");
 				row=0;
 			}
 			else

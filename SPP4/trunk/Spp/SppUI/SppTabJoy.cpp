@@ -27,6 +27,7 @@ SppTabJoy::SppTabJoy(HINSTANCE hInstance, HWND TopDlgWnd) : SppTab( hInstance,  
 
 SppTabJoy::~SppTabJoy(void)
 {
+	delete(m_BtnsDlg);
 }
 
 #pragma region Joystick Combo box
@@ -195,7 +196,7 @@ void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 void SppTabJoy::SetProcessedChData(UINT iCh, UINT data)
 {
 	// Check if this channel is supported
-	UINT count = m_vPpBarId.size();
+	size_t count = m_vPpBarId.size();
 	if (iCh >= count)
 		return;
 
@@ -210,7 +211,7 @@ void SppTabJoy::SetProcessedChData(UINT iCh, UINT data)
 void SppTabJoy::SetRawChData(UINT iCh, UINT data)
 {
 	// Check if this channel is supported
-	UINT count = m_vRawBarId.size();
+	size_t count = m_vRawBarId.size();
 	if (iCh >= count)
 		return;
 

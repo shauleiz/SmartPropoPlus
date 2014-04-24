@@ -50,7 +50,7 @@ void SppTabFltr::SetRawChData(UINT iCh, UINT data)
 {
 
 	// Check if this channel is supported
-	UINT count = m_vRawBarId.size();
+	size_t count = m_vRawBarId.size();
 	if (iCh >= count)
 		return;
 
@@ -66,7 +66,7 @@ void SppTabFltr::SetProcessedChData(UINT iCh, UINT data)
 {
 
 	// Check if this channel is supported
-	UINT count =  m_vPpBarId.size();
+	size_t count =  m_vPpBarId.size();
 	if (iCh >= count)
 		return;
 

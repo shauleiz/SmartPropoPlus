@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
+#include <crtdbg.h>
 #include <Shellapi.h>
 #include "public.h"
-//#include "vld.h"
 #include "vJoyInterface.h"
 #include "SmartPropoPlus.h"
 #include "SppAudio.h"
@@ -16,6 +16,7 @@
 #include "SppDbg.h"
 #include "WinMessages.h"
 #include "vJoyMonitor.h"
+#include <vld.h>
 
 #pragma region Globals
 
@@ -90,6 +91,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 
 	THREAD_NAME("Main Thread");
+
+	//// Memory Leak detection
+	////_CrtSetReportMode(_CRT_WARN | _CRT_ERROR,  _CRTDBG_MODE_DEBUG );
+	//_CrtSetDbgFlag( _CRTDBG_CHECK_ALWAYS_DF|_CRTDBG_LEAK_CHECK_DF );
+	//_CrtCheckMemory();
 
 
 	HANDLE hDlgCLosed=NULL;
@@ -262,6 +268,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
  
 ExitApp:
+	// Stop audio
+	Spp->Stop();
+
 	// Stop monitoring
 	Monitor = false;
 	if (tMonitor && tMonitor->joinable())
@@ -272,6 +281,9 @@ ExitApp:
 	delete(Conf);
 	delete(Spp);
 	delete(Audio);
+	delete(DbgObj);
+	delete(LogWin);
+	delete(tMonitor);
 
 	return 0;
 }
@@ -1039,18 +1051,18 @@ void CaptureDevicesPopulate(HWND hDlg)
 		if (jack.Default)
 		{
 			UINT BitRate = Conf->GetAudioDeviceBitRate(jack.id);
-			WCHAR * Channel =  _wcsdup(Conf->GetAudioDeviceChannel(jack.id).c_str());
+			std::wstring Channel = Conf->GetAudioDeviceChannel(jack.id);
 			if (!BitRate)
 				BitRate = DEF_BITRATE;
 
-			if (!wcslen(Channel) && jack.nChannels != 1)
+			if (!Channel.length() && jack.nChannels != 1)
 					Channel = DEF_CHANNEL2;
 
 			if (jack.nChannels == 1)
 					Channel = DEF_CHANNEL1;
 
 
-			SendMessage(hDlg, SET_AUDIO_PARAMS, (WPARAM)BitRate, (LPARAM)(Channel[0]));
+			SendMessage(hDlg, SET_AUDIO_PARAMS, (WPARAM)BitRate, (LPARAM)((Channel.c_str())[0]));
 
 			// Auto/Manual channel selection
 			if (Conf->IsDefaultChannelAuto())

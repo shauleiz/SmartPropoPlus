@@ -11,6 +11,7 @@
 #include <Mmdeviceapi.h>
 #include "PolicyConfig.h"
 #include "PulseData.h"
+#include <vld.h>
 
 #define MAX_LOADSTRING 100
 
@@ -311,6 +312,8 @@ CSppAudio::~CSppAudio(void)
 	SAFE_RELEASE(m_pCaptureDeviceCollect);
 	SAFE_RELEASE(m_pCaptureClient);
 	SAFE_RELEASE(m_pAudioClient);
+
+	CoUninitialize();
 }
 
 
@@ -1868,7 +1871,7 @@ inline void CSppAudio::SendDbgInputSignal(PBYTE buffer, UINT bSize, WORD nChanne
 	sInputSig.wBitsPerSample = wBitsPerSample;
 	sInputSig.dwCount = counter++;
 
-	PostMessage(m_hPrntWnd, WMSPP_AUDIO_INSIG, (WPARAM)buffer, (LPARAM)&sInputSig);
+	SendMessage(m_hPrntWnd, WMSPP_AUDIO_INSIG, (WPARAM)buffer, (LPARAM)&sInputSig);
 }
 
 HRESULT CSppAudio::InitPulseDataObj(CPulseData * pPulseDataObj)

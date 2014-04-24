@@ -74,6 +74,7 @@ SPPMAIN_API CSppProcess::~CSppProcess()
 {
 	Stop();
 	StopCaptureAudio();
+	MonitorChannels(FALSE);
 	m_ModulationMap.clear();
 }
 
