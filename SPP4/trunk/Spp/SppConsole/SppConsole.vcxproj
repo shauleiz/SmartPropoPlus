@@ -69,7 +69,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;$(SolutionDir)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -57,6 +57,11 @@ SppDlg::~SppDlg(void)
 	if (m_tnid.cbSize)
 		Shell_NotifyIcon(NIM_DELETE, &m_tnid);
 
+	// Cleanup
+	delete(m_hrsrc.TabAudio);
+	delete(m_hrsrc.TabDcdr);
+	delete(m_hrsrc.TabFltr);
+	delete(m_hrsrc.TabJoy);
 }
 
 void SppDlg::Show()
