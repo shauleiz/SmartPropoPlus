@@ -5,7 +5,7 @@
 #include "public.h"
 #include "SppProcess.h"
 #include "SppConfig.h"
-#include <vld.h>
+//#include <vld.h>
 
 
 CSppConfig::CSppConfig(LPTSTR FileName) 
@@ -39,7 +39,7 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	// TODO: Log operation
 
 
-	saved = m_doc.SaveFile();
+	saved = Save();
 	if (!saved)
 		m_doc = NULL;
 }
@@ -47,7 +47,7 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 CSppConfig::~CSppConfig(void)
 {
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	m_doc.Clear();
 }
@@ -88,7 +88,7 @@ TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 	vJoyDevice->LinkEndChild(vJoyDevId);
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 
 	return i_doc;
@@ -157,7 +157,7 @@ TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
 
 	// Obtain handle to the opened/created vJoy_Device Element
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	TiXmlHandle out( Device );
 	return out;
@@ -250,7 +250,7 @@ void CSppConfig::MapButtons(UINT id, BTNArr ButtonMap)
 	};
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 }
 
@@ -303,7 +303,7 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 		UniqueTextLeaf(AxisHandle, string("X"), to_wstring ((map & 0xF0000000)>>28), true);
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 }
 
@@ -419,7 +419,7 @@ void CSppConfig::SetModulationAttrib(LPTSTR Attrib, LPTSTR Value)
 	// If selected==true - assign id to the attribute 'selected'
 	Modulations->SetAttribute(utf8_encode(wstring(Attrib)), utf8_encode(wstring(Value)));
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 }
 
@@ -474,7 +474,7 @@ bool CSppConfig::AddModulation(wstring Type, wstring SubType, wstring Name, bool
 	UniqueTextLeaf(ModHandle, string(SPP_MODNAME), Name, true);
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 
@@ -735,7 +735,7 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 		UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_wstring(BitRate), true);
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 
@@ -1047,7 +1047,7 @@ bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 	// Add Filter DLL file version
 	UniqueTextLeaf(FiltersHandle, string(SPP_DLLVER), wstring(Version), true);
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 }
@@ -1107,7 +1107,7 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 		{
 			Filters->RemoveAttribute(SPP_SELECT);
 #ifdef _DEBUG
-			m_doc.SaveFile();
+			Save();
 #endif
 			return true;
 		}
@@ -1126,7 +1126,7 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 	wstring wstr_Name = (wstring(Name));
 	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , wstr_Name , true);
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 }
@@ -1200,6 +1200,7 @@ wstring CSppConfig::GetSelectedFilterName(void)
 // Save XML to disk
 bool CSppConfig::Save(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_Save);
 	return 	m_doc.SaveFile();
 }
 
@@ -1301,7 +1302,7 @@ bool CSppConfig::PulseScope(bool Monitor)
 		PulseScp->SetAttribute(SPP_CHECKED, "0");
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 }
@@ -1340,7 +1341,7 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 		Monitor_Ch->SetAttribute(SPP_CHECKED, "0");
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 }
@@ -1415,7 +1416,7 @@ bool CSppConfig::SetGeneralElemetsBool(const char * Element, bool Val)
 		Ch->SetAttribute(SPP_CHECKED, "0");
 
 #ifdef _DEBUG
-	m_doc.SaveFile();
+	Save();
 #endif
 	return true;
 }
@@ -1482,7 +1483,7 @@ void CSppConfig::Test(void)
 	UINT sf = GetSelectedFilter();
 	Name = GetSelectedFilterName();
 
-	m_doc.SaveFile();
+	Save();
 }
 
 /////////// Helper functions
@@ -1521,8 +1522,11 @@ LPCTSTR utf8_decode(const char * str)
 //	LeafText:	The text to insert in the leaf element
 //	Replace:	If the leaf element exist - should the text be replaced
 // Returns: Handle to leaf element if successful - NULL otherwize
+recursive_mutex			m_mx_UniqueTextLeaf; // Mutex - UniqueTextLeaf is critical region
 TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, wstring &LeafText, bool Replace)
 {
+	lock_guard<recursive_mutex> lock(m_mx_UniqueTextLeaf);
+
 	// Does the leaf exist and unique
 	TiXmlElement * Leaf[2];
 	Leaf[0] = Parent.ChildElement(LeafName, 0).ToElement();

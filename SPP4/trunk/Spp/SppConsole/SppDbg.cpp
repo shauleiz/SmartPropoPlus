@@ -2,6 +2,7 @@
 #include "SmartPropoPlus.h"
 #include "SppDbg.h"
 #include <errno.h>
+#include <assert.h>
 
 SppDbg::SppDbg(void) :
 	m_FileDbgInSig(NULL)
@@ -61,14 +62,15 @@ void SppDbg::StopDbgInputSignal(void)
 
 	OPENFILENAME ofn;
 	fclose(m_FileDbgInSig);
+	m_FileDbgInSig = NULL;
 
 	// Get destination file
-	char szFileName[MAX_PATH] = "";
-	memcpy_s(szFileName, MAX_PATH, L"SPPDBGINSIG.TXT", MAX_PATH);
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn); 
+	WCHAR szFileName[MAX_PATH] = L"";
+	memcpy_s(szFileName, MAX_PATH, L"SPPDBGINSIG.TXT", sizeof(L"SPPDBGINSIG.TXT"));
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ofn.lStructSize = sizeof(OPENFILENAME); 
     ofn.hwndOwner = NULL;
-    ofn.lpstrFilter = (LPCWSTR)L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFilter = (LPCWSTR)L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0\0";
     ofn.lpstrFile = (LPWSTR)szFileName;
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_OVERWRITEPROMPT;
@@ -85,19 +87,20 @@ void SppDbg::StopDbgPulse(void)
 
 	OPENFILENAME ofn;
 	int closed = fclose(m_FileDbgPulse);
+	m_FileDbgPulse=NULL;
 
 	// Get destination file
-	char szFileName[MAX_PATH] = "";
-	memcpy_s(szFileName, MAX_PATH, L"SPPDBGPULSE.TXT", MAX_PATH);
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn); 
+	WCHAR szFileName[MAX_PATH] = {L""};
+	memcpy_s(szFileName, MAX_PATH, L"SPPDBGPULSE.TXT", sizeof(L"SPPDBGPULSE.TXT"));
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ofn.lStructSize = sizeof(OPENFILENAME); 
     ofn.hwndOwner = NULL;
-    ofn.lpstrFilter = (LPCWSTR)L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFilter = (LPCWSTR)L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0\0";
     ofn.lpstrFile = (LPWSTR)szFileName;
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = (LPCWSTR)L"txt";
-	GetSaveFileName(&ofn);
+	assert(GetSaveFileName(&ofn));
 
 	// Move tempfile to selected destination
 	BOOL moved = MoveFileEx(m_FileDbgPulseName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED);

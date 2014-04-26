@@ -1422,7 +1422,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     static int data[14];		/* Array of pulse widthes in joystick values */
     static int datacount = 0;	/* pulse index (corresponds to channel index) */
 	static int former_sync = 0;
-	char tbuffer [9];
+	char tbuffer [11];
 	static int i = 0;
 	static int PrevWidth[14];	/* array of previous width values */
 
