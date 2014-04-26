@@ -16,7 +16,7 @@
 #include "SppDbg.h"
 #include "WinMessages.h"
 #include "vJoyMonitor.h"
-#include <vld.h>
+//#include <vld.h>
 
 #pragma region Globals
 
@@ -1244,6 +1244,10 @@ HINSTANCE FilterPopulate(HWND hDlg)
 			FilterNameW = const_cast<WCHAR *>(pGetFilterNameByIndexW(iFilter));
 		else
 			FilterName = pGetFilterNameByIndexA(iFilter);
+
+		// Sanity check
+		if (!FilterName)
+			return NULL;
 
 		// If got a char* then convert to LPCWSTR
 		if (!FilterNameW || !wcslen(FilterNameW))

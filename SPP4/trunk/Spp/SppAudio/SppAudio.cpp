@@ -11,7 +11,7 @@
 #include <Mmdeviceapi.h>
 #include "PolicyConfig.h"
 #include "PulseData.h"
-#include <vld.h>
+//#include <vld.h>
 
 #define MAX_LOADSTRING 100
 
@@ -314,6 +314,14 @@ CSppAudio::~CSppAudio(void)
 	SAFE_RELEASE(m_pAudioClient);
 
 	CoUninitialize();
+
+	for (auto item : m_CaptureDevices)
+	{
+		free(item->DeviceName);
+		free(item->id);
+		delete item;
+	}
+	m_CaptureDevices.clear();
 }
 
 

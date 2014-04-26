@@ -154,10 +154,10 @@ private:
 
 
 private:
-	TiXmlDocument m_doc;
+	TiXmlDocument			m_doc;
+	recursive_mutex			m_mx_Save;
 
 };
-
 
 string utf8_encode(const wstring &wstr);
 wstring utf8_decode(const string &str);

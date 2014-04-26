@@ -615,9 +615,10 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 // Based on
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd756686(v=vs.85).aspx
 {
-	float offset = 0;			// Offset to the beginning of the longest pulse
-	float maxlength = 0;		// Size of the longest pulse (in the first half of the buffer)
+	FLOAT offset = 0;			// Offset to the beginning of the longest pulse
+	FLOAT maxlength = 0;		// Size of the longest pulse (in the first half of the buffer)
 	UINT arrsize = nPulses*2+1;	// Size of array of points
+	FLOAT fTmp;
 
 	// Pause state
 	if (!m_isPlaying)
@@ -632,6 +633,7 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 		delete m_points;
 		m_points = NULL;
 	};
+
 	m_points = new D2D1_POINT_2F[arrsize];
 
 	// Populate each point and calculate overall offset
@@ -640,7 +642,9 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 	for (UINT i=1; i<nPulses; i++)
 	{
 		// Convert from pulse data to points
-		m_points[2*i].x	  = m_points[2*i-1].x	= Length[i-1] + m_points[2*i-2].x;
+		fTmp = Length[i-1] + m_points[2*i-2].x;
+		m_points[2*i].x	    = fTmp;
+		m_points[2*i-1].x	= fTmp;
 		m_points[2*i-1].y = m_points[2*i-2].y = Value[i-1];
 
 		// find the longest pulse in the first half buffer
