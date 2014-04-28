@@ -193,3 +193,4 @@
 #define IDC_BTN_FILTERBROWSE                    40141
 #define IDC_COMBO_FILTERS                       40142
 #define IDC_CH_FILTER                           40143
+#define IDS_I_STATUSCHANGED                     40144

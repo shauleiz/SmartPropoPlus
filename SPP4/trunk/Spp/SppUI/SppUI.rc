@@ -523,6 +523,7 @@ STRINGTABLE
     IDS_I_STARTSTREAM             "Starting a new audio stream and a new Capture Thread"
     IDS_I_CAPTURESTART            "Capture thread - Starting"
     IDS_I_CAPTUREABORT            "Capture thread - Ending"
+    IDS_I_STATUSCHANGED           "CU Status"
 }
 
 

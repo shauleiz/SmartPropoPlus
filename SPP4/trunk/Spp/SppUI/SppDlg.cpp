@@ -195,7 +195,8 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 		SetStreamingButton(true);
 	};
 
-	SetWindowText(GetDlgItem(m_hDlg, IDS_STATUS_EDT), (LPTSTR)lParam);
+	if (lParam)
+		SetWindowText(GetDlgItem(m_hDlg, IDS_STATUS_EDT), (LPTSTR)lParam);
 }
 
 #if 0
