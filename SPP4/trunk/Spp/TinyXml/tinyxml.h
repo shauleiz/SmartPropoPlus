@@ -38,6 +38,7 @@ distribution.
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <Windows.h>
 
 // Help out windows:
 #if defined( _DEBUG ) && !defined( DEBUG )
@@ -211,7 +212,7 @@ public:
 		
 		(For an unformatted stream, use the << operator.)
 	*/
-	virtual void Print( FILE* cfile, int depth ) const = 0;
+	virtual void Print( FILE* cfile, int depth ) const {DebugBreak();} /*const = 0*/;
 
 	/**	The world does not agree on whether white space should be kept or
 		not. In order to make everyone happy, these global, static functions

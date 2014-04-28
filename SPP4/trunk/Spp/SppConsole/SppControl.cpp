@@ -34,7 +34,8 @@ HINSTANCE g_hInstance = 0;
 HWND hLog;
 bool Monitor = true;
 thread * tMonitor = NULL;
-int vJoyDevice = 1;
+int     vJoyDevice = 1;
+bool    vJoyDeviceEnabled = false;
 bool reqPopulateFilter = false;
 UINT AudioLevel[2] = {0, 0};
 int isRight=-1; // -1: Uninitialized
@@ -73,6 +74,7 @@ WORD		GetStartMode(LPTSTR lpCmdLine);
 void		SetNotificationIcon(LPCTSTR);
 void		ComputeOperatState(void);
 void		DecoderAuto(HWND hDlg);
+OperatState SetState(OperatState current, OperatState next, LPCTSTR Msg = NULL);
 #pragma endregion Declarations
 
 
@@ -432,12 +434,12 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_JMON_BTN:
-		case WMSPP_JMON_AXIS:
 		case WMSPP_PRCS_RCHMNT:
 		case WMSPP_PRCS_NRCHMNT:
 		case WMSPP_PRCS_NPCHMNT:
 		case WMSPP_PRCS_PCHMNT:
 		case WMSPP_PRCS_ALIVE:
+		case WMSPP_JMON_AXIS:
 		SendMessage(hDialog, uMsg, wParam, lParam);
 			break;
 
@@ -609,8 +611,8 @@ void ComputeOperatState(void)
 	UINT PosQual=0;
 	UINT JoyQual=0;
 	UINT AudioQualitySel, AudioQualityOther;
-	static UINT StabilityCount=0;
-	OperatState NewState=S0;
+	//static UINT StabilityCount=0;
+	//OperatState NewState=S0;
 
 	// Nothing to compute is user chose to be in stopped mode
 	if (OperatStateMachine == S0)
@@ -634,56 +636,33 @@ void ComputeOperatState(void)
 	// State Feed (W10)
 	// Perfect conditions, all is functioning
 	// Joystick communication is very good (JoyQual>=75)
+#if 0
 	if (JoyQual>=75)
 	{
 		if ((AudioQualitySel<LEVEL_LO) && (AudioQualitySel<AudioQualityOther))
-			NewState = W101;
+			OperatStateMachine = SetState(OperatStateMachine, W101, CONSOLE_BLN_W101);
 		else
-			NewState = W10;
-
-		// Wait for State to stabilize
-		if (OperatStateMachine == NewState)
-			StabilityCount++;
-		else
-			StabilityCount=0;
-
-		// State is W10 but we will inform GUI only when state is stable
-		// - After exactly 5 times the state is stable
-		OperatStateMachine = NewState;
-		if (StabilityCount!=5)
-			return;
-
-		// State is stable
-		if (NewState == W101)
-			SetNotificationIcon(CONSOLE_BLN_W101);
-		else
-			SetNotificationIcon(CONSOLE_BLN_W10);
+			OperatStateMachine = SetState(OperatStateMachine, W10, CONSOLE_BLN_W10);
 		return;
 	} // W10
 
-	// State Process (W9)
-	// Joystick communication is not good (JoyQual<90)
+#endif // 0
+
+	// State Process (W9/W10)
 	// Quality of Position data is good (PosQual >= 75)
 	if (PosQual >= 75)
 	{
-		NewState = W9;
-
-		// Wait for State to stabilize
-		if (OperatStateMachine == NewState)
-			StabilityCount++;
+		if (vJoyDeviceEnabled)
+		{
+			if ((AudioQualitySel<LEVEL_LO) && (AudioQualitySel<AudioQualityOther))
+				OperatStateMachine = SetState(OperatStateMachine, W101, CONSOLE_BLN_W101);
+			else
+				OperatStateMachine = SetState(OperatStateMachine, W10, CONSOLE_BLN_W10);
+		} // W10
 		else
-			StabilityCount=0;
-
-		// State is W9 but we will inform GUI only when state is stable
-		// - After exactly 5 times the state is stable
-		OperatStateMachine = NewState;
-		if (StabilityCount!=5)
-			return;
-
-		// State is stable
-		SetNotificationIcon(CONSOLE_BLN_W9);
+		    OperatStateMachine = SetState(OperatStateMachine, W9, CONSOLE_BLN_W9);// W9
 		return;
-	} // W9
+	} 
 
 	// State NoProcess (W8)
 	// Joystick communication is not good (JoyQual<90)
@@ -692,31 +671,11 @@ void ComputeOperatState(void)
 	if (AudioQualitySel>=LEVEL_LO)
 	{
 		if (AudioQualityOther>=LEVEL_LO)
-			NewState = W81;
+            OperatStateMachine = SetState(OperatStateMachine, W81, CONSOLE_BLN_W81);
 		else if (AudioQualityOther>AudioQualitySel)
-			NewState = W82;
+            OperatStateMachine = SetState(OperatStateMachine, W82, CONSOLE_BLN_W82);
 		else
-			NewState = W8;
-
-		// Wait for State to stabilize
-		if (OperatStateMachine == NewState)
-			StabilityCount++;
-		else
-			StabilityCount=0;
-
-		// State is W8 but we will inform GUI only when state is stable
-		// - After exactly 5 times the state is stable
-		OperatStateMachine = NewState;
-		if (StabilityCount!=5)
-			return;
-
-		// State is stable - let's try to guess what's wrong
-		if (OperatStateMachine==W81)
-			SetNotificationIcon(CONSOLE_BLN_W81);
-		else if (OperatStateMachine==W82)
-			SetNotificationIcon(CONSOLE_BLN_W82);
-		else
-			SetNotificationIcon(CONSOLE_BLN_W8);
+            OperatStateMachine = SetState(OperatStateMachine, W8, CONSOLE_BLN_W8);
 		return;
 	}
 
@@ -728,50 +687,17 @@ void ComputeOperatState(void)
 	if (AudioQualitySel<=LEVEL_LO)
 	{
 		if (AudioQualityOther>AudioQualitySel)
-			NewState = W71;
+			OperatStateMachine = SetState(OperatStateMachine, W71, CONSOLE_BLN_W71);
 		else if (AudioQualitySel>LEVEL_VLO)
-			NewState = W72;
+			OperatStateMachine = SetState(OperatStateMachine, W72, CONSOLE_BLN_W72);
 		else
-			NewState = W7;
-
-		// Wait for State to stabilize
-		if (OperatStateMachine == NewState)
-			StabilityCount++;
-		else
-			StabilityCount=0;
-
-		// State is W7 but we will inform GUI only when state is stable
-		// - After exactly 5 times the state is stable
-		OperatStateMachine = NewState;
-		if (StabilityCount!=5)
-			return;
-
-		// State is stable - let's try to guess what's wrong
-		if (OperatStateMachine==W71)
-			SetNotificationIcon(CONSOLE_BLN_W71);
-		else if (OperatStateMachine==W72)
-			SetNotificationIcon(CONSOLE_BLN_W72);
-		else
-			SetNotificationIcon(CONSOLE_BLN_W7);
+			OperatStateMachine = SetState(OperatStateMachine, W7, CONSOLE_BLN_W7);
 		return;
 	}
 
 	// Default
 	{
-		NewState = UNKNOWN;
-
-		if (OperatStateMachine == NewState)
-			StabilityCount++;
-		else
-			StabilityCount=0;
-
-		// Default
-		OperatStateMachine = NewState;
-		if (StabilityCount!=5)
-			return;
-
-		// State is stable
-		SetNotificationIcon(L"Unknown Error"); // TODO: Repalce with good string
+		OperatStateMachine = SetState(OperatStateMachine, UNKNOWN, L"Unknown Error");
 		return;
 	}
 
@@ -1585,6 +1511,7 @@ void thMonitor(bool * KeepAlive)
 				{
 					if (vJoyEnabled())
 					{
+                        vJoyDeviceEnabled = true;
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
 						SetvJoyMapping(vJoyDevice);
@@ -1592,7 +1519,10 @@ void thMonitor(bool * KeepAlive)
 						//StartPollingDevice(vJoyDevice);
 					}
 					else
+					{
+                        vJoyDeviceEnabled = false;
 						continue;
+					};
 				}
 				else
 					RelinquishVJD(rID);
@@ -1726,8 +1656,39 @@ void SetNotificationIcon(LPCTSTR Message)
 		return;
 
 	SendMessage(hDialog, WMSPP_STAT_UPDT, (WPARAM)OperatStateMachine, (LPARAM)Message);
+	LogMessage(INFO,IDS_I_STATUSCHANGED ,Message);
 }
 
+// Set a new status
+// Test that this is not a glitch
+// If not a glitch then set the status and send notification
+OperatState SetState(OperatState current, OperatState next, LPCTSTR Msg)
+{
+	static UINT StabilityCount=0;
+	static OperatState tmp = S0;
+
+	// Change?
+	if (current == next)
+		return next;
+
+	// Wait for State to stabilize
+	if (tmp != next)
+	{
+		StabilityCount=0;
+		tmp = next;
+	}
+	else
+		StabilityCount++;
+
+	// Test
+	if (StabilityCount < 5)
+		return current;
+
+	// OK, reached stability
+	if (Msg)
+		SetNotificationIcon(Msg);
+	return next;
+}
 
 
 // Get the start mode out of the command line

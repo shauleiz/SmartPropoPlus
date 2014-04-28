@@ -214,6 +214,7 @@
 #define IDS_I_STARTSTREAM                       40083
 #define IDS_I_CAPTURESTART                      40084
 #define IDS_I_CAPTUREABORT                      40085
+#define IDS_I_STATUSCHANGED                     40086
 #define IDC_X                                   40087
 #define IDC_Y                                   40088
 #define IDC_Z                                   40089
