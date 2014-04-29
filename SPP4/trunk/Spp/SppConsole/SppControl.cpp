@@ -234,7 +234,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		FilterPopulate(hDialog);
 		Spp->AudioChanged(); // TODO: Remove later
 
-		OperatStateMachine = W7;
+		OperatStateMachine = UNKNOWN;
 	};
 
 	// Start monitoring channels according to config file
@@ -544,7 +544,7 @@ LRESULT CALLBACK MainWindowProc(
 			{
 				Spp->Start();
 				Spp->AudioChanged();
-				OperatStateMachine = W7;
+				OperatStateMachine = UNKNOWN;
 				Conf->Stopped(false);
 			}
 			else
