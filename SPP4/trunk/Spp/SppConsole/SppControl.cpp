@@ -650,15 +650,16 @@ void ComputeOperatState(void)
 
 	// State Process (W9/W10)
 	// Quality of Position data is good (PosQual >= 75)
-	if (PosQual >= 75)
+    // Quality of audio is not minimal
+	if (PosQual >= 75 && AudioQualitySel)
 	{
 		if (vJoyDeviceEnabled)
 		{
 			if ((AudioQualitySel<LEVEL_LO) && (AudioQualitySel<AudioQualityOther))
 				OperatStateMachine = SetState(OperatStateMachine, W101, CONSOLE_BLN_W101);
 			else
-				OperatStateMachine = SetState(OperatStateMachine, W10, CONSOLE_BLN_W10);
-		} // W10
+				OperatStateMachine = SetState(OperatStateMachine, W10, CONSOLE_BLN_W10); // W10
+		} 
 		else
 		    OperatStateMachine = SetState(OperatStateMachine, W9, CONSOLE_BLN_W9);// W9
 		return;
