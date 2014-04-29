@@ -54,7 +54,6 @@
 #define IDC_OUT_CHANNELS                        40000
 #define IDC_SPP_OUT                             40000
 #define IDC_WIZ                                 40000
-#define IDM_DISPLAY_WIZARD                      40000
 #define IDP_JACK_PIC                            40000
 #define IDS_APP_TITLE                           40000
 #define IDS_LEFT                                40000
@@ -262,3 +261,4 @@
 #define IDC_TXT_RZ                              40206
 #define IDC_TXT_SL0                             40207
 #define IDC_TXT_SL1                             40208
+#define IDM_DISPLAY_WIZARD                      40209
