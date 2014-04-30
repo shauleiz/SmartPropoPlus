@@ -71,6 +71,7 @@ public: // Called from window procedure
 	void CreateBtnsDlg(HWND hDlg);
 	void EnableControls(UINT id, controls * ctrl);
 	void SetStreamingButton(BOOL isProcessingAudio);
+	void SetStreamingState(BOOL isProcessingAudio);
 	//void FilterListEvent(WPARAM wParam, LPARAM lParam);
 	void AddLine2FilterListA(int iFilter, const char * FilterName);
 	void AddLine2FilterListW(int iFilter, LPCWSTR FilterName);
