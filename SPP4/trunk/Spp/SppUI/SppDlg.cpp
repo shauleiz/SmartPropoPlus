@@ -176,23 +176,24 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 	// Change Icon and status text
 	if (wParam == S0)
 	{
+		SetWindowText(GetDlgItem(m_hDlg, IDS_STATUS_EDT), CONSOLE_BLN_S0);
 		TaskBarAddIcon(IDI_S0, CONSOLE_TT_S0, (LPTSTR)lParam);		
-		SetStreamingButton(false);
+		SetStreamingState(false);
 	}
 	else if (wParam == W10)
 	{
 		TaskBarAddIcon(IDI_W10, CONSOLE_TT_W10, (LPTSTR)lParam);
-		SetStreamingButton(false);
+		SetStreamingState(false);
 	}
 	else if (wParam == W8)
 	{
 		TaskBarAddIcon(IDI_W8, CONSOLE_TT_W8, (LPTSTR)lParam);
-		SetStreamingButton(false);
+		SetStreamingState(false);
 	}
 	else
 	{
 		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, (LPTSTR)lParam);
-		SetStreamingButton(true);
+		SetStreamingState(true);
 	};
 
 	if (lParam)
@@ -641,6 +642,33 @@ void SppDlg::EnableFilter(BOOL cb)
 		UpdateFilter();
 	else
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_FILTER, (WPARAM)-1, 0);
+}
+
+// Change GUI to reflect "Start/Stop" states
+void SppDlg::SetStreamingState(BOOL isProcessingAudio)
+{
+	// Button
+	SetStreamingButton(isProcessingAudio);
+
+	// Show/Hide Tab control
+	if (isProcessingAudio)
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), SW_SHOW);
+	else
+		ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), SW_HIDE);
+	
+
+	// Enable/Disable Info frame
+	EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_SRC),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDC_STAT_AUDIO),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDC_STAT_TX),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDS_DECODER),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDC_STAT_FILTER),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDS_FILTER),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDC_STAT_VJOY),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDS_JOY),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_CHBITS),  isProcessingAudio);
+	EnableWindow(GetDlgItem(m_hDlg,  IDS_DECODER_NCH),  isProcessingAudio);
+	// TODO: Enable/Disable all Progress bars
 }
 
 // Set the value of the "Start/Stop" streaming button
@@ -1771,7 +1799,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WMSPP_PRCS_ALIVE:
-		DialogObj->SetStreamingButton((BOOL)wParam);
+		DialogObj->SetStreamingState((BOOL)wParam);
 		break;
 
 
