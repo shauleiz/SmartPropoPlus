@@ -5,9 +5,9 @@
 #define FILEVER "0,4,0,0"
 
 #ifdef X64
-#define PRODVER "0,4,0,0 (x64) Tag 0.0.3.1"
+#define PRODVER "0,4,0,0 (x64) Rev 622"
 #else
-#define PRODVER "0,4,0,0 (x86) Tag 0.0.3.1"
+#define PRODVER "0,4,0,0 (x86) Rev 622"
 #endif
 
 #define IDD_ABOUTBOX                            103
