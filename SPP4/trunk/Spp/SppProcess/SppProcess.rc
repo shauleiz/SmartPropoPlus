@@ -26,12 +26,12 @@ VS_VERSION_INFO VERSIONINFO
         BLOCK "040904B0"
         {
             VALUE "Comments", ""
-            VALUE "FileDescription", "Graphical Pulse viewer for SmartPropoPlus"
+            VALUE "FileDescription", "SmartPropoPlus decoders & processing"
             VALUE "FileVersion", "0, 4, 0, 0"
-            VALUE "InternalName", "PulseScope"
+            VALUE "InternalName", "SppProcess"
             VALUE "LegalCopyright", "Copyright (C) 2006-2014"
-            VALUE "OriginalFilename", "PulseScope.DLL"
-            VALUE "ProductName", "PulseScope for SmartPropoPlus"
+            VALUE "OriginalFilename", "SppProcess.DLL"
+            VALUE "ProductName", "SppProcess for SmartPropoPlus"
             VALUE "ProductVersion", PRODVER
         }
         BLOCK "0800FDE9"

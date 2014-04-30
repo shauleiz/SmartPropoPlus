@@ -26,12 +26,12 @@ VS_VERSION_INFO VERSIONINFO
         BLOCK "040904B0"
         {
             VALUE "Comments", ""
-            VALUE "FileDescription", "Graphical Pulse viewer for SmartPropoPlus"
+            VALUE "FileDescription", "Monitor vJoy for SmartPropoPlus"
             VALUE "FileVersion", "0, 4, 0, 0"
-            VALUE "InternalName", "PulseScope"
+            VALUE "InternalName", "vJoyMonitor"
             VALUE "LegalCopyright", "Copyright (C) 2006-2014"
-            VALUE "OriginalFilename", "PulseScope.DLL"
-            VALUE "ProductName", "PulseScope for SmartPropoPlus"
+            VALUE "OriginalFilename", "vJoyMonitor.DLL"
+            VALUE "ProductName", "vJoyMonitor for SmartPropoPlus"
             VALUE "ProductVersion", PRODVER
         }
         BLOCK "0800FDE9"

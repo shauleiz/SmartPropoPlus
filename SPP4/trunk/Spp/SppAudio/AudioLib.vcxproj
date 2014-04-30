@@ -110,7 +110,7 @@
       <AdditionalOptions>/DUNICODE /DSPPINTERFACE_EXPORTS %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AUDIOLIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;WIN32;_DEBUG;_WINDOWS;_USRDLL;AUDIOLIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -127,6 +127,9 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent />
@@ -156,7 +159,7 @@
     <ClCompile>
       <AdditionalOptions>/DUNICODE /DSPPINTERFACE_EXPORTS %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AUDIOLIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;WIN32;NDEBUG;_WINDOWS;_USRDLL;AUDIOLIB_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -173,13 +176,15 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="SppAudio.h" />
     <ClInclude Include="NotificationClient.h" />
     <ClInclude Include="PolicyConfig.h" />
     <ClInclude Include="PulseData.h" />
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\include\WinMessages.h" />
   </ItemGroup>
@@ -191,6 +196,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="debug\BuildLog.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AudioLib.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

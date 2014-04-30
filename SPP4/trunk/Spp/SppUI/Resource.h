@@ -98,6 +98,7 @@
 #define IDC_CH16                                40009
 #define IDS_DECOD_NCH                           40009
 #define IDS_E_FILTERSELFAIL                     40009
+#define IDS_STATUS_FRAME                        40009
 #define IDC_JOY_FRAME                           40010
 #define IDC_LIST_PCM                            40010
 #define IDS_I_FILTERSELOK                       40010

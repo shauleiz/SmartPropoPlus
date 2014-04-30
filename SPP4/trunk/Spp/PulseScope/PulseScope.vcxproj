@@ -142,6 +142,9 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
@@ -201,6 +204,9 @@ copy $(TargetDir)\$(ProjectName).lib  ..\..\..\Lib\$(Configuration)\.
 copy $(TargetDir)\$(ProjectName).lib  ..\..\..\Lib\$(Configuration)\.
 </Command>
     </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
