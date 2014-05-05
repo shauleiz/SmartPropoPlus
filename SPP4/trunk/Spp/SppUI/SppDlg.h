@@ -1,10 +1,16 @@
 #pragma once
 //
 //#include "SppTabGen.h"
+#include "Commctrl.h"
 #include "SppTabAudio.h"
 #include "SppTabDcdr.h"
 #include "SppTabFltr.h"
 #include "SppTabJoy.h"
+#pragma comment(lib, "Comctl32.lib")
+//#pragma comment(linker,"/manifestdependency:\"type='win32' "\
+//"name='Microsoft.Windows.Common-Controls' version='6.0.0.0' "\
+//	"processorArchitecture='*' publicKeyToken='6595b64144ccf1df' "\
+//	"language='*'\"")
 
 #define STOP	L"Sleep"
 #define START	L"Wake-up"
@@ -19,6 +25,7 @@ typedef struct tag_dlghdr {  // Based on http://msdn.microsoft.com/en-us/library
 	SppTab /** TabGen,*/ * TabAudio, * TabDcdr, * TabFltr, * TabJoy, * TabAdvnc;
 } DLGHDR; 
 
+enum TABS_INDEX {IAUDIO=0, IDECODER, IFILTER, IJOYSTICK, ILAST};
 
 public:
 	SppDlg(void);
@@ -102,6 +109,7 @@ private:
 	void ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color);
 	int FindItemById(HWND hListView, LPCTSTR Id);
 	DLGTEMPLATE* DoLockDlgRes(LPCTSTR lpszResName);
+	HIMAGELIST CreateTabsImageList(void);
 	//DWORD WINAPI  StartDlg(LPVOID hInstance);
 
 protected:

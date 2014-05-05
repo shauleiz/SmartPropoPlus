@@ -25,6 +25,11 @@
 #define IDD_JOY                                 149
 #define IDD_ADVANCE                             151
 #define IDB_GREYDOT                             153
+#define IDB_MASK01                              165
+#define IDI_AUDIO                               167
+#define IDI_DECODER                             170
+#define IDI_FILTER                              172
+#define IDI_JOYSTICK                            174
 #define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001

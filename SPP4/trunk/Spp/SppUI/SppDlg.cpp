@@ -245,6 +245,7 @@ void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
 int SppDlg::InitTabs(HWND hDlg)
 {
 	TCITEM tie;
+	HIMAGELIST hImageList;
 
 	// Initialize structure that represents tabs
 	m_hrsrc.hwndTab = GetDlgItem(hDlg,  IDC_TABS);
@@ -257,11 +258,11 @@ int SppDlg::InitTabs(HWND hDlg)
 		return 0;
 
 	// Create child dialogs and tabs
-	tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
+	tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM ;
 	tie.iImage = -1;
 
 	// Creating dialog boxes that will be associated with tabs.
-	int iTab=0;
+	//int iTab=0;
 
 	//// General
 	//m_hrsrc.TabGen =   new SppTabGen(m_hInstance, m_hrsrc.hwndTab);
@@ -275,28 +276,39 @@ int SppDlg::InitTabs(HWND hDlg)
 	m_hrsrc.Display = m_hrsrc.TabAudio;
 	tie.pszText = TEXT("Input");
 	tie.lParam = m_hrsrc.Display->GetId();
-    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+	tie.iImage = IAUDIO;
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, IAUDIO, &tie); 
 
 	// Decoder
 	m_hrsrc.TabDcdr = new SppTabDcdr(m_hInstance, m_hrsrc.hwndTab);
 	m_hrsrc.Display = m_hrsrc.TabDcdr;
-	tie.pszText = TEXT("Decoder");
+	tie.pszText = TEXT("Transmitter");
 	tie.lParam = m_hrsrc.Display->GetId();
-    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+	tie.iImage = IDECODER;
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, IDECODER, &tie); 
 
 	// Filter
 	m_hrsrc.TabFltr = new SppTabFltr(m_hInstance, m_hrsrc.hwndTab);
 	m_hrsrc.Display = m_hrsrc.TabFltr;
 	tie.pszText = TEXT("Filter");
 	tie.lParam = m_hrsrc.Display->GetId();
-    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+	tie.iImage = IFILTER;
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, IFILTER, &tie); 
 
 	// Joystick
 	m_hrsrc.TabJoy = new SppTabJoy(m_hInstance, m_hrsrc.hwndTab);
 	m_hrsrc.Display = m_hrsrc.TabJoy;
 	tie.pszText = TEXT("Joystick");
 	tie.lParam = m_hrsrc.Display->GetId();
-    TabCtrl_InsertItem(m_hrsrc.hwndTab, iTab++, &tie); 
+	tie.iImage = IJOYSTICK;
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, IJOYSTICK, &tie); 
+
+	// Add icons
+	TabCtrl_SetPadding(m_hrsrc.hwndTab,10,5);
+	hImageList = CreateTabsImageList();
+	if (hImageList)
+		TabCtrl_SetImageList(m_hrsrc.hwndTab, hImageList);
+
 
 	// Select the tab (Tab 0)
 	TabCtrl_SetCurSel(m_hrsrc.hwndTab,0);
@@ -1571,6 +1583,34 @@ void SppDlg::SelChanged(WORD ListBoxId, HWND hListBox)
 	};
 }
 
+// Create a list of immages to be used by tab control
+HIMAGELIST SppDlg::CreateTabsImageList(void)
+{
+	HICON icon;
+	ICONINFO iconinf;
+	HIMAGELIST hList;
+	HBITMAP bitmap;
+
+	int icons[] = {IDI_AUDIO, IDI_DECODER, IDI_FILTER, IDI_JOYSTICK}; // TODO: Replace icons 
+	// Creat a list of 32x32 images that may contain up to 4 icons
+	hList = ImageList_Create(32, 32, ILC_COLOR32, ILAST, 0); // 
+	if (!hList)
+		return hList;
+
+	// Load icons to the limmage list
+    for (int i =0; i<ILAST; ++i)
+    {
+        icon = reinterpret_cast<HICON>(LoadImage(m_hInstance, MAKEINTRESOURCE(icons[i]), IMAGE_ICON, 32, 32, LR_LOADTRANSPARENT));
+		if (!icon)
+			continue;
+        GetIconInfo(icon, &iconinf);
+        bitmap = iconinf.hbmColor;
+		int res = ImageList_Add(hList, bitmap, NULL);
+        DestroyIcon(icon);
+    };
+
+	return hList;
+}
 
 
 // Message handler for top spp dialog box.

@@ -14,6 +14,10 @@
 // Bitmap resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDB_MASK01         BITMAP         ".\\Mask01.bmp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_GREENDOT       BITMAP         "bitmap2.bmp"
 
 
@@ -23,6 +27,10 @@ IDB_GREYDOT        BITMAP         ".\\bitmap4.bmp"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_REDDOT         BITMAP         "bitmap1.bmp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDB_VJOY32         BITMAP         ".\\vJoy32.bmp"
 
 
 
@@ -544,6 +552,22 @@ IDC_SPPCONSOLE ACCELERATORS
 //
 // Icon resources
 //
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_AUDIO          ICON           ".\\AudioJackBlue.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_DECODER        ICON           ".\\RC-TxGreen.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_FILTER         ICON           ".\\FilterBlue.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_JOYSTICK       ICON           ".\\vJoyRed.ico"
+
+
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_S0             ICON           "SppControlS0.ico"
 
