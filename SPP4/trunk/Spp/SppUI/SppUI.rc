@@ -14,10 +14,6 @@
 // Bitmap resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_MASK01         BITMAP         ".\\Mask01.bmp"
-
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_GREENDOT       BITMAP         "bitmap2.bmp"
 
 
@@ -26,11 +22,11 @@ IDB_GREYDOT        BITMAP         ".\\bitmap4.bmp"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_REDDOT         BITMAP         "bitmap1.bmp"
+IDB_MASK01         BITMAP         ".\\Mask01.bmp"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_VJOY32         BITMAP         ".\\vJoy32.bmp"
+IDB_REDDOT         BITMAP         "bitmap1.bmp"
 
 
 
@@ -562,6 +558,10 @@ IDI_DECODER        ICON           ".\\RC-TxGreen.ico"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_FILTER         ICON           ".\\FilterBlue.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_W7             ICON           ".\\SppControlW7.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
