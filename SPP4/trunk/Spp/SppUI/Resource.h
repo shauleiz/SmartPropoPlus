@@ -30,6 +30,7 @@
 #define IDI_DECODER                             170
 #define IDI_FILTER                              172
 #define IDI_JOYSTICK                            174
+#define IDI_W7                                  176
 #define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001
