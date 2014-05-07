@@ -1630,6 +1630,62 @@ HIMAGELIST SppDlg::CreateTabsImageList(void)
 	return hList;
 }
 
+// Create one central  Tooltip object
+HWND SppDlg::CreateToolTip(HWND hDlg)
+{
+	if (!hDlg || !m_hInstance)
+		return (HWND)NULL;
+
+	// Create the tooltip. g_hInst is the global instance handle.
+	HWND hwndTip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL,
+                              WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON,
+                              CW_USEDEFAULT, CW_USEDEFAULT,
+                              CW_USEDEFAULT, CW_USEDEFAULT,
+                              hDlg, NULL, 
+                              m_hInstance, NULL);
+
+	if  (!hwndTip)
+		m_hwndToolTip = (HWND)NULL;
+	else
+		m_hwndToolTip = hwndTip;
+
+
+   // Initializing Tooltip per control
+   if (m_hwndToolTip)
+   {
+	   AddToolTip(IDC_HIDE,  L"Minimize Wizard", hDlg);
+	   AddToolTip(IDS_AUDIO_SRC,  L"Connect your transmitter to this input socket", hDlg);
+
+   }
+
+   return m_hwndToolTip;
+}
+
+// Add a tooltip to the tooltip object
+// Based on http://msdn.microsoft.com/en-us/library/windows/desktop/hh298368(v=vs.85).aspx
+void SppDlg::AddToolTip(int toolID,  PTSTR pszText, HWND hDlg)
+{
+
+	if (!toolID || !hDlg || !pszText || !m_hwndToolTip)
+        return ;
+   
+	// Get the window of the tool.
+    HWND hwndTool = GetDlgItem(hDlg, toolID);
+	if (!hwndTool)
+        return ;
+    
+	// Associate the tooltip with the tool.
+	TOOLINFO toolInfo = { 0 };
+	toolInfo.cbSize = TTTOOLINFO_V1_SIZE;
+	toolInfo.hwnd = GetDlgItem(hDlg, toolID);
+	toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+	toolInfo.uId = (UINT_PTR)hwndTool;
+	toolInfo.lpszText = pszText;
+	//GetClientRect(GetDlgItem(hDlg, toolID), &toolInfo.rect);
+	SendMessage(m_hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+	SendMessage(m_hwndToolTip, TTM_ACTIVATE, TRUE, (LPARAM)&toolInfo);
+
+}
 
 // Message handler for top spp dialog box.
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -1661,6 +1717,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->InitTabs(hDlg); // Initialize the tab control
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
+		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
 #if !TAB_JOY_ON
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
 #endif
