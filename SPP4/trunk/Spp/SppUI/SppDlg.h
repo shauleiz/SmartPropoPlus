@@ -6,11 +6,11 @@
 #include "SppTabDcdr.h"
 #include "SppTabFltr.h"
 #include "SppTabJoy.h"
-#pragma comment(lib, "Comctl32.lib")
-//#pragma comment(linker,"/manifestdependency:\"type='win32' "\
-//"name='Microsoft.Windows.Common-Controls' version='6.0.0.0' "\
-//	"processorArchitecture='*' publicKeyToken='6595b64144ccf1df' "\
-//	"language='*'\"")
+//#pragma comment( linker, "/manifestdependency:\"type='win32' \
+//    name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+//    processorArchitecture='*' publicKeyToken='6595b64144ccf1df' \
+//    language='*'\"")
+#pragma comment( lib, "comctl32.lib")
 
 #define STOP	L"Sleep"
 #define START	L"Wake-up"
@@ -103,6 +103,7 @@ public: // Called from window procedure
 	LRESULT RelayToConsoleWnd(UINT message, WPARAM wParam, LPARAM lParam);
 	LPCTSTR GetDecoderFullName(LPCTSTR Type);
 	void SetFilterInfo(LPTSTR,  LPTSTR);
+	HWND CreateToolTip(HWND hDlg);
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
@@ -110,6 +111,8 @@ private:
 	int FindItemById(HWND hListView, LPCTSTR Id);
 	DLGTEMPLATE* DoLockDlgRes(LPCTSTR lpszResName);
 	HIMAGELIST CreateTabsImageList(void);
+	void AddToolTip(int toolID,  PTSTR pszText, HWND hDlg);
+
 	//DWORD WINAPI  StartDlg(LPVOID hInstance);
 
 protected:
@@ -124,5 +127,6 @@ protected:
 	HWND	m_ConsoleWnd;
 	SppBtnsDlg * m_BtnsDlg;
 	DLGHDR m_hrsrc;
+	HWND m_hwndToolTip;
 };
 
