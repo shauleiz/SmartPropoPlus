@@ -1633,12 +1633,21 @@ HIMAGELIST SppDlg::CreateTabsImageList(void)
 // Create one central  Tooltip object
 HWND SppDlg::CreateToolTip(HWND hDlg)
 {
+	BOOL added, active;
+	const int Controls[] = {\
+		IDS_AUDIO_SRC, IDC_HIDE, IDC_STREAM,  IDS_AUDIO_CHBITS, IDS_DECODER, IDS_DECODER_NCH, \
+		IDS_FILTER, IDS_JOY, IDS_STATUS_EDT, IDOK, \
+		IDC_CH1, IDC_CH2, IDC_CH3, IDC_CH4, IDC_CH5, IDC_CH6, IDC_CH7, IDC_CH8, \
+		IDC_CHPP1, IDC_CHPP2, IDC_CHPP3, IDC_CHPP4, IDC_CHPP5, IDC_CHPP6, IDC_CHPP7, IDC_CHPP8, \
+		IDC_X, IDC_Y, IDC_Z, IDC_RX, IDC_RY, IDC_RZ, IDC_SL0, IDC_SL1 \
+	};
+
 	if (!hDlg || !m_hInstance)
 		return (HWND)NULL;
 
-	// Create the tooltip. g_hInst is the global instance handle.
+	// Create the tooltip.
 	HWND hwndTip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL,
-                              WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON,
+                              WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON | WS_EX_TOOLWINDOW,
                               CW_USEDEFAULT, CW_USEDEFAULT,
                               CW_USEDEFAULT, CW_USEDEFAULT,
                               hDlg, NULL, 
@@ -1653,38 +1662,232 @@ HWND SppDlg::CreateToolTip(HWND hDlg)
    // Initializing Tooltip per control
    if (m_hwndToolTip)
    {
-	   AddToolTip(IDC_HIDE,  L"Minimize Wizard", hDlg);
-	   AddToolTip(IDS_AUDIO_SRC,  L"Connect your transmitter to this input socket", hDlg);
+	   // General initialization
+	   TOOLINFO toolInfo = { 0 };
+	   toolInfo.cbSize = TTTOOLINFO_V1_SIZE;
+	   toolInfo.hwnd = hDlg;
+	   toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+	   toolInfo.lpszText = LPSTR_TEXTCALLBACK;
 
+	   // Loop on all controls that require tooltip
+	   for (auto ctrl : Controls)
+	   {
+		   HWND hwndTool = GetDlgItem(hDlg, ctrl);
+		   toolInfo.uId = (UINT_PTR)hwndTool;
+		   added = SendMessage(m_hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+		   active = SendMessage(m_hwndToolTip, TTM_ACTIVATE, TRUE, (LPARAM)&toolInfo);
+	   };
    }
 
    return m_hwndToolTip;
 }
 
-// Add a tooltip to the tooltip object
-// Based on http://msdn.microsoft.com/en-us/library/windows/desktop/hh298368(v=vs.85).aspx
-void SppDlg::AddToolTip(int toolID,  PTSTR pszText, HWND hDlg)
+// Display callback-type tooltip
+// lpttt:	Pointer to tooltip structure
+// TxtID:	The resource ID of the text to display
+// TitleID:	The resource ID of the title - default is "no title"
+// Icon:	Icon to display. Possible values are TTI_NONE (default), TTI_INFO, TTI_WARNING, TTI_ERROR
+void SppDlg::DisplayToolTip(LPNMTTDISPINFO lpttt, int TxtID, int TitleID, int Icon)
 {
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
 
-	if (!toolID || !hDlg || !pszText || !m_hwndToolTip)
-        return ;
-   
-	// Get the window of the tool.
-    HWND hwndTool = GetDlgItem(hDlg, toolID);
-	if (!hwndTool)
-        return ;
-    
-	// Associate the tooltip with the tool.
-	TOOLINFO toolInfo = { 0 };
-	toolInfo.cbSize = TTTOOLINFO_V1_SIZE;
-	toolInfo.hwnd = GetDlgItem(hDlg, toolID);
-	toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-	toolInfo.uId = (UINT_PTR)hwndTool;
-	toolInfo.lpszText = pszText;
-	//GetClientRect(GetDlgItem(hDlg, toolID), &toolInfo.rect);
-	SendMessage(m_hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
-	SendMessage(m_hwndToolTip, TTM_ACTIVATE, TRUE, (LPARAM)&toolInfo);
+	LoadString(m_hInstance, TxtID,  ControlText, MAX_MSG_SIZE);
+	lpttt->lpszText = ControlText;
 
+	if (TitleID<0)
+		SendMessage(m_hwndToolTip, TTM_SETTITLE, TTI_NONE, (LPARAM) TEXT(""));
+	else
+	{
+		LoadString(m_hInstance, TitleID,  TitleText, MAX_MSG_SIZE);
+		SendMessage(m_hwndToolTip, TTM_SETTITLE, Icon, (LPARAM) TitleText);
+	};
+}
+
+// Display callback-type tooltip
+// lpttt:	Pointer to tooltip structure
+// TxtID:	The resource ID of the text to display
+// TitleStr:The title string
+// Icon:	Icon to display. Possible values are TTI_NONE (default), TTI_INFO, TTI_WARNING, TTI_ERROR
+void SppDlg::DisplayToolTip(LPNMTTDISPINFO lpttt, int TxtID, LPCTSTR TitleStr , int Icon)
+{
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+
+	LoadString(m_hInstance, TxtID,  ControlText, MAX_MSG_SIZE);
+	lpttt->lpszText = ControlText;
+
+	SendMessage(m_hwndToolTip, TTM_SETTITLE, Icon, (LPARAM) TitleStr);
+}
+void SppDlg::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+
+	switch (CtrlId) // Per-control tooltips
+	{
+	// Name of audio jack
+	case IDS_AUDIO_SRC:
+		DisplayToolTip(lpttt, IDS_I_AUDIO_SRC, IDS_T_AUDIO_SRC);
+		break;
+
+	// Minimize button
+	case IDC_HIDE:
+		DisplayToolTip(lpttt, IDS_I_HIDE);
+		break;
+
+	// Sleep/Wake-up button
+	case IDC_STREAM:
+		ControlTextSize = Button_GetText((HWND)lpttt->hdr.idFrom, ControlText, MAX_MSG_SIZE);
+		if (ControlTextSize>0 && ControlTextSize<MAX_MSG_SIZE)
+		{
+			// Button is "Wake-up"
+			if (!_tcscmp(ControlText, START))
+			{
+				DisplayToolTip(lpttt, IDS_I_START, START, TTI_WARNING);
+			}
+			else
+			{
+				DisplayToolTip(lpttt, IDS_I_STOP, STOP, TTI_INFO);
+			}
+		};
+		break;
+
+	case IDS_AUDIO_CHBITS:
+		DisplayToolTip(lpttt, IDS_I_AUDIO_CHBITS);
+		break;
+
+	case IDS_DECODER:
+		DisplayToolTip(lpttt, IDS_I_DECODER, IDS_T_DECODER);
+		break;
+
+	case IDS_DECODER_NCH:
+		DisplayToolTip(lpttt, IDS_I_DECODER_NCH);
+		break;
+
+	case IDS_FILTER:
+		DisplayToolTip(lpttt, IDS_I_FILTER, IDS_T_FILTER);
+		break;
+
+	case IDS_JOY:
+		DisplayToolTip(lpttt, IDS_I_JOY, IDS_T_JOY);
+		break;
+
+	case IDS_STATUS_EDT:
+		DisplayToolTip(lpttt, IDS_I_STATUS_EDT);
+		break;
+
+	case IDOK:
+		DisplayToolTip(lpttt, IDS_I_OK);
+		break;
+
+	case IDC_CH1:
+		DisplayToolTip(lpttt, IDS_I_CH1);
+		break;
+
+	case IDC_CH2:
+		DisplayToolTip(lpttt, IDS_I_CH2);
+		break;
+
+	case IDC_CH3:
+		DisplayToolTip(lpttt, IDS_I_CH3);
+		break;
+
+	case IDC_CH4:
+		DisplayToolTip(lpttt, IDS_I_CH4);
+		break;
+
+	case IDC_CH5:
+		DisplayToolTip(lpttt, IDS_I_CH5);
+		break;
+
+	case IDC_CH6:
+		DisplayToolTip(lpttt, IDS_I_CH6);
+		break;
+
+	case IDC_CH7:
+		DisplayToolTip(lpttt, IDS_I_CH7);
+		break;
+
+	case IDC_CH8:
+		DisplayToolTip(lpttt, IDS_I_CH8);
+		break;
+
+	case IDC_CHPP1:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP1);
+		break;
+
+	case IDC_CHPP2:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP2);
+		break;
+
+	case IDC_CHPP3:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP3);
+		break;
+
+	case IDC_CHPP4:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP4);
+		break;
+
+	case IDC_CHPP5:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP5);
+		break;
+
+	case IDC_CHPP6:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP6);
+		break;
+
+	case IDC_CHPP7:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP7);
+		break;
+
+	case IDC_CHPP8:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP8);
+		break;
+
+	case IDC_X:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_X);
+		break;
+
+	case IDC_Y:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_Y);
+		break;
+
+	case IDC_Z:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_Z);
+		break;
+
+	case IDC_RX:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_RX);
+		break;
+
+	case IDC_RY:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_RY);
+		break;
+
+	case IDC_RZ:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_RZ);
+		break;
+
+	case IDC_SL0:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_SL0);
+		break;
+
+	case IDC_SL1:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_SL1);
+		break;
+
+	default:
+		break;
+	}
 }
 
 // Message handler for top spp dialog box.
@@ -1709,6 +1912,13 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			return  (INT_PTR)TRUE;
 		}
 
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
+		};
+		
 		return (INT_PTR)TRUE;
 
 

@@ -368,19 +368,22 @@ EXSTYLE WS_EX_WINDOWEDGE
 CAPTION "SmartPropoPlus"
 FONT 8, "Ms Shell Dlg"
 {
+    CONTROL         "", IDC_TABS, WC_TABCONTROL, 0, 5, 5, 320, 213, WS_EX_LEFT
+    GROUPBOX        "Log && Debug", IDC_STATIC, 330, 17, 85, 85, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Show Log", IDC_CH_LOG, 336, 30, 48, 8, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Record Input Signal", IDC_CH_INSIG, 336, 43, 74, 8, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Record Pulse", IDC_CH_PULSE, 336, 56, 59, 8, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Pulse Scope", IDC_PLS_SCOPE, 336, 69, 56, 8, 0, WS_EX_LEFT
+    PUSHBUTTON      "Minimize", IDC_HIDE, 336, 107, 47, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Start", IDC_STREAM, 337, 126, 47, 14, 0, WS_EX_LEFT
+    DEFPUSHBUTTON   "Exit", IDOK, 337, 145, 47, 14, 0, WS_EX_LEFT
     GROUPBOX        "General Information", 0, 5, 223, 320, 84, 0, WS_EX_LEFT
     LTEXT           "Audio Input:", IDC_STAT_AUDIO, 14, 235, 39, 8, SS_LEFT, WS_EX_LEFT
+    EDITTEXT        IDS_AUDIO_SRC, 64, 235, 188, 12, ES_READONLY, WS_EX_LEFT
+    EDITTEXT        IDS_AUDIO_CHBITS, 256, 235, 46, 12, ES_READONLY, WS_EX_LEFT
     LTEXT           "Transmitter:", IDC_STAT_TX, 14, 251, 38, 8, SS_LEFT, WS_EX_LEFT
-    LTEXT           "Filter:", IDC_STAT_FILTER, 14, 268, 18, 8, SS_LEFT, WS_EX_LEFT
-    LTEXT           "vJoy Monitor:", IDC_STAT_VJOY, 14, 285, 43, 8, SS_LEFT, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP1, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 256, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP2, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 264, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP3, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 272, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP4, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 280, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP5, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 288, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP6, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 296, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP7, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 304, 268, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_CHPP8, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 312, 268, 6, 12, WS_EX_LEFT
+    EDITTEXT        IDS_DECODER, 64, 251, 140, 12, ES_READONLY, WS_EX_LEFT
+    EDITTEXT        IDS_DECODER_NCH, 209, 251, 43, 12, ES_READONLY, WS_EX_LEFT
     CONTROL         "1", IDC_CH1, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 256, 251, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_CH2, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 264, 251, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_CH3, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 272, 251, 6, 12, WS_EX_LEFT
@@ -389,22 +392,18 @@ FONT 8, "Ms Shell Dlg"
     CONTROL         "", IDC_CH6, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 296, 251, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_CH7, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 304, 251, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_CH8, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 312, 251, 6, 12, WS_EX_LEFT
-    CONTROL         "", IDC_TABS, WC_TABCONTROL, 0, 5, 5, 320, 213, WS_EX_LEFT
-    EDITTEXT        IDS_AUDIO_SRC, 64, 235, 188, 12, ES_READONLY, WS_EX_LEFT
-    EDITTEXT        IDS_AUDIO_CHBITS, 256, 235, 46, 12, ES_READONLY, WS_EX_LEFT
-    EDITTEXT        IDS_DECODER, 64, 251, 140, 12, ES_READONLY, WS_EX_LEFT
-    EDITTEXT        IDS_STATUS_EDT, 14, 323, 304, 12, ES_READONLY, WS_EX_LEFT
-    GROUPBOX        "Status", IDS_STATUS_FRAME, 5, 312, 320, 28, 0, WS_EX_LEFT
+    LTEXT           "Filter:", IDC_STAT_FILTER, 14, 268, 18, 8, SS_LEFT, WS_EX_LEFT
     EDITTEXT        IDS_FILTER, 64, 268, 188, 12, ES_READONLY, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP1, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 256, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP2, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 264, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP3, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 272, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP4, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 280, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP5, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 288, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP6, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 296, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP7, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 304, 268, 6, 12, WS_EX_LEFT
+    CONTROL         "", IDC_CHPP8, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 312, 268, 6, 12, WS_EX_LEFT
+    LTEXT           "vJoy Monitor:", IDC_STAT_VJOY, 14, 285, 43, 8, SS_LEFT, WS_EX_LEFT
     EDITTEXT        IDS_JOY, 64, 285, 188, 12, ES_READONLY, WS_EX_LEFT
-    EDITTEXT        IDS_DECODER_NCH, 209, 251, 43, 12, ES_READONLY, WS_EX_LEFT
-    DEFPUSHBUTTON   "Exit", IDOK, 337, 145, 47, 14, 0, WS_EX_LEFT
-    PUSHBUTTON      "Cancel", IDCANCEL, 377, 316, 50, 14, NOT WS_VISIBLE, WS_EX_LEFT
-    AUTOCHECKBOX    "Monitor Channels", IDC_CH_MONITOR, 356, 296, 71, 8, NOT WS_VISIBLE, WS_EX_LEFT
-    GROUPBOX        "Log && Debug", IDC_STATIC, 330, 17, 85, 85, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Show Log", IDC_CH_LOG, 336, 30, 48, 8, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Record Input Signal", IDC_CH_INSIG, 336, 43, 74, 8, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Record Pulse", IDC_CH_PULSE, 336, 56, 59, 8, 0, WS_EX_LEFT
     CONTROL         "", IDC_X, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 256, 285, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_Y, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 264, 285, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_Z, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 272, 285, 6, 12, WS_EX_LEFT
@@ -413,9 +412,10 @@ FONT 8, "Ms Shell Dlg"
     CONTROL         "", IDC_RZ, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 296, 285, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_SL0, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 304, 285, 6, 12, WS_EX_LEFT
     CONTROL         "", IDC_SL1, PROGRESS_CLASS, PBS_SMOOTH | PBS_VERTICAL, 312, 285, 6, 12, WS_EX_LEFT
-    PUSHBUTTON      "Start", IDC_STREAM, 337, 126, 47, 14, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Pulse Scope", IDC_PLS_SCOPE, 336, 69, 56, 8, 0, WS_EX_LEFT
-    PUSHBUTTON      "Minimize", IDC_HIDE, 336, 107, 47, 14, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Monitor Channels", IDC_CH_MONITOR, 356, 296, 71, 8, NOT WS_VISIBLE, WS_EX_LEFT
+    GROUPBOX        "Status", IDS_STATUS_FRAME, 5, 312, 320, 28, 0, WS_EX_LEFT
+    PUSHBUTTON      "Cancel", IDCANCEL, 377, 316, 50, 14, NOT WS_VISIBLE, WS_EX_LEFT
+    EDITTEXT        IDS_STATUS_EDT, 14, 323, 304, 12, ES_READONLY, WS_EX_LEFT
 }
 
 
@@ -524,11 +524,55 @@ STRINGTABLE
     IDS_E_STREAMFAIL              "Failed to start audio streaming"
     IDS_E_STREAMTHRDFAIL          "Failed to start capture thread"
     IDS_I_STREAMTHRDOK            "Capture thread - Started"
-    IDS_I_AUDIOCHANGE             "Resuest to change audio source"
+    IDS_I_AUDIOCHANGE             "Request to change audio source"
     IDS_I_STARTSTREAM             "Starting a new audio stream and a new Capture Thread"
     IDS_I_CAPTURESTART            "Capture thread - Starting"
     IDS_I_CAPTUREABORT            "Capture thread - Ending"
     IDS_I_STATUSCHANGED           "CU Status"
+    IDS_I_HIDE                    "press to minimize - SmartPropoPlus will function as usual"
+    IDS_I_AUDIO_SRC               "Connect your transmitter to this audio socket"
+    IDS_I_STAT_AUDIO              "Current default audio input"
+    IDS_I_STAT_TX                 "Type of Signal Decoding"
+    IDS_I_STAT_FILTER             "Channel post-processing Filter"
+    IDS_I_FILTER                  "To change, select tab ""Filter"""
+    IDS_T_AUDIO_SRC               "Audio Input"
+    IDS_I_START                   "SmartPropoPlus is currently paused - Press to activate"
+    IDS_I_STOP                    "SmartPropoPlus is currently active - Press to deactivate"
+	IDS_I_AUDIO_CHBITS			  "Current Audio channel and bit rate"
+	IDS_I_DECODER                 "To change, select tab ""Transmitter"""
+	IDS_T_DECODER                 "Type of signal"
+	IDS_I_DECODER_NCH             "Number of Transmitter Channels detected"
+	IDS_T_FILTER                  "Selected Filter"
+	IDS_I_JOY                     "To change and map axes, select tab ""Joystick"""
+	IDS_T_JOY                     "Target Joystick"
+	IDS_I_STATUS_EDT              "Current status of SmartPropoPlus"
+	IDS_I_OK                      "Exit SmartPropoPlus ..."
+	IDS_I_CH1                     "Level of transmitter channel 1"
+	IDS_I_CH2                     "Level of transmitter channel 2"
+	IDS_I_CH3                     "Level of transmitter channel 3"
+	IDS_I_CH4                     "Level of transmitter channel 4"
+	IDS_I_CH5                     "Level of transmitter channel 5"
+	IDS_I_CH6                     "Level of transmitter channel 6"
+	IDS_I_CH7                     "Level of transmitter channel 7"
+	IDS_I_CH8                     "Level of transmitter channel 8"
+	IDS_I_CHPP                    "Level of Filter Output"
+	IDS_T_CHPP1                   "Channel A"
+	IDS_T_CHPP2                   "Channel B"
+	IDS_T_CHPP3                   "Channel C"
+	IDS_T_CHPP4                   "Channel 4"
+	IDS_T_CHPP5                   "Channel 5"
+	IDS_T_CHPP6                   "Channel 6"
+	IDS_T_CHPP7                   "Channel 7"
+	IDS_T_CHPP8                   "Channel 8"
+	IDS_I_AXES					  "Joystick axis monitor"
+	IDS_T_X                       "Axis X"
+	IDS_T_Y                       "Axis Y"
+	IDS_T_Z                       "Axis Z"
+	IDS_T_RX                      "Axis RX"
+	IDS_T_RY                      "Axis RY"
+	IDS_T_RZ                      "Axis RZ"
+	IDS_T_SL0                     "Axis SL0"
+	IDS_T_SL1                     "Axis SL1"
 }
 
 
@@ -561,10 +605,6 @@ IDI_FILTER         ICON           ".\\FilterBlue.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_W7             ICON           ".\\SppControlW7.ico"
-
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_JOYSTICK       ICON           ".\\vJoyRed.ico"
 
 
@@ -582,6 +622,10 @@ IDI_SPPCONSOLE     ICON           "SppControl.ico"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_W10            ICON           "SppControlW10.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_W7             ICON           ".\\SppControlW7.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL

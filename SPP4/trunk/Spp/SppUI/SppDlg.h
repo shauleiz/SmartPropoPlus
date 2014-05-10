@@ -104,6 +104,7 @@ public: // Called from window procedure
 	LPCTSTR GetDecoderFullName(LPCTSTR Type);
 	void SetFilterInfo(LPTSTR,  LPTSTR);
 	HWND CreateToolTip(HWND hDlg);
+	void UpdateToolTip(LPVOID);
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
@@ -111,9 +112,8 @@ private:
 	int FindItemById(HWND hListView, LPCTSTR Id);
 	DLGTEMPLATE* DoLockDlgRes(LPCTSTR lpszResName);
 	HIMAGELIST CreateTabsImageList(void);
-	void AddToolTip(int toolID,  PTSTR pszText, HWND hDlg);
-
-	//DWORD WINAPI  StartDlg(LPVOID hInstance);
+	void DisplayToolTip(LPNMTTDISPINFO lpttt, int TxtID, int TitleID=-1, int Icon= TTI_NONE);
+	void DisplayToolTip(LPNMTTDISPINFO lpttt, int TxtID, LPCTSTR TitleStr, int Icon= TTI_NONE);
 
 protected:
 	MSG m_msg;
