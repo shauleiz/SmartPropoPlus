@@ -15,7 +15,7 @@
 #include "PulseScope.h"
 #include "WinMessages.h"
 #include "SppProcess.h"
-
+#include <crtdbg.h>
 /* Globals */
 int gDebugLevel = 0;
 FILE * gCtrlLogFile = NULL;
@@ -446,6 +446,7 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 
 	// Make an internal copy of the previous buffer to work on.
 	iPrevBuf = (m_vPulsesIndex-1)*(m_vPulsesIndex-1);
+	_ASSERTE(iPrevBuf==0 || iPrevBuf==1);
 	if (m_vPulses[iPrevBuf].size()<100)
 		return ERROR_INVALID_DATA; // Not enough data to work on
 	else
