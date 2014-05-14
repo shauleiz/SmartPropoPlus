@@ -55,7 +55,6 @@ distribution.
 	#define TIXML_STRING		TiXmlString
 #endif
 
-#define _ITERATOR_DEBUG_LEVEL 1
 
 // Deprecated library function hell. Compilers want to use the
 // new safe versions. This probably doesn't fully address the problem,
@@ -214,7 +213,11 @@ public:
 		
 		(For an unformatted stream, use the << operator.)
 	*/
-	virtual void Print( FILE* cfile, int depth ) const {DebugBreak();} /*const = 0*/;
+	virtual void Print( FILE* cfile, int depth ) const {
+		UNREFERENCED_PARAMETER(cfile); 
+		UNREFERENCED_PARAMETER(depth); 
+		DebugBreak();
+	} /*const = 0*/;
 
 	/**	The world does not agree on whether white space should be kept or
 		not. In order to make everyone happy, these global, static functions

@@ -394,7 +394,8 @@ inline void  CSppProcess::GetEncoding(void)
 // Store pulse in pulse buffer for future analysis
 // Select buffer according to value of member m_vPulsesIndex
 void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
-{
+{			
+	lock_guard<recursive_mutex> lock_Decode(m_mx_Pulses);
 	static UINT vPulsesIndex;
 
 	
@@ -440,6 +441,8 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
  HRESULT CSppProcess::DetectCurrentEncoding(TCHAR*& Type)
 {
 #define MAX_N_SYNCS 4
+	lock_guard<recursive_mutex> lock_Decode(m_mx_Pulses);
+
 	std::vector<int> buf;
 	UINT iPrevBuf, size, SyncPulseSize=0;
 	UINT SyncPulse[MAX_N_SYNCS] = {0};
@@ -2738,6 +2741,7 @@ DWORD WINAPI CSppProcess::CaptureAudioStatic(LPVOID obj)
 
 DWORD WINAPI CSppProcess::PollChannelsStatic(LPVOID obj)
 {
+	THREAD_NAME(" CSppProcess::PollChannels");
 	if (obj)
 		((CSppProcess *)obj)->PollChannels();
 	return 0;

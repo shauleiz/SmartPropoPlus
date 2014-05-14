@@ -230,6 +230,7 @@ private:
 	UINT m_vPulsesIndex;
 	DECODER_DETECT m_DecoderStruct;
 	recursive_mutex			m_mx_Decode;
+	recursive_mutex			m_mx_Pulses;
 };
 
 

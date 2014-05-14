@@ -835,9 +835,6 @@ void TiXmlElement::Print( FILE* cfile, int depth ) const
 
 		for ( node = firstChild; node; node=node->NextSibling() )
 		{
-#ifdef DEBUG
-	counter++;
-#endif
 			if ( !node->ToText() )
 			{
 				fprintf( cfile, "\n" );
