@@ -1633,7 +1633,7 @@ HIMAGELIST SppDlg::CreateTabsImageList(void)
 // Create one central  Tooltip object
 HWND SppDlg::CreateToolTip(HWND hDlg)
 {
-	BOOL added, active;
+	LRESULT  added, active;
 	const int Controls[] = {\
 		IDS_AUDIO_SRC, IDC_HIDE, IDC_STREAM,  IDS_AUDIO_CHBITS, IDS_DECODER, IDS_DECODER_NCH, \
 		IDS_FILTER, IDS_JOY, IDS_STATUS_EDT, IDOK, \
