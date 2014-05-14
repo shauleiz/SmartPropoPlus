@@ -17,6 +17,7 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	bool loaded, saved;
 	//const char *ErrorTxt;
 
+	lock_guard<recursive_mutex> lock(m_mx_General);
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
 	w_full_path = path;
@@ -46,9 +47,8 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 
 CSppConfig::~CSppConfig(void)
 {
-#ifdef _DEBUG
+	lock_guard<recursive_mutex> lock(m_mx_General);
 	Save();
-#endif
 	m_doc.Clear();
 }
 
@@ -58,6 +58,8 @@ CSppConfig::~CSppConfig(void)
 // The function returns a pointer to a valid default document
 TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	TiXmlDocument *  i_doc = doc;
 	// if input is NULL - Create a new document
 	if (!doc)
@@ -104,6 +106,8 @@ TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 // Returns handle to the vJoy_Device Element
 TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Sanity check - document exists, id is valid
 	if ( id<1 || id>16)
 		return TiXmlHandle(0);
@@ -167,6 +171,8 @@ TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
 // If does not exist then create it first
 bool CSppConfig::SelectvJoyDevice(UINT id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	TiXmlHandle h = CreatevJoyDevice(id, true);
 	if (h.ToElement())
 		return true;
@@ -179,6 +185,8 @@ bool CSppConfig::SelectvJoyDevice(UINT id)
 // If Unable to determine return 0
 UINT CSppConfig::SelectedvJoyDevice(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	int id =0;
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -219,6 +227,8 @@ UINT CSppConfig::SelectedvJoyDevice(void)
 
 void CSppConfig::MapButtons(UINT id, BTNArr ButtonMap)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Create a vjoy device (if it does not exist)
 	TiXmlHandle  DeviceHandle = CreatevJoyDevice(id);
 
@@ -265,6 +275,8 @@ void CSppConfig::MapButtons(UINT id, BTNArr ButtonMap)
 // Special case: Map nibble = 0, don't change mapping for this axis.
 void CSppConfig::MapAxis(UINT id, DWORD map)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Create a vjoy device (if it does not exist)
 	TiXmlHandle  DeviceHandle = CreatevJoyDevice(id);
 
@@ -318,6 +330,8 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 // Special case: item = 0 - no info for this button
 void CSppConfig::GetMapButtons(UINT id, BTNArr* ButtonMap)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle to vJoy Device
 	TiXmlHandle DeviceHandle = CreatevJoyDevice(id);
 
@@ -342,6 +356,8 @@ void CSppConfig::GetMapButtons(UINT id, BTNArr* ButtonMap)
 DWORD CSppConfig::MapAxis(UINT id)
 {
 
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle to vJoy Device
 	TiXmlHandle DeviceHandle = CreatevJoyDevice(id);
 	 
@@ -362,12 +378,16 @@ DWORD CSppConfig::MapAxis(UINT id)
 
 void	CSppConfig::Map(UINT id, Mapping* GeneralMap)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	MapAxis(id, *GeneralMap->pAxisMap);
 	MapButtons(id,  *GeneralMap->ButtonArray);
 }
 
 void	CSppConfig::GetMap(UINT id, Mapping* GeneralMap)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Axes
 	*GeneralMap->pAxisMap = MapAxis(id);
 	GeneralMap->nAxes = 8;
@@ -381,6 +401,8 @@ void	CSppConfig::GetMap(UINT id, Mapping* GeneralMap)
 // Return 0 if no mapping available
 UINT CSppConfig::GetSingleButtonMap(TiXmlHandle DeviceHandle, const UINT button)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Convert button number to string of typr ButtonXX
 	string ButtonXX = SPP_BTNPREF + to_string(button);
 	TiXmlText * Text = DeviceHandle.FirstChildElement(SPP_DEVMAP).FirstChildElement(SPP_MAPBTN).FirstChildElement(ButtonXX.data()).FirstChild().ToText();
@@ -402,6 +424,8 @@ UINT CSppConfig::GetSingleAxisMap(TiXmlHandle DeviceHandle, const char * axis)
 
 void CSppConfig::SetModulationAttrib(LPTSTR Attrib, LPTSTR Value)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -428,6 +452,8 @@ void CSppConfig::SetModulationAttrib(LPTSTR Attrib, LPTSTR Value)
 // No testing if this type exists
 bool CSppConfig::SelectModulation(LPTSTR Type)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// If selected==true - assign id to the attribute 'selected'
 	SetModulationAttrib(TEXT(SPP_SELECT), Type);
 	return true;
@@ -443,6 +469,8 @@ bool CSppConfig::SelectModulation(LPTSTR Type)
 //	select: If true, mark this modulation as the selected
 bool CSppConfig::AddModulation(wstring Type, wstring SubType, wstring Name, bool select)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -481,6 +509,8 @@ bool CSppConfig::AddModulation(wstring Type, wstring SubType, wstring Name, bool
 }
 bool CSppConfig::AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool select)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Convert LPTSTR to wstring
 	wstring wstr_Type = wstring(Type);
 	wstring wstr_SubType = wstring(SubType);
@@ -492,6 +522,8 @@ bool CSppConfig::AddModulation(LPTSTR Type, LPTSTR SubType, LPTSTR Name, bool se
 }
 bool CSppConfig::AddModulation(PVOID data)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring SubType = L"PPM";	
 	SubType = wstring( ((MOD *)data)->Subtype);
 	wstring Type = wstring(((MOD *)data)->Type);
@@ -502,6 +534,8 @@ bool CSppConfig::AddModulation(PVOID data)
 
 wstring CSppConfig::GetModulationAttrib(LPTSTR Attrib)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring value =  wstring(L"");
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -522,6 +556,8 @@ wstring CSppConfig::GetModulationAttrib(LPTSTR Attrib)
 
 void  CSppConfig::RemoveModulationAttrib(LPTSTR Attrib)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -543,6 +579,8 @@ void  CSppConfig::RemoveModulationAttrib(LPTSTR Attrib)
 // If absent - return an empty string
 wstring  CSppConfig::GetSelectedModulation(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return GetModulationAttrib(TEXT(SPP_SELECT));
 }
 
@@ -550,6 +588,8 @@ wstring  CSppConfig::GetSelectedModulation(void)
 // Return handle of the element
 TiXmlHandle	 CSppConfig::GetModulationHandle(wstring Type)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -575,6 +615,8 @@ TiXmlHandle	 CSppConfig::GetModulationHandle(wstring Type)
 // Return its subtype if exists - otherwise return empty string
 string		CSppConfig::GetSubTypeModulation(wstring Type)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string SubType;
 	SubType.clear();
 
@@ -589,6 +631,8 @@ string		CSppConfig::GetSubTypeModulation(wstring Type)
 // Return its Name if exists - otherwise return empty string
 wstring CSppConfig::GetNameModulation(wstring Type)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring Name;
 	Name.clear();
 
@@ -602,11 +646,15 @@ wstring CSppConfig::GetNameModulation(wstring Type)
 
 string CSppConfig::GetSubTypeModulationSelected()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return GetSubTypeModulation(GetSelectedModulation());
 }
 
 wstring CSppConfig::GetNameModulationSelected()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return GetNameModulation(GetSelectedModulation());
 }
 
@@ -619,7 +667,9 @@ wstring CSppConfig::GetNameModulationSelected()
 
 bool CSppConfig::SetAutoDecoder(bool AutoMode)
 {
-		if (AutoMode)
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
+	if (AutoMode)
 	{
 		//// Auto mode
 		wstring  manual = GetSelectedModulation();
@@ -641,6 +691,8 @@ bool CSppConfig::SetAutoDecoder(bool AutoMode)
 
 bool CSppConfig::IsDecoderAuto(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring bu, sl;
 
 	// Get attribute "Manual" (If does not exist or too short - return)
@@ -665,6 +717,8 @@ bool CSppConfig::IsDecoderAuto(void)
 //  3. If 'Id' already exists and 'select'==true then override 'Name' AND override selected attribute
 bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, bool select)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return AddAudioDevice(Id,  Name, 0, NULL, select);
 }
 
@@ -673,6 +727,8 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, bool select)
 // BitRate=0 is ignored
 bool CSppConfig::SetAudioDeviceBitRate(LPTSTR Id, UINT BitRate)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return AddAudioDevice(Id,  NULL, BitRate, NULL);
 }
 
@@ -694,6 +750,8 @@ bool CSppConfig::SetAudioDeviceChannel(LPTSTR Id, LPTSTR Channel)
 //
 bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Channel, bool select)
 {
+
+	lock_guard<recursive_mutex> lock(m_mx_General);
 
 	wstring str_Id = (wstring(Id));
 
@@ -743,6 +801,8 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 
 wstring CSppConfig::GetCurrentAudio(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring str_Id = L"";
 
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -768,6 +828,8 @@ wstring CSppConfig::GetCurrentAudio(void)
 // If BitRate=0 then ignore
 bool CSppConfig::SetDefaultBitRate(UINT BitRate)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	if (!BitRate)
 		return true;
 
@@ -782,6 +844,8 @@ bool CSppConfig::SetDefaultBitRate(UINT BitRate)
 // Expected value are "Left", "Right" and "Mono"
 bool CSppConfig::SetDefaultChannel(LPTSTR Channel)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	if (Channel[0] != L'L'  && Channel[0] != L'R' && Channel[0] != L'M')
 		return false;
 
@@ -795,6 +859,8 @@ bool CSppConfig::SetDefaultChannel(LPTSTR Channel)
 // If AutoMode is false -> channel in manual mode:  Restore value from attribute "Manual" and delete attribute
 bool CSppConfig::SetAutoChannel(bool AutoMode )
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring Id = GetCurrentAudio();
 	wstring ch;
 
@@ -825,6 +891,8 @@ bool CSppConfig::SetAutoChannel(bool AutoMode )
 // If AutoMode is false -> Bitrate in manual mode:  Restore value from attribute "Manual" and delete attribute
 bool CSppConfig::SetAutoBitRate(bool AutoMode )
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring Id = GetCurrentAudio();
 	wstring Br;
 	UINT uiBr;
@@ -855,6 +923,8 @@ bool CSppConfig::SetAutoBitRate(bool AutoMode )
 // Return true if the channel is set to 'auto' for the default audio device
 bool CSppConfig::IsDefaultChannelAuto(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring Id = GetCurrentAudio();
 	wstring ch;
 
@@ -868,6 +938,8 @@ bool CSppConfig::IsDefaultChannelAuto(void)
 
 bool CSppConfig::IsDefaultBitRateAuto(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring Id = GetCurrentAudio();
 	wstring ch;
 
@@ -882,6 +954,8 @@ bool CSppConfig::IsDefaultBitRateAuto(void)
 
 bool CSppConfig::IsDefaultChannelRight()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring Id = GetCurrentAudio();
 	if (!Id.length())
 		return false;
@@ -896,6 +970,8 @@ bool CSppConfig::IsDefaultChannelRight()
 
 TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring str_Id = wstring(Id);
 
 	// Get handle of the root
@@ -946,6 +1022,8 @@ TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 
 wstring CSppConfig::GetAudioDeviceName(LPTSTR Id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string Name = "";
 
 	TiXmlHandle h = GetAudioHandle(Id);
@@ -958,6 +1036,8 @@ wstring CSppConfig::GetAudioDeviceName(LPTSTR Id)
 
 wstring CSppConfig::GetAudioDeviceChannel(LPTSTR Id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string Name = "";
 
 	TiXmlHandle h = GetAudioHandle(Id);
@@ -971,6 +1051,8 @@ wstring CSppConfig::GetAudioDeviceChannel(LPTSTR Id)
 // Set an audio attribute (e.g. "Manual") to a given value (e.g. "Left") for a given element (e.g. "Channel")
 bool CSppConfig::SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR Value)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
 	if (!peChannel)
@@ -982,6 +1064,8 @@ bool CSppConfig::SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR
 // Get a value (e.g. "Left") of a given audio attribute (e.g. "Manual") for a given element (e.g. "Channel")
 wstring CSppConfig::GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string sValue = "";
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
@@ -998,6 +1082,8 @@ wstring CSppConfig::GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
 // Remove a given audio attribute (e.g. "Manual") for a given element (e.g. "Channel")
 void CSppConfig::RemoveAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlElement* peChannel = h.FirstChildElement(utf8_encode(wstring(Element))).ToElement();
 	if (!peChannel)
@@ -1008,6 +1094,8 @@ void CSppConfig::RemoveAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib)
 
 UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string Value = "0";
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlText * Text = h.FirstChildElement(SPP_AUDBR).FirstChild().ToText();
@@ -1023,6 +1111,8 @@ UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 //	Version:  e.g. 3.3.8 (Creates element DLL_Version)
 bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string str_Name = utf8_encode(wstring(FilePath));
 	string str_Ver = utf8_encode(wstring(Version));
 
@@ -1054,6 +1144,8 @@ bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 
 wstring CSppConfig::FilterFile(void)
 {	
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string Value = "";
 	TiXmlHandle FilterFileHandle = GetFilterFileHandle();
 	TiXmlText * Text = FilterFileHandle.ToText();
@@ -1064,6 +1156,8 @@ wstring CSppConfig::FilterFile(void)
 
 TiXmlHandle CSppConfig::GetFilterFileHandle(void)
 {
+
+	lock_guard<recursive_mutex> lock(m_mx_General);
 
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -1078,6 +1172,8 @@ TiXmlHandle CSppConfig::GetFilterFileHandle(void)
 
 bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select) 
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// This means remove selection
 	if ((int)Id == -1 || !Name)
 		return AddFilter(Id, TEXT(""), select);
@@ -1089,6 +1185,8 @@ bool CSppConfig::AddFilter(UINT Id, const char * Name, bool select)
 
 bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select) 
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1134,6 +1232,8 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 
 UINT CSppConfig::GetSelectedFilter(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	UINT selected = 0;
 
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
@@ -1156,6 +1256,8 @@ UINT CSppConfig::GetSelectedFilter(void)
 
 TiXmlHandle CSppConfig::GetFilterHandle(LPTSTR Id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	wstring wstr_Id = (wstring(Id));
 
 	// Get handle of the root
@@ -1180,6 +1282,8 @@ TiXmlHandle CSppConfig::GetFilterHandle(LPTSTR Id)
 
 wstring CSppConfig::GetFilterName(LPTSTR Id)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	string Value = "";
 	TiXmlHandle h = GetFilterHandle(Id);
 	TiXmlText * Text = h.FirstChildElement(SPP_FLTNAME).FirstChild().ToText();
@@ -1190,6 +1294,8 @@ wstring CSppConfig::GetFilterName(LPTSTR Id)
 
 wstring CSppConfig::GetSelectedFilterName(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	UINT Id = GetSelectedFilter();
 	wstring w_id = to_wstring(Id);
 	const WCHAR * pw_id = w_id.data();
@@ -1200,7 +1306,8 @@ wstring CSppConfig::GetSelectedFilterName(void)
 // Save XML to disk
 bool CSppConfig::Save(void)
 {
-	lock_guard<recursive_mutex> lock(m_mx_Save);
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return 	m_doc.SaveFile();
 }
 
@@ -1211,6 +1318,8 @@ bool CSppConfig::Save(void)
 //  -1: No data
 int CSppConfig::PulseScope()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1243,6 +1352,8 @@ int CSppConfig::PulseScope()
 //  -1: No data
 int CSppConfig::MonitorChannels()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1272,6 +1383,8 @@ int CSppConfig::MonitorChannels()
 // Return true on success
 bool CSppConfig::PulseScope(bool Monitor)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1311,6 +1424,8 @@ bool CSppConfig::PulseScope(bool Monitor)
 // Return true on success
 bool CSppConfig::MonitorChannels(bool Monitor)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1350,6 +1465,8 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 // Return true on success
 bool CSppConfig::Wizard(bool Active)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return SetGeneralElemetsBool(SPP_WIZARD, Active);
 }
 
@@ -1358,6 +1475,8 @@ bool CSppConfig::Wizard(bool Active)
 // Returns false if explicitly set to false
 bool CSppConfig::Wizard()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	if (!GetGeneralElemetsBool(SPP_WIZARD))
 		return false;
 	else
@@ -1368,6 +1487,8 @@ bool CSppConfig::Wizard()
 // Return true on success
 bool CSppConfig::Stopped(bool Active)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	return SetGeneralElemetsBool(SPP_STOPPED, Active);
 }
 
@@ -1376,6 +1497,8 @@ bool CSppConfig::Stopped(bool Active)
 // Returns true if explicitly set to true
 bool CSppConfig::Stopped()
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	if (GetGeneralElemetsBool(SPP_STOPPED) == 1)
 		return true;
 	else
@@ -1386,6 +1509,8 @@ bool CSppConfig::Stopped()
 // Generic function to set "Checked" value of elements under <General> to 1/0
 bool CSppConfig::SetGeneralElemetsBool(const char * Element, bool Val)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1429,6 +1554,8 @@ bool CSppConfig::SetGeneralElemetsBool(const char * Element, bool Val)
 //  -1: No data
 int	CSppConfig::GetGeneralElemetsBool(const char * Element)
 {
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
 	// Get handle of the root
 	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
 	if (!root)
@@ -1522,11 +1649,8 @@ LPCTSTR utf8_decode(const char * str)
 //	LeafText:	The text to insert in the leaf element
 //	Replace:	If the leaf element exist - should the text be replaced
 // Returns: Handle to leaf element if successful - NULL otherwize
-recursive_mutex			m_mx_UniqueTextLeaf; // Mutex - UniqueTextLeaf is critical region
 TiXmlHandle UniqueTextLeaf(TiXmlHandle Parent,  string &LeafName, wstring &LeafText, bool Replace)
 {
-	lock_guard<recursive_mutex> lock(m_mx_UniqueTextLeaf);
-
 	// Does the leaf exist and unique
 	TiXmlElement * Leaf[2];
 	Leaf[0] = Parent.ChildElement(LeafName, 0).ToElement();

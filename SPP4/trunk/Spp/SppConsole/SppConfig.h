@@ -155,7 +155,7 @@ private:
 
 private:
 	TiXmlDocument			m_doc;
-	recursive_mutex			m_mx_Save;
+	recursive_mutex			m_mx_General;
 
 };
 

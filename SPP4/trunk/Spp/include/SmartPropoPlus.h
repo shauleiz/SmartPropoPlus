@@ -4,7 +4,9 @@ extern "C"
 {
 #endif
 
+#ifndef _ITERATOR_DEBUG_LEVEL
 #define _ITERATOR_DEBUG_LEVEL 1
+#endif
 
 #ifndef __SMARTPROPOPLUS
 #define __SMARTPROPOPLUS
