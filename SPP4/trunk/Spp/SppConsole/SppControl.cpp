@@ -628,6 +628,16 @@ void ComputeOperatState(void)
 	// Get the qulity of the joystick communication - Higher than 90 is good quality
 	JoyQual = Spp->GetJoystickCommQuality();
 
+#if 0
+	// If in W7/W71/W71 and signal is good then restart processing
+	if (OperatStateMachine == W7 || OperatStateMachine == W71 || OperatStateMachine == W72)
+	{
+		Spp->Start();
+		OperatStateMachine=UNKNOWN;
+		return;
+	}
+
+#endif // 0
 
 	// Infor GUI of quality
 	SendMessage(hDialog, WMSPP_DECD_QLT,PosQual, 0);
@@ -651,7 +661,7 @@ void ComputeOperatState(void)
 	// State Process (W9/W10)
 	// Quality of Position data is good (PosQual >= 75)
     // Quality of audio is not minimal
-	if (PosQual >= 75 && AudioQualitySel)
+	if (PosQual >= 75 && AudioQualitySel>LEVEL_VLO)
 	{
 		if (vJoyDeviceEnabled)
 		{
@@ -693,6 +703,7 @@ void ComputeOperatState(void)
 			OperatStateMachine = SetState(OperatStateMachine, W72, CONSOLE_BLN_W72);
 		else
 			OperatStateMachine = SetState(OperatStateMachine, W7, CONSOLE_BLN_W7);
+		//Spp->Stop();
 		return;
 	}
 

@@ -508,9 +508,7 @@ void SppDlg::SetNumberProcCh(UINT nCh)
 
 // Update the number of raw channels
 void SppDlg::SetNumberRawCh(UINT nCh)
-{
-
-	Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER_NCH), (to_wstring(nCh)+L" Channels").data());
+{	
 #if TAB_DCDR_ON
 	((SppTabDcdr *)m_hrsrc.TabDcdr)->SetNumberRawCh(nCh);
 #endif	
@@ -522,6 +520,8 @@ void SppDlg::SetNumberRawCh(UINT nCh)
 	// Prevent flicker
 	if (prevVal == nCh)
 		return;
+
+	Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER_NCH), (to_wstring(nCh)+L" Channels").data());
 	prevVal = nCh;
 
 	// Update text of static frame
