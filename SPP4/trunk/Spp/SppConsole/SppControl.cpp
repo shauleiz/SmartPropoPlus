@@ -44,6 +44,8 @@ bool AutoBitRate;
 bool AutoChannel;
 OperatState OperatStateMachine = S0;
 WORD Flags = FLG_NONE;
+bool ReqStartCapture=false;
+bool ReqStopCapture=false;
 
 #pragma endregion Globals
 
@@ -541,19 +543,9 @@ LRESULT CALLBACK MainWindowProc(
 		// Stop/Start Streaming
 		case WMSPP_DLG_STREAM:
 			if ((BOOL)wParam)
-			{
-				Spp->Start();
-				Spp->AudioChanged();
-				OperatStateMachine = UNKNOWN;
-				Conf->Stopped(false);
-			}
+				ReqStartCapture = true;
 			else
-			{
-				Spp->Stop();
-				OperatStateMachine = S0;
-				Conf->Stopped(true);
-			};
-
+				ReqStopCapture = true;
 			break;
 
 			// User pressed OK (or Cancel) button
@@ -614,9 +606,30 @@ void ComputeOperatState(void)
 	//static UINT StabilityCount=0;
 	//OperatState NewState=S0;
 
+	// Respond to requests to stop or start capture
+	if (ReqStartCapture)
+	{
+		ReqStartCapture = false;
+		Spp->Start();
+		Spp->AudioChanged();
+		OperatStateMachine = UNKNOWN;
+		Conf->Stopped(false);
+		return;
+	};
+
+	if (ReqStopCapture)
+	{
+		ReqStopCapture = false;
+		Spp->Stop();
+		OperatStateMachine = S0;
+		Conf->Stopped(true);
+		return;
+	};
+
 	// Nothing to compute is user chose to be in stopped mode
 	if (OperatStateMachine == S0)
 		return;
+
 
 	// Get audio quality of Selected audio channel and of Other audio channel
 	AudioQualitySel = GetAudioQuality(true);
