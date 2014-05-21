@@ -338,6 +338,7 @@ struct MOD {
 enum OperatState {
 	UNKNOWN = 0,
 	S0,
+	S3,
 	W10,
 	W101,
 	W9,
