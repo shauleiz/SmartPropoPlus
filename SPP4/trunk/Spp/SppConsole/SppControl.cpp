@@ -42,10 +42,12 @@ int isRight=-1; // -1: Uninitialized
 int BitRate=-1; // -1: Uninitialized
 bool AutoBitRate;
 bool AutoChannel;
-OperatState OperatStateMachine = S0;
+OperatState OperatStateMachine = UNKNOWN;
 WORD Flags = FLG_NONE;
 bool ReqStartCapture=false;
 bool ReqStopCapture=false;
+bool StartCapture=false;
+bool StopCapture=false;
 
 #pragma endregion Globals
 
@@ -221,6 +223,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Spp->SetAudioObj(Audio);
 
+	// If flag FLG_STPD is set signal the state machine not to start
+	// Else start processing audio
 	if (!(Flags & FLG_STPD))
 	{
 		// Start processing the audio
@@ -236,7 +240,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		FilterPopulate(hDialog);
 		Spp->AudioChanged(); // TODO: Remove later
 
-		OperatStateMachine = UNKNOWN;
+	}
+	else
+	{
+		ReqStopCapture = true;
+		SendMessage(hDialog, WMSPP_PRCS_ALIVE, (WPARAM)0, 0);
 	};
 
 	// Start monitoring channels according to config file
@@ -440,9 +448,22 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_PRCS_NRCHMNT:
 		case WMSPP_PRCS_NPCHMNT:
 		case WMSPP_PRCS_PCHMNT:
-		case WMSPP_PRCS_ALIVE:
+		//case WMSPP_PRCS_ALIVE:
 		case WMSPP_JMON_AXIS:
 		SendMessage(hDialog, uMsg, wParam, lParam);
+			break;
+
+		case WMSPP_PRCS_ALIVE:
+			if (wParam)
+			{
+				StopCapture = false;
+				StartCapture = true;
+			}
+			else
+			{
+				StopCapture = true;
+				StartCapture = false;
+			}
 			break;
 
 		case WMSPP_DLG_FILTER:
@@ -610,7 +631,13 @@ void ComputeOperatState(void)
 	if (ReqStartCapture)
 	{
 		ReqStartCapture = false;
-		Spp->Start();
+		if (Spp->Start())
+			LogMessage(INFO, IDS_I_STARTSPPPRS);
+		else
+		{
+			LogMessage(FATAL, IDS_F_STARTSPPPRS);
+			return;
+		};
 		Spp->AudioChanged();
 		OperatStateMachine = UNKNOWN;
 		Conf->Stopped(false);
@@ -624,6 +651,20 @@ void ComputeOperatState(void)
 		OperatStateMachine = S0;
 		Conf->Stopped(true);
 		return;
+	};
+
+
+	// Capture started or Stopped - inform GUI
+	if (StartCapture)
+	{
+		StartCapture = false;
+		SendMessage(hDialog, WMSPP_PRCS_ALIVE, (WPARAM)1, 0);
+	};
+
+	if (StopCapture)
+	{
+		StopCapture = false;
+		SendMessage(hDialog, WMSPP_PRCS_ALIVE, (WPARAM)0, 0);
 	};
 
 	// Nothing to compute is user chose to be in stopped mode
