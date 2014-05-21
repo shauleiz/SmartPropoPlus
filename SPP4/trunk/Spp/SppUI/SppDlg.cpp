@@ -180,35 +180,35 @@ void SppDlg::SppStatusChanged( WPARAM wParam, LPARAM lParam)
 	case S0:
 		SetWindowText(GetDlgItem(m_hDlg, IDS_STATUS_EDT), CONSOLE_BLN_S0);
 		TaskBarAddIcon(IDI_S0, CONSOLE_TT_S0, (LPTSTR)lParam);		
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	case W7:
 		TaskBarAddIcon(IDI_W7, CONSOLE_TT_W7, (LPTSTR)lParam);
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	case W71:
 		TaskBarAddIcon(IDI_W7, CONSOLE_TT_W71, (LPTSTR)lParam);
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	case W72:
 		TaskBarAddIcon(IDI_W7, CONSOLE_TT_W72, (LPTSTR)lParam);
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	case W8:
 		TaskBarAddIcon(IDI_W8, CONSOLE_TT_W8, (LPTSTR)lParam);
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	case W9:
 		TaskBarAddIcon(IDI_W8, CONSOLE_TT_W9, (LPTSTR)lParam);
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	case W10:
 		TaskBarAddIcon(IDI_W10, CONSOLE_TT_W10, (LPTSTR)lParam);
-		SetStreamingState(false);
+		//SetStreamingState(false);
 		break;
 	default:
 		TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, (LPTSTR)lParam);
-		SetStreamingState(true);
+		//SetStreamingState(true);
 		break;
 	}
 
