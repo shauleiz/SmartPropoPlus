@@ -23,6 +23,7 @@ UINT const WMSPP_PRCS_PCHMNT=			WM_APP + 204;			// Processed Channel data is rea
 UINT const WMSPP_PRCS_NRCHMNT=			WM_APP + 205;			// Number of Raw. The payload: Wparam is number of channel.
 UINT const WMSPP_PRCS_NPCHMNT=			WM_APP + 206;			// Number of Processed. The payload: Wparam is number of channel.
 UINT const WMSPP_PRCS_ALIVE =			WM_APP + 207;			// Processing is/isn't alive. The payload: Wparam is true(alive)/false(not processing)
+UINT const WMSPP_PRCS_AWAKE =			WM_APP + 208;			// Processing is/isn't awake. The payload: Wparam is true(alive)/false(not processing)
 
 UINT const BASE_SUB			=			WM_APP + 1000;			// Base value
 UINT const POPULATE_JACKS	=			BASE_SUB+1;				// The payload is a pointer to struct jack_info

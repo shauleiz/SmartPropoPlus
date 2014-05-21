@@ -630,12 +630,11 @@ void ComputeOperatState(void)
 	UINT PosQual=0;
 	UINT JoyQual=0;
 	UINT AudioQualitySel, AudioQualityOther;
-	//static UINT StabilityCount=0;
-	//OperatState NewState=S0;
 
 	// Respond to requests to stop or start capture
-	if (ReqStartCapture)
+	if (ReqStartCapture/* && OperatStateMachine == S0*/)
 	{
+		ReqStopCapture = false;
 		ReqStartCapture = false;
 		if (Spp->Start())
 			LogMessage(INFO, IDS_I_STARTSPPPRS);
@@ -650,9 +649,15 @@ void ComputeOperatState(void)
 		return;
 	};
 
-	if (ReqStopCapture)
+	if (OperatStateMachine == UNKNOWN && ReqStartCapture)
 	{
-		ReqStopCapture = false;
+		ReqStartCapture = false;
+		return;
+	}
+
+	if (ReqStopCapture && OperatStateMachine != S3 && OperatStateMachine != S0)
+	{
+		//ReqStopCapture = false;
 		if (Spp->Stop())
 			LogMessage(INFO, IDS_I_STOPSPPPRS);
 		else
@@ -661,11 +666,17 @@ void ComputeOperatState(void)
 			return;
 		};
 
-		OperatStateMachine = S0;
+		OperatStateMachine = S3;
 		Conf->Stopped(true);
 		return;
 	};
 
+	if (OperatStateMachine == S3)
+	{
+		ReqStopCapture = false;
+		OperatStateMachine = S0;
+		return;
+	};
 
 	// Capture started or Stopped - inform GUI
 	if (StartCapture)
