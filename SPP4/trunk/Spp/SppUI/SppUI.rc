@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <commctrl.h>
 //#include <richedit.h>
-#include "resource.h"
+#include "../Include/resource.h"
 
 
 
@@ -19,10 +19,6 @@ IDB_GREENDOT       BITMAP         "bitmap2.bmp"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDB_GREYDOT        BITMAP         ".\\bitmap4.bmp"
-
-
-//LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-//IDB_MASK01         BITMAP         ".\\Mask01.bmp"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
@@ -538,41 +534,43 @@ STRINGTABLE
     IDS_T_AUDIO_SRC               "Audio Input"
     IDS_I_START                   "SmartPropoPlus is currently paused - Press to activate"
     IDS_I_STOP                    "SmartPropoPlus is currently active - Press to deactivate"
-	IDS_I_AUDIO_CHBITS			  "Current Audio channel and bit rate"
-	IDS_I_DECODER                 "To change, select tab ""Transmitter"""
-	IDS_T_DECODER                 "Type of signal"
-	IDS_I_DECODER_NCH             "Number of Transmitter Channels detected"
-	IDS_T_FILTER                  "Selected Filter"
-	IDS_I_JOY                     "To change and map axes, select tab ""Joystick"""
-	IDS_T_JOY                     "Target Joystick"
-	IDS_I_STATUS_EDT              "Current status of SmartPropoPlus"
-	IDS_I_OK                      "Exit SmartPropoPlus ..."
-	IDS_I_CH1                     "Level of transmitter channel 1"
-	IDS_I_CH2                     "Level of transmitter channel 2"
-	IDS_I_CH3                     "Level of transmitter channel 3"
-	IDS_I_CH4                     "Level of transmitter channel 4"
-	IDS_I_CH5                     "Level of transmitter channel 5"
-	IDS_I_CH6                     "Level of transmitter channel 6"
-	IDS_I_CH7                     "Level of transmitter channel 7"
-	IDS_I_CH8                     "Level of transmitter channel 8"
-	IDS_I_CHPP                    "Level of Filter Output"
-	IDS_T_CHPP1                   "Channel A"
-	IDS_T_CHPP2                   "Channel B"
-	IDS_T_CHPP3                   "Channel C"
-	IDS_T_CHPP4                   "Channel 4"
-	IDS_T_CHPP5                   "Channel 5"
-	IDS_T_CHPP6                   "Channel 6"
-	IDS_T_CHPP7                   "Channel 7"
-	IDS_T_CHPP8                   "Channel 8"
-	IDS_I_AXES					  "Joystick axis monitor"
-	IDS_T_X                       "Axis X"
-	IDS_T_Y                       "Axis Y"
-	IDS_T_Z                       "Axis Z"
-	IDS_T_RX                      "Axis RX"
-	IDS_T_RY                      "Axis RY"
-	IDS_T_RZ                      "Axis RZ"
-	IDS_T_SL0                     "Axis SL0"
-	IDS_T_SL1                     "Axis SL1"
+    IDS_I_AUDIO_CHBITS            "Current Audio channel and bit rate"
+    IDS_I_DECODER                 "To change, select tab ""Transmitter"""
+    IDS_T_DECODER                 "Type of signal"
+    IDS_I_DECODER_NCH             "Number of Transmitter Channels detected"
+    IDS_T_FILTER                  "Selected Filter"
+    IDS_I_JOY                     "To change and map axes, select tab ""Joystick"""
+    IDS_T_JOY                     "Target Joystick"
+    IDS_I_STATUS_EDT              "Current status of SmartPropoPlus"
+    IDS_I_OK                      "Exit SmartPropoPlus ..."
+    IDS_I_CH1                     "Level of transmitter channel 1"
+    IDS_I_CH2                     "Level of transmitter channel 2"
+    IDS_I_CH3                     "Level of transmitter channel 3"
+    IDS_I_CH4                     "Level of transmitter channel 4"
+    IDS_I_CH5                     "Level of transmitter channel 5"
+    IDS_I_CH6                     "Level of transmitter channel 6"
+    IDS_I_CH7                     "Level of transmitter channel 7"
+    IDS_I_CH8                     "Level of transmitter channel 8"
+    IDS_I_CHPP                    "Level of Filter Output"
+    IDS_T_CHPP1                   "Channel A"
+    IDS_T_CHPP2                   "Channel B"
+    IDS_T_CHPP3                   "Channel C"
+    IDS_T_CHPP4                   "Channel 4"
+    IDS_T_CHPP5                   "Channel 5"
+    IDS_T_CHPP6                   "Channel 6"
+    IDS_T_CHPP7                   "Channel 7"
+    IDS_T_CHPP8                   "Channel 8"
+    IDS_I_AXES                    "Joystick axis monitor"
+    IDS_T_X                       "Axis X"
+    IDS_T_Y                       "Axis Y"
+    IDS_T_Z                       "Axis Z"
+    IDS_T_RX                      "Axis RX"
+    IDS_T_RY                      "Axis RY"
+    IDS_T_RZ                      "Axis RZ"
+    IDS_T_SL0                     "Axis SL0"
+    IDS_T_SL1                     "Axis SL1"
+    IDS_I_STOPSPPPRS              "SppProcess stopped"
+    IDS_E_STOPSPPPRS              "Failed to stop SppProcess"
 }
 
 

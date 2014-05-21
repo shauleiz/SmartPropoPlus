@@ -227,6 +227,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Else start processing audio
 	if (!(Flags & FLG_STPD))
 	{
+		ReqStartCapture = true;
+		SendMessage(hDialog, WMSPP_PRCS_ALIVE, (WPARAM)1, 0);
+
+#if 0
 		// Start processing the audio
 		if (!Spp->Start())
 		{
@@ -239,6 +243,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		FilterPopulate(hDialog);
 		Spp->AudioChanged(); // TODO: Remove later
+
+#endif // 0
 
 	}
 	else
@@ -647,7 +653,14 @@ void ComputeOperatState(void)
 	if (ReqStopCapture)
 	{
 		ReqStopCapture = false;
-		Spp->Stop();
+		if (Spp->Stop())
+			LogMessage(INFO, IDS_I_STOPSPPPRS);
+		else
+		{
+			LogMessage(ERR, IDS_E_STOPSPPPRS);
+			return;
+		};
+
 		OperatStateMachine = S0;
 		Conf->Stopped(true);
 		return;
