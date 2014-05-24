@@ -27,13 +27,15 @@ class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
 class CPulseScope * PulseScopeObj = NULL;
-LPCTSTR AudioId = NULL;
+class SppDlg *	Dialog = NULL;
 class CSppProcess * Spp = NULL;
+LPCTSTR AudioId = NULL;
 HINSTANCE hDllFilters = 0;
 HINSTANCE g_hInstance = 0;
 HWND hLog;
 bool Monitor = true;
 thread * tMonitor = NULL;
+thread * tDialogBox = NULL;
 int     vJoyDevice = 1;
 bool    vJoyDeviceEnabled = false;
 bool reqPopulateFilter = false;
@@ -64,6 +66,7 @@ void		LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg);
 void		DbgInputSignal(bool start);
 void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
+void		thDialogBox(HWND hwnd);
 void		SetMonitoring(HWND hDlg);
 void		SetPulseScope(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
@@ -79,16 +82,10 @@ void		SetNotificationIcon(LPCTSTR);
 void		ComputeOperatState(void);
 void		DecoderAuto(HWND hDlg);
 OperatState SetState(OperatState current, OperatState next, LPCTSTR Msg = NULL);
+void		MessageLoop(void);
+LRESULT		CALLBACK MainWindowProc(_In_  HWND hwnd, _In_  UINT uMsg, _In_  WPARAM wParam, _In_  LPARAM lParam);
+void		AppExit(void);
 #pragma endregion Declarations
-
-
-LRESULT CALLBACK MainWindowProc(
-  _In_  HWND hwnd,
-  _In_  UINT uMsg,
-  _In_  WPARAM wParam,
-  _In_  LPARAM lParam
-);
-
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -204,7 +201,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	DbgObj = new SppDbg();
 
 	// Create Dialog box, initialize it then show it
-	SppDlg *	Dialog	= new SppDlg(hInstance, hwnd);
+	//SppDlg *	Dialog	= new SppDlg(hInstance, hwnd);
+	// Start Dialog box thread
+	tDialogBox = new thread(thDialogBox, hwnd);
+	if (!tDialogBox)
+			goto ExitApp;
+
+    Sleep(1000); // TODO: Replace with a proper waiting procedure: http://stackoverflow.com/questions/16350473/why-i-need-stdcondition-variable
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
 
@@ -282,27 +285,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		Dialog->Show();
 
 	// Loop forever in the dialog box until user kills it
-	Dialog->MsgLoop();
-
+	MessageLoop();
  
 ExitApp:
-	// Stop audio
-	Spp->Stop();
 
-	// Stop monitoring
-	Monitor = false;
-	if (tMonitor && tMonitor->joinable())
-		tMonitor->join();
-
-	vJoyMonitorClose();
-	delete(Dialog);
-	delete(Conf);
-	delete(Spp);
-	delete(Audio);
-	delete(DbgObj);
-	delete(LogWin);
-	delete(tMonitor);
-
+	AppExit();
 	return 0;
 }
 
@@ -577,12 +564,10 @@ LRESULT CALLBACK MainWindowProc(
 
 			// User pressed OK (or Cancel) button
 		case WMSPP_DLG_OK:
-			PulseScope(FALSE);
-			if (wParam)
-				Conf->Save();
+			AppExit();
 			break;
 
-		// GUI became iconified or switched to wizard mode
+			// GUI became iconified or switched to wizard mode
 		case WMSPP_DLG_ICONFD:
 			if (wParam)
 				Conf->Wizard(false);
@@ -611,6 +596,66 @@ LRESULT CALLBACK MainWindowProc(
     return 0; 
 }
 
+void MessageLoop(void)
+{
+	MSG winmsg;
+	BOOL bRet;
+
+	while( (bRet = GetMessage( &winmsg, NULL, 0, 0 )) != 0)
+	{ 
+		if (bRet == -1)
+		{
+			// handle the error and possibly exit
+		}
+		else
+		{
+			TranslateMessage(&winmsg); 
+			DispatchMessage(&winmsg); 
+		}
+	}
+}
+
+// Call this function once when received request to exit application
+// The function:
+// - Kills all child threads (Execept GUI)
+// - Closes GUI window then kills GUI thread
+// - Distroys application
+void		AppExit(void)
+{
+
+	// Kill Dialog box
+	SendMessage(hDialog, WM_DESTROY, 0,0);
+	delete(Dialog);
+
+	// Stop thread "CvJoyMonitor Central thread (Loop)"
+	 vJoyMonitorClose();
+
+	exit(0); // TODO: Try a cleaner exit based on the following - Current problem: Stuck when sleeping
+
+	// Stop thread "SppControl Monitor Thread"
+	Monitor = false;
+	if (tMonitor && tMonitor->joinable())
+		tMonitor->join();
+	delete(tMonitor);
+
+	// Stop cupture and monitoring signal
+	if (Spp)
+		delete(Spp);
+
+	// Kill Scope thread
+
+
+	// Clean Up
+	delete(Conf);
+	delete(Audio);
+	delete(DbgObj);
+	delete(LogWin);
+
+	// TODO: Clean-up the Scope window
+
+	// Exit
+	exit(0);
+}
 
 // Start/Stop monitoring the pulse data using Pulse Scope
 void PulseScope(BOOL start)
@@ -851,9 +896,9 @@ void AudioLevelWatch()
 
 	// Inform GUI
 	if (nChannels == 1)
-		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],101));
+		PostMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],101));
 	else
-		SendMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
+		PostMessage(hDialog, VJOYDEV_CH_LEVEL, (WPARAM)AudioId, MAKELPARAM(AudioLevel[0],AudioLevel[1]));
 
 	// Inform GUI of change in Channel or BitRate
 	if ((ch[0] != prevCh) || (BitRate != prevBr))
@@ -1553,6 +1598,15 @@ void		DbgPulse(bool start)
 		DbgObj->StopDbgPulse();
 	}
 }
+
+// Dialog Box thread
+void thDialogBox(HWND hwnd)
+{
+	THREAD_NAME("Dialog Box Thread");
+	Dialog	= new SppDlg(g_hInstance, hwnd);
+	Dialog->MsgLoop();
+}
+
 // Monitor Thread
 // Polls activity of the different modules
 // Reports health of the modules and attemps recovery when possible
