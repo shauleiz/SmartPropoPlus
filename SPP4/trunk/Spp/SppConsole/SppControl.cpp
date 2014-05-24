@@ -688,6 +688,7 @@ void ComputeOperatState(void)
 			LogMessage(FATAL, IDS_F_STARTSPPPRS);
 			return;
 		};
+		FilterPopulate(hDialog);
 		Spp->AudioChanged();
 		OperatStateMachine = UNKNOWN;
 		Conf->Stopped(false);
