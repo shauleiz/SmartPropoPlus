@@ -1552,7 +1552,7 @@ void  SppDlg::vJoyDevSelect(UINT id)
 // Informs Parent window (CU) that the user pressed OK or Cancel button
 void SppDlg::ExitWithOK(bool OkSelected)
 {
-	PostMessage(m_ConsoleWnd, WMSPP_DLG_OK, (WPARAM)OkSelected, 0);
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_OK, (WPARAM)OkSelected, 0);
 }
 
 // Informs Parent window (CU) that the user went to/from iconified dispaly mode
@@ -1898,6 +1898,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	switch (message)
 	{
 
+	case WM_DESTROY:
+			DestroyWindow(hDlg);
+			hDlg = NULL;
+//			PostQuitMessage(0);
+			return (INT_PTR)TRUE;
+
 	case WM_NOTIFY:
 
 		if (((LPNMHDR)lParam)->idFrom  == IDC_BTN_MAP)
@@ -1947,16 +1953,15 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			return (INT_PTR)TRUE;
 		}
 
-	case WM_DESTROY:
-			DestroyWindow(hDlg);
-			hDlg = NULL;
-//			PostQuitMessage(0);
-			return (INT_PTR)TRUE;
+		break;
 
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
 			DialogObj->ExitWithOK(LOWORD(wParam) == IDOK);
+			DestroyWindow(hDlg);
+			hDlg = NULL;
+			PostQuitMessage(0);
 			return (INT_PTR)TRUE;
 		}
 
