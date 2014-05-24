@@ -1307,7 +1307,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 			FilterName = pGetFilterNameByIndexA(iFilter);
 
 		// Sanity check
-		if (!FilterName)
+		if (!FilterName && !FilterNameW)
 			return NULL;
 
 		// If got a char* then convert to LPCWSTR
