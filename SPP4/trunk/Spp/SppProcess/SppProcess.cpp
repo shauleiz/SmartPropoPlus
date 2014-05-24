@@ -72,9 +72,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
 
 SPPMAIN_API CSppProcess::~CSppProcess()
 {
-	Stop();
 	StopCaptureAudio();
-	MonitorChannels(FALSE);
+	Stop();
 	m_ModulationMap.clear();
 }
 
@@ -173,6 +172,7 @@ SPPMAIN_API bool CSppProcess::Stop(void)
 		m_tMonitorCapture->join();
 	delete(m_tMonitorCapture);
 	m_tMonitorCapture = NULL;
+	MonitorChannels(false);
 
 	// Inform parent
 	PostMessage(m_hParentWnd, WMSPP_PRCS_ALIVE, FALSE ,0);
@@ -193,6 +193,7 @@ SPPMAIN_API bool CSppProcess::Start(void)
 	if (m_PropoStarted)
 		return false;
 	m_PropoStarted = true;
+	MonitorChannels(true);
 
 	if (!m_hParentWnd)
 		return false;
