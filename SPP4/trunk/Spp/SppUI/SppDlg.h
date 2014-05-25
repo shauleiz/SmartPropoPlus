@@ -128,5 +128,7 @@ protected:
 	SppBtnsDlg * m_BtnsDlg;
 	DLGHDR m_hrsrc;
 	HWND m_hwndToolTip;
+	bool m_StreamingState;
+	bool m_WizMinimized;
 };
 
