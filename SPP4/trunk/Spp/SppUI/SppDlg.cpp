@@ -40,6 +40,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 {
 	m_hInstance = hInstance;
 	m_ConsoleWnd = ConsoleWnd;
+	m_StreamingState = true;
 
 	// Create the dialog box (Hidden) 
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg, (LPARAM)this);	
@@ -66,12 +67,14 @@ SppDlg::~SppDlg(void)
 
 void SppDlg::Show()
 {
+	m_WizMinimized = false;
 	ShowWindow(m_hDlg, SW_SHOW);
 	UpdateWindow(m_hDlg);	
 }
 
 void SppDlg::Hide()
 {
+	m_WizMinimized = true;
 	ShowWindow(m_hDlg, SW_HIDE);
 }
 
@@ -252,6 +255,25 @@ void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
 	{
 		HMENU hIconMenu = LoadMenu(m_hInstance, MAKEINTRESOURCE(IDM_ICON));
 		HMENU hPopupMenu = GetSubMenu(hIconMenu, 0); 
+
+		// Update menu look
+		MENUITEMINFO mii;
+
+		// Get the state of the specified menu item. 
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STATE | MIIM_ID;    // information to get 
+		GetMenuItemInfo(hPopupMenu, IDC_STREAM, FALSE, &mii); 
+
+		// Awake check mark
+		mii.fState = m_StreamingState ? MFS_CHECKED : 0;
+		SetMenuItemInfo(hPopupMenu, IDC_STREAM, FALSE, &mii); 
+
+		// Wizard/Minimized check mark 
+		mii.fState = m_WizMinimized ? 0 : MFS_CHECKED;
+		// Wizard/Minimized meaning 
+		mii.wID = m_WizMinimized ? IDM_DISPLAY_WIZARD : IDC_HIDE;
+		SetMenuItemInfo(hPopupMenu, IDM_DISPLAY_WIZARD, FALSE, &mii); 
+
 		POINT pt;
 		GetCursorPos(&pt);
 		TrackPopupMenu(hPopupMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON, pt.x, pt.y, 0, m_hDlg, NULL);
@@ -677,6 +699,8 @@ void SppDlg::EnableFilter(BOOL cb)
 // Change GUI to reflect "Start/Stop" states
 void SppDlg::SetStreamingState(BOOL isProcessingAudio)
 {
+	m_StreamingState = isProcessingAudio;
+
 	// Button
 	SetStreamingButton(isProcessingAudio);
 
