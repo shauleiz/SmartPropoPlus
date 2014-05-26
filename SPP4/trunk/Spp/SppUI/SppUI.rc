@@ -572,6 +572,8 @@ STRINGTABLE
     IDS_T_SL1                     "Axis SL1"
     IDS_I_STOPSPPPRS              "SppProcess stopped"
     IDS_E_STOPSPPPRS              "Failed to stop SppProcess"
+    IDS_W_AREYOUSURE              "This will completely close SmartPropoPlus.\r\nIn most cases it is wiser to send it to sleep.\r\nAre you sure you want to quit SmartPropoPlus?"
+    IDS_T_AREYOUSURE              "Quit SmartPropoPlus"
 }
 
 

@@ -2004,9 +2004,6 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
 			DialogObj->ExitWithOK(LOWORD(wParam) == IDOK);
-			DestroyWindow(hDlg);
-			hDlg = NULL;
-			PostQuitMessage(0);
 			return (INT_PTR)TRUE;
 		}
 
