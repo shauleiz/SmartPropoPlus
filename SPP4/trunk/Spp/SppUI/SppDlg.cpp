@@ -123,7 +123,7 @@ bool SppDlg::MsgLoop(void)
 // lpszTip - tooltip text 
 bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
 {
-	bool res; 
+	bool res = true; 
     NOTIFYICONDATA tnid;
 	HRESULT hr;
 	int cmd = NIM_ADD;
@@ -133,42 +133,63 @@ bool SppDlg::TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo)
 
 
  	m_hIcon = LoadIcon(m_hInstance, MAKEINTRESOURCE(uID));
-    tnid.cbSize = sizeof(NOTIFYICONDATA); 
-    tnid.hWnd = m_hDlg; 
-    tnid.uID = IDI_SPPCONSOLE; 
-    tnid.uFlags = NIF_MESSAGE | NIF_ICON; 
-    tnid.uCallbackMessage = WMAPP_NOTIFYCALLBACK; 
-    tnid.hIcon =	m_hIcon;// Load system tray icon
+	tnid.cbSize = sizeof(NOTIFYICONDATA); 
+	tnid.hWnd = m_hDlg; 
+	tnid.uID = IDI_SPPCONSOLE; 
+	tnid.uFlags = NIF_MESSAGE | NIF_ICON; 
+	tnid.uCallbackMessage = WMAPP_NOTIFYCALLBACK; 
+	tnid.hIcon =	m_hIcon;// Load system tray icon
 	tnid.uVersion = NOTIFYICON_VERSION_4;
 
 	LPTSTR lpszTitle = TEXT("SmartPropoPlus Message");
 	// Tool Tip
-    if (lpszTip)
+	if (lpszTip)
 	{
-        hr = StringCbCopyN(tnid.szTip, sizeof(tnid.szTip), lpszTip, sizeof(tnid.szTip));
+		hr = StringCbCopyN(tnid.szTip, sizeof(tnid.szTip), lpszTip, sizeof(tnid.szTip));
 		tnid.uFlags |= NIF_TIP;
 	}
-    else 
-        tnid.szTip[0] = (TCHAR)'\0';
+	else 
+		tnid.szTip[0] = (TCHAR)'\0';
 
 	// Info text
 	if (lpszInfo)
 	{
-        hr = StringCbCopyN(tnid.szInfo, sizeof(tnid.szInfo), lpszInfo, sizeof(tnid.szInfo));
-        hr = StringCbCopyN(tnid.szInfoTitle, sizeof(tnid.szInfoTitle), lpszTitle, sizeof(tnid.szInfoTitle));
+		hr = StringCbCopyN(tnid.szInfo, sizeof(tnid.szInfo), lpszInfo, sizeof(tnid.szInfo));
+		hr = StringCbCopyN(tnid.szInfoTitle, sizeof(tnid.szInfoTitle), lpszTitle, sizeof(tnid.szInfoTitle));
 		tnid.dwInfoFlags = NIIF_NONE;
 		tnid.uFlags |= NIF_INFO;
 	}
-    else 
-        tnid.szInfo[0] = (TCHAR)'\0';
- 
-    res = (TRUE == Shell_NotifyIcon(cmd, &tnid));
+	else 
+		tnid.szInfo[0] = (TCHAR)'\0';
+
+	res = (TRUE == Shell_NotifyIcon(cmd, &tnid));
 	if (res)
-		m_tnid = tnid;
+		m_tnid = tnid;  
+
  
+     //if (m_hIcon) 
+     //   DestroyIcon(m_hIcon); 
+
+	//////////////  Icon on the dialog box next to the status text
+	// Calculate location of icon - based of hidden control IDI_STATUS
+	RECT ScreenRc, ClientRc;
+	HWND hBase = GetDlgItem(m_hDlg, IDI_STATUS);
+	BOOL foundrect = GetWindowRect(hBase, &ScreenRc);
+	POINT TopLeft = {ScreenRc.left, ScreenRc.top};
+	ScreenToClient(m_hDlg, &TopLeft);
+	ClientRc.left = TopLeft.x;
+	ClientRc.top = TopLeft.y;
+	LONG Width  = ScreenRc.right-ScreenRc.left;
+	LONG Height = ScreenRc.bottom-ScreenRc.top;
+
+	// Create static window, load icon and display the icon
+	HWND hTarget = CreateWindowEx(0, _T("static"), L"", SS_ICON|WS_CHILD, ClientRc.left, ClientRc.top, Width,  Height, m_hDlg, NULL,	m_hInstance, 0);
+	HANDLE	prev = (HANDLE)SendMessage(hTarget,STM_SETIMAGE, IMAGE_ICON, (LPARAM)m_hIcon);
+	ShowWindow(hTarget, SW_SHOW);
+
     if (m_hIcon) 
         DestroyIcon(m_hIcon); 
- 
+
     return res; 
 }
 

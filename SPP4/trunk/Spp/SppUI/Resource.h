@@ -106,6 +106,7 @@
 #define IDS_STATUS_FRAME                        40009
 #define IDC_JOY_FRAME                           40010
 #define IDC_LIST_PCM                            40010
+#define IDI_STATUS                              40010
 #define IDS_I_FILTERSELOK                       40010
 #define IDC_STAT_TX                             40011
 #define IDC_TXT_CH10                            40011
