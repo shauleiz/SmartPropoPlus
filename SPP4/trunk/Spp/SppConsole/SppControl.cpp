@@ -84,7 +84,7 @@ void		DecoderAuto(HWND hDlg);
 OperatState SetState(OperatState current, OperatState next, LPCTSTR Msg = NULL);
 void		MessageLoop(void);
 LRESULT		CALLBACK MainWindowProc(_In_  HWND hwnd, _In_  UINT uMsg, _In_  WPARAM wParam, _In_  LPARAM lParam);
-void		AppExit(void);
+bool		AppExit(void);
 #pragma endregion Declarations
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -564,8 +564,7 @@ LRESULT CALLBACK MainWindowProc(
 
 			// User pressed OK (or Cancel) button
 		case WMSPP_DLG_OK:
-			AppExit();
-			break;
+			return AppExit();
 
 			// GUI became iconified or switched to wizard mode
 		case WMSPP_DLG_ICONFD:
@@ -620,8 +619,16 @@ void MessageLoop(void)
 // - Kills all child threads (Execept GUI)
 // - Closes GUI window then kills GUI thread
 // - Distroys application
-void		AppExit(void)
+bool		AppExit(void)
 {
+	// Ask user if sure
+	TCHAR msg[MAX_MSG_SIZE];
+	TCHAR ttl[MAX_MSG_SIZE];
+	LoadString(g_hInstance, IDS_W_AREYOUSURE, reinterpret_cast< LPWSTR >( &msg ), sizeof(msg)/sizeof(TCHAR) );
+	LoadString(g_hInstance, IDS_T_AREYOUSURE, reinterpret_cast< LPWSTR >( &ttl ), sizeof(ttl)/sizeof(TCHAR) );
+	int kill = MessageBox(NULL, msg, ttl, MB_YESNO|MB_ICONWARNING|MB_DEFBUTTON2|MB_SYSTEMMODAL);
+	if (kill == IDNO)
+		return false;
 
 	// Kill Dialog box
 	SendMessage(hDialog, WM_DESTROY, 0,0);

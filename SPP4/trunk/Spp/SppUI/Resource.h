@@ -294,7 +294,9 @@
 #define IDS_I_STOPSPPPRS                        40131
 #define IDC_RIGHT                               40132
 #define IDS_E_STOPSPPPRS                        40132
+#define IDS_W_AREYOUSURE                        40133
 #define IDC_VJOY_DEVICE                         40134
+#define IDS_T_AREYOUSURE                        40134
 #define IDC_VJOY_AXES                           40135
 #define IDC_EDIT_FILTERFILE                     40140
 #define IDC_BTN_FILTERBROWSE                    40141
