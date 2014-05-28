@@ -35,6 +35,7 @@ CreateAppDir=true
 OutputDir=.
 OutputBaseFilename=Spp4Installer
 SetupIconFile=.\Installer.ico
+UninstallDisplayIcon=.\UnInstaller.ico
 Compression=lzma/Max
 SolidCompression=true
 DefaultDirName={pf}\{#MyShortAppName}
@@ -42,8 +43,8 @@ DefaultGroupName={#MyShortAppName}
 VersionInfoCompany=Shaul Eizikovich
 AppCopyright=Copyright (c) 2005-2014 by Shaul Eizikovich
 MinVersion = 6.0.6000sp2
-SignTool=Sig sign /a /v /s My /t http://timestamp.digicert.com $f
-SignedUninstaller=yes
+;SignTool=Sig sign /a /v /s My /t http://timestamp.digicert.com $f
+;SignedUninstaller=yes
 DisableDirPage=no
 DisableProgramGroupPage=no
 DisableReadyMemo=no
@@ -66,8 +67,8 @@ Source: "{#ExternFolder}\{#vJoyInstaller}"; DestDir: "{app}"; Flags: deleteafter
 [Icons]
 Name: "{group}\Uninstall SmartPropoPlus"; Filename: "{uninstallexe}"
 
-[UninstallRun]
-Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent " ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated
+;[UninstallRun]
+;Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent " ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated
 
 [Run]
 Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /SILENT /NORESTART /SUPPRESSMSGBOXES"  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
@@ -80,10 +81,23 @@ AppIdFlag	= 'ID';
 AppIdParam	= ' /'+AppIdFlag;
 UninstKey 	= 'Software\Microsoft\Windows\CurrentVersion\Uninstall\';
 
-    (* Forward Function declarations - Start *)
-function IsX64: Boolean; Forward;
-function IsX86: Boolean; Forward;
-function GetAppId(Param: String): String; Forward;
+(* Forward Function declarations - Start *)
+function  IsX64: Boolean; Forward;
+function  IsX86: Boolean; Forward;
+function  GetAppId(Param: String): String; Forward;
+function  vJoyUnInstaller: String; Forward;
+procedure vJoyUninstal; Forward;              
+
+(*  event functions *)
+
+(* Called with every step of uninstaller *)
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  (* First thing - uninstall vJoy *)
+  if CurUninstallStep = usUninstall then begin
+  vJoyUninstal();
+  end;
+end;
 
 (* Helper Functions *)
 function IsX64: Boolean;
@@ -94,6 +108,49 @@ end;
 function IsX86: Boolean;
 begin
   Result := ProcessorArchitecture = paX86;
+end;
+
+(* Uninstalls vJoy *)
+procedure vJoyUninstal;
+
+var
+	executable	: String;
+  res         : Boolean;
+  ResultCode  : Integer;
+
+begin
+  executable := vJoyUnInstaller();
+  res := Exec(executable ,' /SILENT /LOG ', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+  if not res then Log('vJoyUninstal(): Failed: ' +  SysErrorMessage(ResultCode))
+  else   Log('vJoyUninstal(): OK:');
+end;
+
+(* Return the Uninstaller of vJoy *)
+function vJoyUnInstaller: String;
+
+var
+	UninstKeyVjoy, executable	: String;
+	Res: Boolean;
+  Len: Longint;
+
+begin
+  (* Get the vJoy uninstaller registry key *)
+	UninstKeyVjoy := UninstKey + '{#vJoyID}' + '_is1';
+	Log('vJoyUnInstaller(): Uninstall Key is ' + UninstKeyVjoy);
+
+  (* Test if this registry key exists*)
+	if not RegValueExists(HKEY_LOCAL_MACHINE, UninstKeyVjoy, 'UninstallString') then
+	begin	// RegValueExists = False
+		Log('Could not find registry value HKLM\'+UninstKeyVjoy+'\UninstallString');
+		Result := '';
+		exit;
+	end;	// RegValueExists = False
+         
+  Res := RegQueryStringValue(HKEY_LOCAL_MACHINE, UninstKeyVjoy, 'UninstallString', executable);
+ 	if Res then Len := Length(executable) else Len := 0;
+  if (Len > 0) then Result := RemoveQuotes(executable)  else    Result := '';
+  Log('vJoyUnInstaller(): Result: '+ Result);
+
 end;
 
 
@@ -112,7 +169,7 @@ end;
 (*
 	Return the Uninstaller of vJoy 
 *)
-function vJoyUnInstaller(Param: String): String;
+function vJoyUnInstallerOld(Param: String): String;
 
 var
 	UninstKeyVjoy, executable	: String;
