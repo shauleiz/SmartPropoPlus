@@ -10,6 +10,8 @@
 #define Src86Folder "..\Release"
 #define Src64Folder "..\x64\Release"
 #define ExternFolder ".\Externals"
+#define DllX86Folder ".\Externals\x86"
+#define DllX64Folder ".\Externals\x64"
 #define SppIconFile "..\SppUI\SppControl.ico"
 #define SppExec "SppConsole.exe"
 #define vJoyInstaller "vJoyInstall.exe"
@@ -58,6 +60,8 @@ UsePreviousLanguage=no
 ;DLLs
 Source: "{#Src86Folder}\*.dll"; DestDir: "{app}"; Flags: promptifolder; Check: IsX86
 Source: "{#Src64Folder}\*.dll"; DestDir: "{app}"; Flags: promptifolder; Check: IsX64
+Source: "{#DllX86Folder}\*.dll"; DestDir: "{app}"; Flags: promptifolder; Check: IsX86
+Source: "{#DllX64Folder}\*.dll"; DestDir: "{app}"; Flags: promptifolder; Check: IsX64
 ; Executable
 Source: "{#Src86Folder}\{#SppExec}"; DestDir: "{app}"  ; Check: IsX86
 Source: "{#Src64Folder}\{#SppExec}"; DestDir: "{app}"  ; Check: IsX64
