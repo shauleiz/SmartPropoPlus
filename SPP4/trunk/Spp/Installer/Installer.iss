@@ -35,7 +35,7 @@ CreateAppDir=true
 OutputDir=.
 OutputBaseFilename=Spp4Installer
 SetupIconFile=.\Installer.ico
-UninstallDisplayIcon=.\UnInstaller.ico
+UninstallDisplayIcon={app}\UnInstaller.ico
 Compression=lzma/Max
 SolidCompression=true
 DefaultDirName={pf}\{#MyShortAppName}
@@ -64,8 +64,14 @@ Source: "{#Src64Folder}\{#SppExec}"; DestDir: "{app}"  ; Check: IsX64
 ; vJoy Installer
 Source: "{#ExternFolder}\{#vJoyInstaller}"; DestDir: "{app}"; Flags: deleteafterinstall
 
+; Icon files
+Source: "UnInstaller.ico"; DestDir: "{app}";
+
+
 [Icons]
-Name: "{group}\Uninstall SmartPropoPlus"; Filename: "{uninstallexe}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "{app}" ;
+Name: "{group}\Uninstall SmartPropoPlus"; Filename: {uninstallexe}; IconFilename: {app}\UnInstaller.ico; 
+Name: "{group}\SmartPropoPlus Alpha Web Site"; Filename: "http://smartpropoplus.sourceforge.net/alpha" ; WorkingDir: "{app}"
 
 ;[UninstallRun]
 ;Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent " ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated
