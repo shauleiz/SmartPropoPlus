@@ -879,24 +879,35 @@ void AudioLevelWatch()
 	static bool WentAutoBr=true;
 	static WCHAR prevCh = L'';
 	static UINT  prevBr = 0;
+	wstring ch = L"";
 
 	if (!AudioId)
 		return; // TODO: Add log here - this is an error
 	// Initializing channel state
 	//if (isRight==-1)
 	//{
-	wstring ch = Conf->GetAudioDeviceChannel(const_cast<LPTSTR>(AudioId));
-	if (ch[0] == L'R' || ch[0] == L'r')
-		isRight=1;
+
+
+	// Get the number of channels (Stereo/Mono)
+	int nChannels = Audio->GetNumberChannels((PVOID)AudioId);
+
+	if (nChannels>1)
+	{
+		ch = Conf->GetAudioDeviceChannel(const_cast<LPTSTR>(AudioId));
+		if (ch[0] == L'R' || ch[0] == L'r')
+			isRight=1;
+		else
+			isRight=0;
+	}
 	else
+	{
+		ch = L"Mono";
 		isRight=0;
+	};
 	//};
 
 	// Initialize bit rate
 	BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
-
-	// Get the number of channels (Stereo/Mono)
-	int nChannels = Audio->GetNumberChannels((PVOID)AudioId);
 
 	// Get the audio levels of the selected audio device
 	AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
