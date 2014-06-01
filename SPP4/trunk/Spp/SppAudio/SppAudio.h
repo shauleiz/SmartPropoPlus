@@ -163,7 +163,8 @@ public:
 
 	SPPINTERFACE_API DWORD		GetnSamplesPerSec(void);
 	SPPINTERFACE_API WORD		GetwBitsPerSample(void);
-	SPPINTERFACE_API void		SetwBitsPerSample(UCHAR nBits=8);
+	SPPINTERFACE_API void		SetwBitsPerSample(UCHAR nBits=16);
+	SPPINTERFACE_API bool		CurrentChannelIsRight(void);
 	SPPINTERFACE_API void		StartDbgInputSignal(void);
 	SPPINTERFACE_API void		StopDbgInputSignal(void);
 	SPPINTERFACE_API float		GetChannelPeak(PVOID Id, int iChannel);

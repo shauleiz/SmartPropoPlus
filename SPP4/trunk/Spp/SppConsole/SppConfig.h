@@ -138,7 +138,7 @@ private:
 	void			RemoveModulationAttrib(LPTSTR Attrib);
 
 	TiXmlHandle		GetAudioHandle(LPTSTR Id);
-	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=8, LPTSTR Channel=L"Left", bool select=false);
+	bool			AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate=0, LPTSTR Channel=NULL, bool select=false);
 	bool			SetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib, LPTSTR Value);
 	wstring			GetAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib);
 	void			RemoveAudioAttrib(LPTSTR Id, LPTSTR Element, LPTSTR Attrib);

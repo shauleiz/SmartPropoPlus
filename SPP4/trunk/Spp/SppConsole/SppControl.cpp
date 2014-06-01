@@ -347,6 +347,8 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_AUDIO_GETSU:
 			{
 				UINT br = Conf->GetAudioDeviceBitRate((LPTSTR)wParam);
+				if (!br)
+					br = DEF_BITRATE;
 				wstring ch = Conf->GetAudioDeviceChannel((LPTSTR)wParam);
 				if (ch[0] == L'R' || ch[0] == L'r')
 					br++;
@@ -517,16 +519,17 @@ LRESULT CALLBACK MainWindowProc(
 			{
 				Audio->SetwBitsPerSample((UCHAR)wParam);
 				Spp->AudioChanged();
+				Conf->SetDefaultBitRate((UINT)wParam);
 			};
-			Conf->SetDefaultBitRate((UINT)wParam);
+			
 
 			// Set L/R to Spp
-			if ((TCHAR)lParam == TEXT('L'))
+			if ((TCHAR)lParam == TEXT('L') && isRight!=0)
 			{
 				Conf->SetDefaultChannel(TEXT("Left"));
 				Spp->SetAudioChannel(true);
 			}
-			else if ((TCHAR)lParam == TEXT('R'))
+			else if ((TCHAR)lParam == TEXT('R') && isRight!=1)
 			{
 				Conf->SetDefaultChannel(TEXT("Right"));
 				Spp->SetAudioChannel(false);
@@ -575,7 +578,7 @@ LRESULT CALLBACK MainWindowProc(
 			break;
 
 		case WMSPP_PRCS_GETLR:
-			if (Conf->IsDefaultChannelRight())
+			if (Audio->CurrentChannelIsRight())
 				return 1;
 			else
 				return 0;
@@ -908,6 +911,8 @@ void AudioLevelWatch()
 
 	// Initialize bit rate
 	BitRate = Conf->GetAudioDeviceBitRate(const_cast<LPTSTR>(AudioId));
+	if (!BitRate)
+		BitRate = DEF_BITRATE;
 
 	// Get the audio levels of the selected audio device
 	AudioLevel[0] = static_cast<UINT>(100* Audio->GetChannelPeak((PVOID)AudioId, 0));
@@ -1015,7 +1020,7 @@ void AudioLevelWatch()
 		{
 			BitRate=16;
 			//BitRate=8;  //// Very strong? change to 8 bits (Removed)
-			Conf->SetDefaultBitRate(BitRate);
+			//DEBUG Conf->SetDefaultBitRate(BitRate);
 			Audio->SetwBitsPerSample(BitRate);
 			Spp->AudioChanged();
 			WentAutoBr=true;
