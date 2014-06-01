@@ -85,11 +85,13 @@ void SppTabAudio::AutoParams(WORD ctrl)
 // Default will be 8bit/Left channel
 void SppTabAudio::AudioChannelParams(void)
 {
-	UCHAR bits = 8;
+	UCHAR bits;
 	TCHAR Channel = TEXT('L');
 
 	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_AUD_16))
 		bits = 16;
+	else if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_AUD_8))
+		bits = 8;
 
 	if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_RIGHT))
 		Channel = TEXT('R');

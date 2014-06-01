@@ -911,6 +911,8 @@ bool CSppConfig::SetAutoBitRate(bool AutoMode )
 		//// Manual mode
 		// Get attribute "Manual" (If does not exist - return)
 		Br = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDBR), TEXT(SPP_BACKUP));
+		if (Br.empty() || !Br.length())
+			Br = L"0";
 		// Set channel value
 		uiBr = std::stoi(Br);
 		SetDefaultBitRate(uiBr);
@@ -928,6 +930,10 @@ bool CSppConfig::IsDefaultChannelAuto(void)
 	wstring Id = GetCurrentAudio();
 	wstring ch;
 
+	ch = GetAudioDeviceChannel((LPTSTR)(Id.c_str()));
+	if (!ch.length() || !ch.c_str())
+		return true;
+
 	// Get attribute "Manual" (If does not exist or too short - return)
 	ch = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDCH), TEXT(SPP_BACKUP));
 	if (!ch.length())
@@ -942,6 +948,11 @@ bool CSppConfig::IsDefaultBitRateAuto(void)
 
 	wstring Id = GetCurrentAudio();
 	wstring ch;
+	int br;
+
+	br = GetAudioDeviceBitRate((LPTSTR)(Id.c_str()));
+	if (!br)
+		return true;
 
 	// Get attribute "Manual" (If does not exist or too short - return)
 	ch = GetAudioAttrib((LPTSTR)(Id.c_str()),TEXT(SPP_AUDBR), TEXT(SPP_BACKUP));

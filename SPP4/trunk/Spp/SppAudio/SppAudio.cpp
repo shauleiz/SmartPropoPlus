@@ -832,6 +832,11 @@ SPPINTERFACE_API void CSppAudio::SetwBitsPerSample(UCHAR nBits)
 	m_CurrentWaveFormat.wBitsPerSample = nBits;
 }
 
+SPPINTERFACE_API bool CSppAudio::CurrentChannelIsRight(void)
+{
+	return m_CurrentChannelIsRight;
+}
+
 SPPINTERFACE_API int CSppAudio::GetNumberChannels(void)
 {
 	return m_CurrentWaveFormat.nChannels;
