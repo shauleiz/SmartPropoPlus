@@ -92,8 +92,8 @@ public:
 	wstring			GetAudioDeviceName(LPTSTR Id);
 	UINT			GetAudioDeviceBitRate(LPTSTR Id);
 	wstring			GetAudioDeviceChannel(LPTSTR Id);
-	bool			SetAutoChannel(bool);
-	bool			SetAutoBitRate(bool);
+	bool			SetAutoChannel(bool, LPTSTR Channel=TEXT(""));
+	bool			SetAutoBitRate(bool,UINT br=0);
 	bool			IsDefaultChannelAuto(void);
 	bool			IsDefaultBitRateAuto(void);
 

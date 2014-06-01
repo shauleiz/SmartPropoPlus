@@ -539,14 +539,14 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_AUTO:
 			if ((WORD)wParam & AUTOCHANNEL)
 			{
-				Conf->SetAutoChannel(((WORD)lParam & AUTOCHANNEL)!=0);
+				Conf->SetAutoChannel(((WORD)lParam & AUTOCHANNEL)!=0, DEF_CHANNEL2);
 				AutoChannel = (((WORD)lParam & AUTOCHANNEL)!=0);
 			};
 
 			if ((WORD)wParam & AUTOBITRATE)
 			{
-				Conf->SetAutoBitRate(((WORD)lParam & AUTOBITRATE)!=0);
-				AutoBitRate = (((WORD)lParam & AUTOBITRATE)!=0);
+				Conf->SetAutoBitRate(((WORD)lParam & AUTOBITRATE)!=0, DEF_BITRATE);
+				AutoBitRate = (((WORD)lParam & AUTOBITRATE)!=0);				
 			}
 
 			if ((WORD)wParam & AUTODECODE)
