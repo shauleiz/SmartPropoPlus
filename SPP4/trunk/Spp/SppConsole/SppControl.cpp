@@ -71,6 +71,7 @@ void		SetMonitoring(HWND hDlg);
 void		SetPulseScope(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
 void		SetvJoyMapping(UINT id);
+int			SelectedvJoyDevice(void);
 void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
@@ -218,7 +219,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Start reading audio data
 	Spp		= new CSppProcess();
 	Spp->Init(hwnd);
-	vJoyDevice = Conf->SelectedvJoyDevice();
+	//vJoyDevice = Conf->SelectedvJoyDevice();
+	vJoyDevice = SelectedvJoyDevice();
 	SetvJoyMapping(vJoyDevice);
 
 	// Instruct GUI of the available Controls (Axes/Buttons)
@@ -1781,6 +1783,47 @@ int vJoyDevicesPopulate(HWND hDlg)
 	};
 
 	return nDev;
+}
+
+// Return the device ID of the slected vJoy device
+// Take if from the configuration file and check if exists
+// If valid ID (0<ID<17) and exists the return it
+// Otherwise look for the lowest ID that exists and return it
+// If not found return 0
+int SelectedvJoyDevice(void)
+{
+	VjdStat stat;
+	int DefId = 0;
+
+	// Get the selected. If none selected then vJoyDevice is 0
+	// If the selected is valid the return it
+	int SelDevice = Conf->SelectedvJoyDevice();
+	if (SelDevice)
+	{
+		stat = GetVJDStatus(SelDevice);
+		if ((stat == VJD_STAT_OWN) || (stat == VJD_STAT_FREE))
+			return SelDevice;
+	};
+
+	// Search for the first available device
+	// Loop on all devices
+	for (int id=1; id< 16; id++)
+	{
+		// Make sure this vJoy device is usable
+		stat = GetVJDStatus(id);
+		if (stat == VJD_STAT_BUSY || stat == VJD_STAT_MISS || stat == VJD_STAT_UNKN)
+			continue;
+
+		if ((stat == VJD_STAT_OWN) || (stat == VJD_STAT_FREE))
+		{
+			Conf->SelectvJoyDevice(id);
+			return id;
+		};
+
+	}; // For loop
+
+
+	return 0; // Not found
 }
 
 void SetAvailableControls(UINT id, HWND hDlg)
