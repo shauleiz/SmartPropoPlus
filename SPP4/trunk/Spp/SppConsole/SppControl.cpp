@@ -1020,7 +1020,7 @@ void AudioLevelWatch()
 		{
 			BitRate=16;
 			//BitRate=8;  //// Very strong? change to 8 bits (Removed)
-			//DEBUG Conf->SetDefaultBitRate(BitRate);
+			Conf->SetDefaultBitRate(BitRate);
 			Audio->SetwBitsPerSample(BitRate);
 			Spp->AudioChanged();
 			WentAutoBr=true;
