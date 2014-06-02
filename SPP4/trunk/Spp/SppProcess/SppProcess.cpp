@@ -1908,7 +1908,7 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 
 
 				
-				SendPPJoy(fixed_n_channel-1, m_Position);
+				SendPPJoy(fixed_n_channel, m_Position);
 
 				
 			};
@@ -2128,7 +2128,7 @@ void CSppProcess::ProcessPulseWalPcm(int width, BOOL input)
 		};
 		nPulse = 0;
 
-				SendPPJoy(fixed_n_channel-1, m_Position);
+				SendPPJoy(fixed_n_channel, m_Position);
 	};
 	return;
 }
@@ -2563,7 +2563,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
 	{
 
 		iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
-		if ((int)iMapped>=nChannels)
+		if ((int)iMapped>nChannels)
 			continue;
 		if (ch[iMapped-1]<0) // Test value - if (-1) value is illegal
 			return;
