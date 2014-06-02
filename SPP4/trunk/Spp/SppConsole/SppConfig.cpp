@@ -85,9 +85,9 @@ TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 	root->LinkEndChild(Targets);
 	TiXmlElement * vJoyDevice = new TiXmlElement(SPP_VJOYDEV);
 	Targets->LinkEndChild(vJoyDevice);
-	TiXmlElement * vJoyDevId = new TiXmlElement(SPP_VJOYID);
-	vJoyDevId->LinkEndChild(new TiXmlText( "1" ));
-	vJoyDevice->LinkEndChild(vJoyDevId);
+	//TiXmlElement * vJoyDevId = new TiXmlElement(SPP_VJOYID);
+	//vJoyDevId->LinkEndChild(new TiXmlText( "1" ));
+	//vJoyDevice->LinkEndChild(vJoyDevId);
 
 #ifdef _DEBUG
 	Save();
