@@ -113,6 +113,7 @@
 #define IDS_JOY_DEVID                           40011
 #define IDS_W_VJOYMISSING                       40011
 #define IDC_LIST_PPM                            40012
+#define IDI_JACK                                40012
 #define IDS_E_VJOYVERTOOOLD                     40012
 #define IDS_JOY_NAX                             40012
 #define IDC_CH1                                 40013

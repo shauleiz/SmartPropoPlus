@@ -6,6 +6,7 @@
 #pragma once
 
 #define DIRECTINPUT_VERSION 0x0800
+#define GDIPVER 0x0110
 
 #include "targetver.h"
 
