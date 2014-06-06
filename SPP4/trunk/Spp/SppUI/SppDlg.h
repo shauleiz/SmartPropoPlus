@@ -131,5 +131,6 @@ protected:
 	HWND m_hwndToolTip;
 	BOOL m_StreamingState;
 	BOOL m_WizMinimized;
+	DWORD m_color;
 };
 

@@ -695,7 +695,7 @@ SPPINTERFACE_API bool CSppAudio::IsDisconnected(PVOID Id)
 		return false;
 
 }
-SPPINTERFACE_API COLORREF CSppAudio::GetJackColor(PVOID Id)
+SPPINTERFACE_API DWORD CSppAudio::GetJackColor(PVOID Id)
 /* Get the colour of the input jack
    Provided that the jack:
    * The sound cart supports Jack Interface Information
@@ -709,7 +709,7 @@ SPPINTERFACE_API COLORREF CSppAudio::GetJackColor(PVOID Id)
 */
 {
 	HRESULT hr = S_OK;
-	COLORREF out = 0xFFFFFFFF;
+	DWORD out = 0xFFFFFFFF;
 
 	// Get Jack info
 	KSJACK_DESCRIPTION  JackDesc;

@@ -305,7 +305,7 @@ struct jack_info
 	/* Inter-unit information about jack/capture endpoint information */
 	int	struct_size;
 	WCHAR * id;
-	COLORREF color;
+	DWORD  color; // 00 R G B
 	WCHAR * FriendlyName;
 	//bool	Enabled;
 	bool	Default;
