@@ -51,6 +51,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 	// Add icon to system tray
 	m_tnid.cbSize = 0;
 	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, NULL);
+	m_color = 0x0;
 
 	return;
 }
@@ -1506,10 +1507,17 @@ void SppDlg::SetMappingData(Mapping * Map)
 void  SppDlg::AddLine2AudioList(jack_info * jack)
 {
 	// Print jack name to summary
-		if (jack->Default)
-			Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_SRC),jack->FriendlyName);
+	if (jack->Default)
+	{
+		Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_SRC),jack->FriendlyName);
+		if (m_color != jack->color)
+		{
+			m_color = jack->color;
+			OnPaint();
+		}		
+	};
 
-		
+
 	//// Audio jack must have at least one audio channel (mono)
 	//HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
 	//if (!jack->nChannels)
@@ -1950,13 +1958,19 @@ VOID SppDlg::OnPaint(void)
 	RECT rect;
 	GetClientRect(hJack, &rect);
 
+	// Clear current jack bitmap
+	InvalidateRect(hJack, NULL, TRUE);
+
+	// If color unknown (-1) then don't draw
+	//if (m_color == 0xFFFFFFFF)
+	//	return;
+
 	// Colors
 	Gdiplus::Color Blue = Gdiplus::Color(255, 0, 0, 255);
 	Gdiplus::Color PalePink = Gdiplus::Color(100, 255, 0, 0);
 	Gdiplus::Color Black = Gdiplus::Color(255, 0, 0, 0);
 	Gdiplus::Color LightGrey = Gdiplus::Color(255, 150, 150, 150);
-	Gdiplus::Color Jack =  Gdiplus::Color();
-	Jack.SetFromCOLORREF(0xFF55);
+	Gdiplus::Color Jack =  Gdiplus::Color(m_color + 0x80000000);
 
 	// Pens & Brushes
 	Gdiplus::Pen		penBlue(Blue); 
@@ -1965,11 +1979,21 @@ VOID SppDlg::OnPaint(void)
 	Gdiplus::SolidBrush solidBrushPink(PalePink); // Pink (Transparrent)
 	Gdiplus::SolidBrush solidBrushBlack(Black); // Pink (Transparrent)
 	Gdiplus::SolidBrush solidBrushJack(Jack); //
+	Gdiplus::SolidBrush solidBrushWhite(Gdiplus::Color::White); //
 
 	// Paint
 	hdc = BeginPaint(hJack, &ps);
 	Gdiplus::Graphics graphics(hdc);
 	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias8x8 );
+
+	
+	// If color unknown (-1) then just clear the area
+	if (m_color == 0xFFFFFFFF)
+	{
+		COLORREF bg = GetSysColor(COLOR_MENU);
+		graphics.Clear(bg+0xFF000000);
+		return;
+	}
 
 	// Circles & Rings
 	graphics.DrawEllipse(&penBlack, 1, 1, rect.right-2, rect.bottom-2);
@@ -1986,6 +2010,7 @@ VOID SppDlg::OnPaint(void)
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppDlg * DialogObj = NULL;
+
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR           gdiplusToken;
 

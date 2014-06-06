@@ -152,7 +152,7 @@ public:
 	SPPINTERFACE_API bool		StartStreaming(PVOID Id/*, bool RightChannel=false*/);
 	SPPINTERFACE_API HRESULT	ProcessAudioPacket(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
-	SPPINTERFACE_API COLORREF	GetJackColor(PVOID Id);
+	SPPINTERFACE_API DWORD	GetJackColor(PVOID Id);
 	SPPINTERFACE_API bool		IsDisconnected(PVOID Id);
 	SPPINTERFACE_API bool		AudioChannelParamsChanged(UCHAR bits, TCHAR Channel);
 
