@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <gdiplus.h>
 #include "Vector"
 #include "Windows.h"
 #include "Windowsx.h"
@@ -11,6 +12,8 @@
 #include "SppProcess.h"
 #include "SppBtnsDlg.h"
 #include "SppDlg.h"
+
+#pragma comment (lib,"Gdiplus.lib")
 
 #define MAX_LOADSTRING 100
 
@@ -1506,6 +1509,7 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
 		if (jack->Default)
 			Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_SRC),jack->FriendlyName);
 
+		
 	//// Audio jack must have at least one audio channel (mono)
 	//HWND hAudioList = GetDlgItem(m_hDlg,  IDC_LIST_AUDIOSRC);
 	//if (!jack->nChannels)
@@ -1935,13 +1939,62 @@ void SppDlg::UpdateToolTip(LPVOID param)
 	}
 }
 
+VOID SppDlg::OnPaint(void)
+{
+
+	HDC          hdc;
+	PAINTSTRUCT  ps;
+
+	// Get control's dimentions
+	HWND hJack = GetDlgItem(m_hDlg, IDI_JACK);
+	RECT rect;
+	GetClientRect(hJack, &rect);
+
+	// Colors
+	Gdiplus::Color Blue = Gdiplus::Color(255, 0, 0, 255);
+	Gdiplus::Color PalePink = Gdiplus::Color(100, 255, 0, 0);
+	Gdiplus::Color Black = Gdiplus::Color(255, 0, 0, 0);
+	Gdiplus::Color LightGrey = Gdiplus::Color(255, 150, 150, 150);
+	Gdiplus::Color Jack =  Gdiplus::Color();
+	Jack.SetFromCOLORREF(0xFF55);
+
+	// Pens & Brushes
+	Gdiplus::Pen		penBlue(Blue); 
+	Gdiplus::Pen		penBlack(Black); 
+	Gdiplus::Pen		penLightGrey(LightGrey); 
+	Gdiplus::SolidBrush solidBrushPink(PalePink); // Pink (Transparrent)
+	Gdiplus::SolidBrush solidBrushBlack(Black); // Pink (Transparrent)
+	Gdiplus::SolidBrush solidBrushJack(Jack); //
+
+	// Paint
+	hdc = BeginPaint(hJack, &ps);
+	Gdiplus::Graphics graphics(hdc);
+	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias8x8 );
+
+	// Circles & Rings
+	graphics.DrawEllipse(&penBlack, 1, 1, rect.right-2, rect.bottom-2);
+	graphics.DrawEllipse(&penLightGrey, 3, 3, rect.right-6, rect.bottom-6);
+	graphics.DrawEllipse(&penBlack, 4, 4, rect.right-8, rect.bottom-8);
+	graphics.FillEllipse(&solidBrushJack, 4, 4, rect.right-8, rect.bottom-8);
+	graphics.FillEllipse(&solidBrushBlack, 8,8, rect.right-16, rect.bottom-16);
+	graphics.DrawEllipse(&penLightGrey, 9, 9, rect.right-18, rect.bottom-18);
+
+	EndPaint(hJack, &ps);
+}
+
 // Message handler for top spp dialog box.
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppDlg * DialogObj = NULL;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR           gdiplusToken;
 
 	switch (message)
 	{
+
+	case WM_PAINT:
+		DialogObj->OnPaint();
+	break;
 
 	case WM_DESTROY:
 			DestroyWindow(hDlg);
@@ -1975,10 +2028,15 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
+
+		// Initialize GDI+.
+		GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
 		DialogObj->InitTabs(hDlg); // Initialize the tab control
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
 		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
+
 #if !TAB_JOY_ON
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
 #endif

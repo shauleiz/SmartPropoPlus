@@ -105,6 +105,7 @@ public: // Called from window procedure
 	void SetFilterInfo(LPTSTR,  LPTSTR);
 	HWND CreateToolTip(HWND hDlg);
 	void UpdateToolTip(LPVOID);
+	VOID OnPaint(void);
 
 private:
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
