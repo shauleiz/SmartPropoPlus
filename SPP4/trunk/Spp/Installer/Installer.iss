@@ -82,7 +82,7 @@ Name: "{group}\SmartPropoPlus Alpha Web Site"; Filename: "http://smartpropoplus.
 
 [Run]
 Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /SILENT /NORESTART /SUPPRESSMSGBOXES"  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
-
+Filename: "{app}\{#SppExec}";  Flags: nowait postinstall
 
 [Code]
 (* Constants related to installation under SPP *)
