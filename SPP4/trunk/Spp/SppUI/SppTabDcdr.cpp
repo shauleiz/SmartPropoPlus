@@ -238,6 +238,107 @@ void SppTabDcdr::SetNumberRawCh(UINT nCh)
 }
 #pragma endregion
 
+/*
+	Called every time mouse hovers over a control that was previously registered for tool tip
+	Registration was done in CreateToolTip()
+	The Control ID (CtrlId) of the control is extracted from the input 'param' 
+	The correct text is displayed according to the Control ID
+*/
+void SppTabDcdr::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+
+	switch (CtrlId) // Per-control tooltips
+	{
+
+	case IDC_DEC_AUTO:	// Decoder Type: Auto selection (Recommended)
+		DisplayToolTip(lpttt, IDS_I_DEC_AUTO, IDS_T_DEC_AUTO);
+		break;
+
+	case IDC_BTN_SCAN:  // Decoder Type: Evaluate signal for correct type
+		DisplayToolTip(lpttt, IDS_I_BTN_SCAN, IDS_T_BTN_SCAN);
+		break;
+
+	case IDC_LIST_PPM:	// PPM Transmitters: Select a decoder that matches you Transmitter
+		DisplayToolTip(lpttt, IDS_I_LIST_PPM, IDS_T_LIST_PPM);
+		break;
+
+	case IDC_LIST_PCM:  // PCM Transmitters: Select a decoder that matches you Transmitter
+		DisplayToolTip(lpttt, IDS_I_LIST_PCM, IDS_T_LIST_PCM);
+		break;
+
+	case IDC_CH1:
+		DisplayToolTip(lpttt, IDS_I_CH1);
+		break;
+
+	case IDC_CH2:
+		DisplayToolTip(lpttt, IDS_I_CH2);
+		break;
+
+	case IDC_CH3:
+		DisplayToolTip(lpttt, IDS_I_CH3);
+		break;
+
+	case IDC_CH4:
+		DisplayToolTip(lpttt, IDS_I_CH4);
+		break;
+
+	case IDC_CH5:
+		DisplayToolTip(lpttt, IDS_I_CH5);
+		break;
+
+	case IDC_CH6:
+		DisplayToolTip(lpttt, IDS_I_CH6);
+		break;
+
+	case IDC_CH7:
+		DisplayToolTip(lpttt, IDS_I_CH7);
+		break;
+
+	case IDC_CH8:
+		DisplayToolTip(lpttt, IDS_I_CH8);
+		break;
+	case IDC_CH9: 
+		DisplayToolTip(lpttt, IDS_I_CH9);
+		break;
+	case IDC_CH10: 
+		DisplayToolTip(lpttt, IDS_I_CH10);
+		break;
+	case IDC_CH11: 
+		DisplayToolTip(lpttt, IDS_I_CH11);
+		break;
+	case IDC_CH12: 
+		DisplayToolTip(lpttt, IDS_I_CH12);
+		break;
+	case IDC_CH13: 
+		DisplayToolTip(lpttt, IDS_I_CH13);
+		break;
+	case IDC_CH14: 
+		DisplayToolTip(lpttt, IDS_I_CH14);
+		break;
+	case IDC_CH15: 
+		DisplayToolTip(lpttt, IDS_I_CH15);
+		break;
+	case IDC_CH16:
+		DisplayToolTip(lpttt, IDS_I_CH16);
+		break;
+
+
+	default:
+		DisplayToolTip(lpttt, IDS_W_NOT_IMP, L"OOOPS", TTI_WARNING);
+		break;
+	}
+}
+
 INT_PTR CALLBACK MsgHndlTabDcdrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppTabDcdr * DialogObj = NULL;
@@ -249,6 +350,7 @@ INT_PTR CALLBACK MsgHndlTabDcdrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		DialogObj = (SppTabDcdr *)lParam;
 		DialogObj->SetPosition(hDlg) ;
 		DialogObj->MonitorCh(hDlg) ;
+		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -268,6 +370,16 @@ INT_PTR CALLBACK MsgHndlTabDcdrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			DialogObj->ScanEncoding();
 			break;
 		}
+
+		return (INT_PTR)TRUE;
+
+	case WM_NOTIFY:
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
+		};
 
 	default:
 		break;

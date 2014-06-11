@@ -274,6 +274,7 @@ INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			DialogObj->AutoParams(IDC_AUD_AUTO);
 			break;
 		}
+
 	case WM_NOTIFY:
 		// Tooltips
 		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
