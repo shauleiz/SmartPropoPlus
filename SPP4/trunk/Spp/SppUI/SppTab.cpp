@@ -177,16 +177,13 @@ void  SppTab::InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBar
 HWND SppTab::CreateToolTip(HWND hDlg)
 {
 	LRESULT  added, active;
-	const int Controls[] = {\
-		IDC_AUD_AUTO,\
-		IDC_AUD_8,\
-		IDC_AUD_16,\
-		IDC_CH_AUTO,\
-		IDC_LEFT,\
-		IDC_RIGHT,\
-		IDC_LEVEL_L,\
-		IDC_LEVEL_R,\
-		IDC_LEVEL_M\
+	const int Controls[] = {
+		/* Audio Tab (IDD_AUDIO ) */
+		IDC_AUD_AUTO, IDC_AUD_8, IDC_AUD_16, IDC_CH_AUTO, IDC_LEFT, IDC_RIGHT, IDC_LEVEL_L, IDC_LEVEL_R, IDC_LEVEL_M,
+
+		/* Transmitter Tab (IDD_DECODE) */
+		IDC_DEC_AUTO, IDC_BTN_SCAN, IDC_LIST_PPM, IDC_LIST_PCM, 
+		IDC_CH1, IDC_CH2, IDC_CH3, IDC_CH4, IDC_CH5, IDC_CH6, IDC_CH7, IDC_CH8, IDC_CH9, IDC_CH10, IDC_CH11, IDC_CH12, IDC_CH13, IDC_CH14, IDC_CH15, IDC_CH16
 	};
 
 	if (!hDlg || !m_hInstance)

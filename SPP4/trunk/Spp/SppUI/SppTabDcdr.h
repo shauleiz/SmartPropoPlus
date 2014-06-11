@@ -21,5 +21,6 @@ public:
 	void SetNumberRawCh(UINT nCh);
 	void Init(HWND hDlg);
 	void SetDecoderQuality(UINT Quality);
+	void UpdateToolTip(LPVOID param);
 };
 

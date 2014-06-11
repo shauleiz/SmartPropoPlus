@@ -594,6 +594,22 @@ STRINGTABLE
     IDS_T_LEVEL_R                 "Right Channel"
     IDS_I_LEVEL_M                 "Dynamic audio level"
     IDS_T_LEVEL_M                 "IDS_T_LEVEL_M"
+    IDS_I_CH9                     "Level of transmitter channel 9"
+    IDS_I_CH10                    "Level of transmitter channel 10"
+    IDS_I_CH11                    "Level of transmitter channel 11"
+    IDS_I_CH12                    "Level of transmitter channel 12"
+    IDS_I_CH13                    "Level of transmitter channel 13"
+    IDS_I_CH14                    "Level of transmitter channel 14"
+    IDS_I_CH15                    "Level of transmitter channel 15"
+    IDS_I_CH16                    "Level of transmitter channel 16"
+    IDS_I_DEC_AUTO                "Auto selection (Recommended)"
+    IDS_T_DEC_AUTO                "Decoder Type"
+    IDS_I_BTN_SCAN                "Evaluate signal for correct type"
+    IDS_T_BTN_SCAN                "Decoder Type"
+    IDS_I_LIST_PPM                "Select a decoder that matches you Transmitter"
+    IDS_T_LIST_PPM                "PPM Transmitters"
+    IDS_I_LIST_PCM                "Select a decoder that matches you Transmitter"
+    IDS_T_LIST_PCM                "PCM Transmitters"
 }
 
 
