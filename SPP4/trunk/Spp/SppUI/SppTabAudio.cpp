@@ -181,6 +181,63 @@ void SppTabAudio::AudioAutoParams(WORD Mask, WORD Flags)
 		}
 	}}
 
+/*
+	Called every time mouse hovers over a control that was previously registered for tool tip
+	Registration was done in CreateToolTip()
+	The Control ID (CtrlId) of the control is extracted from the input 'param' 
+	The correct text is displayed according to the Control ID
+*/
+void SppTabAudio::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+
+	switch (CtrlId) // Per-control tooltips
+	{
+	case IDC_AUD_AUTO:	// Auto bitrate check box
+		DisplayToolTip(lpttt, IDS_I_AUD_AUTO, IDS_T_AUD_AUTO);
+		break;
+	case IDC_AUD_8:		// Bitrate = 8
+		DisplayToolTip(lpttt, IDS_I_AUD_8, IDS_T_AUD_8);
+		break;
+	case IDC_AUD_16:	// Bitrate = 16
+		DisplayToolTip(lpttt, IDS_I_AUD_16, IDS_T_AUD_16);
+		break;
+	case IDC_CH_AUTO:	// Auto channel check box
+		DisplayToolTip(lpttt, IDS_I_CH_AUTO, IDS_T_CH_AUTO);
+		break;
+	case IDC_LEFT:		// Left channel
+		DisplayToolTip(lpttt, IDS_I_LEFT, IDS_T_LEFT);
+		break;
+	case IDC_RIGHT:		// Right channel
+		DisplayToolTip(lpttt, IDS_I_RIGHT, IDS_T_RIGHT);
+		break;
+	case IDC_LEVEL_L:	// Audio level: Left channel
+		DisplayToolTip(lpttt, IDS_I_LEVEL_L, IDS_T_LEVEL_L);
+		break;
+	case IDC_LEVEL_R:	// Audio level: Right channel
+		DisplayToolTip(lpttt, IDS_I_LEVEL_R, IDS_T_LEVEL_R);
+		break;
+	case IDC_LEVEL_M:	// Audio level
+		DisplayToolTip(lpttt, IDS_I_LEVEL_M);
+		break;
+
+
+
+	default:
+		DisplayToolTip(lpttt, IDS_W_NOT_IMP, L"OOOPS", TTI_WARNING);
+		break;
+	}
+}
+
 
 INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -191,6 +248,7 @@ INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPAR
 	case WM_INITDIALOG:
 		DialogObj = (SppTabAudio *)lParam;
 		DialogObj->SetPosition(hDlg) ;
+		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -216,6 +274,15 @@ INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			DialogObj->AutoParams(IDC_AUD_AUTO);
 			break;
 		}
+	case WM_NOTIFY:
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
+		};
+		
+		return (INT_PTR)TRUE;
 
 	default:
 		break;

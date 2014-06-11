@@ -173,6 +173,125 @@ void  SppTab::InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBar
 
 }
 
+// Create one central  Tooltip object
+HWND SppTab::CreateToolTip(HWND hDlg)
+{
+	LRESULT  added, active;
+	const int Controls[] = {\
+		IDC_AUD_AUTO,\
+		IDC_AUD_8,\
+		IDC_AUD_16,\
+		IDC_CH_AUTO,\
+		IDC_LEFT,\
+		IDC_RIGHT,\
+		IDC_LEVEL_L,\
+		IDC_LEVEL_R,\
+		IDC_LEVEL_M\
+	};
+
+	if (!hDlg || !m_hInstance)
+		return (HWND)NULL;
+
+	// Create the tooltip.
+	HWND hwndTip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL,
+                              WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON | WS_EX_TOOLWINDOW,
+                              CW_USEDEFAULT, CW_USEDEFAULT,
+                              CW_USEDEFAULT, CW_USEDEFAULT,
+                              hDlg, NULL, 
+                              m_hInstance, NULL);
+
+	if  (!hwndTip)
+		m_hwndToolTip = (HWND)NULL;
+	else
+		m_hwndToolTip = hwndTip;
+
+
+   // Initializing Tooltip per control
+   if (m_hwndToolTip)
+   {
+	   // General initialization
+	   TOOLINFO toolInfo = { 0 };
+	   toolInfo.cbSize = TTTOOLINFO_V1_SIZE;
+	   toolInfo.hwnd = hDlg;
+	   toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+	   toolInfo.lpszText = LPSTR_TEXTCALLBACK;
+
+	   // Loop on all controls that require tooltip
+	   for (auto ctrl : Controls)
+	   {
+		   HWND hwndTool = GetDlgItem(hDlg, ctrl);
+		   toolInfo.uId = (UINT_PTR)hwndTool;
+		   added = SendMessage(m_hwndToolTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+		   active = SendMessage(m_hwndToolTip, TTM_ACTIVATE, TRUE, (LPARAM)&toolInfo);
+	   };
+   }
+
+   return m_hwndToolTip;
+}
+
+
+// Display callback-type tooltip
+// lpttt:	Pointer to tooltip structure
+// TxtID:	The resource ID of the text to display
+// TitleStr:The title string
+// Icon:	Icon to display. Possible values are TTI_NONE (default), TTI_INFO, TTI_WARNING, TTI_ERROR
+void SppTab::DisplayToolTip(LPNMTTDISPINFO lpttt, int TxtID, LPCTSTR TitleStr , int Icon)
+{
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+
+	LoadString(m_hInstance, TxtID,  ControlText, MAX_MSG_SIZE);
+	lpttt->lpszText = ControlText;
+
+	SendMessage(m_hwndToolTip, TTM_SETTITLE, Icon, (LPARAM) TitleStr);
+}
+
+// Display callback-type tooltip
+// lpttt:	Pointer to tooltip structure
+// TxtID:	The resource ID of the text to display
+// TitleID:	The resource ID of the title - default is "no title"
+// Icon:	Icon to display. Possible values are TTI_NONE (default), TTI_INFO, TTI_WARNING, TTI_ERROR
+void SppTab::DisplayToolTip(LPNMTTDISPINFO lpttt, int TxtID, int TitleID, int Icon)
+{
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+
+	LoadString(m_hInstance, TxtID,  ControlText, MAX_MSG_SIZE);
+	lpttt->lpszText = ControlText;
+
+	if (TitleID<0)
+		SendMessage(m_hwndToolTip, TTM_SETTITLE, TTI_NONE, (LPARAM) TEXT(""));
+	else
+	{
+		LoadString(m_hInstance, TitleID,  TitleText, MAX_MSG_SIZE);
+		SendMessage(m_hwndToolTip, TTM_SETTITLE, Icon, (LPARAM) TitleText);
+	};
+}
+
+/*
+	Should be never be called - only inhereted methods should be called
+	Called every time mouse hovers over a control that was previously registered for tool tip
+	Registration was done in CreateToolTip()
+	The Control ID (CtrlId) of the control is extracted from the input 'param' 
+	The correct text is displayed according to the Control ID
+*/
+void SppTab::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+	DisplayToolTip(lpttt, IDS_W_NOT_IMP, L"OOOPS!", TTI_WARNING);
+	return;
+
+}
+
 INT_PTR CALLBACK MsgHndlTabDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppDlg * DialogObj = NULL;
@@ -181,6 +300,16 @@ INT_PTR CALLBACK MsgHndlTabDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 	{
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
+		return (INT_PTR)TRUE;
+
+	case WM_NOTIFY:
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
+		};
+
 		return (INT_PTR)TRUE;
 
 	default:
