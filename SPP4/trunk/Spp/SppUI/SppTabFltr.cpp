@@ -10,6 +10,11 @@
 //Globals
 const int g_TitleId[] = {IDC_TXT_CH1,IDC_TXT_CH2,IDC_TXT_CH3,IDC_TXT_CH4,IDC_TXT_CH5,IDC_TXT_CH6,IDC_TXT_CH7,IDC_TXT_CH8};
 const int g_oTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
+static const int g_Controls[] = {
+		IDC_EDIT_FILTERFILE, IDC_COMBO_FILTERS, IDC_BTN_FILTERBROWSE, IDC_CH_FILTER, 
+		IDC_CH1, IDC_CH2, IDC_CH3, IDC_CH4, IDC_CH5, IDC_CH6, IDC_CH7, IDC_CH8,
+		IDC_CHPP1, IDC_CHPP2, IDC_CHPP3, IDC_CHPP4, IDC_CHPP5, IDC_CHPP6, IDC_CHPP7, IDC_CHPP8
+	};
 
 INT_PTR CALLBACK	MsgHndlTabFltrDlg(HWND, UINT, WPARAM, LPARAM);
 
@@ -340,6 +345,114 @@ void SppTabFltr::SentFilterInfo2Parent(void)
 		SendMessage(m_TopDlgWnd, WMSPP_DLG_FLTR , (WPARAM)NULL, (LPARAM)NULL);
 }
 
+/*
+	Called every time mouse hovers over a control that was previously registered for tool tip
+	Registration was done in CreateToolTip()
+	The Control ID (CtrlId) of the control is extracted from the input 'param' 
+	The correct text is displayed according to the Control ID
+*/
+void SppTabFltr::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+
+	switch (CtrlId) // Per-control tooltips
+	{
+	case IDC_EDIT_FILTERFILE: 
+		DisplayToolTip(lpttt, IDS_I_EDIT_FILTERFILE, IDS_T_EDIT_FILTERFILE);
+		break;
+
+	case IDC_BTN_FILTERBROWSE: 
+		DisplayToolTip(lpttt, IDS_I_BTN_FILTERBROWSE, IDS_T_BTN_FILTERBROWSE);
+		break;
+
+	case IDC_CH_FILTER: 
+		DisplayToolTip(lpttt, IDS_I_CH_FILTER);
+		break;
+
+	case IDC_COMBO_FILTERS:
+		DisplayToolTip(lpttt, IDS_I_COMBO_FILTERS, IDS_T_COMBO_FILTERS);
+		break;
+
+	case IDC_CH1:
+		DisplayToolTip(lpttt, IDS_I_CH1);
+		break;
+
+	case IDC_CH2:
+		DisplayToolTip(lpttt, IDS_I_CH2);
+		break;
+
+	case IDC_CH3:
+		DisplayToolTip(lpttt, IDS_I_CH3);
+		break;
+
+	case IDC_CH4:
+		DisplayToolTip(lpttt, IDS_I_CH4);
+		break;
+
+	case IDC_CH5:
+		DisplayToolTip(lpttt, IDS_I_CH5);
+		break;
+
+	case IDC_CH6:
+		DisplayToolTip(lpttt, IDS_I_CH6);
+		break;
+
+	case IDC_CH7:
+		DisplayToolTip(lpttt, IDS_I_CH7);
+		break;
+
+	case IDC_CH8:
+		DisplayToolTip(lpttt, IDS_I_CH8);
+		break;
+
+	case IDC_CHPP1:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP1);
+		break;
+
+	case IDC_CHPP2:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP2);
+		break;
+
+	case IDC_CHPP3:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP3);
+		break;
+
+	case IDC_CHPP4:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP4);
+		break;
+
+	case IDC_CHPP5:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP5);
+		break;
+
+	case IDC_CHPP6:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP6);
+		break;
+
+	case IDC_CHPP7:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP7);
+		break;
+
+	case IDC_CHPP8:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP8);
+		break;
+
+
+	default:
+		DisplayToolTip(lpttt, IDS_W_NOT_IMP, L"OOOPS", TTI_WARNING);
+		break;
+	}
+}
+
 INT_PTR CALLBACK MsgHndlTabFltrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppTabFltr * DialogObj = NULL;
@@ -351,6 +464,7 @@ INT_PTR CALLBACK MsgHndlTabFltrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		DialogObj->SetPosition(hDlg) ;
 		DialogObj->MonitorCh(hDlg) ;
 		DialogObj->MonitorPpCh(hDlg) ;
+		DialogObj->CreateToolTip(hDlg, g_Controls, sizeof(g_Controls)/sizeof(int)); // Initialize tooltip object
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
 		return (INT_PTR)TRUE;
 
@@ -373,7 +487,15 @@ INT_PTR CALLBACK MsgHndlTabFltrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			DialogObj->EnableFilter(LOWORD(wParam));
 			break;
 		};
+		return (INT_PTR)TRUE;
 
+	case WM_NOTIFY:
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
+		};
 
 	default:
 		break;

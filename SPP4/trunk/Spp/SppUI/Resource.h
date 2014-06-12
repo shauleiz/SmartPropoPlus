@@ -343,6 +343,14 @@
 #define IDS_T_LIST_PPM                          40167
 #define IDS_I_LIST_PCM                          40168
 #define IDS_T_LIST_PCM                          40169
+#define IDS_I_EDIT_FILTERFILE                   40170
+#define IDS_T_EDIT_FILTERFILE                   40171
+#define IDS_I_BTN_FILTERBROWSE                  40172
+#define IDS_T_BTN_FILTERBROWSE                  40173
+#define IDS_I_CH_FILTER                         40174
+#define IDS_T_CH_FILTER                         40175
+#define IDS_I_COMBO_FILTERS                     40176
+#define IDS_T_COMBO_FILTERS                     40177
 #define IDC_TXT_X                               40201
 #define IDC_TXT_Y                               40202
 #define IDC_TXT_Z                               40203
