@@ -13,27 +13,26 @@
 // GLobals
 
 // IDs of raw channel progress bars 
-const int g_RawBarId[] = 
+static const int g_RawBarId[] = 
 {IDC_CH1,IDC_CH2,IDC_CH3,IDC_CH4,IDC_CH5,IDC_CH6,IDC_CH7,IDC_CH8,\
 IDC_CH9,IDC_CH10,IDC_CH11,IDC_CH12,IDC_CH13,IDC_CH14,IDC_CH15,IDC_CH16};
 
 // IDs of post-processed (filtered) channel progress bars 
-const int g_PpBarId[] = {IDC_CHPP1,IDC_CHPP2,IDC_CHPP3,IDC_CHPP4,IDC_CHPP5,IDC_CHPP6,IDC_CHPP7,IDC_CHPP8};
+static const int g_PpBarId[] = {IDC_CHPP1,IDC_CHPP2,IDC_CHPP3,IDC_CHPP4,IDC_CHPP5,IDC_CHPP6,IDC_CHPP7,IDC_CHPP8};
 
 // IDs of Joystick monitoring progress bars
-const int g_JoyBarId[] = {IDC_X,IDC_Y,IDC_Z,IDC_RX,IDC_RY,IDC_RZ,IDC_SL0,IDC_SL1};
+static const int g_JoyBarId[] = {IDC_X,IDC_Y,IDC_Z,IDC_RX,IDC_RY,IDC_RZ,IDC_SL0,IDC_SL1};
 
 // IDs of raw channel titles (1...8) 
-const int g_RawTitleId[] = 
+static const int g_RawTitleId[] = 
 {IDC_TXT_CH1,IDC_TXT_CH2,IDC_TXT_CH3,IDC_TXT_CH4,IDC_TXT_CH5,IDC_TXT_CH6,IDC_TXT_CH7,IDC_TXT_CH8,\
 IDC_TXT_CH9, IDC_TXT_CH10, IDC_TXT_CH11,IDC_TXT_CH12,IDC_TXT_CH13,IDC_TXT_CH14,IDC_TXT_CH15,IDC_TXT_CH16};
 
 // IDs of post-processed (filtered) titles (A...H) 
-const int g_PpTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
+static const int g_PpTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
 
-// IDs of oystick monitoring titles (X...SL1) 
-const int g_JoyTitleId[] = {IDC_TXT_X,IDC_TXT_Y,IDC_TXT_Z,IDC_TXT_RX,IDC_TXT_RY,IDC_TXT_RZ,IDC_TXT_SL0,IDC_TXT_SL1};
-
+// IDs of joystick monitoring titles (X...SL1) 
+static const int g_JoyTitleId[] = {IDC_TXT_X,IDC_TXT_Y,IDC_TXT_Z,IDC_TXT_RX,IDC_TXT_RY,IDC_TXT_RZ,IDC_TXT_SL0,IDC_TXT_SL1};
 
 INT_PTR CALLBACK	MsgHndlTabDlg(HWND, UINT, WPARAM, LPARAM);
 
@@ -174,17 +173,9 @@ void  SppTab::InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBar
 }
 
 // Create one central  Tooltip object
-HWND SppTab::CreateToolTip(HWND hDlg)
+HWND SppTab::CreateToolTip(HWND hDlg, const int arr[], int size)
 {
 	LRESULT  added, active;
-	const int Controls[] = {
-		/* Audio Tab (IDD_AUDIO ) */
-		IDC_AUD_AUTO, IDC_AUD_8, IDC_AUD_16, IDC_CH_AUTO, IDC_LEFT, IDC_RIGHT, IDC_LEVEL_L, IDC_LEVEL_R, IDC_LEVEL_M,
-
-		/* Transmitter Tab (IDD_DECODE) */
-		IDC_DEC_AUTO, IDC_BTN_SCAN, IDC_LIST_PPM, IDC_LIST_PCM, 
-		IDC_CH1, IDC_CH2, IDC_CH3, IDC_CH4, IDC_CH5, IDC_CH6, IDC_CH7, IDC_CH8, IDC_CH9, IDC_CH10, IDC_CH11, IDC_CH12, IDC_CH13, IDC_CH14, IDC_CH15, IDC_CH16
-	};
 
 	if (!hDlg || !m_hInstance)
 		return (HWND)NULL;
@@ -214,7 +205,8 @@ HWND SppTab::CreateToolTip(HWND hDlg)
 	   toolInfo.lpszText = LPSTR_TEXTCALLBACK;
 
 	   // Loop on all controls that require tooltip
-	   for (auto ctrl : Controls)
+	   m_vControls.assign(arr, arr+size);
+	   for (auto ctrl : m_vControls)
 	   {
 		   HWND hwndTool = GetDlgItem(hDlg, ctrl);
 		   toolInfo.uId = (UINT_PTR)hwndTool;

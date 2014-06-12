@@ -10,6 +10,13 @@
 // GLobals
 INT_PTR CALLBACK	MsgHndlTabDcdrDlg(HWND, UINT, WPARAM, LPARAM);
 
+static const int g_Controls[] = {
+		/* Transmitter Tab (IDD_DECODE) */
+		IDC_DEC_AUTO, IDC_BTN_SCAN, IDC_LIST_PPM, IDC_LIST_PCM, 
+		IDC_CH1, IDC_CH2, IDC_CH3, IDC_CH4, IDC_CH5, IDC_CH6, IDC_CH7, IDC_CH8, IDC_CH9, IDC_CH10, IDC_CH11, IDC_CH12, IDC_CH13, IDC_CH14, IDC_CH15, IDC_CH16
+	};
+
+
 SppTabDcdr::SppTabDcdr(void)
 {
 }
@@ -17,6 +24,7 @@ SppTabDcdr::SppTabDcdr(void)
 SppTabDcdr::SppTabDcdr(HINSTANCE hInstance, HWND TopDlgWnd) : 
 	SppTab( hInstance,  TopDlgWnd,  IDD_DECODE, MsgHndlTabDcdrDlg)
 {	
+	
 }
 
 SppTabDcdr::~SppTabDcdr(void)
@@ -350,7 +358,7 @@ INT_PTR CALLBACK MsgHndlTabDcdrDlg(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		DialogObj = (SppTabDcdr *)lParam;
 		DialogObj->SetPosition(hDlg) ;
 		DialogObj->MonitorCh(hDlg) ;
-		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
+		DialogObj->CreateToolTip(hDlg, g_Controls, sizeof(g_Controls)/sizeof(int)); // Initialize tooltip object
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:

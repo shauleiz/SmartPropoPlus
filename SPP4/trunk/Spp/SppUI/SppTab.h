@@ -15,7 +15,7 @@ public:
 	int  GetId(void);
 	int  GetTabText(LPTSTR Text, int TextSize);
 	void SetPosition(HWND hDlg);
-	HWND CreateToolTip(HWND hDlg);
+	HWND CreateToolTip(HWND hDlg, const int arr[], int size=0);
 	virtual void UpdateToolTip(LPVOID);
 
 
@@ -43,5 +43,6 @@ protected:
 	std::vector<const int> m_vRawTitleId;
 	std::vector<const int> m_vPpTitleId;
 	std::vector<const int> m_vJoyTitleId;
+	std::vector<const int> m_vControls;
 };
 
