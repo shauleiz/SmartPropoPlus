@@ -8,6 +8,11 @@
 // GLobals
 INT_PTR CALLBACK	MsgHndlTabAudioDlg(HWND, UINT, WPARAM, LPARAM);
 
+static const int g_Controls[] = {
+		/* Audio Tab (IDD_AUDIO ) */
+		IDC_AUD_AUTO, IDC_AUD_8, IDC_AUD_16, IDC_CH_AUTO, IDC_LEFT, IDC_RIGHT, IDC_LEVEL_L, IDC_LEVEL_R, IDC_LEVEL_M,
+	};
+
 SppTabAudio::SppTabAudio(void)
 {
 }
@@ -248,7 +253,7 @@ INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPAR
 	case WM_INITDIALOG:
 		DialogObj = (SppTabAudio *)lParam;
 		DialogObj->SetPosition(hDlg) ;
-		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
+		DialogObj->CreateToolTip(hDlg, g_Controls, sizeof(g_Controls)/sizeof(int)); // Initialize tooltip object
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
