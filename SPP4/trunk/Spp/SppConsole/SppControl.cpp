@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include <crtdbg.h>
 #include <Shellapi.h>
+#include <condition_variable>
 #include "public.h"
 #include "vJoyInterface.h"
 #include "SmartPropoPlus.h"
@@ -50,6 +51,9 @@ bool ReqStartCapture=false;
 bool ReqStopCapture=false;
 bool StartCapture=false;
 bool StopCapture=false;
+bool dialogbox_is_ready(false);
+std::mutex mtx_dialogbox;
+std::condition_variable cv_dialogbox;
 
 #pragma endregion Globals
 
@@ -202,13 +206,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	DbgObj = new SppDbg();
 
 	// Create Dialog box, initialize it then show it
-	//SppDlg *	Dialog	= new SppDlg(hInstance, hwnd);
 	// Start Dialog box thread
 	tDialogBox = new thread(thDialogBox, hwnd);
+	std::unique_lock<std::mutex> lk(mtx_dialogbox);
 	if (!tDialogBox)
 			goto ExitApp;
 
-    Sleep(1000); // TODO: Replace with a proper waiting procedure: http://stackoverflow.com/questions/16350473/why-i-need-stdcondition-variable
+	// WAit for dialog box initialization to complete
+	while (!dialogbox_is_ready)
+		cv_dialogbox.wait(lk);
+	lk.unlock();
+
+
 	hDialog = Dialog->GetHandle();
 	CaptureDevicesPopulate(hDialog);
 
@@ -1630,6 +1639,10 @@ void thDialogBox(HWND hwnd)
 {
 	THREAD_NAME("Dialog Box Thread");
 	Dialog	= new SppDlg(g_hInstance, hwnd);
+	std::unique_lock<std::mutex> lk(mtx_dialogbox);
+	dialogbox_is_ready = true;
+	cv_dialogbox.notify_one();
+	mtx_dialogbox.unlock();
 	Dialog->MsgLoop();
 }
 
