@@ -14,6 +14,7 @@
 #include "SppDlg.h"
 
 #pragma comment (lib,"Gdiplus.lib")
+#pragma comment (lib,"UxTheme.lib")
 
 #define MAX_LOADSTRING 100
 
@@ -316,6 +317,9 @@ int SppDlg::InitTabs(HWND hDlg)
 	m_hrsrc.hwndTab = GetDlgItem(hDlg,  IDC_TABS);
 	if (!m_hrsrc.hwndTab) // TODO: Add log
 		return 0;
+			
+	// Fix white background around tab icon
+	SetWindowTheme(m_hrsrc.hwndTab, L" ", L" ");
 
 	// Get the tab rectangle
 	BOOL GotRect = GetWindowRect(m_hrsrc.hwndTab, &m_hrsrc.rcDisplay);
@@ -1239,6 +1243,7 @@ void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 	do 
 	{
 		hCh = GetDlgItem(m_hDlg,  ch);
+		SetWindowTheme(hCh, L" ", L" ");
 		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);
@@ -1334,6 +1339,7 @@ void SppDlg::CfgJoyMonitor(HWND hDlg)
 	do 
 	{
 		hCh = GetDlgItem(hDlg,  ch);
+		SetWindowTheme(hCh, L" ", L" ");
 		SendMessage(hCh, PBM_SETRANGE ,0, 0xFFFF0000); // Range: 0-64K
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 		SendMessage(hCh, PBM_SETBARCOLOR , 0, RGB(0xFF,0,0));
@@ -2053,6 +2059,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WM_INITDIALOG:
 		DialogObj = (SppDlg *)lParam;
+
+		// Initialize common controls
+		INITCOMMONCONTROLSEX InitCtrlEx;
+		InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		InitCtrlEx.dwICC  =  0 /*ICC_PROGRESS_CLASS | ICC_TAB_CLASSES | ICC_STANDARD_CLASSES*/;
+		InitCommonControlsEx(&InitCtrlEx);
 
 		// Initialize GDI+.
 		GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
