@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Commctrl.h"
+#include "Uxtheme.h"
 #include "resource.h"
 #include "WinMessages.h"
 #include "SmartPropoPlus.h"
@@ -35,6 +36,12 @@ void SppTabAudio::DisplayAudioLevels(PVOID Id, UINT Left, UINT Right)
 	HWND hLevelL = GetDlgItem(m_hDlg, IDC_LEVEL_L);
 	HWND hLevelR = GetDlgItem(m_hDlg, IDC_LEVEL_R);
 	HWND hLevelM = GetDlgItem(m_hDlg, IDC_LEVEL_M);
+
+	// Fix white background around tab icon
+	SetWindowTheme(hLevelL, L" ", L" ");
+	SetWindowTheme(hLevelR, L" ", L" ");
+	SetWindowTheme(hLevelM, L" ", L" ");
+
 
 	// Mono?
 	if (Right>100) // If Right channel is over 100 then this is a mono device

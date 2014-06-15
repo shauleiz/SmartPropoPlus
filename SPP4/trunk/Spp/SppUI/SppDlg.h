@@ -2,15 +2,16 @@
 //
 //#include "SppTabGen.h"
 #include "Commctrl.h"
+#include "Uxtheme.h"
 #include "SppTabAudio.h"
 #include "SppTabDcdr.h"
 #include "SppTabFltr.h"
 #include "SppTabJoy.h"
-//#pragma comment( linker, "/manifestdependency:\"type='win32' \
-//    name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
-//    processorArchitecture='*' publicKeyToken='6595b64144ccf1df' \
-//    language='*'\"")
-#pragma comment( lib, "comctl32.lib")
+#pragma comment( linker, "/manifestdependency:\"type='win32' \
+    name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+    processorArchitecture='*' publicKeyToken='6595b64144ccf1df' \
+    language='*'\"") // TODO: This causes ugly Tabs & progress bars
+#pragma comment( lib, "comctl32.lib") 
 
 #define STOP	L"Sleep"
 #define START	L"Wake-up"
