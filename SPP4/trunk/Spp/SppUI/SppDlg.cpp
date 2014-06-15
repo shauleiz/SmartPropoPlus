@@ -1244,6 +1244,8 @@ void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 	{
 		hCh = GetDlgItem(m_hDlg,  ch);
 		SetWindowTheme(hCh, L" ", L" ");
+		SetWindowPos(hCh, HWND_TOP, 1,1,1,1, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
 		SendMessage(hCh, PBM_SETRANGE ,0, 0x03ff0000); // Range: 0-1023
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);
@@ -1340,6 +1342,7 @@ void SppDlg::CfgJoyMonitor(HWND hDlg)
 	{
 		hCh = GetDlgItem(hDlg,  ch);
 		SetWindowTheme(hCh, L" ", L" ");
+		SetWindowPos(hCh, HWND_TOP, 1,1,1,1, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 		SendMessage(hCh, PBM_SETRANGE ,0, 0xFFFF0000); // Range: 0-64K
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
 		SendMessage(hCh, PBM_SETBARCOLOR , 0, RGB(0xFF,0,0));
