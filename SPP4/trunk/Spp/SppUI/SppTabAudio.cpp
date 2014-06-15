@@ -37,11 +37,13 @@ void SppTabAudio::DisplayAudioLevels(PVOID Id, UINT Left, UINT Right)
 	HWND hLevelR = GetDlgItem(m_hDlg, IDC_LEVEL_R);
 	HWND hLevelM = GetDlgItem(m_hDlg, IDC_LEVEL_M);
 
-	// Fix white background around tab icon
+	// Fix progress bar problem
 	SetWindowTheme(hLevelL, L" ", L" ");
 	SetWindowTheme(hLevelR, L" ", L" ");
 	SetWindowTheme(hLevelM, L" ", L" ");
-
+	SetWindowPos(hLevelL, HWND_TOP, 1,1,1,1, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	SetWindowPos(hLevelR, HWND_TOP, 1,1,1,1, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	SetWindowPos(hLevelM, HWND_TOP, 1,1,1,1, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
 	// Mono?
 	if (Right>100) // If Right channel is over 100 then this is a mono device

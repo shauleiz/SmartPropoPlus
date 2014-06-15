@@ -166,6 +166,7 @@ void  SppTab::InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBar
 	{
 		hCh = GetDlgItem(hDlg,  id);
 		SetWindowTheme(hCh, L" ", L" ");
+		SetWindowPos(hCh, HWND_TOP, 1,1,1,1, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 		SendMessage(hCh, PBM_SETRANGE ,min, max);	
 		SendMessage(hCh, PBM_SETPOS, 0, 0);				// Reset
 		SendMessage(hCh, PBM_SETBARCOLOR , 0, Color);	
