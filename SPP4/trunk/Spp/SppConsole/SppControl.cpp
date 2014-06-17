@@ -230,7 +230,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Spp->Init(hwnd);
 	//vJoyDevice = Conf->SelectedvJoyDevice();
 	vJoyDevice = SelectedvJoyDevice();
-	SetvJoyMapping(vJoyDevice);
+	if (vJoyDevice)
+		SetvJoyMapping(vJoyDevice);
 
 	// Instruct GUI of the available Controls (Axes/Buttons)
 	SetAvailableControls((UINT)vJoyDevice, hDialog);
@@ -1869,7 +1870,8 @@ void SetvJoyMapping(UINT id)
 	Map.ButtonArray = &aButtonMap;
 	Conf->Map(id, &Map);
 
-	Spp->MappingChanged(&Map, id); 
+	if (id)
+		Spp->MappingChanged(&Map, id); 
 	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
 
