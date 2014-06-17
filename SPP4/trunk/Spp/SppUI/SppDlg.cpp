@@ -400,6 +400,9 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	if (!sTab)
 		return;
 
+	if (tie.lParam == m_hrsrc.Display->GetId())
+		return;
+
 	// Hide all dialog boxes but one - according to ID
 	//m_hrsrc.TabGen->Hide();
 	m_hrsrc.TabAudio->Hide();
@@ -416,18 +419,22 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 
 	case IDD_AUDIO:
 		m_hrsrc.TabAudio->Show();
+		m_hrsrc.Display = m_hrsrc.TabAudio;
 		break;
 
 	case IDD_DECODE:
 		m_hrsrc.TabDcdr->Show();
+		m_hrsrc.Display = m_hrsrc.TabDcdr;
 		break;
 
 	case IDD_FILTER:
 		m_hrsrc.TabFltr->Show();
+		m_hrsrc.Display = m_hrsrc.TabFltr;
 		break;
 
 	case IDD_JOY:
 		m_hrsrc.TabJoy->Show();
+		m_hrsrc.Display = m_hrsrc.TabJoy;
 		break;
 	};
 
