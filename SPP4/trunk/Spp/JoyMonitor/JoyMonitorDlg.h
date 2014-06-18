@@ -20,6 +20,7 @@ public:
 	HWND GetHandle(void);
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 	void InitJoyMonitor(HWND hDlg);
+	void EnableControls(UINT id, controls * ctrl);
 
 protected:
 	void CreateControls(UINT nButtons);
@@ -37,6 +38,6 @@ protected:
 	UINT m_CurJoy;
 	UINT m_nRawCh;
 	vector<const int> m_vJoyBarId;
-
+	vector<const int> m_vJoyTitleId;
 };
 
