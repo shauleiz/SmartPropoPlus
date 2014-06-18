@@ -319,7 +319,7 @@ void CJoyMonitorDlg::EnableControlsBtn(UINT id, controls * ctrl)
 
 void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 {
-	HWND  hRedDot, hGreenDot, hEdit;
+	HWND  hRedDot, hGreenDot, hLabel;
 
 	//return;
 
@@ -327,9 +327,9 @@ void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 	{
 		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i+1);
 		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i+1);
-		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i+1);
-		LONG StyleEdit = GetWindowLong( hEdit, GWL_STYLE);
-		if ((StyleEdit & WS_DISABLED))
+		hLabel = GetDlgItem(m_hDlg,ID_BASE_STATIC+i+1);
+		LONG StyleLabel = GetWindowLong( hLabel, GWL_STYLE);
+		if ((StyleLabel & WS_DISABLED))
 			continue;
 
 		if ((*BtnVals)[i])
