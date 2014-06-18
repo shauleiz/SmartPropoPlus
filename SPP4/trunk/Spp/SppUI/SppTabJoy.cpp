@@ -21,8 +21,6 @@ SppTabJoy::SppTabJoy(void)
 SppTabJoy::SppTabJoy(HINSTANCE hInstance, HWND TopDlgWnd) : SppTab( hInstance,  TopDlgWnd,  IDD_JOY, MsgHndlTabJoyDlg)
 {
 	m_nProcCh = 100; // Improbable number of Post-processed channels
-	m_nRawCh = 0;
-	m_CurJoy = 0; // Current displayed joystick: None
 }
 
 SppTabJoy::~SppTabJoy(void)

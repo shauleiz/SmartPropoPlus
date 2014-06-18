@@ -2,6 +2,8 @@
 //
 
 #include "stdafx.h"
+#include "smartpropoplus.h"
+#include "vJoyMonitor.h"
 #include "JoyMonitorDlg.h"
 #include "JoyMonitor.h"
 
@@ -112,14 +114,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+   //ShowWindow(hWnd, nCmdShow);
+   //UpdateWindow(hWnd);
 
    // Start the main dialog box
    Dialog	= new CJoyMonitorDlg(hInstance, hWnd);
 
+   	// Open vJoy monitor
+	bool MonitorOk = vJoyMonitorInit(hInstance, Dialog->GetHandle());
+	StartPollingDevice(1);
+
    return TRUE;
 }
+
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
