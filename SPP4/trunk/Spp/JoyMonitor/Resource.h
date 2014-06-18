@@ -1,0 +1,35 @@
+#ifndef IDC_STATIC
+#define IDC_STATIC (-1)
+#endif
+
+#define IDD_ABOUTBOX                            103
+#define IDM_ABOUT                               104
+#define IDM_EXIT                                105
+#define IDI_JOYMONITOR                          107
+#define IDI_SMALL                               108
+#define IDC_JOYMONITOR                          109
+#define IDD_JOY                                 111
+#define IDB_GREENDOT1                           113
+#define IDB_GREENDOT2                           115
+#define IDB_GREENDOT                            118
+#define IDB_GREYDOT                             120
+#define IDB_REDDOT                              122
+#define IDS_APP_TITLE                           40000
+#define IDC_X                                   40034
+#define IDC_TXT_X                               40035
+#define IDC_Y                                   40036
+#define IDC_TXT_Y                               40037
+#define IDC_Z                                   40038
+#define IDC_TXT_Z                               40039
+#define IDC_RX                                  40040
+#define IDC_TXT_RX                              40041
+#define IDC_RY                                  40042
+#define IDC_TXT_RY                              40043
+#define IDC_RZ                                  40044
+#define IDC_TXT_RZ                              40045
+#define IDC_SL0                                 40046
+#define IDC_TXT_SL0                             40047
+#define IDC_SL1                                 40048
+#define IDC_TXT_SL1                             40049
+#define IDC_VJOY_AXES                           40050
+#define IDC_VJOY_DEVICE                         40068
