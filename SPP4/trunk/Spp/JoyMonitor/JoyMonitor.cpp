@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "smartpropoplus.h"
+#include "vJoyInterface.h"
 #include "vJoyMonitor.h"
 #include "JoyMonitorDlg.h"
 #include "JoyMonitor.h"
@@ -20,6 +21,7 @@ ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+void				SetAvailableControls(UINT id, HWND hDlg);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -122,11 +124,27 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, Dialog->GetHandle());
+
+	//
+	SetAvailableControls(1, Dialog->GetHandle());
+
+	// Start polling vJoy Device 1 (Hard coded)
 	StartPollingDevice(1);
 
    return TRUE;
 }
 
+void SetAvailableControls(UINT id, HWND hDlg)
+{
+	controls ctrls;
+	// Get data from vJoy Interface
+	ctrls.nButtons = GetVJDButtonNumber(id);
+	for (UINT i=0; i<8; i++)
+		ctrls.axis[i] = GetVJDAxisExist(id, HID_USAGE_X+i);
+
+	// Send data to GUI
+	SendMessage(hDlg, VJOYDEV_SETAVAIL, id, (LPARAM)&ctrls);
+}
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)

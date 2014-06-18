@@ -2,10 +2,14 @@
 #include "Commctrl.h"
 #include "resource.h"
 #include "public.h"
+#include "smartpropoplus.h"
 #include "JoyMonitorDlg.h"
 
 // IDs of Joystick monitoring progress bars
 static const int g_JoyBarId[] = {IDC_X,IDC_Y,IDC_Z,IDC_RX,IDC_RY,IDC_RZ,IDC_SL0,IDC_SL1};
+
+// IDs of joystick monitoring titles (X...SL1) 
+static const int g_JoyTitleId[] = {IDC_TXT_X,IDC_TXT_Y,IDC_TXT_Z,IDC_TXT_RX,IDC_TXT_RY,IDC_TXT_RZ,IDC_TXT_SL0,IDC_TXT_SL1};
 
 INT_PTR CALLBACK	MsgHndlDlg(HWND, UINT, WPARAM, LPARAM);
 
@@ -15,7 +19,8 @@ CJoyMonitorDlg::CJoyMonitorDlg(void)
 
 CJoyMonitorDlg::CJoyMonitorDlg(HINSTANCE hInstance, HWND	ConsoleWnd) : 
 	m_hDlg(0),
-	m_vJoyBarId(g_JoyBarId, g_JoyBarId+sizeof(g_JoyBarId)/ sizeof(int))
+	m_vJoyBarId(g_JoyBarId, g_JoyBarId+sizeof(g_JoyBarId)/ sizeof(int)),
+	m_vJoyTitleId(g_JoyTitleId, g_JoyTitleId+sizeof(g_JoyTitleId)/ sizeof(int))
 {
 	m_hInstance = hInstance;
 	m_ConsoleWnd = ConsoleWnd;
@@ -229,6 +234,61 @@ void CJoyMonitorDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
+// Enable/disable controls according to vJoy device settings
+void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
+{
+	UINT ch= IDC_X;
+	HWND hCh, hEdt, hTtl;
+	UINT iAxis=0;
+	UINT edt = 0;
+
+	////// Verify correct vJoy device
+	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
+	// Get the index of the selected vJoy device
+	int index = 0; // TODO: (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
+	if (index == CB_ERR)
+		return;
+
+#if 0
+	// Extract the device id from the item's data
+	int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
+	if (id != SelId)
+		return;
+
+#endif // 0
+	////// Verified
+
+	// Go over all axes
+	do 
+	{
+		// Axis bars
+		hCh = GetDlgItem(m_hDlg,  ch);
+		SendMessage(hCh, PBM_SETPOS, 0, 0);
+		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
+		UpdateWindow(hCh);
+
+
+		// Bar titles
+		hTtl = GetDlgItem(m_hDlg,  m_vJoyTitleId[iAxis]);
+		EnableWindow(hTtl, ctrl->axis[edt]);
+		UpdateWindow(hTtl);
+
+#if 0		
+		// Map edit fields
+		hEdt = GetDlgItem(m_hDlg,  edt);
+		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
+		UpdateWindow(hEdt);
+
+#endif // 0
+
+		ch++;
+		edt++;
+		iAxis++;
+	} while (ch<=IDC_SL1);
+
+	// SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
+}
+
 
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -257,6 +317,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_JMON_AXIS:
 		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
 		break;
+
+	case VJOYDEV_SETAVAIL:
+		DialogObj->EnableControls((UINT)wParam, (controls*)lParam);		
+		break;
+
 	}
 	return (INT_PTR)FALSE;
 }
