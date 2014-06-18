@@ -10,7 +10,6 @@
 #define ID_BASE_GREENDOT	143432
 #define ID_BASE_REDDOT		153432
 
-
 class CJoyMonitorDlg
 {
 public:
@@ -21,6 +20,8 @@ public:
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 	void InitJoyMonitor(HWND hDlg);
 	void EnableControls(UINT id, controls * ctrl);
+	void EnableControlsBtn(UINT id, controls * ctrl);
+	void SetButtonValues(UINT id, BTNArr * BtnVals);
 
 protected:
 	void CreateControls(UINT nButtons);

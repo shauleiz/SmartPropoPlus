@@ -92,7 +92,7 @@ SppBtnsDlg::SppBtnsDlg(HINSTANCE hInstance, HWND	ParentWnd)
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_BUTTONSDLG), NULL, MsgHndlBtnDlg, (LPARAM)this);	
 
 	// Populate dialog box
-	CreateControls(MAX_BUTTONS);
+	CreateControls(MAX_DISPLAY);
 
 	// Test
 	array<BYTE,MAX_BUTTONS> map = {0};
@@ -180,7 +180,7 @@ void SppBtnsDlg::CreateControls(UINT nButtons)
 	POINT OrigPt;
 	OrigPt.x = OrigPt.y = 10;
 
-	for (UINT i=1; i<=MAX_BUTTONS; i++)
+	for (UINT i=1; i<=MAX_DISPLAY; i++)
 	{
 		CreateButtonLable(i);
 		CreateChannelEdit(i);
@@ -305,7 +305,7 @@ void SppBtnsDlg::CreateChannelEdit(UINT iButton)
 // Go over the edit boxes and get the data
 // Create button-map out of them
 // Return the size of the array or -1 if error
-int SppBtnsDlg::CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap)
+int SppBtnsDlg::CreateBtnMap(BTNArr& BtnMap)
 {
 	auto size = BtnMap.size();
 	HWND hEditCh;
@@ -333,7 +333,7 @@ void SppBtnsDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 
 	//return;
 
-	for (UINT i=0; i<MAX_BUTTONS; i++)
+	for (UINT i=0; i<MAX_DISPLAY; i++)
 	{
 		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i+1);
 		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i+1);
@@ -360,7 +360,7 @@ void SppBtnsDlg::EnableControls(UINT id, controls * ctrl)
 {
 	HWND hEdit, hLable, hRedDot, hGreenDot;
 
-	for (UINT i=0; i<=MAX_BUTTONS; i++)
+	for (UINT i=0; i<=MAX_DISPLAY; i++)
 	{
 		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
 		hLable = GetDlgItem(m_hDlg,ID_BASE_STATIC+i);

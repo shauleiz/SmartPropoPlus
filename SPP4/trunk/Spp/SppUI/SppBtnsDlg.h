@@ -6,6 +6,8 @@
 #define ID_BASE_CH			133432
 #define ID_BASE_GREENDOT	143432
 #define ID_BASE_REDDOT		153432
+#define MAX_DISPLAY			32
+
 
 class SppBtnsDlg
 {
@@ -14,7 +16,7 @@ public:
 	SppBtnsDlg(HINSTANCE hInstance, HWND	ConsoleWnd);
 	virtual ~SppBtnsDlg(void);
 	HWND GetHandle(void);
-	void SetButtonsMappingData(array<BYTE, MAX_BUTTONS>* aButtonMap, UINT nButtons);
+	void SetButtonsMappingData(BTNArr * aButtonMap, UINT nButtons);
 	void SendButtonsMappingData(void);
 	void Show(void);
 	void EnableControls(UINT id, controls * ctrl);
@@ -27,7 +29,7 @@ private:
 	void CreateButtonLable(UINT iButton);
 	void CreateChannelEdit(UINT iButton);
 	void CreateIndicator(UINT iButton);
-	int	 CreateBtnMap(array<BYTE,MAX_BUTTONS>& BtnMap);
+	int	 CreateBtnMap(BTNArr& BtnMap);
 
 private:
 	HWND		m_hDlg;
