@@ -33,6 +33,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Filter", "Filter\Filter.vcxproj", "{AD6B94F3-05B9-48C5-81EF-FD487F8C3896}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JoyMonitor", "JoyMonitor\JoyMonitor.vcxproj", "{F919081A-CEF3-41D8-879A-A63ADEBEFFC5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9ADDD735-0F87-4CAB-8100-B7153BE97DAC} = {9ADDD735-0F87-4CAB-8100-B7153BE97DAC}
+		{9E1FC894-F587-4FBA-8599-2F8C544E061A} = {9E1FC894-F587-4FBA-8599-2F8C544E061A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

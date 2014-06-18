@@ -116,7 +116,7 @@ void CJoyMonitorDlg::CreateButtonLable(UINT iButton)
 
 void CJoyMonitorDlg::CreateIndicator(UINT iButton)
 {
-		// Constants
+	// Constants
 	UINT RowSpace = ROWSPACE;			// Space between rows
 	UINT ColSpace = COLSPACE;		// Space between columns
 	RECT rc = {10,133,19,140};	// Text rectangle
@@ -129,7 +129,7 @@ void CJoyMonitorDlg::CreateIndicator(UINT iButton)
 	rc.left+=iCol*ColSpace;
 	rc.right+=iCol*ColSpace;
 
-	// Green
+	// Grey
 	HWND hGreenImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_GREENDOT+iButton, L"");
 	HANDLE hGreenImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_GREYDOT), IMAGE_BITMAP,0, 0,  LR_DEFAULTSIZE );
 	SendMessage(hGreenImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hGreenImage1);
@@ -238,7 +238,7 @@ void CJoyMonitorDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue
 void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 {
 	UINT ch= IDC_X;
-	HWND hCh, hEdt, hTtl;
+	HWND hCh, hTtl;
 	UINT iAxis=0;
 	UINT edt = 0;
 
@@ -286,7 +286,64 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 		iAxis++;
 	} while (ch<=IDC_SL1);
 
+	EnableControlsBtn( id, ctrl);
 	// SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
+}
+
+void CJoyMonitorDlg::EnableControlsBtn(UINT id, controls * ctrl)
+{
+	HWND hEdit, hLable, hRedDot, hGreenDot;
+
+	for (UINT i=0; i<=MAX_DISP_BUTTONS; i++)
+	{
+		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i);
+		hLable = GetDlgItem(m_hDlg,ID_BASE_STATIC+i);
+		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i);
+		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i);
+		if (ctrl->nButtons < i)
+		{
+			EnableWindow(hEdit, false);
+			EnableWindow(hLable, false);
+			ShowWindow(hGreenDot, SW_HIDE);
+			ShowWindow(hRedDot, SW_HIDE);
+		}
+		else
+		{
+			EnableWindow(hEdit, true);
+			EnableWindow(hLable, true);
+			ShowWindow(hGreenDot, SW_SHOW);
+			ShowWindow(hRedDot, SW_SHOW);
+		};
+	}
+}
+
+void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
+{
+	HWND  hRedDot, hGreenDot, hEdit;
+
+	//return;
+
+	for (UINT i=0; i<MAX_DISP_BUTTONS; i++)
+	{
+		hGreenDot = GetDlgItem(m_hDlg,ID_BASE_GREENDOT+i+1);
+		hRedDot = GetDlgItem(m_hDlg,ID_BASE_REDDOT+i+1);
+		hEdit = GetDlgItem(m_hDlg,ID_BASE_CH+i+1);
+		LONG StyleEdit = GetWindowLong( hEdit, GWL_STYLE);
+		if ((StyleEdit & WS_DISABLED))
+			continue;
+
+		if ((*BtnVals)[i])
+		{
+			ShowWindow(hGreenDot, SW_HIDE);
+			ShowWindow(hRedDot, SW_SHOW);
+		}
+		else
+		{
+			ShowWindow(hGreenDot, SW_SHOW);
+			ShowWindow(hRedDot, SW_HIDE);
+		};
+	};
+
 }
 
 
@@ -316,6 +373,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_JMON_AXIS:
 		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
+		break;
+
+	case WMSPP_JMON_BTN:
+		DialogObj->SetButtonValues((UINT)wParam, (BTNArr *)lParam);
 		break;
 
 	case VJOYDEV_SETAVAIL:

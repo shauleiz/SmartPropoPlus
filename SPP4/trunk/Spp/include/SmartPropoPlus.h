@@ -284,7 +284,7 @@ struct DbgPulseInfo
 };
 
 /// Channel to Button/Axis mapping
-#define MAX_BUTTONS		32
+#define MAX_BUTTONS		128
 typedef std::array<BYTE, MAX_BUTTONS> BTNArr;
 struct Mapping {
 	UINT nAxes;
