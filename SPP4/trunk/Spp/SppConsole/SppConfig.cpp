@@ -89,9 +89,7 @@ TiXmlDocument * CSppConfig::CreateDefaultConfig(TiXmlDocument *  doc)
 	//vJoyDevId->LinkEndChild(new TiXmlText( "1" ));
 	//vJoyDevice->LinkEndChild(vJoyDevId);
 
-#ifdef _DEBUG
 	Save();
-#endif
 
 	return i_doc;
 }
@@ -160,9 +158,8 @@ TiXmlHandle  CSppConfig::CreatevJoyDevice(UINT id, bool selected)
 	};
 
 	// Obtain handle to the opened/created vJoy_Device Element
-#ifdef _DEBUG
 	Save();
-#endif
+
 	TiXmlHandle out( Device );
 	return out;
 }
@@ -259,9 +256,8 @@ void CSppConfig::MapButtons(UINT id, BTNArr ButtonMap)
 		UniqueTextLeaf(ButtonHandle, ButtonXX, to_wstring(ButtonMap[i]), true);
 	};
 
-#ifdef _DEBUG
 	Save();
-#endif
+
 }
 
 // MapAxis - Register the channel-to-axis mapping of a given vJoy device
@@ -314,9 +310,8 @@ void CSppConfig::MapAxis(UINT id, DWORD map)
 	if ((map & 0xF0000000)>>28)
 		UniqueTextLeaf(AxisHandle, string("X"), to_wstring ((map & 0xF0000000)>>28), true);
 
-#ifdef _DEBUG
 	Save();
-#endif
+
 }
 
 // GetMapButtons- Get the channel-to-button mapping of a given vJoy device
@@ -442,9 +437,8 @@ void CSppConfig::SetModulationAttrib(LPTSTR Attrib, LPTSTR Value)
 	
 	// If selected==true - assign id to the attribute 'selected'
 	Modulations->SetAttribute(utf8_encode(wstring(Attrib)), utf8_encode(wstring(Value)));
-#ifdef _DEBUG
 	Save();
-#endif
+
 }
 
 // SelectModulation - Set the selected modulation (by Type)
@@ -501,9 +495,8 @@ bool CSppConfig::AddModulation(wstring Type, wstring SubType, wstring Name, bool
 	// Convert & Enter name
 	UniqueTextLeaf(ModHandle, string(SPP_MODNAME), Name, true);
 
-#ifdef _DEBUG
 	Save();
-#endif
+
 	return true;
 
 }
@@ -792,9 +785,8 @@ bool CSppConfig::AddAudioDevice(LPTSTR Id, LPTSTR Name, UINT BitRate, LPTSTR Cha
 	if (BitRate)
 		UniqueTextLeaf(DevHandle, string(SPP_AUDBR), to_wstring(BitRate), true);
 
-#ifdef _DEBUG
 	Save();
-#endif
+
 	return true;
 
 }
@@ -1154,9 +1146,9 @@ bool CSppConfig::FilterFile(LPTSTR FilePath, LPTSTR Version)
 
 	// Add Filter DLL file version
 	UniqueTextLeaf(FiltersHandle, string(SPP_DLLVER), wstring(Version), true);
-#ifdef _DEBUG
+
 	Save();
-#endif
+
 	return true;
 }
 
@@ -1222,9 +1214,9 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 		if ((int)Id == -1)
 		{
 			Filters->RemoveAttribute(SPP_SELECT);
-#ifdef _DEBUG
+	
 			Save();
-#endif
+
 			return true;
 		}
 		else
@@ -1241,9 +1233,8 @@ bool CSppConfig::AddFilter(UINT Id, LPTSTR Name, bool select)
 	// Set filter's Name
 	wstring wstr_Name = (wstring(Name));
 	UniqueTextLeaf(FilterHandle, string(SPP_FLTNAME) , wstr_Name , true);
-#ifdef _DEBUG
 	Save();
-#endif
+
 	return true;
 }
 
@@ -1432,9 +1423,8 @@ bool CSppConfig::PulseScope(bool Monitor)
 	else
 		PulseScp->SetAttribute(SPP_CHECKED, "0");
 
-#ifdef _DEBUG
 	Save();
-#endif
+
 	return true;
 }
 
@@ -1473,9 +1463,8 @@ bool CSppConfig::MonitorChannels(bool Monitor)
 	else
 		Monitor_Ch->SetAttribute(SPP_CHECKED, "0");
 
-#ifdef _DEBUG
 	Save();
-#endif
+
 	return true;
 }
 
@@ -1558,9 +1547,7 @@ bool CSppConfig::SetGeneralElemetsBool(const char * Element, bool Val)
 	else
 		Ch->SetAttribute(SPP_CHECKED, "0");
 
-#ifdef _DEBUG
 	Save();
-#endif
 	return true;
 }
 
