@@ -370,7 +370,7 @@ FONT 8, "Ms Shell Dlg"
     AUTOCHECKBOX    "Record Input Signal", IDC_CH_INSIG, 336, 43, 74, 8, 0, WS_EX_LEFT
     AUTOCHECKBOX    "Record Pulse", IDC_CH_PULSE, 336, 56, 59, 8, 0, WS_EX_LEFT
     AUTOCHECKBOX    "Pulse Scope", IDC_PLS_SCOPE, 336, 69, 56, 8, 0, WS_EX_LEFT
-    PUSHBUTTON      "Minimize", IDC_HIDE, 336, 107, 47, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Minimize", IDC_HIDE, 337, 107, 47, 14, 0, WS_EX_LEFT
     PUSHBUTTON      "Start", IDC_STREAM, 337, 126, 47, 14, 0, WS_EX_LEFT
     DEFPUSHBUTTON   "Exit", IDOK, 337, 145, 47, 14, 0, WS_EX_LEFT
     GROUPBOX        "General Information", 0, 5, 223, 320, 84, 0, WS_EX_LEFT
