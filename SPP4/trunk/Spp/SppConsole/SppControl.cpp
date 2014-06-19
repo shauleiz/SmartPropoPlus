@@ -295,6 +295,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Send notification icon status data
 	if (Flags & FLG_WIZRD) 
 		Dialog->Show();
+	else
+		Dialog->Hide();
 
 	// Loop forever in the dialog box until user kills it
 	MessageLoop();
