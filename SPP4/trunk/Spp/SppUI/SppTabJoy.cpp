@@ -12,6 +12,17 @@
 INT_PTR CALLBACK	MsgHndlTabJoyDlg(HWND, UINT, WPARAM, LPARAM);
 const int g_RawTitleId[] = {IDC_TXT_CH1,IDC_TXT_CH2,IDC_TXT_CH3,IDC_TXT_CH4,IDC_TXT_CH5,IDC_TXT_CH6,IDC_TXT_CH7,IDC_TXT_CH8};
 const int g_PpTitleId[] = {IDC_TXT_CHPP1,IDC_TXT_CHPP2,IDC_TXT_CHPP3,IDC_TXT_CHPP4,IDC_TXT_CHPP5,IDC_TXT_CHPP6,IDC_TXT_CHPP7,IDC_TXT_CHPP8};
+static const int g_Controls[] = {
+	/* Joystick Tab (IDD_JOY ) */
+	IDC_CHPP1, IDC_CHPP2, IDC_CHPP3, IDC_CHPP4, IDC_CHPP5, IDC_CHPP6, IDC_CHPP7, IDC_CHPP8, 
+	IDC_TXT_CHPP1, IDC_TXT_CHPP2, IDC_TXT_CHPP3, IDC_TXT_CHPP4, IDC_TXT_CHPP5, IDC_TXT_CHPP6, IDC_TXT_CHPP7, IDC_TXT_CHPP8, 
+	IDC_CH1, IDC_CH2, IDC_CH3, IDC_CH4, IDC_CH5, IDC_CH6, IDC_CH7, IDC_CH8, 
+	IDC_TXT_CH1, IDC_TXT_CH2, IDC_TXT_CH3, IDC_TXT_CH4, IDC_TXT_CH5, IDC_TXT_CH6, IDC_TXT_CH7, IDC_TXT_CH8,
+	IDC_X, IDC_Y, IDC_Z, IDC_RX, IDC_RY, IDC_RZ, IDC_SL0, IDC_SL1,
+	IDC_TXT_X, IDC_TXT_Y, IDC_TXT_Z, IDC_TXT_RX, IDC_TXT_RY, IDC_TXT_RZ, IDC_TXT_SL0, IDC_TXT_SL1,
+	IDC_SRC_X, IDC_SRC_Y, IDC_SRC_Z, IDC_SRC_RX, IDC_SRC_RY, IDC_SRC_RZ, IDC_SRC_SL0, IDC_SRC_SL1,
+	IDC_BTN_MAP, IDC_VJOY_DEVICE, IDC_BTN_MAPBTNS,
+	};
 
 
 SppTabJoy::SppTabJoy(void)
@@ -181,6 +192,7 @@ void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 	case HID_USAGE_SL1:
 		IdItem = IDC_SL1;
 		break;
+
 
 	default:
 		return;
@@ -418,6 +430,174 @@ void SppTabJoy::ShowButtonMapWindow(void)
 
 #pragma endregion
 
+/*
+	Called every time mouse hovers over a control that was previously registered for tool tip
+	Registration was done in CreateToolTip()
+	The Control ID (CtrlId) of the control is extracted from the input 'param' 
+	The correct text is displayed according to the Control ID
+*/
+void SppTabJoy::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+
+	switch (CtrlId) // Per-control tooltips
+	{
+
+	case IDC_BTN_MAP:
+		DisplayToolTip(lpttt, IDS_I_BTN_MAP);
+		break;
+
+	case IDC_VJOY_DEVICE:
+		DisplayToolTip(lpttt, IDS_I_VJOY_DEVICE, IDS_T_VJOY_DEVICE);
+		break;
+
+	case IDC_BTN_MAPBTNS:
+		DisplayToolTip(lpttt, IDS_I_BTN_MAPBTNS, IDS_T_BTN_MAPBTNS);
+		break;
+
+	case IDC_SRC_X:
+		DisplayToolTip(lpttt, IDS_I_SRC_X, IDS_T_SRC);
+		break;
+
+	case IDC_SRC_Y:
+		DisplayToolTip(lpttt, IDS_I_SRC_Y, IDS_T_SRC);
+		break;
+
+	case  IDC_SRC_Z:
+		DisplayToolTip(lpttt, IDS_I_SRC_Z, IDS_T_SRC);
+		break;
+
+	case  IDC_SRC_RX:
+		DisplayToolTip(lpttt, IDS_I_SRC_RX, IDS_T_SRC);
+		break;
+
+	case  IDC_SRC_RY:
+		DisplayToolTip(lpttt, IDS_I_SRC_RY, IDS_T_SRC);
+		break;
+
+	case  IDC_SRC_RZ:
+		DisplayToolTip(lpttt, IDS_I_SRC_RZ, IDS_T_SRC);
+		break;
+
+	case  IDC_SRC_SL0:
+		DisplayToolTip(lpttt, IDS_I_SRC_SL0, IDS_T_SRC);
+		break;
+
+	case  IDC_SRC_SL1:
+		DisplayToolTip(lpttt, IDS_I_SRC_SL1, IDS_T_SRC);
+		break;
+
+	case IDC_CH1:
+		DisplayToolTip(lpttt, IDS_I_CH1);
+		break;
+
+	case IDC_CH2:
+		DisplayToolTip(lpttt, IDS_I_CH2);
+		break;
+
+	case IDC_CH3:
+		DisplayToolTip(lpttt, IDS_I_CH3);
+		break;
+
+	case IDC_CH4:
+		DisplayToolTip(lpttt, IDS_I_CH4);
+		break;
+
+	case IDC_CH5:
+		DisplayToolTip(lpttt, IDS_I_CH5);
+		break;
+
+	case IDC_CH6:
+		DisplayToolTip(lpttt, IDS_I_CH6);
+		break;
+
+	case IDC_CH7:
+		DisplayToolTip(lpttt, IDS_I_CH7);
+		break;
+
+	case IDC_CH8:
+		DisplayToolTip(lpttt, IDS_I_CH8);
+		break;
+
+	case IDC_CHPP1:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP1);
+		break;
+
+	case IDC_CHPP2:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP2);
+		break;
+
+	case IDC_CHPP3:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP3);
+		break;
+
+	case IDC_CHPP4:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP4);
+		break;
+
+	case IDC_CHPP5:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP5);
+		break;
+
+	case IDC_CHPP6:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP6);
+		break;
+
+	case IDC_CHPP7:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP7);
+		break;
+
+	case IDC_CHPP8:
+		DisplayToolTip(lpttt, IDS_I_CHPP, IDS_T_CHPP8);
+		break;	
+	
+		case IDC_X:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_X);
+		break;
+
+	case IDC_Y:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_Y);
+		break;
+
+	case IDC_Z:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_Z);
+		break;
+
+	case IDC_RX:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_RX);
+		break;
+
+	case IDC_RY:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_RY);
+		break;
+
+	case IDC_RZ:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_RZ);
+		break;
+
+	case IDC_SL0:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_SL0);
+		break;
+
+	case IDC_SL1:
+		DisplayToolTip(lpttt, IDS_I_AXES, IDS_T_SL1);
+		break;
+	
+	default:
+		DisplayToolTip(lpttt, IDS_W_NOT_IMP, L"OOOPS", TTI_WARNING);
+		break;
+	}
+}
+
 INT_PTR CALLBACK MsgHndlTabJoyDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppTabJoy * DialogObj = NULL;
@@ -431,7 +611,17 @@ INT_PTR CALLBACK MsgHndlTabJoyDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 		DialogObj->MonitorPpCh(hDlg); // Init joystick feeder progress bar
 		DialogObj->MonitorCh(hDlg); // Init Raw channels progress bar
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
+		DialogObj->CreateToolTip(hDlg, g_Controls, sizeof(g_Controls)/sizeof(int)); // Initialize tooltip object
 		return (INT_PTR)TRUE;
+
+	case WM_NOTIFY:
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
+		};
+		break;
 
 	case WMSPP_DLG_MAPBTN:
 		DialogObj->SendMappingData((BTNArr *)wParam, (UINT)lParam);

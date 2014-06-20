@@ -351,6 +351,7 @@
 #define IDS_T_CH_FILTER                         40175
 #define IDS_I_COMBO_FILTERS                     40176
 #define IDS_T_COMBO_FILTERS                     40177
+#define IDS_T_SRC                               40179
 #define IDC_TXT_X                               40201
 #define IDC_TXT_Y                               40202
 #define IDC_TXT_Z                               40203
@@ -361,3 +362,18 @@
 #define IDC_TXT_SL1                             40208
 #define IDM_DISPLAY_WIZARD                      40209
 #define IDC_STAT_FILTER                         40210
+#define IDS_I_SRC_X                             40220
+#define IDS_I_SRC_Y                             40221
+#define IDS_I_SRC_Z                             40222
+#define IDS_I_SRC_RX                            40223
+#define IDS_I_SRC_RY                            40224
+#define IDS_I_SRC_RZ                            40225
+#define IDS_I_SRC_SL0                           40226
+#define IDS_I_SRC_SL1                           40227
+#define IDS_I_BTN_MAP                           40228
+#define IDS_T_BTN_MAP                           40229
+#define IDS_I_VJOY_DEVICE                       40230
+#define IDS_T_VJOY_DEVICE                       40231
+#define IDS_I_BTN_MAPBTNS                       40232
+#define IDS_T_BTN_MAPBTNS                       40233
+
