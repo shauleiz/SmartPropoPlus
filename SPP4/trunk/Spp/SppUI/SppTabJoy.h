@@ -33,6 +33,7 @@ public:
 	void SetNumberProcCh(UINT nCh);
 	void SetNumberRawCh(UINT nCh);
 	void SetRawChData(UINT iCh, UINT data);
+	void UpdateToolTip(LPVOID param);
 
 protected:
 	void UpdateChannelView(bool Raw, UINT nCh);
