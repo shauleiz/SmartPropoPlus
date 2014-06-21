@@ -18,7 +18,6 @@
 #include <tchar.h>
 
 #include <stdio.h>
-#include <Strsafe.h>
 #include <Shellapi.h>
 #include <fstream>
 #include <iostream>
@@ -30,6 +29,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include <Strsafe.h>
 
 using namespace std;
 

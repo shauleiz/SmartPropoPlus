@@ -22,7 +22,6 @@ using namespace std;
 #include <time.h>
 #include <tchar.h>
 #include <stdio.h>
-#include <Strsafe.h>
 #include <Shellapi.h>
 #include <fstream>
 #include <iostream>
@@ -32,3 +31,4 @@ using namespace std;
 #include <thread>
 #include <mutex>
 #include <array>
+#include <Strsafe.h>

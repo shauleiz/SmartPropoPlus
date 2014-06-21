@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include <StrSafe.h>
 #include <d2d1.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
@@ -16,6 +15,7 @@
 #include "WinMessages.h"
 #include "SppProcess.h"
 #include <crtdbg.h>
+#include <StrSafe.h>
 /* Globals */
 int gDebugLevel = 0;
 FILE * gCtrlLogFile = NULL;

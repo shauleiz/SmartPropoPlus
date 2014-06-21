@@ -113,7 +113,7 @@ void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 	SendMessage(hEdit,EM_SETSEL    , lr, lr);
 	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)src);
 	// Code
-	swprintf(prtcode, 10,L"%d>: ", Code);
+	swprintf_s(prtcode, 10,L"%d>: ", Code);
 	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
 	SendMessage(hEdit,EM_SETSEL    , lr, lr);
 	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)prtcode);

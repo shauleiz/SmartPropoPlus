@@ -18,11 +18,11 @@
 #include <time.h>
 #include <tchar.h>
 #include <stdio.h>
-#include <Strsafe.h>
 #include <Shellapi.h>
 #include <mutex>
 #include <array>
 #include <Resource.h>
+#include <Strsafe.h>
 
 
 // TODO: reference additional headers your program requires here
