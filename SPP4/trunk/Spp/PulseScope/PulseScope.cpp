@@ -2,9 +2,9 @@
 //
 
 #include "stdafx.h"
-#include <StrSafe.h>
 #include <Windowsx.h>
 #include "PulseScope.h"
+#include <StrSafe.h>
 
 
 // This is an example of an exported variable
