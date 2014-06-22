@@ -97,8 +97,33 @@ function  IsX86: Boolean; Forward;
 function  GetAppId(Param: String): String; Forward;
 function  vJoyUnInstaller: String; Forward;
 procedure vJoyUninstal; Forward;              
+function InitializeSetup(): Boolean; Forward;
+function IsUpgrade(): Boolean;  Forward;
+function GetUninstallString(): String; Forward;
+function UnInstallOldVersion(): Integer; Forward;
 
-(*  event functions *)
+(*  event functions *)                       
+
+(*
+	InitializeSetup() is an event function that is 
+	Called during Setup's initialization.
+	Setup aborted if function returns False. 
+	
+	In this case:
+  Always Returns True (never abort installation)
+*)
+function InitializeSetup(): Boolean;
+
+begin
+
+	Log('InitializeSetup()');
+    if (IsUpgrade()) then
+    begin
+      UnInstallOldVersion();
+   end;
+ 
+  Result := True; 
+end;
 
 (* Called with every step of uninstaller *)
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
@@ -118,6 +143,53 @@ end;
 function IsX86: Boolean;
 begin
   Result := ProcessorArchitecture = paX86;
+end;
+
+/////////////////////////////////////////////////////////////////////
+function IsUpgrade(): Boolean;
+begin
+  Result := (GetUninstallString() <> '');
+end;
+
+/////////////////////////////////////////////////////////////////////
+function GetUninstallString(): String;
+var
+  sUnInstPath: String;
+  sUnInstallString: String;
+begin
+  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppId")}_is1');
+  sUnInstallString := '';
+  if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
+    RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
+  Result := sUnInstallString;
+end;
+
+
+/////////////////////////////////////////////////////////////////////
+
+function UnInstallOldVersion(): Integer;
+var
+  sUnInstallString: String;
+  iResultCode: Integer;
+begin
+// Return Values:
+// 1 - uninstall string is empty
+// 2 - error executing the UnInstallString
+// 3 - successfully executed the UnInstallString
+
+  // default return value
+  Result := 0;
+
+  // get the uninstall string of the old app
+  sUnInstallString := GetUninstallString();
+  if sUnInstallString <> '' then begin
+    sUnInstallString := RemoveQuotes(sUnInstallString);
+    if Exec(sUnInstallString, '/SILENT  /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated  , iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
 end;
 
 (* Uninstalls vJoy *)
