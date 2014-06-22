@@ -71,11 +71,14 @@ Source: "{#ExternFolder}\{#vJoyInstaller}"; DestDir: "{app}"; Flags: deleteafter
 ; Icon files
 Source: "UnInstaller.ico"; DestDir: "{app}";
 
+[Tasks]
+Name: desktopicon;   Description: "Create a &desktop icon" ; Flags: unchecked; 
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "{app}" ;
 Name: "{group}\Uninstall SmartPropoPlus"; Filename: {uninstallexe}; IconFilename: {app}\UnInstaller.ico; 
 Name: "{group}\SmartPropoPlus Alpha Web Site"; Filename: "http://smartpropoplus.sourceforge.net/alpha" ; WorkingDir: "{app}"
+Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "{app}" ; Tasks: desktopicon
 
 ;[UninstallRun]
 ;Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent " ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated
