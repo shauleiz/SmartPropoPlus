@@ -22,6 +22,10 @@ public:
 	void EnableControls(UINT id, controls * ctrl);
 	void EnableControlsBtn(UINT id, controls * ctrl);
 	void SetButtonValues(UINT id, BTNArr * BtnVals);
+	void InitDevices(HWND hDlg);
+	void JoystickStopped(UCHAR iDev);
+	void ReportDeviceSelection(void);
+	void AddDevice(int vJoyID, bool Selected);
 
 protected:
 	void CreateControls(UINT nButtons);
@@ -30,6 +34,7 @@ protected:
 	void CreateIndicator(UINT);
 	HWND CreateStatics(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle, const RECT& rc,const int id,const wstring& caption);
 	void InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max=0x03ff0000,ULONG min=0);
+	void GetExistingDevices(HWND hDlg);
 
 protected:
 	HWND m_hDlg;

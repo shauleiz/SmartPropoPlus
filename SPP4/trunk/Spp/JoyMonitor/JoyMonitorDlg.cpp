@@ -1,9 +1,11 @@
 #include "stdafx.h"
+#include "Windowsx.h"
 #include "Commctrl.h"
 #include "resource.h"
 #include "public.h"
 #include "smartpropoplus.h"
 #include "JoyMonitorDlg.h"
+
 
 // IDs of Joystick monitoring progress bars
 static const int g_JoyBarId[] = {IDC_X,IDC_Y,IDC_Z,IDC_RX,IDC_RY,IDC_RZ,IDC_SL0,IDC_SL1};
@@ -35,10 +37,37 @@ CJoyMonitorDlg::CJoyMonitorDlg(HINSTANCE hInstance, HWND	ConsoleWnd) :
 	return;
 }
 
+void CJoyMonitorDlg::ReportDeviceSelection(void)
+{
+	HWND hDeviceCB = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
+	int sel = ComboBox_GetCurSel(hDeviceCB);
+	int id  = ComboBox_GetItemData(hDeviceCB, sel);
+	if (id>0)
+		SendMessage(m_ConsoleWnd, WMSPP_DLG_VJOYSEL, (WPARAM)id, 0);
+}
+
 // Init the progress bars that monitor the feedback from the joystick
 void CJoyMonitorDlg::InitJoyMonitor(HWND hDlg)
 {	
 	InitBars(hDlg, 0xFF, m_vJoyBarId,0xFFFF0000);
+}
+
+// Add vJoy device to the combo box by it's ID
+// If it is marked as selected then select it
+void CJoyMonitorDlg::AddDevice(int vJoyID, bool Selected)
+{
+	wstring EntryCB;
+
+	// Get the Combo Box
+	HWND hDeviceCB = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
+	EntryCB = L"vJoy Device #" + to_wstring (vJoyID);
+	int index = SendMessage(hDeviceCB,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) EntryCB.c_str());
+	SendMessage(hDeviceCB,(UINT) CB_SETITEMDATA,(WPARAM) index,(LPARAM) vJoyID);
+	if (Selected)
+	{
+		SendMessage(hDeviceCB,(UINT) CB_SETCURSEL,(WPARAM)index,(LPARAM) 0);
+		m_CurJoy = vJoyID;
+	}
 }
 
 // Initialize array of progress-bars that desplay data such as channel position or axes
@@ -100,7 +129,7 @@ void CJoyMonitorDlg::CreateButtonLable(UINT iButton)
 	// Constants
 	UINT RowSpace = ROWSPACE;			// Space between rows
 	UINT ColSpace = COLSPACE;		// Space between columns
-	RECT rc = {20,130,100,160};	// Text rectangle
+	RECT rc = {20,130,50,160};	// Text rectangle
 
 	// Location
 	UINT iCol = (iButton-1)/16; // Zero-based column index
@@ -346,6 +375,13 @@ void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 
 }
 
+void CJoyMonitorDlg::JoystickStopped(UCHAR iDev)
+{
+	wstring wsMessage;
+
+	wsMessage = L"vJoy Device #" + to_wstring(iDev) + L" Stopped";
+	MessageBox(m_hDlg, wsMessage.c_str(), L"Device Changed", MB_OK);
+}
 
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -354,6 +390,15 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	switch (message)
 	{
+
+	case WM_COMMAND:
+	if  (LOWORD(wParam)  == IDC_VJOY_DEVICE && HIWORD(wParam) == CBN_SELENDOK   )
+	{
+		DialogObj->ReportDeviceSelection();
+		break;
+	};
+
+		break; // WM_COMMAND
 
 	case WM_DESTROY:
 			DestroyWindow(hDlg);
@@ -368,16 +413,8 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WM_INITDIALOG:
 		DialogObj = (CJoyMonitorDlg *)lParam;
 		DialogObj->InitJoyMonitor(hDlg); // Init joystick monitor progress bar
-
 		break;
 
-	case WMSPP_JMON_AXIS:
-		DialogObj->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
-		break;
-
-	case WMSPP_JMON_BTN:
-		DialogObj->SetButtonValues((UINT)wParam, (BTNArr *)lParam);
-		break;
 
 	case VJOYDEV_SETAVAIL:
 		DialogObj->EnableControls((UINT)wParam, (controls*)lParam);		

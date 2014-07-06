@@ -14,7 +14,8 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
-CJoyMonitorDlg * Dialog = NULL;
+CJoyMonitorDlg * Dialog = NULL;					// Pointer to the dialog box object
+int	CurrDeviceId = -1;							// ID of vJoy device that is monitorred
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -22,6 +23,7 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void				SetAvailableControls(UINT id, HWND hDlg);
+int					DetectAvailableDevices(HWND hDlg);			
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -123,16 +125,45 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    Dialog	= new CJoyMonitorDlg(hInstance, hWnd);
 
    	// Open vJoy monitor
-	bool MonitorOk = vJoyMonitorInit(hInstance, Dialog->GetHandle());
+	bool MonitorOk = vJoyMonitorInit(hInstance, hWnd);
+
+	// Get available vJoy devices and update combo box
+	int selected = DetectAvailableDevices( Dialog->GetHandle());
 
 	//
-	SetAvailableControls(1, Dialog->GetHandle());
+	SetAvailableControls(selected, Dialog->GetHandle());
 
 	// Start polling vJoy Device 1 (Hard coded)
-	StartPollingDevice(1);
+	StartPollingDevice(selected);
+
+	CurrDeviceId = selected;
 
    return TRUE;
 }
+
+// Scan for the existing vJoy devices and set one of them as current
+// Call the dialog box for every detected device
+// Call the  dialog box to mark the detected one
+int DetectAvailableDevices(HWND hDlg)
+{
+	bool exist=false;
+	int sel=-1;
+
+	// Loop on all possible vJoy devices
+	for (int i=1; i<=16; i++)
+	{
+		if(GetVJDStatus(i) == VJD_STAT_FREE  || GetVJDStatus(i) == VJD_STAT_BUSY)
+		{
+			Dialog->AddDevice(i, !exist);
+			if (!exist)
+				sel = i;
+			exist=true;
+		}
+	}; // Loop
+
+	return sel;
+}
+
 
 void SetAvailableControls(UINT id, HWND hDlg)
 {
@@ -185,9 +216,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: Add any drawing code here...
 		EndPaint(hWnd, &ps);
 		break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WMSPP_JMON_AXIS:
+		Dialog->SetJoystickAxisData((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
+		break;
+
+	case WMSPP_JMON_BTN:
+		Dialog->SetButtonValues((UINT)wParam, (BTNArr *)lParam);
+		break;
+
+	case WMSPP_JMON_STP:
+		Dialog->JoystickStopped((UCHAR)wParam);		
+		break;
+
+	case WMSPP_DLG_VJOYSEL:
+		SetAvailableControls((UINT)wParam, Dialog->GetHandle());
+		StopPollingDevice(CurrDeviceId);
+		StartPollingDevice((UINT)wParam);
+
+		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
