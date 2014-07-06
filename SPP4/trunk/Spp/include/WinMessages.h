@@ -84,6 +84,7 @@ UINT const WMSPP_JOY_QLT	=			BASE_SUB+56;			// Joystick data Quality: Payload is
 UINT const WMSPP_PRCS_DCDR	=			BASE_SUB+57;			// Send detected encoding: WPARAM = encoder/NULL, LPARAM = 0:Valid, 1:Not found, 2:Timeout reached
 UINT const SET_DEC_AUTO		=			BASE_SUB+58;			// Send decoding auto mode: WPARAM = Auto true/false
 UINT const WMSPP_DLG_FLTR  =			BASE_SUB+59;			// SEND Filter DLL file name and selected Filter name
+UINT const WMSPP_JMON_STP	=			BASE_SUB+60;			// Inform that polling stopped for a given vJoy device
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

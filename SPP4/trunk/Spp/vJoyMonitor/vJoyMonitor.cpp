@@ -82,7 +82,12 @@ Synchronization:
 >> Stop: If one or more devices are not to be polled - call Suspend Polling and go to loop.
 >> Start:  If one or more devices are to be polled - call Poll Device  and go to loop.
 
-Interface:
+**** Interface: *****
+** Functions **
+vJoyMonitorInit(hInstance, ParentWnd)
+> Initialize the interface
+> Register target window for position-data messages
+
 StartPolling(ID): Request to start polling a (vJoy) device by ID.
 > Convert vJoy ID to Unique ID (string)
 > Set  Request Polling - it will be treated by Central Thread.
@@ -97,7 +102,19 @@ GetNumDevices()
 GetNumButtons(ID)
 ExistAxis(ID, Axis)
 
-Major internal members:
+** Messages **
+WMSPP_JMON_AXIS: Posts axis data
+wParam: 
++ Upper 16bits = Axis (HID_USAGE_X to HID_USAGE_SL0 )
++ Lower 16bits = iDev (vJoyID)
+lParam: Axis Value
+
+WMSPP_JMON_BTN: Posts buttons data
+wParam: iDev (vJoyID)
+lParam: address BTNArr holding button state (Array of 128 bytes)
+
+**** Major internal members: ****
+** Methods **
 PollDevice( Unique ID): Start polling:
 > Set Enable Polling
 > Start Polling thread
@@ -109,6 +126,7 @@ SuspendPolling(Unique ID): Stop Polling
 > Resets Is Polling
 > Clean pointer to thread
 
+** Variables **
 int m_EnumerateCounter:
 > Set to 1 on creation to force first enumeration
 > Incremented with every change in the system
@@ -224,7 +242,7 @@ After each responce - Continue & Wait.
 */
 void CvJoyMonitor::CentralThread()
 {
-	//THREAD_NAME("CvJoyMonitor Central thread (Loop)");
+	THREAD_NAME("CvJoyMonitor Central thread (Loop)");
 
 	while (m_CentralKeepalive)
 	{
@@ -495,6 +513,9 @@ void CvJoyMonitor::_PollingThread(CvJoyMonitor * This, Device * dev)
 	THREAD_NAME((char *)ThreadName.data());
 	if (This)
 		This->PollingThread(dev);
+
+	// Report that this device stopped polling
+	This->PollingStopped(dev);
 }
 
 // This is the polling loop - running on a dedicated thread
@@ -618,6 +639,15 @@ void CvJoyMonitor::StopPollingDevice(UINT vJoyID)
 
 	lock_guard<recursive_mutex> lock(m_mx_ctSuspend);
 	m_ctSuspend.insert(UniqueID);
+}
+
+void CvJoyMonitor::PollingStopped(Device * dev)
+{
+	if (dev->Exist && dev->EnPolling)
+	{
+		UCHAR iDevice = dev->vJoyID;
+		SendMessageTimeout (m_ParentWnd, WMSPP_JMON_STP, iDevice , 0, SMTO_ABORTIFHUNG, 1000, 0);
+	}
 }
 
 // Test if a given Axis esists in a given vJoy device

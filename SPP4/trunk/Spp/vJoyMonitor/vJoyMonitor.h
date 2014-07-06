@@ -131,6 +131,7 @@ public:
 	void IncEnumCount(void);
 	int  GetIdByIndex(int iDevice);
 	void StopPollingDevices(void);
+    void PollingStopped(Device * dev);
 
 // Class helper functions
 private:
