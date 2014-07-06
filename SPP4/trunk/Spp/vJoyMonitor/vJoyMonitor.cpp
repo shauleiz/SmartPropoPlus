@@ -261,7 +261,7 @@ void CvJoyMonitor::CentralThread()
 			{
 				SuspendPolling(*(m_ctSuspend.begin()));
 				continue;
-				lock_ctSuspend;
+				//lock_ctSuspend;
 			};
 
 			// Need to create polling threads? - if m_mx_quPoll is not empty then yes

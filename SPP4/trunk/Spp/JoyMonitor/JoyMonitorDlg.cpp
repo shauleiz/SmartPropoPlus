@@ -43,7 +43,10 @@ void CJoyMonitorDlg::ReportDeviceSelection(void)
 	int sel = ComboBox_GetCurSel(hDeviceCB);
 	int id  = ComboBox_GetItemData(hDeviceCB, sel);
 	if (id>0)
+	{
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_VJOYSEL, (WPARAM)id, 0);
+		m_CurJoy = id;
+	};
 }
 
 // Init the progress bars that monitor the feedback from the joystick
@@ -351,6 +354,8 @@ void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 	HWND  hRedDot, hGreenDot, hLabel;
 
 	//return;
+	if (m_CurJoy != id)
+		return;
 
 	for (UINT i=0; i<MAX_DISP_BUTTONS; i++)
 	{
