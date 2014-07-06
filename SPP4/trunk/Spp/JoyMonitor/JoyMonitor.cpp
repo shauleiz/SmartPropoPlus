@@ -236,7 +236,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetAvailableControls((UINT)wParam, Dialog->GetHandle());
 		StopPollingDevice(CurrDeviceId);
 		StartPollingDevice((UINT)wParam);
-
+		CurrDeviceId = (UINT)wParam;
 		break;
 
 	default:
