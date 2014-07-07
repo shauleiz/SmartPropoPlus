@@ -9,8 +9,6 @@
 #define IDI_SMALL                               108
 #define IDC_JOYMONITOR                          109
 #define IDD_JOY                                 111
-#define IDB_GREENDOT1                           113
-#define IDB_GREENDOT2                           115
 #define IDB_GREENDOT                            118
 #define IDB_GREYDOT                             120
 #define IDB_REDDOT                              122
