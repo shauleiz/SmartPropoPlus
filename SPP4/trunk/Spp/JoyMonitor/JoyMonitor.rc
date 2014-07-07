@@ -7,9 +7,8 @@
 //#include <richedit.h>
 #include "resource.h"
 
-#ifndef IDC_STATIC
-#define IDC_STATIC (-1)
-#endif
+
+
 
 //
 // Bitmap resources
@@ -64,7 +63,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 1
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDD_JOY DIALOG 0, 0, 339, 352
-STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
+STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_GROUP | WS_POPUP | WS_SYSMENU
 EXSTYLE WS_EX_WINDOWEDGE
 CAPTION "vJoy Monitor"
 FONT 8, "Ms Shell Dlg"
@@ -123,21 +122,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_JOYMONITOR     ICON           "JoyMonitor.ico"
 
 
-//LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-//IDI_SMALL          ICON           "small.ico"
-
 
 //
 // Version Information resources
 //
-#define FILEVER "0,4,0,0"
-
-#ifdef X64
-#define PRODVER "0,4,0,0 (x64) Build 20140707"
-#else
-#define PRODVER "0,4,0,0 (x86) Build 20140707"
-#endif
-
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 1 VERSIONINFO
     FILEVERSION     0,4,0,0
@@ -155,14 +143,14 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
             VALUE "Comments", "JoyMonitor - Monitor vJoy devices"
             VALUE "CompanyName", "Shaul Eizikovich"
             VALUE "FileDescription", "JoyMonitor"
-            VALUE "FileVersion", FILEVER
+            VALUE "FileVersion", "0,4,0,0"
             VALUE "InternalName", "JoyMonitor.exe"
             VALUE "LegalCopyright", "Copyright © 2014 Shaul Eizikovich"
             VALUE "LegalTrademarks", ""
             VALUE "OriginalFilename", "JoyMonitor.EXE"
             VALUE "PrivateBuild", "0.0.3.1"
             VALUE "ProductName", "SmartPropoPlus Application"
-            VALUE "ProductVersion", PRODVER
+            VALUE "ProductVersion", "0,4,0,0 (x86) Build 20140707"
             VALUE "SpecialBuild", "0.0.3.1"
         }
     }

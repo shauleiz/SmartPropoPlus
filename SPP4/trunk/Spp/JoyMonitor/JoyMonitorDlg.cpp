@@ -41,7 +41,7 @@ void CJoyMonitorDlg::ReportDeviceSelection(void)
 {
 	HWND hDeviceCB = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
 	int sel = ComboBox_GetCurSel(hDeviceCB);
-	int id  = ComboBox_GetItemData(hDeviceCB, sel);
+	int id  = (int)ComboBox_GetItemData(hDeviceCB, sel);
 	if (id>0)
 	{
 		SendMessage(m_ConsoleWnd, WMSPP_DLG_VJOYSEL, (WPARAM)id, 0);
@@ -64,7 +64,7 @@ void CJoyMonitorDlg::AddDevice(int vJoyID, bool Selected)
 	// Get the Combo Box
 	HWND hDeviceCB = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
 	EntryCB = L"vJoy Device #" + to_wstring (vJoyID);
-	int index = SendMessage(hDeviceCB,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) EntryCB.c_str());
+	int index = (int)SendMessage(hDeviceCB,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM) EntryCB.c_str());
 	SendMessage(hDeviceCB,(UINT) CB_SETITEMDATA,(WPARAM) index,(LPARAM) vJoyID);
 	if (Selected)
 	{
