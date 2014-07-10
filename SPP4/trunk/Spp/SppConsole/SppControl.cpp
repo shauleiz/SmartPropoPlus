@@ -628,7 +628,10 @@ void MessageLoop(void)
 		{
 			// Handle message from a new SPP process
 			if (WM_INTERSPPCONSOLE == winmsg.message)
+			{
 				Dialog->Show();
+				Dialog->Iconified(false);
+			};
 
 			TranslateMessage(&winmsg); 
 			DispatchMessage(&winmsg); 
