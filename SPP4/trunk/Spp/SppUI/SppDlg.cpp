@@ -74,6 +74,7 @@ void SppDlg::Show()
 {
 	m_WizMinimized = false;
 	ShowWindow(m_hDlg, SW_SHOW);
+	SetForegroundWindow(m_hDlg);
 	UpdateWindow(m_hDlg);	
 }
 

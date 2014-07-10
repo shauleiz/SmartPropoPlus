@@ -583,7 +583,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_OK:
 			return AppExit();
 
-			// GUI became iconified or switched to wizard mode
+		// GUI became iconified or switched to wizard mode
 		case WMSPP_DLG_ICONFD:
 			if (wParam)
 				Conf->Wizard(false);
@@ -619,12 +619,17 @@ void MessageLoop(void)
 
 	while( (bRet = GetMessage( &winmsg, NULL, 0, 0 )) != 0)
 	{ 
+
 		if (bRet == -1)
 		{
 			// handle the error and possibly exit
 		}
 		else
 		{
+			// Handle message from a new SPP process
+			if (WM_INTERSPPCONSOLE == winmsg.message)
+				Dialog->Show();
+
 			TranslateMessage(&winmsg); 
 			DispatchMessage(&winmsg); 
 		}
