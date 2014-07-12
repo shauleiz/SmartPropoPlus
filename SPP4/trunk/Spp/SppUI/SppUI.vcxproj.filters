@@ -45,6 +45,9 @@
     <ClInclude Include="SppTabJoy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SppTabAdv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SppDlg.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SppTabJoy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SppTabAdv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
