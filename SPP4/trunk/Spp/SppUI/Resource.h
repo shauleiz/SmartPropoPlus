@@ -367,6 +367,14 @@
 #define IDS_T_VJOY_DEVICE                       40190
 #define IDS_I_BTN_MAPBTNS                       40191
 #define IDS_T_BTN_MAPBTNS                       40192
+#define IDS_I_CH_LOG                            40193
+#define IDS_T_CH_LOG                            40194
+#define IDS_I_CH_INSIG                          40195
+#define IDS_T_CH_INSIG                          40196
+#define IDS_I_CH_PULSE                          40197
+#define IDS_T_CH_PULSE                          40198
+#define IDS_I_PLS_SCOPE                         40199
+#define IDS_T_PLS_SCOPE                         40200
 #define IDC_TXT_X                               40201
 #define IDC_TXT_Y                               40202
 #define IDC_TXT_Z                               40203
