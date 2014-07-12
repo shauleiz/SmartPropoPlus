@@ -68,6 +68,7 @@ SppDlg::~SppDlg(void)
 	delete(m_hrsrc.TabDcdr);
 	delete(m_hrsrc.TabFltr);
 	delete(m_hrsrc.TabJoy);
+	delete(m_hrsrc.TabAdvnc);
 }
 
 void SppDlg::Show()
@@ -371,7 +372,16 @@ int SppDlg::InitTabs(HWND hDlg)
 	tie.pszText = TEXT("Joystick");
 	tie.lParam = m_hrsrc.Display->GetId();
 	tie.iImage = IJOYSTICK;
-    TabCtrl_InsertItem(m_hrsrc.hwndTab, IJOYSTICK, &tie); 
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, IJOYSTICK, &tie);
+
+	// Advanced
+	m_hrsrc.TabAdvnc = new SppTabAdv(m_hInstance, m_hrsrc.hwndTab);
+	m_hrsrc.Display = m_hrsrc.TabAdvnc;
+	tie.pszText = TEXT("Advanced");
+	tie.lParam = m_hrsrc.Display->GetId();
+	tie.iImage = IADVANCED ;
+    TabCtrl_InsertItem(m_hrsrc.hwndTab, IADVANCED , &tie);
+
 
 	// Add icons
 	TabCtrl_SetPadding(m_hrsrc.hwndTab,10,5);
@@ -410,6 +420,7 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 	m_hrsrc.TabDcdr->Hide();
 	m_hrsrc.TabFltr->Hide();
 	m_hrsrc.TabJoy->Hide();
+	m_hrsrc.TabAdvnc->Hide();
 
 	// Show only the selected dialog box
 	switch (tie.lParam)
@@ -1683,7 +1694,7 @@ HIMAGELIST SppDlg::CreateTabsImageList(void)
 	HIMAGELIST hList;
 	HBITMAP bitmap;
 
-	int icons[] = {IDI_AUDIO, IDI_DECODER, IDI_FILTER, IDI_JOYSTICK}; // TODO: Replace icons 
+	int icons[] = {IDI_AUDIO, IDI_DECODER, IDI_FILTER, IDI_JOYSTICK, IDI_ADVANCED};
 	// Creat a list of 32x32 images that may contain up to 4 icons
 	hList = ImageList_Create(32, 32, ILC_COLOR32, ILAST, 0); // 
 	if (!hList)

@@ -164,6 +164,7 @@
     <ClInclude Include="SppDlg.h" />
     <ClInclude Include="SppLog.h" />
     <ClInclude Include="SppTab.h" />
+    <ClInclude Include="SppTabAdv.h" />
     <ClInclude Include="SppTabAudio.h" />
     <ClInclude Include="SppTabDcdr.h" />
     <ClInclude Include="SppTabFltr.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="SppDlg.cpp" />
     <ClCompile Include="SppLog.cpp" />
     <ClCompile Include="SppTab.cpp" />
+    <ClCompile Include="SppTabAdv.cpp" />
     <ClCompile Include="SppTabAudio.cpp" />
     <ClCompile Include="SppTabDcdr.cpp" />
     <ClCompile Include="SppTabFltr.cpp" />
