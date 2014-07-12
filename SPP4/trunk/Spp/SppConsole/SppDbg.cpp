@@ -75,7 +75,8 @@ void SppDbg::StopDbgInputSignal(void)
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = (LPCWSTR)L"txt";
-	GetSaveFileName(&ofn);
+	if (!GetSaveFileName(&ofn))
+		return;
 
 	// Move tempfile to selected destination
 	BOOL moved = MoveFileEx(m_FileDbgInSigName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED);
@@ -100,7 +101,8 @@ void SppDbg::StopDbgPulse(void)
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_OVERWRITEPROMPT;
     ofn.lpstrDefExt = (LPCWSTR)L"txt";
-	assert(GetSaveFileName(&ofn));
+	if (!GetSaveFileName(&ofn))
+		return;
 
 	// Move tempfile to selected destination
 	BOOL moved = MoveFileEx(m_FileDbgPulseName, ofn.lpstrFile, MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED);
