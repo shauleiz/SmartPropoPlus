@@ -69,6 +69,51 @@ void  SppTabAdv::RecordInSignal(WORD cb)
 
 }
 
+/*
+	Called every time mouse hovers over a control that was previously registered for tool tip
+	Registration was done in CreateToolTip()
+	The Control ID (CtrlId) of the control is extracted from the input 'param' 
+	The correct text is displayed according to the Control ID
+*/
+void SppTabAdv::UpdateToolTip(LPVOID param)
+{
+	LPNMTTDISPINFO lpttt = (LPNMTTDISPINFO)param;
+	TCHAR ControlText[MAX_MSG_SIZE] ={0};
+	TCHAR TitleText[MAX_MSG_SIZE] ={0};
+	int ControlTextSize = 0;
+
+	// Since the id field of the control in the tooltip was defined as a handle - it has to be converted back
+	int CtrlId = GetDlgCtrlID((HWND)lpttt->hdr.idFrom);
+
+	// Handle to the tooltip window
+	HWND hToolTip = lpttt->hdr.hwndFrom;
+
+	switch (CtrlId) // Per-control tooltips
+	{
+	case IDC_CH_LOG:
+		DisplayToolTip(lpttt, IDS_I_CH_LOG, IDS_T_CH_LOG);
+		break;
+
+	case IDC_CH_INSIG:
+		DisplayToolTip(lpttt, IDS_I_CH_INSIG, IDS_T_CH_INSIG);
+		break;
+
+	case IDC_CH_PULSE:
+		DisplayToolTip(lpttt, IDS_I_CH_PULSE, IDS_T_CH_PULSE);
+		break;
+
+	case IDC_PLS_SCOPE:
+		DisplayToolTip(lpttt, IDS_I_PLS_SCOPE, IDS_T_PLS_SCOPE);
+		break;
+
+	default:
+		DisplayToolTip(lpttt, IDS_W_NOT_IMP, L"OOOPS", TTI_WARNING);
+		break;
+	}
+
+}
+
+
 INT_PTR CALLBACK MsgHndlTabAdvDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static SppTabAdv * DialogObj = NULL;
@@ -104,6 +149,14 @@ INT_PTR CALLBACK MsgHndlTabAdvDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 		{
 			DialogObj->RecordPulse(LOWORD(wParam));
 			break;
+		};
+
+	case WM_NOTIFY:
+		// Tooltips
+		if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+		{
+			DialogObj->UpdateToolTip((LPVOID)lParam);
+			return  (INT_PTR)TRUE;
 		};
 
 	default:

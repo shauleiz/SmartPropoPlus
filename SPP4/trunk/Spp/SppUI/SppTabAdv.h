@@ -12,6 +12,7 @@ public:
 	void ShowLogWindow(WORD cb);
 	void RecordInSignal(WORD cb);
 	void RecordPulse(WORD cb);
+	void UpdateToolTip(LPVOID param);
 
 };
 

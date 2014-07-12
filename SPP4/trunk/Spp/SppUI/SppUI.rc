@@ -641,6 +641,14 @@ STRINGTABLE
     IDS_T_VJOY_DEVICE             "Target Device"
     IDS_I_BTN_MAPBTNS             "Select R/C Channels to feed joystick buttons"
     IDS_T_BTN_MAPBTNS             "Map joystick buttons"
+    IDS_I_CH_LOG                  "Click to display log window\r\nClick again to Hide it"
+    IDS_T_CH_LOG                  "Show Log Window"
+    IDS_I_CH_INSIG                "Click once to start logging\r\nClick again to stop and create a log file"
+    IDS_T_CH_INSIG                "Log Audio signal"
+    IDS_I_CH_PULSE                "Click once to start logging\r\nClick again to stop and create a log file"
+    IDS_T_CH_PULSE                "Log Pulses"
+    IDS_I_PLS_SCOPE               "Check to start Display\r\nUn-check to stop"
+    IDS_T_PLS_SCOPE               "Display Pulse Signal"
 }
 
 
