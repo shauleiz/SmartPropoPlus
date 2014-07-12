@@ -448,6 +448,11 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 		m_hrsrc.TabJoy->Show();
 		m_hrsrc.Display = m_hrsrc.TabJoy;
 		break;
+
+	case IDD_ADVANCED:
+		m_hrsrc.TabAdvnc->Show();
+		m_hrsrc.Display = m_hrsrc.TabAdvnc;
+		break;
 	};
 
 
@@ -1293,6 +1298,7 @@ void  SppDlg::SetPulseScope(bool cb)
 void  SppDlg::MonitorCh(bool cb)
 {
 
+#if 0
 	// Set checkbox
 	HWND hChkBox = GetDlgItem(m_hDlg,  IDC_CH_MONITOR);
 	if (!hChkBox)
@@ -1305,6 +1311,8 @@ void  SppDlg::MonitorCh(bool cb)
 
 	ClearChDisplay(IDC_CHPP1, IDC_CHPP8, RGB(0,0,0xFF));
 	ClearChDisplay(IDC_CH1, IDC_CH8, RGB(0,0xFF,0));
+
+#endif // 0
 
 }
 
@@ -2144,12 +2152,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 		}
 
-		if (LOWORD(wParam) == IDC_CH_MONITOR)
-		{
-			DialogObj->MonitorPrcCh(LOWORD(wParam));
-			DialogObj->MonitorRawCh(LOWORD(wParam));
-			break;
-		};
+		//if (LOWORD(wParam) == IDC_CH_MONITOR)
+		//{
+		//	DialogObj->MonitorPrcCh(LOWORD(wParam));
+		//	DialogObj->MonitorRawCh(LOWORD(wParam));
+		//	break;
+		//};
 
 		if (LOWORD(wParam) == IDC_PLS_SCOPE)
 		{
@@ -2399,6 +2407,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_DLG_FILTER:
 	case WMSPP_DLG_VJOYSEL:
 	case WMSPP_DLG_MAP:
+	case WMSPP_DLG_PLSSCOP:
+	case WMSPP_DLG_LOG:
+	case WMSPP_DLG_INSIG:
+	case WMSPP_DLG_PULSE:
 		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 		break;
 

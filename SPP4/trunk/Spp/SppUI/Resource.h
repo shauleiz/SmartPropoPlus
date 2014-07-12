@@ -32,7 +32,6 @@
 #define IDI_W7                                  176
 #define IDD_ADVANCED                            178
 #define IDI_ADVANCED                            180
-#define IDC_CH_MONITOR                          1000
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001
 #define IDC_CHPP2                               1002
