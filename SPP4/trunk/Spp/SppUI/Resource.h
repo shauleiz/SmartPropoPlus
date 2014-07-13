@@ -32,6 +32,7 @@
 #define IDI_W7                                  176
 #define IDD_ADVANCED                            178
 #define IDI_ADVANCED                            180
+#define IDI_BACKGROUND                          182
 #define IDC_CHPP1                               1001
 #define ID_APPLY                                1001
 #define IDC_CHPP2                               1002

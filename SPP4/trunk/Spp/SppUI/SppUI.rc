@@ -685,6 +685,10 @@ IDI_FILTER         ICON           ".\\FilterBlue.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_BACKGROUND     ICON           ".\\BackGround.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_JOYSTICK       ICON           ".\\vJoyRed.ico"
 
 
