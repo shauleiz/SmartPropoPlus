@@ -45,6 +45,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 	m_hInstance = hInstance;
 	m_ConsoleWnd = ConsoleWnd;
 	m_StreamingState = true;
+	m_hTarget = NULL;
 
 	// Create the dialog box (Hidden) 
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg, (LPARAM)this);	
@@ -53,6 +54,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
 	m_tnid.cbSize = 0;
 	TaskBarAddIcon(IDI_SPPCONSOLE, CONSOLE_TT_DEF, NULL);
 	m_color = 0x0;
+
 
 	return;
 }
@@ -122,6 +124,47 @@ bool SppDlg::MsgLoop(void)
 	return true;
 }
 
+void SppDlg::InitBackgroundImage(HWND hDlg)
+{
+	// Find the location of the center of the tab control
+	// Create a rectangle into which the image will fit
+	RECT ScreenRc, ClientRc;
+	HWND hBase = GetDlgItem(hDlg, IDC_TABS);
+	BOOL foundrect = GetWindowRect(hBase, &ScreenRc);
+	POINT TopLeft = {ScreenRc.left, ScreenRc.top};
+	ScreenToClient(hDlg, &TopLeft);
+	ClientRc.left = TopLeft.x+100;
+	ClientRc.top = TopLeft.y;
+	LONG Width  = ScreenRc.right-ScreenRc.left;
+	LONG Height = ScreenRc.bottom-ScreenRc.top;
+
+	// Get the Image
+	HICON hIcon = (HICON)LoadImage(m_hInstance, MAKEINTRESOURCE(IDI_BACKGROUND), IMAGE_ICON, 300, 300, NULL);
+
+	// Create static window, load icon and display the icon
+	m_hTarget = CreateWindowEx(0, _T("static"), L"", SS_ICON|WS_CHILD, ClientRc.left, ClientRc.top, Width,  Height, hDlg, NULL,	m_hInstance, 0);
+	HANDLE	prev = (HANDLE)SendMessage(m_hTarget,STM_SETIMAGE, IMAGE_ICON, (LPARAM)hIcon);
+	ShowWindow(m_hTarget, SW_HIDE);
+
+	//// Destroy Icon
+ //   if (hIcon) 
+ //       DestroyIcon(hIcon);
+}
+
+// Display/Hide Background image when to tabs are displayed
+void SppDlg::DisplayBackgroundImage(BOOL Display)
+{
+	if (!m_hTarget)
+		return;
+
+	if (Display)
+		ShowWindow(m_hTarget, SW_SHOW);
+	else
+		ShowWindow(m_hTarget, SW_HIDE);
+
+
+
+}
 
 // TaskBarAddIcon - adds an icon to the notification area. 
 // Returns TRUE if successful, or FALSE otherwise. 
@@ -776,6 +819,8 @@ void SppDlg::SetStreamingState(BOOL isProcessingAudio)
 	EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_CHBITS),  isProcessingAudio);
 	EnableWindow(GetDlgItem(m_hDlg,  IDS_DECODER_NCH),  isProcessingAudio);
 	// TODO: Enable/Disable all Progress bars
+
+	DisplayBackgroundImage(!isProcessingAudio);
 }
 
 // Set the value of the "Start/Stop" streaming button
@@ -2103,6 +2148,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		DialogObj->CfgJoyMonitor(hDlg); // Initialize vJoy Monitoring
 		DialogObj->InitFilterDisplay(hDlg); // Initialize Filter section of the GUI
 		DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
+		DialogObj->InitBackgroundImage(hDlg); // Initialize backgrown image
 
 #if !TAB_JOY_ON
 		DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box

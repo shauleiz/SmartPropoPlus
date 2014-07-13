@@ -108,8 +108,10 @@ public: // Called from window procedure
 	HWND CreateToolTip(HWND hDlg);
 	void UpdateToolTip(LPVOID);
 	VOID OnPaint(void);
+	void InitBackgroundImage(HWND hDlg);
 
 private:
+	void DisplayBackgroundImage(BOOL Display);
 	bool TaskBarAddIcon(UINT uID, LPTSTR lpszTip, LPTSTR lpszInfo);
 	void ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color);
 	int FindItemById(HWND hListView, LPCTSTR Id);
@@ -134,5 +136,6 @@ protected:
 	BOOL m_StreamingState;
 	BOOL m_WizMinimized;
 	DWORD m_color;
+	HWND  m_hTarget;
 };
 
