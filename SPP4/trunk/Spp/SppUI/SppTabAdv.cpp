@@ -51,6 +51,17 @@ void  SppTabAdv::ShowLogWindow(WORD cb)
 	SendMessage(m_TopDlgWnd, WMSPP_DLG_LOG , show, 0);
 }
 
+
+// Reset button was pressed pass it to the parent
+void  SppTabAdv::ResetRequest(void)
+{
+	SendMessage(m_TopDlgWnd, WMSPP_DLG_RST , 0, 0);
+}
+
+void SppTabAdv::Reset()
+{
+}
+
 void  SppTabAdv::RecordPulse(WORD cb)
 {
 	// Get data
@@ -150,6 +161,14 @@ INT_PTR CALLBACK MsgHndlTabAdvDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 			DialogObj->RecordPulse(LOWORD(wParam));
 			break;
 		};
+
+		if (LOWORD(wParam) == IDC_BTN_RESET  && HIWORD(wParam) == BN_CLICKED )
+		{
+			DialogObj->ResetRequest();
+			break;
+		};
+
+	break;
 
 	case WM_NOTIFY:
 		// Tooltips

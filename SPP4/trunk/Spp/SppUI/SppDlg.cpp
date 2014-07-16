@@ -352,6 +352,18 @@ void SppDlg::OnNotificationIcon( WPARAM wParam, LPARAM lParam)
 	}
 }
 
+// Reset was requested
+// Reset object-by-object
+LRESULT SppDlg::Reset(void)
+{
+	// Audio
+	if (m_hrsrc.TabAudio)
+		m_hrsrc.TabAudio->Reset();
+
+	return TRUE;
+}
+
+
 // Initialize the tab control
 int SppDlg::InitTabs(HWND hDlg)
 {
@@ -1353,11 +1365,11 @@ void  SppDlg::MonitorCh(bool cb)
 		Button_SetCheck(hChkBox, BST_CHECKED);
 	else
 		Button_SetCheck(hChkBox, BST_UNCHECKED);
+#endif // 0
 
 	ClearChDisplay(IDC_CHPP1, IDC_CHPP8, RGB(0,0,0xFF));
 	ClearChDisplay(IDC_CH1, IDC_CH8, RGB(0,0xFF,0));
 
-#endif // 0
 
 }
 
@@ -2446,6 +2458,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WMSPP_DLG_MOD:
 		Edit_SetText(GetDlgItem(DialogObj->GetHandle(),IDS_DECODER),  DialogObj->GetDecoderFullName((LPCTSTR)wParam));
+		break;
+
+	case WMSPP_DLG_RST:
+		return DialogObj->Reset();
 
 	case WMSPP_DLG_AUTO:
 	case WMSPP_DLG_SCAN:

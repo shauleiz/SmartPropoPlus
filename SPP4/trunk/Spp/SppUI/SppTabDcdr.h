@@ -22,5 +22,6 @@ public:
 	void Init(HWND hDlg);
 	void SetDecoderQuality(UINT Quality);
 	void UpdateToolTip(LPVOID param);
+	//void Reset();
 };
 

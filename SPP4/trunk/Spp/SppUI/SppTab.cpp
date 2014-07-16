@@ -70,9 +70,14 @@ HWND SppTab::GetHandle(void)
 }
 
 
+
 int SppTab::GetId(void)
 {
 	return m_DlgId;
+}
+
+void SppTab::Reset()
+{
 }
 
 void SppTab::Show()

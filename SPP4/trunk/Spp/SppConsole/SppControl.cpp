@@ -245,22 +245,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ReqStartCapture = true;
 		SendMessage(hDialog, WMSPP_PRCS_ALIVE, (WPARAM)1, 0);
 
-#if 0
-		// Start processing the audio
-		if (!Spp->Start())
-		{
-			LogMessage(FATAL, IDS_F_STARTSPPPRS);
-			goto ExitApp;
-		};
-
-		// Start processing the audio - Success
-		LogMessage(INFO, IDS_I_STARTSPPPRS);
-
-		FilterPopulate(hDialog);
-		Spp->AudioChanged(); // TODO: Remove later
-
-#endif // 0
-
 	}
 	else
 	{
@@ -429,6 +413,10 @@ LRESULT CALLBACK MainWindowProc(
 			else
 				LogWin->Hide();
 			break;
+
+		case WMSPP_DLG_RST:
+			break;
+
 
 		case WMSPP_DLG_INSIG:
 			if (wParam)

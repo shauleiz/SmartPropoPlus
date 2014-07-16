@@ -109,6 +109,7 @@ public: // Called from window procedure
 	void UpdateToolTip(LPVOID);
 	VOID OnPaint(void);
 	void InitBackgroundImage(HWND hDlg);
+	LRESULT Reset(void);
 
 private:
 	void DisplayBackgroundImage(BOOL Display);

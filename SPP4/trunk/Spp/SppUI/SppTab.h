@@ -17,6 +17,7 @@ public:
 	void SetPosition(HWND hDlg);
 	HWND CreateToolTip(HWND hDlg, const int arr[], int size=0);
 	virtual void UpdateToolTip(LPVOID);
+	virtual void Reset();
 
 
 protected:

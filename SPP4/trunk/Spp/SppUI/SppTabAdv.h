@@ -13,6 +13,7 @@ public:
 	void RecordInSignal(WORD cb);
 	void RecordPulse(WORD cb);
 	void UpdateToolTip(LPVOID param);
-
+	void ResetRequest(void);
+	void Reset();
 };
 
