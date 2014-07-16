@@ -14,5 +14,6 @@ public:
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
 	void AudioAutoParams(WORD Mask, WORD Flags);
 	void UpdateToolTip(LPVOID param);
+	void Reset();
 };
 

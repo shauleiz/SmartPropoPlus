@@ -113,6 +113,7 @@ FONT 8, "Ms Shell Dlg"
     GROUPBOX        "Log and Debug", 0, 7, 6, 128, 89, 0, WS_EX_LEFT
     AUTOCHECKBOX    "Record Pulse data to file", IDC_CH_PULSE, 18, 64, 106, 18, BS_PUSHLIKE, WS_EX_LEFT
     AUTOCHECKBOX    "Show Pulse Scope", IDC_PLS_SCOPE, 153, 18, 76, 8, 0, WS_EX_LEFT
+    PUSHBUTTON      "Reset", IDC_BTN_RESET, 18, 106, 106, 14, 0, WS_EX_LEFT
 }
 
 
@@ -677,15 +678,15 @@ IDI_AUDIO          ICON           ".\\AudioJackBlue.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_BACKGROUND     ICON           ".\\BackGround.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_DECODER        ICON           ".\\RC-TxGreen.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_FILTER         ICON           ".\\FilterBlue.ico"
-
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDI_BACKGROUND     ICON           ".\\BackGround.ico"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL

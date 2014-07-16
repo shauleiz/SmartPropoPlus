@@ -58,6 +58,7 @@
 #define IDC_STREAM                              1023
 #define IDC_AUD_AUTO                            1024
 #define IDC_CH_LOG                              1081
+#define IDC_BTN_RESET                           40000
 #define IDC_OUT_CHANNELS                        40000
 #define IDC_SPP_OUT                             40000
 #define IDC_WIZ                                 40000

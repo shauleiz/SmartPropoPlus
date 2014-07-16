@@ -34,6 +34,7 @@ public:
 	void SetNumberRawCh(UINT nCh);
 	void SetRawChData(UINT iCh, UINT data);
 	void UpdateToolTip(LPVOID param);
+	//void Reset();
 
 protected:
 	void UpdateChannelView(bool Raw, UINT nCh);

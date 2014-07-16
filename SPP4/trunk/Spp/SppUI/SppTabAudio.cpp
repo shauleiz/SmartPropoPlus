@@ -26,6 +26,21 @@ SppTabAudio::~SppTabAudio(void)
 {
 }
 
+// Request to reset this tab to its default values
+// Bitrate = Auto
+// Channel = Auto
+void SppTabAudio::Reset(void)
+{
+
+	// Check IDC_AUD_AUTO
+	CheckDlgButton(m_hDlg,  IDC_AUD_AUTO, BST_CHECKED);
+	AutoParams(IDC_AUD_AUTO);
+
+	// Check IDC_CH_AUTO
+	CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_CHECKED);
+	AutoParams(IDC_CH_AUTO);
+}
+
 // Display the audio levels of channels (Left/Right)
 // Levels are in the range 0-100
 void SppTabAudio::DisplayAudioLevels(PVOID Id, UINT Left, UINT Right)
