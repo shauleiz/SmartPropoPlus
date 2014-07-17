@@ -414,8 +414,8 @@ LRESULT CALLBACK MainWindowProc(
 				LogWin->Hide();
 			break;
 
-		case WMSPP_DLG_RST:
-			break;
+		//case WMSPP_DLG_RST:
+		//	break;
 
 
 		case WMSPP_DLG_INSIG:
