@@ -31,6 +31,16 @@ SppTabDcdr::~SppTabDcdr(void)
 {
 }
 
+// Request to reset this tab to its default values
+// Auto checked
+void SppTabDcdr::Reset(void)
+{
+
+	// Check IDC_AUD_AUTO
+	CheckDlgButton(m_hDlg,  IDC_DEC_AUTO , BST_CHECKED);
+	AutoDecParams();
+}
+
 
 #pragma region Encoding detection and auto selection
 // CU informed of state of Auto-detection of decoder
@@ -158,6 +168,8 @@ void SppTabDcdr::SelChanged(WORD ListBoxId, HWND hListBox)
 
 		// Get a handle to the parent window
 		LPCTSTR mod = (LPCTSTR)SendMessage(hNew, LB_GETITEMDATA, SelNew, NULL);
+
+		// Set new decoder
 		SendMessage(m_TopDlgWnd, WMSPP_DLG_MOD, (WPARAM)mod, 0);
 
 		// Make sure decoder selection is manual

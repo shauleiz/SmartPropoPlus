@@ -360,6 +360,10 @@ LRESULT SppDlg::Reset(void)
 	if (m_hrsrc.TabAudio)
 		m_hrsrc.TabAudio->Reset();
 
+	// Decoder
+	if (m_hrsrc.TabDcdr)
+		m_hrsrc.TabDcdr->Reset();
+
 	return TRUE;
 }
 
@@ -2456,12 +2460,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	case WMSPP_DLG_CHNL:
 		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 
-	case WMSPP_DLG_MOD:
-		Edit_SetText(GetDlgItem(DialogObj->GetHandle(),IDS_DECODER),  DialogObj->GetDecoderFullName((LPCTSTR)wParam));
-		break;
-
 	case WMSPP_DLG_RST:
 		return DialogObj->Reset();
+
+	case WMSPP_DLG_MOD:
+		Edit_SetText(GetDlgItem(DialogObj->GetHandle(),IDS_DECODER),  DialogObj->GetDecoderFullName((LPCTSTR)wParam));
+		return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 
 	case WMSPP_DLG_AUTO:
 	case WMSPP_DLG_SCAN:
