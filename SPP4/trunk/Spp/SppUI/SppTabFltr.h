@@ -26,7 +26,7 @@ public:
 	void MonitorPpCh(HWND hDlg);
 	void SetNumberProcCh(UINT nCh);
 	void UpdateToolTip(LPVOID param);
-	//void Reset();
+	void Reset();
 
 protected:
 	void ShowRawCh(HWND hDlg, int nCmdShow);

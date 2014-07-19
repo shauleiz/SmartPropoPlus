@@ -364,6 +364,11 @@ LRESULT SppDlg::Reset(void)
 	if (m_hrsrc.TabDcdr)
 		m_hrsrc.TabDcdr->Reset();
 
+	// Filter
+	if (m_hrsrc.TabFltr)
+		m_hrsrc.TabFltr->Reset();
+
+
 	return TRUE;
 }
 
