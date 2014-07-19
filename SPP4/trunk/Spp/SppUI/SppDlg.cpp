@@ -372,6 +372,10 @@ LRESULT SppDlg::Reset(void)
 	if (m_hrsrc.TabJoy)
 		m_hrsrc.TabJoy->Reset();
 
+	// Advanced
+	if (m_hrsrc.TabAdvnc)
+		m_hrsrc.TabAdvnc->Reset();
+
 
 	return TRUE;
 }
