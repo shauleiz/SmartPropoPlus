@@ -32,6 +32,31 @@ SppTabFltr::~SppTabFltr(void)
 {
 }
 
+// Request to reset this tab to its default values
+// Bitrate = Auto
+// Channel = Auto
+void SppTabFltr::Reset(void)
+{
+
+	// Clear edit-box IDC_EDIT_FILTERFILE
+	HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
+	Edit_SetText(hFilterFile, (LPTSTR)"");
+	UpdateWindow(hFilterFile);
+
+	// Clear Comb-box IDC_COMBO_FILTERS
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
+	ComboBox_ResetContent(hCombo);
+
+	//// UnCheck "Filter Active" IDC_CH_FILTER
+	//HWND hFilterCB = GetDlgItem(m_hDlg,  IDC_CH_FILTER);
+	//Button_SetCheck(hFilterCB, BST_UNCHECKED);
+
+	// Call InitFilter() with empty filter file and 0 filters (Might need modifications)
+	InitFilter(0, NULL);
+	EnableFilter(IDC_CH_FILTER);
+
+}
+
 #pragma region Transmitter & Post-processed (filtered) channel data Progress bars
 // Init Raw channel progress bar
 void SppTabFltr::MonitorCh(HWND hDlg)
