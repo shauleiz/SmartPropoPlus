@@ -368,6 +368,10 @@ LRESULT SppDlg::Reset(void)
 	if (m_hrsrc.TabFltr)
 		m_hrsrc.TabFltr->Reset();
 
+	// Joystick
+	if (m_hrsrc.TabJoy)
+		m_hrsrc.TabJoy->Reset();
+
 
 	return TRUE;
 }
