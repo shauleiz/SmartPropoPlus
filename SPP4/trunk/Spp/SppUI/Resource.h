@@ -378,7 +378,9 @@
 #define IDS_I_PLS_SCOPE                         40199
 #define IDS_T_PLS_SCOPE                         40200
 #define IDC_TXT_X                               40201
+#define IDS_I_BTN_RESET                         40201
 #define IDC_TXT_Y                               40202
+#define IDS_T_BTN_RESET                         40202
 #define IDC_TXT_Z                               40203
 #define IDC_TXT_RX                              40204
 #define IDC_TXT_RY                              40205

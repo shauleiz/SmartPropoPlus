@@ -11,7 +11,7 @@ INT_PTR CALLBACK	MsgHndlTabAdvDlg(HWND, UINT, WPARAM, LPARAM);
 
 static const int g_Controls[] = {
 		/* Advanced Tab (IDD_ADVANCED ) */
-		IDC_CH_LOG, IDC_CH_INSIG, IDC_CH_PULSE, IDC_PLS_SCOPE,
+		IDC_CH_LOG, IDC_CH_INSIG, IDC_CH_PULSE, IDC_PLS_SCOPE, IDC_BTN_RESET,
 	};
 
 
@@ -120,6 +120,10 @@ void SppTabAdv::UpdateToolTip(LPVOID param)
 
 	case IDC_PLS_SCOPE:
 		DisplayToolTip(lpttt, IDS_I_PLS_SCOPE, IDS_T_PLS_SCOPE);
+		break;
+
+	case IDC_BTN_RESET:
+		DisplayToolTip(lpttt, IDS_I_BTN_RESET, IDS_T_BTN_RESET);
 		break;
 
 	default:

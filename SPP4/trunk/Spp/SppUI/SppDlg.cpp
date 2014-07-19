@@ -376,7 +376,6 @@ LRESULT SppDlg::Reset(void)
 	if (m_hrsrc.TabAdvnc)
 		m_hrsrc.TabAdvnc->Reset();
 
-
 	return TRUE;
 }
 

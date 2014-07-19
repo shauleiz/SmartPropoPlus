@@ -650,6 +650,8 @@ STRINGTABLE
     IDS_T_CH_PULSE                "Log Pulses"
     IDS_I_PLS_SCOPE               "Check to start Display\r\nUn-check to stop"
     IDS_T_PLS_SCOPE               "Display Pulse Signal"
+    IDS_I_BTN_RESET               "Set SmartPropoPlus to its default configuration\r\nCurrent configuration will be losst!"
+    IDS_T_BTN_RESET               "Reset Configuration"
 }
 
 
