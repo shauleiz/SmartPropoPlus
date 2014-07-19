@@ -39,6 +39,16 @@ SppTabJoy::~SppTabJoy(void)
 	delete(m_BtnsDlg);
 }
 
+void  SppTabJoy::Reset()
+{
+	// Select index 0 in combo IDC_VJOY_DEVICE
+	HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
+	SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) 0, 0);
+
+	// Reset Mapping of axes and Buttons
+	SetMappingData();
+}
+
 #pragma region Joystick Combo box
 // Remove all vJoy Entries
 void  SppTabJoy::vJoyRemoveAll()
@@ -348,6 +358,24 @@ void SppTabJoy::SetMappingData(Mapping * Map)
 	};
 
 	SetButtonsMappingData(Map->ButtonArray, Map->nButtons);
+}
+
+// Reset the mapping data
+void SppTabJoy::SetMappingData(void)
+{
+	Mapping Map;
+	DWORD AxisMap = 0x12345678;
+	BTNArr buttons;
+
+	Map.nAxes = 8;
+	Map.pAxisMap = &AxisMap;
+	Map.nButtons = 128;
+	buttons.fill(9);
+	for (int i=0; i<24; i++)
+		buttons[i] = 9+i;
+	Map.ButtonArray  = &buttons;
+	SetMappingData(&Map);
+	vJoyMapping();
 }
 
 // Fill-in the actual button-mapping data - pass message to button-mapping dialog
