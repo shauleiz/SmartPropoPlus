@@ -60,6 +60,11 @@ void  SppTabAdv::ResetRequest(void)
 
 void SppTabAdv::Reset()
 {
+	//Clear check box IDC_PLS_SCOPE
+	HWND hLogChCB = GetDlgItem(m_hDlg,  IDC_PLS_SCOPE);
+	Button_SetCheck(hLogChCB, BST_UNCHECKED);
+ 
+	PulseScope(IDC_PLS_SCOPE);
 }
 
 void  SppTabAdv::RecordPulse(WORD cb)
