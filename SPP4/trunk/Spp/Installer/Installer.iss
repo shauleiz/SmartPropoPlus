@@ -84,7 +84,7 @@ Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "
 ;Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent " ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated
 
 [Run]
-Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /SILENT /NORESTART /SUPPRESSMSGBOXES"  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
+Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /SILENT /NORESTART /SUPPRESSMSGBOXES  /COMPONENTS=""Apps\vJoyFeeder,Apps\vJoyMon"" "  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
 Filename: "{app}\{#SppExec}";  Flags: nowait postinstall
 
 [Code]
