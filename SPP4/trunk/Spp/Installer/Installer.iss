@@ -87,6 +87,12 @@ Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "
 Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /SILENT /NORESTART /SUPPRESSMSGBOXES  /COMPONENTS=""Apps\vJoyFeeder,Apps\vJoyMon"" "  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
 Filename: "{app}\{#SppExec}";  Flags: nowait postinstall
 
+[Registry]
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Services\vjoy\Parameters\Device01" ; Flags: uninsdeletekeyifempty
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Services\vjoy\Parameters\Device01" ; Flags: createvalueifdoesntexist ; ValueType: dword; ValueName: "HidReportDesctiptorSize" ; ValueData: "91"
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Services\vjoy\Parameters\Device01" ; Flags: createvalueifdoesntexist ; ValueType: binary; ValueName: "HidReportDesctiptor" ;   ValueData:  "05 01 15 00 09 04 a1 01 05 01 85 01 09 01 15 00 26 ff 7f 75 20 95 01 a1 00 09 30 81 02 09 31 81 02 09 32 81 02 09 33 81 02 09 34 81 02 09 35 81 02 09 36 81 02 09 37 81 02 c0 75 20 95 04 81 01 05 09 15 00 25 01 55 00 65 00 19 01 29 20 75 01 95 20 81 02 75 60 95 01 81 01 c0"
+
+
 [Code]
 (* Constants related to installation under SPP *)
 const
