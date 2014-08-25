@@ -5,9 +5,9 @@
 #define FILEVER "0,4,0,0"
 
 #ifdef X64
-#define PRODVER "0,4,0,0 (x64) Build 20140622"
+#define PRODVER "0,4,0,0 (x64) Build 20140825"
 #else
-#define PRODVER "0,4,0,0 (x86) Build 20140622"
+#define PRODVER "0,4,0,0 (x86) Build 20140825"
 #endif
 
 #ifndef IDC_STATIC

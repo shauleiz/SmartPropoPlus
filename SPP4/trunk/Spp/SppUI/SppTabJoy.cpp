@@ -353,7 +353,7 @@ void SppTabJoy::SetMappingData(Mapping * Map)
 	{
 		hEdtBox = GetDlgItem(m_hDlg,  id-i);
 		channel = ((AxisMap>>(i*4))&0xF);
-		_itot_s(channel, buffer, 2, 10);
+		_itot_s(channel, buffer, 4, 10);
 		Edit_SetText(hEdtBox, buffer);
 	};
 
