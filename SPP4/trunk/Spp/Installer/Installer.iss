@@ -1,6 +1,6 @@
 ; Installation Script for SmartPropoPlus 4
 
-#define MyAppName "SmartPropoPlus 4 - Alpha Release"
+#define MyAppName "SmartPropoPlus"
 #define MyShortAppName "SmartPropoPlus"
 #define MyAppPublisher "Shaul Eizikovich"
 #define MyAppURL "http://SmartPropoPlus.sourceforge.net"
@@ -77,7 +77,7 @@ Name: desktopicon;   Description: "Create a &desktop icon" ; Flags: unchecked;
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "{app}" ;
 Name: "{group}\Uninstall SmartPropoPlus"; Filename: {uninstallexe}; IconFilename: {app}\UnInstaller.ico; 
-Name: "{group}\SmartPropoPlus Alpha Web Site"; Filename: "http://smartpropoplus.sourceforge.net/alpha" ; WorkingDir: "{app}"
+Name: "{group}\SmartPropoPlus Web Site"; Filename: "http://smartpropoplus.sourceforge.net/prod" ; WorkingDir: "{app}"
 Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "{app}" ; Tasks: desktopicon
 
 ;[UninstallRun]
