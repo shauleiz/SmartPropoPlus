@@ -32,7 +32,7 @@ CJoyMonitorDlg::CJoyMonitorDlg(HINSTANCE hInstance, HWND	ConsoleWnd) :
 	// Create the dialog box (Hidden) 
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_JOY), NULL, MsgHndlDlg, (LPARAM)this);	
 	CreateControls(128);
-
+	CreatePovMeters(1);
 
 	return;
 }
@@ -105,6 +105,77 @@ HWND CJoyMonitorDlg::GetHandle(void)
 	return m_hDlg;
 }
 
+// Create POV meters inside the POV group frame
+void CJoyMonitorDlg::CreatePovMeters(UINT nPovs)
+{
+	if (nPovs<1 || nPovs>4)
+		return;
+
+	// Get position of the frame and determine the size and locations of the POV meters
+	HWND hFrame = GetDlgItem(m_hDlg, IDC_POV_GRP);
+	if (!hFrame)
+		return;
+
+	// Rectangle in screen coordinates
+	RECT FrameRect;
+	BOOL rectOK = GetWindowRect(hFrame, &FrameRect);
+	if (!rectOK)
+		return;
+
+	// Transform to client coordinates
+	POINT ul, ur, bl, br;
+	ul.x = bl.x = FrameRect.left;
+	ur.x = br.x = FrameRect.right;
+	ul.y = ur.y = FrameRect.top;
+	bl.y = br.y = FrameRect.bottom;
+	ScreenToClient(m_hDlg, &ul);
+	ScreenToClient(m_hDlg, &ur);
+	ScreenToClient(m_hDlg, &bl);
+	ScreenToClient(m_hDlg, &br);
+
+	// Calculate radius of each circle and location of centres
+	UINT sSize = min(bl.y-ul.y, ur.x-ul.x);
+	POINT Centre[4] = {{0,0},{0,0},{0,0},{0,0}};
+	double Radius=0;
+	if (nPovs==1)
+	{
+		Radius = 0.8*sSize;
+		Centre[0].x = (ur.x+ul.x)/2;
+		Centre[0].y = (bl.y+ul.y)/2;
+
+	} // One POV
+	else if (nPovs==2)
+	{
+		Radius = 0.4*sSize;
+		Centre[0].x = ul.x + (ur.x-ul.x)*0.25;
+		Centre[1].x = ul.x + (ur.x-ul.x)*0.75;
+		Centre[0].y = Centre[1].y = (bl.y+ul.y)/2;
+
+	} // Two POVs
+	else
+	{
+		Radius = 0.4*sSize;
+		Centre[0].x = Centre[2].x = ul.x + (ur.x-ul.x)*0.25;
+		Centre[1].x = Centre[3].x = ul.x + (ur.x-ul.x)*0.75;
+		Centre[0].y = Centre[1].y = ul.y + (bl.y-ul.y)*0.25;
+		Centre[2].y = Centre[3].y = ul.y + (bl.y-ul.y)*0.75;
+	};
+
+		/// Test
+		RECT rc[4];
+		for (UINT i=0; i<nPovs; i++)
+		{
+			rc[i].bottom = Centre[i].y-Radius/2+2;
+			rc[i].top = Centre[i].y-Radius/2+2;
+			rc[i].left = Centre[i].x-Radius/2+2;
+			rc[i].right = Centre[i].x-Radius/2+2;
+			HWND hRedImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc[i], ID_BASE_REDDOT+20000+i, L"");
+			HANDLE hRedImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_RING50), IMAGE_BITMAP,Radius, Radius,   LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS );
+			SendMessage(hRedImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRedImage1);
+		};
+
+}
+
 // Create controls on dialog box
 // Two colums of 8 button-controls
 // For each button dispaly Button number and an edit box
@@ -160,6 +231,7 @@ void CJoyMonitorDlg::CreateIndicator(UINT iButton)
 	rc.bottom+=iRow*RowSpace;
 	rc.left+=iCol*ColSpace;
 	rc.right+=iCol*ColSpace;
+
 
 	// Grey
 	HWND hGreenImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc, ID_BASE_GREENDOT+iButton, L"");

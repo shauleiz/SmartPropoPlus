@@ -11,7 +11,9 @@
 #define IDB_GREENDOT                            118
 #define IDB_GREYDOT                             120
 #define IDB_REDDOT                              122
+#define IDB_RING50                              125
 #define IDS_APP_TITLE                           40000
+#define IDC_POV_GRP                             40001
 #define IDC_TXT_X                               40035
 #define IDC_TXT_Y                               40037
 #define IDC_TXT_Z                               40039
