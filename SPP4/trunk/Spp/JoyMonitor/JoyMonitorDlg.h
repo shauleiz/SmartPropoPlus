@@ -35,6 +35,7 @@ protected:
 	HWND CreateStatics(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle, const RECT& rc,const int id,const wstring& caption);
 	void InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max=0x03ff0000,ULONG min=0);
 	void GetExistingDevices(HWND hDlg);
+	void CreatePovMeters(UINT nPovs);
 
 protected:
 	HWND m_hDlg;
