@@ -590,6 +590,13 @@ void CvJoyMonitor::PollingThread(Device * dev)
 			if (state.rgbButtons != prevState.rgbButtons)
 				SendButtonValue(iDevice, btnState);
 
+			// POVs
+			for (int i=0; i<4; i++)
+			{
+				if (state.rgdwPOV[i] != prevState.rgdwPOV[i])
+					SendPovValue(iDevice, state.rgdwPOV[i], i);
+			};
+
 			// Update
 			btnPrevState = btnState;
 			prevState =  state;
@@ -845,6 +852,13 @@ void CvJoyMonitor::SendButtonValue(UCHAR iDev,  BTNArr btnState)
 {
 	SendMessageTimeout (m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState, SMTO_ABORTIFHUNG, 1000, 0);
 }
+
+void CvJoyMonitor::SendPovValue(UCHAR iDev, DWORD povValue, UINT iPov)
+{
+	SendMessageTimeout (m_ParentWnd, WMSPP_JMON_POV, iDev + (iPov<<16) , (LPARAM)povValue, SMTO_ABORTIFHUNG, 1000, 0);
+
+}
+
 
 #ifdef _DEBUG
 const DWORD MS_VC_EXCEPTION=0x406D1388;

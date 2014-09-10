@@ -172,6 +172,19 @@ void SetAvailableControls(UINT id, HWND hDlg)
 	ctrls.nButtons = GetVJDButtonNumber(id);
 	for (UINT i=0; i<8; i++)
 		ctrls.axis[i] = GetVJDAxisExist(id, HID_USAGE_X+i);
+	int nDiscPov = GetVJDDiscPovNumber(id);
+	int nContPov = GetVJDContPovNumber(id);
+	if (nDiscPov)
+	{
+		ctrls.nPovs = nDiscPov;
+		ctrls.isContPov = FALSE;
+	}
+	else
+	{
+		ctrls.nPovs = nContPov;
+		ctrls.isContPov = TRUE;
+	};
+
 
 	// Send data to GUI
 	SendMessage(hDlg, VJOYDEV_SETAVAIL, id, (LPARAM)&ctrls);
@@ -228,6 +241,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Dialog->SetButtonValues((UINT)wParam, (BTNArr *)lParam);
 		break;
 
+	case WMSPP_JMON_POV:
+		Dialog->SetPovValues((UCHAR)(wParam&0xFF), (UINT)(wParam>>16), (UINT32)lParam);
+		break;
+
+
 	case WMSPP_JMON_STP:
 		Dialog->JoystickStopped((UCHAR)wParam);		
 		break;
@@ -264,3 +282,4 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return (INT_PTR)FALSE;
 }
+
