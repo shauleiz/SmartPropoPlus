@@ -5,6 +5,8 @@
 #define MAX_DISP_BUTTONS 128
 #define ROWSPACE 25			// Space between rows
 #define COLSPACE 60		// Space between columns
+#define PI 3.14159265
+
 #define ID_BASE_STATIC		123332
 #define ID_BASE_CH			133432
 #define ID_BASE_GREENDOT	143432
@@ -50,15 +52,23 @@ protected:
 	UINT m_nRawCh;
 	vector<const int> m_vJoyBarId;
 	vector<const int> m_vJoyTitleId;
+	int	m_nPovs;
+	class CPovGrph * m_Pov[7];
+
 };
 
 class CPovGrph : CJoyMonitorDlg
 {
 public:
 	CPovGrph(void);
-	CPovGrph(UINT iPov, LONG Radius, POINT Centre, int ID);
-	void PaintRing(HWND hDlg, HINSTANCE hInst, BOOL Enabled = TRUE);
+	CPovGrph(UINT iPov, LONG Radius, POINT Centre, int ID, HWND hDlg);
+	void PaintRing(HINSTANCE hInst, BOOL Enabled = TRUE);
+	void ShowPov(BOOL Show = TRUE);
 	virtual ~CPovGrph(void);
+	BOOL SetIndicator(UINT32 val);
+
+private:
+	BOOL CreateIndicator(UINT32 Val=-1);
 
 private:
 	UINT  m_iPov;	// 1-based POV index (Legal values are 1-4)
@@ -66,5 +76,8 @@ private:
 	POINT m_Centre;	// Centre of rim (In client coordinates)
 	BOOL  m_Valid;  // Object is valid
 	int   m_ID;		// ID of the ring window
+	HWND  m_hDlg;	// Handle to the parent dialog box
+	UINT32 m_value;	// Current value of the POV (Default is -1)
+	HWND m_hIndicator; // Handle to the indicator
 };
 
