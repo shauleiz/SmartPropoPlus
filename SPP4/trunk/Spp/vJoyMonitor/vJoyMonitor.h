@@ -150,6 +150,7 @@ private:
 	static void _PollingThread(CvJoyMonitor * This, Device * dev);
 	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 	void SendButtonValue(UCHAR iDev,  BTNArr btnState);
+	void SendPovValue(UCHAR iDev, DWORD povValue, UINT iPov);
 
 // Private members
 private:

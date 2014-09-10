@@ -32,7 +32,7 @@ CJoyMonitorDlg::CJoyMonitorDlg(HINSTANCE hInstance, HWND	ConsoleWnd) :
 	// Create the dialog box (Hidden) 
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_JOY), NULL, MsgHndlDlg, (LPARAM)this);	
 	CreateControls(128);
-	CreatePovMeters(1);
+	//CreatePovMeters(4);
 
 	return;
 }
@@ -136,43 +136,57 @@ void CJoyMonitorDlg::CreatePovMeters(UINT nPovs)
 	// Calculate radius of each circle and location of centres
 	UINT sSize = min(bl.y-ul.y, ur.x-ul.x);
 	POINT Centre[4] = {{0,0},{0,0},{0,0},{0,0}};
-	double Radius=0;
+	LONG Radius=0;
+	CPovGrph * Ring[7];
 	if (nPovs==1)
 	{
-		Radius = 0.8*sSize;
+		Radius = static_cast<LONG>(0.8*sSize);
 		Centre[0].x = (ur.x+ul.x)/2;
 		Centre[0].y = (bl.y+ul.y)/2;
+		Ring[0] = new CPovGrph(1,Radius, Centre[0], ID_BASE_RING);
 
 	} // One POV
 	else if (nPovs==2)
 	{
-		Radius = 0.4*sSize;
-		Centre[0].x = ul.x + (ur.x-ul.x)*0.25;
-		Centre[1].x = ul.x + (ur.x-ul.x)*0.75;
+		Radius = static_cast<LONG>(0.4*sSize);
+		Centre[0].x = ul.x + static_cast<LONG>((ur.x-ul.x)*0.25);
+		Centre[1].x = ul.x + static_cast<LONG>((ur.x-ul.x)*0.75);
 		Centre[0].y = Centre[1].y = (bl.y+ul.y)/2;
+		Ring[0] = new CPovGrph(1,Radius, Centre[0], ID_BASE_RING);
+		Ring[1] = new CPovGrph(2,Radius, Centre[1], ID_BASE_RING+1);
 
 	} // Two POVs
 	else
 	{
-		Radius = 0.4*sSize;
-		Centre[0].x = Centre[2].x = ul.x + (ur.x-ul.x)*0.25;
-		Centre[1].x = Centre[3].x = ul.x + (ur.x-ul.x)*0.75;
-		Centre[0].y = Centre[1].y = ul.y + (bl.y-ul.y)*0.25;
-		Centre[2].y = Centre[3].y = ul.y + (bl.y-ul.y)*0.75;
+		Radius = static_cast<LONG>(0.4*sSize);
+		Centre[0].x = Centre[2].x = ul.x + static_cast<LONG>((ur.x-ul.x)*0.25);
+		Centre[1].x = Centre[3].x = ul.x + static_cast<LONG>((ur.x-ul.x)*0.75);
+		Centre[0].y = Centre[1].y = ul.y + static_cast<LONG>((bl.y-ul.y)*0.25);
+		Centre[2].y = Centre[3].y = ul.y + static_cast<LONG>((bl.y-ul.y)*0.75);
+		Ring[0] = new CPovGrph(1,Radius, Centre[0], ID_BASE_RING);
+		Ring[1] = new CPovGrph(2,Radius, Centre[1], ID_BASE_RING+1);
+		Ring[2] = new CPovGrph(3,Radius, Centre[2], ID_BASE_RING+2);
+		Ring[3] = new CPovGrph(4,Radius, Centre[3], ID_BASE_RING+3);
 	};
 
-		/// Test
-		RECT rc[4];
-		for (UINT i=0; i<nPovs; i++)
-		{
-			rc[i].bottom = Centre[i].y-Radius/2+2;
-			rc[i].top = Centre[i].y-Radius/2+2;
-			rc[i].left = Centre[i].x-Radius/2+2;
-			rc[i].right = Centre[i].x-Radius/2+2;
-			HWND hRedImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc[i], ID_BASE_REDDOT+20000+i, L"");
-			HANDLE hRedImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_RING50), IMAGE_BITMAP,Radius, Radius,   LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS );
-			SendMessage(hRedImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRedImage1);
-		};
+	for (UINT i=0; i<nPovs; i++)
+		Ring[i]->PaintRing(m_hDlg, m_hInstance,TRUE);
+
+#if 0
+	/// Test
+	RECT rc[4];
+	for (UINT i=0; i<nPovs; i++)
+	{
+		rc[i].bottom = Centre[i].y-Radius/2+2;
+		rc[i].top = Centre[i].y-Radius/2+2;
+		rc[i].left = Centre[i].x-Radius/2+2;
+		rc[i].right = Centre[i].x-Radius/2+2;
+		HWND hRedImage= CreateStatics(m_hDlg, m_hInstance, SS_BITMAP, rc[i], ID_BASE_RING+i, L"");
+		HANDLE hRedImage1 =  LoadImage(m_hInstance, MAKEINTRESOURCE(IDB_RING50), IMAGE_BITMAP,Radius, Radius,   LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS );
+		SendMessage(hRedImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRedImage1);
+	};
+
+#endif // 0
 
 }
 
@@ -338,6 +352,10 @@ void CJoyMonitorDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue
 	SendMessage(hCh, PBM_SETPOS, AxisValue, 0);
 }
 
+void CJoyMonitorDlg::SetPovValues(UCHAR iDev, UINT iPov, UINT32 PovValue)
+{
+}
+
 // Enable/disable controls according to vJoy device settings
 void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 {
@@ -391,6 +409,9 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 	} while (ch<=IDC_SL1);
 
 	EnableControlsBtn( id, ctrl);
+
+	CreatePovMeters(ctrl->nPovs);
+
 	// SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
 }
 
@@ -499,4 +520,42 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 	}
 	return (INT_PTR)FALSE;
+}
+
+// Constructor of a POV graphical element
+CPovGrph::CPovGrph(UINT iPov, LONG Radius, POINT Centre, int ID) : m_Valid(FALSE)
+{
+	// Sanity check
+	if (iPov>=1 && iPov<=4 && Radius>0 && ID>0)
+	{
+		m_iPov = iPov;
+		m_Radius = Radius;
+		m_Centre = Centre;
+		m_ID = ID;
+	};
+}
+
+// Paint the POV ring
+void CPovGrph::PaintRing(HWND hDlg, HINSTANCE hInst, BOOL Enabled)
+{
+	RECT rc;
+	rc.bottom = m_Centre.y-m_Radius/2+2;
+	rc.top = m_Centre.y-m_Radius/2+2;
+	rc.left = m_Centre.x-m_Radius/2+2;
+	rc.right = m_Centre.x-m_Radius/2+2;
+	HWND hRingImage= CreateStatics(hDlg, hInst, SS_BITMAP, rc, m_ID, L"");
+	HANDLE hRingImage1 =  LoadImage(hInst, MAKEINTRESOURCE(IDB_RING50), IMAGE_BITMAP,m_Radius, m_Radius,   LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS );
+	SendMessage(hRingImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRingImage1);
+	if (!Enabled)
+		ShowWindow(hRingImage, SW_HIDE);
+}
+
+
+CPovGrph::CPovGrph(void) : m_Valid(FALSE)
+{
+}
+
+
+CPovGrph::~CPovGrph(void)
+{
 }
