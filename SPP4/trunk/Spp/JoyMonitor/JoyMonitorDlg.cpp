@@ -403,7 +403,7 @@ void CJoyMonitorDlg::SetPovValues(UCHAR iDev, UINT iPov, UINT32 PovValue)
 	if (m_CurJoy != iDev)
 		return;
 
-	if (iPov<0 || iPov>=m_nPovs)
+	if (iPov<0 || iPov>= static_cast<UINT>(m_nPovs))
 		return;
 
 	if (m_nPovs == 1 && iPov == 0)
@@ -655,8 +655,8 @@ BOOL CPovGrph::SetIndicator(UINT32 val)
 	else
 	{
 		val = val/100%360; // Normalize
-		loc.x  = m_Centre.x + m_Radius*sin(val*PI/180);
-		loc.y  = m_Centre.y - m_Radius*cos(val*PI/180);
+		loc.x  = m_Centre.x + static_cast<LONG>(m_Radius*sin(val*PI/180));
+		loc.y  = m_Centre.y - static_cast<LONG>(m_Radius*cos(val*PI/180));
 	}
 
 	rc.bottom = loc.y+3;
