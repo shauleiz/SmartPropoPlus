@@ -98,6 +98,12 @@ void  CJoyMonitorDlg::InitBars(HWND hDlg, const DWORD Color, std::vector<const i
 
 CJoyMonitorDlg::~CJoyMonitorDlg(void)
 {
+	for (int i=0; i<7; i++)
+	{
+		if (!m_Pov[0])
+			break;
+		m_Pov[i]->~CPovGrph();
+	};
 }
 
 HWND CJoyMonitorDlg::GetHandle(void)
@@ -564,6 +570,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			return (INT_PTR)TRUE;
 
 	case WM_CLOSE:
+		delete DialogObj;
 		DestroyWindow(hDlg);
 		break;
 
@@ -596,6 +603,7 @@ CPovGrph::CPovGrph(UINT iPov, LONG Radius, POINT Centre, int ID, HWND hDlg) : m_
 		m_hIndicator = NULL;
 		m_hRingImage = NULL;
 		m_Valid = TRUE;
+		m_Pov[0] = NULL;
 	};
 }
 
@@ -685,6 +693,11 @@ CPovGrph::CPovGrph(void) : m_Valid(FALSE)
 
 CPovGrph::~CPovGrph(void)
 {
+	if (!m_hRingImage)
+		return;
+	HANDLE h = (HANDLE)(SendMessage(m_hRingImage,STM_GETIMAGE, IMAGE_BITMAP, (LPARAM)0));
+	BOOL deleted = DeleteObject(h);
+	m_hRingImage=NULL;
 }
 
 	
