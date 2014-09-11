@@ -14,7 +14,13 @@
 #define IDB_RING50                              125
 #define IDI_INDICATOR                           127
 #define IDS_APP_TITLE                           40000
+#define IDS_POV1_2                              40000
 #define IDC_POV_GRP                             40001
+#define IDS_POV2_2                              40002
+#define IDS_POV1_4                              40003
+#define IDS_POV2_4                              40004
+#define IDS_POV3_4                              40005
+#define IDS_POV4_4                              40006
 #define IDC_TXT_X                               40035
 #define IDC_TXT_Y                               40037
 #define IDC_TXT_Z                               40039

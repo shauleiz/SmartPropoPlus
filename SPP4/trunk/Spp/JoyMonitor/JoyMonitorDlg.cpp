@@ -194,6 +194,45 @@ void CJoyMonitorDlg::CreatePovMeters(UINT nPovs)
 	for (UINT i=First; i<(First+nPovs); i++)
 		m_Pov[i]->ShowPov(TRUE);
 
+	ShowMeterLables(nPovs);
+
+}
+
+// Desplay only the lables that are needed
+void CJoyMonitorDlg::ShowMeterLables(int nPovs)
+{
+	HWND hLabel[6];
+
+	// Get handles to all lables
+	hLabel[0] =  GetDlgItem(m_hDlg, IDS_POV1_2);
+	hLabel[1] =  GetDlgItem(m_hDlg, IDS_POV2_2);
+	hLabel[2] =  GetDlgItem(m_hDlg, IDS_POV1_4);
+	hLabel[3] =  GetDlgItem(m_hDlg, IDS_POV2_4);
+	hLabel[4] =  GetDlgItem(m_hDlg, IDS_POV3_4);
+	hLabel[5] =  GetDlgItem(m_hDlg, IDS_POV4_4);
+
+	// Reset
+	for (int i=0; i<6; i++)
+		ShowWindow(hLabel[i], SW_HIDE);
+
+	if (nPovs == 2)
+	{
+		ShowWindow(hLabel[0], SW_SHOW);
+		ShowWindow(hLabel[1], SW_SHOW);
+	}
+	else if (nPovs == 3)
+	{
+		ShowWindow(hLabel[2], SW_SHOW);
+		ShowWindow(hLabel[3], SW_SHOW);
+		ShowWindow(hLabel[4], SW_SHOW);
+	} 
+	else if (nPovs == 4)
+	{
+		ShowWindow(hLabel[2], SW_SHOW);
+		ShowWindow(hLabel[3], SW_SHOW);
+		ShowWindow(hLabel[4], SW_SHOW);
+		ShowWindow(hLabel[5], SW_SHOW);
+	} 
 }
 
 // Create controls on dialog box
@@ -649,9 +688,3 @@ CPovGrph::~CPovGrph(void)
 }
 
 	
-BOOL CPovGrph::CreateIndicator(UINT32 Val)
-{
-	if (!m_hIndicator)
-
-	return TRUE;
-}

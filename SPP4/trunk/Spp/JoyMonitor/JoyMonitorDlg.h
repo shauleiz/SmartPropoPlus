@@ -42,6 +42,7 @@ protected:
 	void InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max=0x03ff0000,ULONG min=0);
 	void GetExistingDevices(HWND hDlg);
 	void CreatePovMeters(UINT nPovs);
+	void ShowMeterLables(int nPovs);
 
 protected:
 	HWND m_hDlg;
@@ -68,7 +69,6 @@ public:
 	BOOL SetIndicator(UINT32 val);
 
 private:
-	BOOL CreateIndicator(UINT32 Val=-1);
 
 private:
 	UINT  m_iPov;	// 1-based POV index (Legal values are 1-4)
