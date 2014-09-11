@@ -364,7 +364,7 @@ void CJoyMonitorDlg::SetPovValues(UCHAR iDev, UINT iPov, UINT32 PovValue)
 	if (m_CurJoy != iDev)
 		return;
 
-	if (iPov<0 || iPov>3)
+	if (iPov<0 || iPov>=m_nPovs)
 		return;
 
 	if (m_nPovs == 1 && iPov == 0)
@@ -604,16 +604,21 @@ BOOL CPovGrph::SetIndicator(UINT32 val)
 	if (m_hIndicator)
 		ShowWindow(m_hIndicator, SW_HIDE);
 
-	// Released?
-	if (val == -1)
-		return TRUE;
-
 	// Calculate
 	POINT loc;
 	RECT rc;
-	val = val/100%360; // Normalize
-	loc.x  = m_Centre.x + m_Radius*sin(val*PI/180);
-	loc.y  = m_Centre.y - m_Radius*cos(val*PI/180);
+
+	if (val==-1)
+	{
+		loc.x  = m_Centre.x;
+		loc.y  = m_Centre.y;
+	}
+	else
+	{
+		val = val/100%360; // Normalize
+		loc.x  = m_Centre.x + m_Radius*sin(val*PI/180);
+		loc.y  = m_Centre.y - m_Radius*cos(val*PI/180);
+	}
 
 	rc.bottom = loc.y+3;
 	rc.top    = loc.y-3;
@@ -626,6 +631,7 @@ BOOL CPovGrph::SetIndicator(UINT32 val)
 		HANDLE hIndicator1 =  LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_INDICATOR), IMAGE_CURSOR,8, 8,   LR_DEFAULTSIZE|LR_SHARED  );
 		SendMessage(m_hIndicator,STM_SETIMAGE, IMAGE_CURSOR, (LPARAM)hIndicator1);
 	};
+	ShowWindow(m_hIndicator, SW_HIDE);
 	MoveWindow(m_hIndicator, loc.x-3,loc.y-3,8,8, TRUE); 
 	ShowWindow(m_hIndicator, SW_SHOW);
 
