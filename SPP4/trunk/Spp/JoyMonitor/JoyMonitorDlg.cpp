@@ -165,11 +165,11 @@ void CJoyMonitorDlg::CreatePovMeters(UINT nPovs)
 	} // Two POVs
 	//else
 	{
-		Radius = static_cast<LONG>(0.2*sSize);
-		Centre[n+0].x = Centre[n+2].x = ul.x + static_cast<LONG>((ur.x-ul.x)*0.25);
-		Centre[n+1].x = Centre[n+3].x = ul.x + static_cast<LONG>((ur.x-ul.x)*0.75);
-		Centre[n+0].y = Centre[n+1].y = ul.y + static_cast<LONG>((bl.y-ul.y)*0.25);
-		Centre[n+2].y = Centre[n+3].y = ul.y + static_cast<LONG>((bl.y-ul.y)*0.75);
+		Radius = static_cast<LONG>(0.2*sSize)-3;
+		Centre[n+0].x = Centre[n+2].x =  Pivot.x - sSize/4 + 4;
+		Centre[n+1].x = Centre[n+3].x =  Pivot.x + sSize/4 + 0;
+		Centre[n+0].y = Centre[n+1].y = Pivot.y - sSize/4 + 4;
+		Centre[n+2].y = Centre[n+3].y = Pivot.y + sSize/4 + 0;
 		m_Pov[n] = new CPovGrph(1,Radius, Centre[n], ID_BASE_RING+n, m_hDlg);
 		n++;
 		m_Pov[n] = new CPovGrph(2,Radius, Centre[n], ID_BASE_RING+n, m_hDlg);
@@ -555,6 +555,7 @@ CPovGrph::CPovGrph(UINT iPov, LONG Radius, POINT Centre, int ID, HWND hDlg) : m_
 		m_hDlg = hDlg;
 		m_value = -1;
 		m_hIndicator = NULL;
+		m_hRingImage = NULL;
 		m_Valid = TRUE;
 	};
 }
@@ -570,9 +571,10 @@ void CPovGrph::PaintRing(HINSTANCE hInst, BOOL Enabled)
 	rc.top = m_Centre.y-m_Radius;
 	rc.left = m_Centre.x-m_Radius;
 	rc.right = m_Centre.x+m_Radius;
-	HWND hRingImage= CreateStatics(m_hDlg, hInst, SS_BITMAP/*|WS_BORDER*/, rc, m_ID, L"");
+	HWND hRingImage= CreateStatics(m_hDlg, hInst, SS_BITMAP /*| WS_BORDER*/, rc, m_ID, L"");
 	HANDLE hRingImage1 =  LoadImage(hInst, MAKEINTRESOURCE(IDB_RING50), IMAGE_BITMAP,m_Radius*2, m_Radius*2,   LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS );
 	SendMessage(hRingImage,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRingImage1);
+	m_hRingImage = hRingImage;
 	if (!Enabled)
 		ShowWindow(hRingImage, SW_HIDE);
 }
@@ -610,16 +612,22 @@ BOOL CPovGrph::SetIndicator(UINT32 val)
 	POINT loc;
 	RECT rc;
 	val = val/100%360; // Normalize
-	loc.x  = m_Centre.x + 1.2*m_Radius*sin(val*PI/180);
-	loc.y  = m_Centre.y - 1.2*m_Radius*cos(val*PI/180);
+	loc.x  = m_Centre.x + m_Radius*sin(val*PI/180);
+	loc.y  = m_Centre.y - m_Radius*cos(val*PI/180);
 
-	rc.bottom = rc.top = loc.y;
-	rc.left  = loc.x - m_Radius/8;
-	rc.right = loc.x + m_Radius/8;
+	rc.bottom = loc.y+3;
+	rc.top    = loc.y-3;
+	rc.left  = loc.x-3;
+	rc.right = loc.x+3;
 
-	m_hIndicator= CreateStatics(m_hDlg, GetModuleHandle(NULL), SS_BITMAP, rc, m_ID+10, L"");
-	HANDLE hRingImage1 =  LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_RING50), IMAGE_BITMAP,m_Radius/4, m_Radius/4,   LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS );
-	SendMessage(m_hIndicator,STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hRingImage1);
+	if (!m_hIndicator)
+	{
+		m_hIndicator= CreateStatics(m_hDlg, GetModuleHandle(NULL), SS_ICON , rc, m_ID+10, L"");
+		HANDLE hIndicator1 =  LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_INDICATOR), IMAGE_CURSOR,8, 8,   LR_DEFAULTSIZE|LR_SHARED  );
+		SendMessage(m_hIndicator,STM_SETIMAGE, IMAGE_CURSOR, (LPARAM)hIndicator1);
+	};
+	MoveWindow(m_hIndicator, loc.x-3,loc.y-3,8,8, TRUE); 
+	ShowWindow(m_hIndicator, SW_SHOW);
 
 	return FALSE;
 }

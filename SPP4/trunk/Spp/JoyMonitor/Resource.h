@@ -12,6 +12,7 @@
 #define IDB_GREYDOT                             120
 #define IDB_REDDOT                              122
 #define IDB_RING50                              125
+#define IDI_INDICATOR                           127
 #define IDS_APP_TITLE                           40000
 #define IDC_POV_GRP                             40001
 #define IDC_TXT_X                               40035
