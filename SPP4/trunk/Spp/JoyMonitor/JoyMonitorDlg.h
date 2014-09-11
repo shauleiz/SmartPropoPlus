@@ -79,5 +79,6 @@ private:
 	HWND  m_hDlg;	// Handle to the parent dialog box
 	UINT32 m_value;	// Current value of the POV (Default is -1)
 	HWND m_hIndicator; // Handle to the indicator
+	HWND m_hRingImage; // Handle to the ring
 };
 

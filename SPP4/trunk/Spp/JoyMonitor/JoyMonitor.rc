@@ -121,6 +121,14 @@ IDC_JOYMONITOR ACCELERATORS
 
 
 //
+// Cursor resources
+//
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_INDICATOR      CURSOR         ".\\Indicator.cur"
+
+
+
+//
 // Icon resources
 //
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
