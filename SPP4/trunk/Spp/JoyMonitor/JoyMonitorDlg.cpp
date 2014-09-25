@@ -33,6 +33,7 @@ CJoyMonitorDlg::CJoyMonitorDlg(HINSTANCE hInstance, HWND	ConsoleWnd) :
 	m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_JOY), NULL, MsgHndlDlg, (LPARAM)this);	
 	CreateControls(128);
 	//CreatePovMeters(4);
+	m_Pov[0] = m_Pov[1] = m_Pov[2] = m_Pov[3] = m_Pov[4] = m_Pov[5] = m_Pov[6] = NULL;
 
 	return;
 }
@@ -100,8 +101,8 @@ CJoyMonitorDlg::~CJoyMonitorDlg(void)
 {
 	for (int i=0; i<7; i++)
 	{
-		if (!m_Pov[0])
-			break;
+		if (!m_Pov[i])
+			continue;
 		m_Pov[i]->~CPovGrph();
 	};
 }
@@ -603,7 +604,7 @@ CPovGrph::CPovGrph(UINT iPov, LONG Radius, POINT Centre, int ID, HWND hDlg) : m_
 		m_hIndicator = NULL;
 		m_hRingImage = NULL;
 		m_Valid = TRUE;
-		m_Pov[0] = NULL;
+		m_Pov[0] = m_Pov[1] = m_Pov[2] = m_Pov[3] = m_Pov[4] = m_Pov[5] = m_Pov[6] = NULL;
 	};
 }
 
