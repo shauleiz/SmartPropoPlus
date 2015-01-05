@@ -112,9 +112,33 @@ HWND CJoyMonitorDlg::GetHandle(void)
 	return m_hDlg;
 }
 
+// Clear all POV meters
+void CJoyMonitorDlg::CleanPovMeters(void)
+{
+	// Erase all rings
+	for (UINT i=0; i<sizeof(m_Pov)/sizeof(m_Pov[0]); i++)
+		if (m_Pov[i])
+			m_Pov[i]->ShowPov(FALSE);
+
+	// Get handles to all lables
+	HWND hLabel[6];
+	hLabel[0] =  GetDlgItem(m_hDlg, IDS_POV1_2);
+	hLabel[1] =  GetDlgItem(m_hDlg, IDS_POV2_2);
+	hLabel[2] =  GetDlgItem(m_hDlg, IDS_POV1_4);
+	hLabel[3] =  GetDlgItem(m_hDlg, IDS_POV2_4);
+	hLabel[4] =  GetDlgItem(m_hDlg, IDS_POV3_4);
+	hLabel[5] =  GetDlgItem(m_hDlg, IDS_POV4_4);
+
+	// Reset
+	for (int i=0; i<6; i++)
+		ShowWindow(hLabel[i], SW_HIDE);
+}
+
 // Create POV meters inside the POV group frame
 void CJoyMonitorDlg::CreatePovMeters(UINT nPovs)
 {
+	CleanPovMeters();
+
 	if (nPovs<1 || nPovs>4)
 		return;
 
@@ -198,6 +222,7 @@ void CJoyMonitorDlg::CreatePovMeters(UINT nPovs)
 	else
 		First = nPovs-1;
 
+	// Show
 	for (UINT i=First; i<(First+nPovs); i++)
 		m_Pov[i]->ShowPov(TRUE);
 
@@ -632,14 +657,21 @@ void CPovGrph::ShowPov(BOOL Show)
 {
 	if (!m_Valid)
 		return;
+	ShowWindow(m_hIndicator, SW_HIDE);
 
 	HWND hRing = GetDlgItem(m_hDlg, m_ID);
 	if (!hRing)
 		return;
 	if (Show)
+	{
 		ShowWindow(hRing, SW_SHOW);
+		ShowWindow(m_hIndicator, SW_SHOW);
+	}
 	else
+	{
 		ShowWindow(hRing, SW_HIDE);
+		ShowWindow(m_hIndicator, SW_HIDE);
+	}
 }
 
 // Given the input value (val) this method:

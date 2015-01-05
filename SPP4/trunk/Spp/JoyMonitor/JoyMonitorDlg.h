@@ -42,6 +42,7 @@ protected:
 	void InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max=0x03ff0000,ULONG min=0);
 	void GetExistingDevices(HWND hDlg);
 	void CreatePovMeters(UINT nPovs);
+	void CleanPovMeters(void);
 	void ShowMeterLables(int nPovs);
 
 protected:
