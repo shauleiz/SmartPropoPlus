@@ -170,6 +170,8 @@ void SetAvailableControls(UINT id, HWND hDlg)
 	controls ctrls;
 	// Get data from vJoy Interface
 	ctrls.nButtons = GetVJDButtonNumber(id);
+	if ((int)ctrls.nButtons<0)
+		ctrls.nButtons=0;
 	for (UINT i=0; i<8; i++)
 		ctrls.axis[i] = GetVJDAxisExist(id, HID_USAGE_X+i);
 	int nDiscPov = GetVJDDiscPovNumber(id);
