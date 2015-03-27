@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Knownfolders.h"
 #include "Shlobj.h"
 #include "SmartPropoPlus.h"
@@ -20,6 +20,7 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	lock_guard<recursive_mutex> lock(m_mx_General);
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
+	// TEST Only path = L"C:\\תיקיית ניסיון";
 	w_full_path = path;
 	m_filename = w_full_path + TEXT("\\") + DEF_CONF_DIR + TEXT("\\") + FileName;
 	full_path = utf8_encode(w_full_path);
@@ -32,10 +33,10 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	if (!loaded && m_doc.ErrorId()/* == TiXmlBase::TIXML_ERROR_OPENING_FILE*/)
 	{
 		m_doc.ClearError();
-		CreateDefaultConfig(&m_doc);
 		w_full_path = path;
 		w_full_path = w_full_path + TEXT("\\") + DEF_CONF_DIR;
 		CreateDirectory(w_full_path.c_str(), 0);
+		CreateDefaultConfig(&m_doc);
 	};
 	// TODO: Log operation
 
@@ -459,7 +460,7 @@ bool CSppConfig::SelectModulation(LPTSTR Type)
 // Parameters:
 //	Type: Short name (PPM, WAL, AIR1)
 //	Subtype: (PPM or PCM)
-//	Name: Friendly name such as �Sanwa/Air (PCM1)�
+//	Name: Friendly name such as “Sanwa/Air (PCM1)”
 //	select: If true, mark this modulation as the selected
 bool CSppConfig::AddModulation(wstring Type, wstring SubType, wstring Name, bool select)
 {
@@ -701,7 +702,7 @@ bool CSppConfig::IsDecoderAuto(void)
 // AddAudioDevice - Add reference to an audio device
 // Parameters:
 //	Id: Unique identifier (e.g. {0.0.1.00000000}.{8512fa69-b703-45b9-b105-c35f74a51950})
-//	Name: Friendly name (e.g. �Mic In at front panel (Pink) (Realtek High Definition Audio)�)
+//	Name: Friendly name (e.g. “Mic In at front panel (Pink) (Realtek High Definition Audio)”)
 //	select: If true then mark this audio device as currently selected
 //
 // Notes:
@@ -737,7 +738,7 @@ bool CSppConfig::SetAudioDeviceChannel(LPTSTR Id, LPTSTR Channel)
 // AddAudioDevice - Add reference to an audio device
 // Parameters:
 //	Id: Unique identifier (e.g. {0.0.1.00000000}.{8512fa69-b703-45b9-b105-c35f74a51950})
-//	Name: Friendly name (e.g. �Mic In at front panel (Pink) (Realtek High Definition Audio)�) - If NULL then do not change Name
+//	Name: Friendly name (e.g. “Mic In at front panel (Pink) (Realtek High Definition Audio)”) - If NULL then do not change Name
 //	BitRate: 8/16 (zero - do not change BitRate)
 //	Channel: Left/Right (NULL - do not change Channel)
 //
