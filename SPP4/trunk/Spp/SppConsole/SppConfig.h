@@ -119,6 +119,7 @@ public:
 	bool			Stopped(bool active);
 
 	bool			Save(void);
+	bool			Load(void);
 
 
 	void Test(void);
@@ -156,6 +157,8 @@ private:
 private:
 	TiXmlDocument			m_doc;
 	recursive_mutex			m_mx_General;
+	FILE *					m_pFile;
+	wstring					m_filename;
 
 };
 

@@ -21,12 +21,12 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
 	w_full_path = path;
-	w_full_path = w_full_path + TEXT("\\") + DEF_CONF_DIR + TEXT("\\") + FileName;
+	m_filename = w_full_path + TEXT("\\") + DEF_CONF_DIR + TEXT("\\") + FileName;
 	full_path = utf8_encode(w_full_path);
 
 	// Create a document and try to load the config file
 	//m_doc = new TiXmlDocument(full_path);
-	loaded = m_doc.LoadFile(full_path);
+	loaded = Load();
 
 	// If not loaded then create a default config file (And sub-folder)
 	if (!loaded && m_doc.ErrorId()/* == TiXmlBase::TIXML_ERROR_OPENING_FILE*/)
@@ -1312,12 +1312,41 @@ wstring CSppConfig::GetSelectedFilterName(void)
 	return w;
 }
 
+// Read XML from disk
+bool CSppConfig::Load(void)
+{
+	// reading in binary mode so that tinyxml can normalize the EOL
+	FILE* file;
+
+	if (!_wfopen_s(&file, m_filename.c_str(), L"rb"))
+	{
+		bool result = m_doc.LoadFile(file);
+		fclose(file);
+		return result;
+	}
+	else
+	{
+		m_doc.SetError(TiXmlDocument::TIXML_ERROR_OPENING_FILE, 0, 0, TIXML_ENCODING_UNKNOWN);
+		return false;
+	}
+
+}
+
 // Save XML to disk
 bool CSppConfig::Save(void)
 {
 	lock_guard<recursive_mutex> lock(m_mx_General);
 
-	return 	m_doc.SaveFile();
+	// The old c stuff lives on...
+	FILE* fp;
+	
+	if (!_wfopen_s(&fp, m_filename.c_str(), L"w"))
+	{
+		bool result = m_doc.SaveFile(fp);
+		fclose(fp);
+		return result;
+	}
+	return false;
 }
 
 // Get the state of Pulse_SCP
