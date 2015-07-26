@@ -8,9 +8,10 @@ SmartPropoPlus - Turning your R/C transmitter into a Flight Simulator Joystick
 * Detailed instructions in the site
 
 [SmartPropoPlus Homepage][hp]
+
 [SmartPropoPlus SourceForge page][spp-sf]
 
 
 
-[hp]: http://smartpropoplus.com/
+[hp]: http://smartpropoplus.com
 [spp-sf]: https://sourceforge.net/projects/smartpropoplus/
