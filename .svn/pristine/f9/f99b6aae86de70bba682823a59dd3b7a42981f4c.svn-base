@@ -1,0 +1,4 @@
+// Microsoft Visual C++ generated Help ID include file.
+// Used by SppConsole.rc
+//
+#define HIDC_LEVEL                      0x8066040b    // IDD_SPPCONSOLE_DIALOG

@@ -1,0 +1,59 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: JsChPostProc - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Release/JsChPostProc.res" /d "NDEBUG" /d "_AFXDLL" "C:\Code\SmartPropoPlus\310\JsChPostProc\JsChPostProc.rc"" 
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP1074.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /Fp"Release/JsChPostProc.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Code\SmartPropoPlus\310\JsChPostProc\JsChPostProc.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP1074.tmp" 
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP1075.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /Fp"Release/JsChPostProc.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Code\SmartPropoPlus\310\JsChPostProc\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP1075.tmp" 
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP1076.tmp" with contents
+[
+/nologo /subsystem:windows /dll /incremental:no /pdb:"Release/JsChPostProc.pdb" /machine:I386 /def:".\JsChPostProc.def" /out:"Release/JsChPostProc.dll" /implib:"Release/JsChPostProc.lib" 
+.\Release\JsChPostProc.obj
+.\Release\StdAfx.obj
+.\Release\JsChPostProc.res
+]
+Creating command line "link.exe @C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP1076.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+JsChPostProc.cpp
+Linking...
+   Creating library Release/JsChPostProc.lib and object Release/JsChPostProc.exp
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP107A.bat" with contents
+[
+@echo off
+echo Copy JsChPostProc.dll  to SppConsole\release
+copy .\Release\JsChPostProc.dll  ..\SppConsole\Release\.
+ECHO Copying to FMS8 folder
+copy .\release\JsChPostProc.dll "C:\Program Files\FMS8\."
+]
+Creating command line "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSP107A.bat"
+
+Copy JsChPostProc.dll  to SppConsole\release
+        1 file(s) copied.
+Copying to FMS8 folder
+        1 file(s) copied.
+
+
+
+<h3>Results</h3>
+JsChPostProc.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

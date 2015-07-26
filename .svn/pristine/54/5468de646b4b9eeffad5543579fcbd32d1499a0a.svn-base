@@ -1,0 +1,6 @@
+; Logger.def : Declares the module parameters for the DLL.
+
+LIBRARY      "Logger"
+
+EXPORTS
+CreateWaveFile				@1

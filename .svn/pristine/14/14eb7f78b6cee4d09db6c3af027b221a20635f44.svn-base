@@ -1,0 +1,412 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\SppConsole.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\SppConsole.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SPPCONSOLE_DIALOG DIALOGEX 0, 0, 184, 212
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_MINIMIZEBOX | WS_POPUP | 
+    WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Console"
+MENU IDR_MENU_MAIN
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "&Done",IDOK,7,191,50,14
+    LISTBOX         IDC_MOD_TYPE,22,26,75,40,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Positive",IDC_SHIFT_POS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,119,41,41,10
+    CONTROL         "Negative",IDC_SHIFT_NEG,"Button",BS_AUTORADIOBUTTON,119,
+                    54,45,10
+    CONTROL         "&Auto-detect",IDC_SHIFT_AUTO,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,103,25,53,10
+    LISTBOX         IDC_AUDIO_SRC,22,122,141,40,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Type:",IDC_STATIC,23,16,19,8
+    LTEXT           "Shift Polarity:",IDC_STATIC,103,15,42,8
+    GROUPBOX        "Modulation",IDC_STATIC,18,4,150,68
+    PUSHBUTTON      "&Hide",IDC_HIDE,127,191,50,14
+    GROUPBOX        "Audio Source",IDC_STATIC,17,81,150,88
+    COMBOBOX        IDC_MIXERDEVICE,22,103,141,91,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Enable Audio input selection",IDC_ENABLE_AUDIO,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,22,90,109,10
+    CONTROL         135,IDC_SPK,"Static",SS_BITMAP | SS_NOTIFY,146,91,11,9,
+                    WS_EX_CLIENTEDGE
+    CONTROL         "Virtual &Joystick Extension",IDC_PPJOYEX,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,17,174,150,10
+END
+
+IDD_ABOUT DIALOGEX 0, 0, 290, 204
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "About SmartPropoPlus"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,233,183,50,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20,0,WS_EX_TRANSPARENT
+    LTEXT           "www.haaretz.co.il",IDC_WEB_LINK,7,189,214,8
+    CTEXT           "SmartPropoPlus - Enables you to connect your R/C transmitter to your Sound-card",
+                    IDC_TTL_1,7,18,276,24,SS_CENTERIMAGE
+    LTEXT           "MainText",IDC_TTL_2,7,57,276,112,SS_SUNKEN
+END
+
+IDD_DEF_VOL DIALOGEX 0, 0, 166, 212
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Default input levels"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,191,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,109,191,50,14
+    CONTROL         "Slider1",IDC_SLIDER_MIC,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,14,17,105,27
+    EDITTEXT        IDC_EDT_MIC,121,22,26,13,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Microphone",IDC_STATIC,7,7,152,39
+    CONTROL         "Slider1",IDC_SLIDER_LIN,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,14,60,105,27
+    EDITTEXT        IDC_EDT_LIN,121,65,26,13,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Line In",IDC_STATIC,7,50,152,39
+    CONTROL         "Slider1",IDC_SLIDER_AUX,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,14,103,105,27
+    EDITTEXT        IDC_EDT_AUX,121,108,26,13,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Auxiliary",IDC_STATIC,7,92,152,39
+    CONTROL         "Slider1",IDC_SLIDER_ANL,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,14,146,105,27
+    EDITTEXT        IDC_EDT_ANL,121,151,26,13,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Analog",IDC_STATIC,7,135,152,39
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,3,3,11
+ PRODUCTVERSION 0,3,3,11
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x21L
+#else
+ FILEFLAGS 0x20L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "SmartPropoPro - Created by Shaul Eizikovich (Based on Tsutomu Seki's SmartPropo)"
+            VALUE "Email", "support@SmartPropoPlus.com"
+            VALUE "FileDescription", "SppConsole  - SmartPropoPlus Console Application"
+            VALUE "FileVersion", "0, 3, 3, 11"
+            VALUE "InternalName", "SppConsole"
+            VALUE "LegalCopyright", "Copyright © 2006-2012 Shaul Eizikovich"
+            VALUE "OriginalFilename", "SppConsole.EXE"
+            VALUE "ProductName", "SppConsole Application"
+            VALUE "ProductVersion", "0, 3, 3, 11"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SPPCONSOLE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 177
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 205
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 283
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 197
+    END
+
+    IDD_DEF_VOL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 159
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 205
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_TEST MENU 
+BEGIN
+    POPUP "Tray"
+    BEGIN
+        MENUITEM "&Console",                    IDC_SHOW
+        MENUITEM "&Hide",                       IDC_HIDE
+        MENUITEM SEPARATOR
+        MENUITEM "&About SmartPropoPlus",       IDC_ABOUT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDOK
+    END
+END
+
+IDR_MENU_MAIN MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Hide",                       IDC_HIDE
+        MENUITEM "E&xit",                       IDOK
+    END
+    POPUP "&Advanced"
+    BEGIN
+        MENUITEM "Audio &Source ...",           IDC_SEL_SRC
+        MENUITEM "Audio &Destination ...",      IDC_AUDIO_DST
+        MENUITEM "&Default input levels ...",   IDC_AUDIO_VOL
+        MENUITEM SEPARATOR
+        MENUITEM "Audio &Report ...",           IDC_AUDIO_PRINT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_SPK_BM              BITMAP                  "res\\bitmap1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDC_SHOW                "Show/Change SmartPropoPlus setup"
+    IDC_SEL_SRC             "Audio source - Selection & Volume"
+    IDC_AUDIO_DST           "Audio destination - Mute & Volume"
+    IDC_VOLUME_MIC          "Microphone Default volume level"
+    IDC_VOLUME_LIN          "Line-In Default volume level"
+    IDC_VOLUME_AUX          "Auxiliary Default volume level"
+    IDC_VOLUME_ANL          "Analog Default volume level"
+    IDC_AUDIO_VOL           "Get/Set default volume levels"
+    IDC_AUDIO_PRINT         "Create an audio report file"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_MOD_TYPE            "Select transsmiter type"
+    IDC_SHIFT_POS           "Manually select positive shift"
+    IDC_SHIFT_NEG           "Manually select nagative shift"
+    IDC_SHIFT_AUTO          "Check to auto-detect shift polarity - Un-check for manual selection"
+    IDC_AUDIO_SRC           "Select audio source"
+    IDC_HIDE                "Hide SmartPropoPlus Console"
+END
+
+STRINGTABLE 
+BEGIN
+    IDOK                    "Close SmartPropoPlus Console"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_MIXERDEVICE         "Select Mixer Device"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_FILTER_0            "Filter 0"
+    IDC_FILTER_1            "Filter 0"
+    IDC_FILTER_2            "Filter 0"
+    IDC_FILTER_3            "Filter 0"
+    IDC_FILTER_4            "Filter 0"
+    IDC_FILTER_5            "Filter 0"
+    IDC_FILTER_6            "Filter 0"
+    IDC_FILTER_7            "Filter 0"
+    IDC_FILTER_8            "Filter 0"
+    IDC_FILTER_9            "Filter 0"
+    IDC_FILTER_10           "Filter 0"
+    IDC_FILTER_11           "Filter 0"
+    IDC_FILTER_12           "Filter 0"
+    IDC_FILTER_13           "Filter 0"
+    IDC_FILTER_14           "Filter 0"
+    IDC_FILTER_15           "Filter 0"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_FILTER_16           "Filter 0"
+    IDC_FILTER_17           "Filter 0"
+    IDC_FILTER_18           "Filter 0"
+    IDC_FILTER_19           "Filter 0"
+    IDC_FILTER_20           "Filter 0"
+    IDC_FILTER_21           "Filter 0"
+    IDC_FILTER_22           "Filter 0"
+    IDC_FILTER_23           "Filter 0"
+    IDC_FILTER_24           "Filter 0"
+    IDC_FILTER_25           "Filter 0"
+    IDC_FILTER_26           "Filter 0"
+    IDC_FILTER_27           "Filter 0"
+    IDC_FILTER_28           "Filter 0"
+    IDC_FILTER_29           "Filter 0"
+    IDC_FILTER_30           "Filter 0"
+    IDC_FILTER_31           "Filter 0"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_FILTER_32           "Filter 0"
+    IDC_FILTER_33           "Filter 0"
+    IDC_FILTER_34           "Filter 0"
+    IDC_FILTER_35           "Filter 0"
+    IDC_FILTER_36           "Filter 0"
+    IDC_FILTER_37           "Filter 0"
+    IDC_FILTER_38           "Filter 0"
+    IDC_FILTER_39           "Filter 0"
+    IDC_FILTER_40           "Filter 0"
+    IDC_FILTER_41           "Filter 0"
+    IDC_FILTER_42           "Filter 0"
+    IDC_FILTER_43           "Filter 0"
+    IDC_FILTER_44           "Filter 0"
+    IDC_FILTER_45           "Filter 0"
+    IDC_FILTER_46           "Filter 0"
+    IDC_FILTER_47           "Filter 0"
+END
+
+STRINGTABLE 
+BEGIN
+    IDC_FILTER_48           "Filter 0"
+    IDC_FILTER_49           "Filter 0"
+    IDC_FILTER_50           "Filter 0"
+    IDC_FILTER_51           "Filter 0"
+    IDC_FILTER_52           "Filter 0"
+    IDC_FILTER_53           "Filter 0"
+    IDC_FILTER_54           "Filter 0"
+    IDC_FILTER_55           "Filter 0"
+    IDC_FILTER_56           "Filter 0"
+    IDC_FILTER_57           "Filter 0"
+    IDC_FILTER_58           "Filter 0"
+    IDC_FILTER_59           "Filter 0"
+    IDC_FILTER_60           "Filter 0"
+    IDC_FILTER_61           "Filter 0"
+    IDC_FILTER_62           "Filter 0"
+    IDC_FILTER_63           "Filter 0"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\SppConsole.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,51 @@
+; Wave2Joystick.def : Declares the module parameters for the DLL.
+
+LIBRARY      "Wave2Joystick"
+
+EXPORTS
+; Explicit exports can go here
+;TestTest						@1 NONAME
+Debug1=TestTest					@1 
+GetWave2JoystickObject			@2
+SppSetParam						@3 NONAME
+SppSetModulation				@4
+SppSetShift						@5
+SppSetAntiJitter				@6
+SppSetActiveAudioDevice			@7
+SppSetSelectedInput				@8
+SppSetMixerSelector				@9
+SppStart						@10
+StopInterfaces					@11
+
+; Log & Debug
+SppWaveLoggerStart				@12
+SppWaveLoggerStop				@13
+SppWaveLoggerPlay				@14
+SppWaveLoggerGetStat			@15
+SppAudioHdrLoggerStart			@16
+SppAudioHdrLoggerStop			@17
+; SppAudioHdrLoggerPlay			@18
+SppAudioHdrLoggerGetStat		@19
+SppPulseLoggerStart				@20
+SppPulseLoggerStop				@21
+; SppPulseLoggerPlay			@22
+SppPulseLoggerGetStat			@23
+SppRawPulseLoggerStart			@24
+SppRawPulseLoggerStop			@25
+; SppRawPulseLoggerPlay			@26
+SppRawPulseLoggerGetStat		@27
+
+
+; PPJoy Interface
+StartPPJoyInterface				@40
+StopPPJoyInterface				@41
+TestPPJoyInterface				@42
+
+; Filter Interface
+SetFilterInterface				@50
+
+; Monitoring
+SppGetAudioLevel				@60
+SppGetNumJoyPos					@61
+SppGetJoyPos					@62
+SppGetFilteredPos				@63

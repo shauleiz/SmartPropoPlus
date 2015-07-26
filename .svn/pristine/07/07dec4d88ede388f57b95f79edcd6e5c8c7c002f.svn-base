@@ -1,0 +1,12 @@
+To Do list for 3.4.x
+
+1. SPP4FMS:	Enable the user to start SppConsole and then FMS. Perhaps starting SppConsole should start FMS.
+2  PPM anti-jitter:	From menu: Enable(Default)/Disable
+3. Log file:		Log WaveIn connection, SppConsole set-up, Registry, DLL loading, DLL-GUI communication
+4. Select card:	Option to change mixer on the fly. Might require replacing the callback function with a callback thread.
+				When un-Checked display the default card
+5. SPP4FMS:	GUI indicator that DLL is fuctional and comunicating.
+6. Scanner:	Scan active audio channels & test for valid signal.
+7. Format:		Enable higher bit-rate audio (96K/192K).
+8. Usability:	Done->Exit. Hide->Minimize. Include 'About' in Help menu. Re-write manual and add to distribution.
+9. Installer:	Version testing. Prevent installation of old versions.

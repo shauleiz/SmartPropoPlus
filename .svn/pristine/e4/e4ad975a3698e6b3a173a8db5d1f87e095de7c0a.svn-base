@@ -1,0 +1,47 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: winmm - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPA48.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /I "../include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WINMM_EXPORTS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /c 
+"C:\Code\SmartPropoPlus\330\Winmm\winmm.c"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPA48.tmp" 
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPA49.tmp" with contents
+[
+smartpropoplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:yes /pdb:"Debug/winmm.pdb" /debug /machine:I386 /nodefaultlib:"LIBCD.lib" /def:".\winmm.def" /out:"Debug/winmm.dll" /implib:"Debug/winmm.lib" /pdbtype:sept /libpath:"../smartpropoplus/debug" 
+.\Debug\winmm.obj
+.\Debug\winmm.res
+\Code\SmartPropoPlus\330\GlobalMemory\Debug\GlobalMemory.lib
+\Code\SmartPropoPlus\330\SmartPropoPlus\Debug\SmartPropoPlus.lib
+\Code\SmartPropoPlus\330\SppRegistry\Debug\SPPREGISTRY.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPA49.tmp"
+<h3>Output Window</h3>
+Compiling...
+winmm.c
+Linking...
+   Creating library Debug/winmm.lib and object Debug/winmm.exp
+Creating temporary file "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPA4D.bat" with contents
+[
+@echo off
+ECHO Copying to FMS8 folder
+copy .\debug\winmm.dll "C:\Program Files\FMS8\."
+]
+Creating command line "C:\DOCUME~1\Shaul\LOCALS~1\Temp\RSPA4D.bat"
+
+Copying to FMS8 folder
+        1 file(s) copied.
+
+
+
+<h3>Results</h3>
+winmm.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,11 @@
+LIBRARY PPJoyEx
+
+EXPORTS
+
+StartPPJoyInterface	@1
+DllGetVersion		@2
+StopPPJoyInterface	@3
+StartJsChPostProc	@4
+MixerChanged		@5
+TestPPJoy			@6
+GetAudioVolume		@7

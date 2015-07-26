@@ -1,0 +1,29 @@
+ 
+// Commands (ID_* and IDM_*) 
+HID_ADVANCED_JITTER                     0x18053
+HID_HELP_LOG                            0x18056
+HID_LOG_REGISTRY                        0x18057
+HID_Menu                                0x18059
+HID_FILE_RUNFMS                         0x1805B
+HID_LOG_AUDIO_HDRS                      0x1805C
+HID_LOG_PULSE                           0x1805D
+HID_LOG_FMSCONNECTION                   0x1805E
+HID_LOG_RAWPULSES                       0x1805F
+ 
+// Prompts (IDP_*) 
+ 
+// Resources (IDR_*) 
+HIDR_HTML_WAVERECDLG                    0x20067
+HIDR_MAINFRAME                          0x20080
+HIDR_MENU_TEST                          0x20081
+HIDR_MENU_MAIN                          0x20082
+ 
+// Dialogs (IDD_*) 
+HIDD_SPPCONSOLE_DIALOG                  0x20066
+HIDD_ABOUT                              0x20082
+HIDD_DEF_VOL                            0x20088
+HIDD_REC_DIALOG                         0x20089
+HIDD_AUDIO_HDR_DIALOG                   0x2008A
+HIDD_SCAN_DIALOG                        0x2008D
+ 
+// Frame Controls (IDW_*) 

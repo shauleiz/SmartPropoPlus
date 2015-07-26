@@ -1,0 +1,15 @@
+; Filter.def : Declares the module parameters for the DLL.
+
+LIBRARY      "Filter"
+;DESCRIPTION  "Filter - Joystick's channels - postprocessor (for SPP)"
+
+EXPORTS
+;Explicit exports can go here
+GetDllVersion	@1
+ProcessChannels	@2
+GetNumberOfFilters	@3
+GetFilterNameByIndex	@4
+GetFilterIdByIndex	@5
+SelectFilterByIndex @6
+GetIndexOfSelectedFilter	@7
+GetFilterNameByIndexW @8
