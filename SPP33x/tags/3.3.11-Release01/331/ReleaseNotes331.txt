@@ -1,9 +1,0 @@
-winmm:
-
-Walkera PCM mode:
-> Improved channel algorithm	
-> Checksum testing
-> Eight channels for future use
-
-Futaba  PCM mode:
-> 10-channel support

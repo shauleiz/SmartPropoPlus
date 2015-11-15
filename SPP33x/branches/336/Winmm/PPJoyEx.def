@@ -1,8 +1,0 @@
-LIBRARY PPJoyEx
-
-EXPORTS
-
-StartPPJoyInterface	@1
-DllGetVersion @2
-StopPPJoyInterface	@3
-StartJsChPostProc	@4

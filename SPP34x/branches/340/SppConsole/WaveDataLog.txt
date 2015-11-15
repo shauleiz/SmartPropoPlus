@@ -1,5 +1,0 @@
-Wave Data Log file
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-{57:31.961} 2648 [W] -              Microsoft Sound Mapper [-1] -	MM_WIM_OPEN
-{57:32.008} 2648 [W] -              SoundMAX Digital Audio [ 0] -	MM_WIM_OPEN
-{57:32.054} 2648 [W] -          Creative Sound Blaster PCI [ 2] -	MM_WIM_OPEN
