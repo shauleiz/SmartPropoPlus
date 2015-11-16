@@ -483,7 +483,7 @@ HRESULT CPulseScope::OnRender()
 		{
 			m_pRenderTarget->DrawLine(m_measureStartPoint, m_measureEndPoint, m_pMeasureBrush, 0.3f);
 			float delta = (m_measureEndPoint.x - m_measureStartPoint.x)/sqSize;
-			if (abs(delta) >= 0.05)
+			if (fabs(delta) >= 0.05)
 			{
 				hr = StringCchPrintf(textBuffer, tMaxLen, L"%.2fmS", delta);
 				m_pRenderTarget->DrawText(

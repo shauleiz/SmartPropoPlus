@@ -99,7 +99,7 @@ void SppTab::ShowArrayOfItems(HWND hDlg, int nCmdShow, const int items[], UINT s
 
 // Show/Hide the first 'size' dialog items in a given vector if IDs
 // If size=0 or if size too big then do it to the entire vector
-void SppTab::ShowArrayOfItems(HWND hDlg, int nCmdShow, std::vector<const int> items, UINT size)
+void SppTab::ShowArrayOfItems(HWND hDlg, int nCmdShow, std::vector< int> items, UINT size)
 {
 	if (!size || size>items.size())
 	{
@@ -121,7 +121,7 @@ void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, const int items[], UINT si
 
 // Enable/Disable the first 'size' dialog items in a given vector if IDs - Disable the rest
 // If size=0 or if size too big then do it to the entire vector
-void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, std::vector<const int> items, UINT size)
+void SppTab::ShowArrayOfItems(HWND hDlg, bool Enable, std::vector< int> items, UINT size)
 {
 	if (!size || size>items.size())
 	{
@@ -144,7 +144,7 @@ void SppTab::ResetArrayOfBars(HWND hDlg, const int items[], UINT size)
 		SendMessage(GetDlgItem(hDlg,  items[i]), PBM_SETPOS, 0, 0);
 }
 
-void SppTab::ResetArrayOfBars(HWND hDlg, std::vector<const int> items)
+void SppTab::ResetArrayOfBars(HWND hDlg, std::vector< int> items)
 {
 	for (auto item : items)
 		SendMessage(GetDlgItem(hDlg,  item), PBM_SETPOS, 0, 0);
@@ -163,7 +163,7 @@ void SppTab::SetPosition(HWND hDlg)
 // vBars -  Vector of IDs of progress-bars to initialize
 // max   -	Upper progress-bar range  (Default is 0x03ff0000)
 // mib   -	Low progress-bar range  (Default is 0)
-void  SppTab::InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max,ULONG min)
+void  SppTab::InitBars(HWND hDlg, const DWORD Color, std::vector< int> vBars,ULONG max,ULONG min)
 {
 	HWND hCh;
 

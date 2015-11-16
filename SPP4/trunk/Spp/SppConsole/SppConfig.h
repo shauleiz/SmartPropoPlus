@@ -1,6 +1,6 @@
 #pragma once
 #define TIXML_USE_STL 1
-#include "TinyXml.h"
+#include "..\TinyXml\TinyXml.h"	 // TODO: Fix the include path
 #include <array>
 
 #ifdef X64

@@ -159,42 +159,42 @@ void SetThreadName(char* threadName);
 
 // Constractor
 CvJoyMonitor::CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd) :
-	m_ParentWnd(ParentWnd), m_hInstance(hInstance),  m_nvJoyDevices(0), m_thCentral(NULL)
+    m_ParentWnd(ParentWnd), m_hInstance(hInstance),  m_nvJoyDevices(0), m_thCentral(NULL)
 {
-	if (!m_ParentWnd || !m_hInstance)
-		return;
+    if (!m_ParentWnd || !m_hInstance)
+        return;
 
-	// Initialize
-	m_DeviceDB.clear();
-	m_thCentral=NULL;
-	m_hDummyWnd=NULL;
-	m_Id.resize(16, -1);
+    // Initialize
+    m_DeviceDB.clear();
+    m_thCentral=NULL;
+    m_hDummyWnd=NULL;
+    m_Id.resize(16, -1);
 
-	// // /// //// Test if DirectInput supported.
-	// Register with the DirectInput subsystem and get a pointer
-	// to a IDirectInput interface we can use.
-	// Create a DInput object
-	if( FAILED(DirectInput8Create( GetModuleHandle( NULL ), DIRECTINPUT_VERSION, IID_IDirectInput8, ( VOID** )&m_pDI, NULL ) ) )
-	{
-		m_pDI->Release();
-		m_pDI = NULL;
-		return;
-	};
+    // // /// //// Test if DirectInput supported.
+    // Register with the DirectInput subsystem and get a pointer
+    // to a IDirectInput interface we can use.
+    // Create a DInput object
+    if( FAILED(DirectInput8Create( GetModuleHandle( NULL ), DIRECTINPUT_VERSION, IID_IDirectInput8, ( VOID** )&m_pDI, NULL ) ) )
+    {
+        m_pDI->Release();
+        m_pDI = NULL;
+        return;
+    };
 
-	// Create a dummy window
-	m_hDummyWnd = CreateDummyWindow();
+    // Create a dummy window
+    m_hDummyWnd = CreateDummyWindow();
 
-	// Create vector of all devices
-	m_EnumerateCounter=1;
-	// Create a Central vJoyMonitor thread
-	// It constantly monitors the activity of vJoyMonitor object
-	m_CentralKeepalive = true;
-	m_thCentral = new thread(_CentralThread, this);
+    // Create vector of all devices
+    m_EnumerateCounter=1;
+    // Create a Central vJoyMonitor thread
+    // It constantly monitors the activity of vJoyMonitor object
+    m_CentralKeepalive = true;
+    m_thCentral = new thread(_CentralThread, this);
 }
 
 CvJoyMonitor::CvJoyMonitor(void)
 {
-		m_DeviceDB.clear();
+        m_DeviceDB.clear();
 }
 
 // Destructor
@@ -204,32 +204,32 @@ CvJoyMonitor::CvJoyMonitor(void)
 // Kill dummy window
 CvJoyMonitor::~CvJoyMonitor(void)
 {
-	StopCentralThread();
-	FreeDeviceDB();
-	SAFE_RELEASE(m_pDI);
-	DestroyWindow(m_hDummyWnd);
+    StopCentralThread();
+    FreeDeviceDB();
+    SAFE_RELEASE(m_pDI);
+    DestroyWindow(m_hDummyWnd);
 }
 
 void CvJoyMonitor::StopCentralThread(void)
 {
-	if (!m_thCentral)
-		return;
+    if (!m_thCentral)
+        return;
 
-	m_CentralKeepalive = false;
-	if (m_thCentral->joinable())
-		m_thCentral->join();
-	delete(m_thCentral);
-	m_thCentral = NULL;
+    m_CentralKeepalive = false;
+    if (m_thCentral->joinable())
+        m_thCentral->join();
+    delete(m_thCentral);
+    m_thCentral = NULL;
 }
 
 // Entry point for creating the Central Thread
 void CvJoyMonitor::_CentralThread(CvJoyMonitor * This)
 {
-	THREAD_NAME("CvJoyMonitor Central thread (Loop)");
-	if (!This)
-		return;
+    THREAD_NAME("CvJoyMonitor Central thread (Loop)");
+    if (!This)
+        return;
 
-	This->CentralThread();
+    This->CentralThread();
 }
 
 /*
@@ -242,37 +242,37 @@ After each responce - Continue & Wait.
 */
 void CvJoyMonitor::CentralThread()
 {
-	THREAD_NAME("CvJoyMonitor Central thread (Loop)");
+    THREAD_NAME("CvJoyMonitor Central thread (Loop)");
 
-	while (m_CentralKeepalive)
-	{
-		Sleep_For(100); // MilliSec
+    while (m_CentralKeepalive)
+    {
+        Sleep_For(100); // MilliSec
 
-		// Need enumeration? - If enumeration counter is positive then yes
-		// Kill all polling threads then start enumerating then decrement counter
-		if (m_EnumerateCounter>0)
-			EnumerateDevices();
+        // Need enumeration? - If enumeration counter is positive then yes
+        // Kill all polling threads then start enumerating then decrement counter
+        if (m_EnumerateCounter>0)
+            EnumerateDevices();
 
-		else
-		{
-			// Need to kill polling threads? - if m_quSuspend is not empty then yes
-			lock_guard<recursive_mutex> lock_ctSuspend(m_mx_ctSuspend);
-			if (!m_ctSuspend.empty())
-			{
-				SuspendPolling(*(m_ctSuspend.begin()));
-				continue;
-				//lock_ctSuspend;
-			};
+        else
+        {
+            // Need to kill polling threads? - if m_quSuspend is not empty then yes
+            lock_guard<recursive_mutex> lock_ctSuspend(m_mx_ctSuspend);
+            if (!m_ctSuspend.empty())
+            {
+                SuspendPolling(*(m_ctSuspend.begin()));
+                continue;
+                //lock_ctSuspend;
+            };
 
-			// Need to create polling threads? - if m_mx_quPoll is not empty then yes
-			lock_guard<recursive_mutex> lock_ctPoll(m_mx_ctPoll);
-			if (!m_ctPoll.empty())
-			{
-				PollDevice(*(m_ctPoll.begin()));
-				continue;
-			};
-		}
-	}; // While
+            // Need to create polling threads? - if m_mx_quPoll is not empty then yes
+            lock_guard<recursive_mutex> lock_ctPoll(m_mx_ctPoll);
+            if (!m_ctPoll.empty())
+            {
+                PollDevice(*(m_ctPoll.begin()));
+                continue;
+            };
+        }
+    }; // While
 
 }
 
@@ -280,34 +280,34 @@ void CvJoyMonitor::CentralThread()
 // Decrement enumerate counter when finished
 void CvJoyMonitor::EnumerateDevices(void)
 {
-	// Go over DB - for each element suspend polling and mark as not exist
-	mapDB::iterator iMap;
-	for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
-	{
-		SuspendPolling((*iMap).first);
-		(*iMap).second->Exist=false;
-	};//For Loop
+    // Go over DB - for each element suspend polling and mark as not exist
+    mapDB::iterator iMap;
+    for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
+    {
+        SuspendPolling((*iMap).first);
+        (*iMap).second->Exist=false;
+    };//For Loop
 
-	// Now enumerate all existing devices
-	// For each device add (if does not exist) and mark as exist
-	if (FAILED(m_pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, _EnumJoysticks, this, DIEDFL_ATTACHEDONLY ) ) )
-		return;
+    // Now enumerate all existing devices
+    // For each device add (if does not exist) and mark as exist
+    if (FAILED(m_pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, _EnumJoysticks, this, DIEDFL_ATTACHEDONLY ) ) )
+        return;
 
-	// Go over updated DB - for each element that request was set - add to request vector
-	lock_guard<recursive_mutex> lock(m_mx_ctPoll);
-	for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
-		if ((*iMap).second->RqPolling)
-			m_ctPoll.insert((*iMap).first);
+    // Go over updated DB - for each element that request was set - add to request vector
+    lock_guard<recursive_mutex> lock(m_mx_ctPoll);
+    for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
+        if ((*iMap).second->RqPolling)
+            m_ctPoll.insert((*iMap).first);
 
-	// Decrement counter
-	m_EnumerateCounter--;
+    // Decrement counter
+    m_EnumerateCounter--;
 }
 
 // Called for every enumerated DI device
 // Calls the coresponding class method function
 BOOL CALLBACK    _EnumJoysticks( const DIDEVICEINSTANCE* pdidInstance, VOID* pContext )
 {
-		return ((CvJoyMonitor *)pContext)->EnumJoysticks(pdidInstance);
+        return ((CvJoyMonitor *)pContext)->EnumJoysticks(pdidInstance);
 }
 
 // Called for every enumerated DI device (only vJoy device supported)
@@ -316,81 +316,81 @@ BOOL CALLBACK    _EnumJoysticks( const DIDEVICEINSTANCE* pdidInstance, VOID* pCo
 // - If exists then mark as 'exist' and update DI device
 BOOL CvJoyMonitor::EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance)
 {
-	HRESULT hr;
-	LPDIRECTINPUTDEVICE8 pJoystick;
+    HRESULT hr;
+    LPDIRECTINPUTDEVICE8 pJoystick;
 
-	// If not vJoy device then ignore
-	if (((pdidInstance)->guidProduct).Data1 != PID2)
-		return TRUE;
+    // If not vJoy device then ignore
+    if (((pdidInstance)->guidProduct).Data1 != PID2)
+        return TRUE;
 
-	// This is a vJoy device - Create a DI device
-	hr = m_pDI->CreateDevice( pdidInstance->guidInstance, &pJoystick, NULL );
-	// If it failed, then we can't use this Joystick. (Maybe the user unplugged
-	// it while we were in the middle of enumerating it.)
-	if( FAILED( hr ) )
-		return DIENUM_CONTINUE;
+    // This is a vJoy device - Create a DI device
+    hr = m_pDI->CreateDevice( pdidInstance->guidInstance, &pJoystick, NULL );
+    // If it failed, then we can't use this Joystick. (Maybe the user unplugged
+    // it while we were in the middle of enumerating it.)
+    if( FAILED( hr ) )
+        return DIENUM_CONTINUE;
 
-	// Set the data format to "simple Joystick" - a predefined data format 
-	//
-	// A data format specifies which controls on a device we are interested in,
-	// and how they should be reported. This tells DInput that we will be
-	// passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
-	if( FAILED(pJoystick->SetDataFormat( &c_dfDIJoystick2 )))
-			return TRUE;
+    // Set the data format to "simple Joystick" - a predefined data format 
+    //
+    // A data format specifies which controls on a device we are interested in,
+    // and how they should be reported. This tells DInput that we will be
+    // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
+    if( FAILED(pJoystick->SetDataFormat( &c_dfDIJoystick2 )))
+            return TRUE;
 
-	// Get device objects and ID
-	m_CurrentID=0;
-	if( FAILED(pJoystick->EnumObjects( _EnumObjects, ( VOID* )this, DIDFT_AXIS|DIDFT_BUTTON|DIDFT_POV ) ) )
-			return TRUE;
+    // Get device objects and ID
+    m_CurrentID=0;
+    if( FAILED(pJoystick->EnumObjects( _EnumObjects, ( VOID* )this, DIDFT_AXIS|DIDFT_BUTTON|DIDFT_POV ) ) )
+            return TRUE;
 
 
-	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(m_CurrentID);
+    // Convert vJoy ID to Unique ID
+    wstring UniqueID = Convert2UniqueID(m_CurrentID);
 
-	// Find device in DB by unique ID
-	// If found - Update its data
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap != m_DeviceDB.end() )
-	{ // Found
-		(*iMap).second->Exist=true;
-		SAFE_RELEASE((*iMap).second->pDeviceDI8);
-		(*iMap).second->pDeviceDI8=pJoystick;
-	}
-	else
-	{ // Not found - Create
-		Device * dev = new Device();
-		dev->UniqueID=UniqueID;
-		dev->Exist=true;
-		dev->pDeviceDI8=pJoystick;
-		dev->isvJoyDevice=true;
-		dev->RqPolling=false;
-		dev->ThPolling=NULL;
-		dev->isPolling=false;
-		dev->vJoyID = m_CurrentID;
-		m_DeviceDB.emplace(UniqueID,dev);
-	};
+    // Find device in DB by unique ID
+    // If found - Update its data
+    mapDB::iterator iMap;
+    iMap = m_DeviceDB.find(UniqueID);
+    if( iMap != m_DeviceDB.end() )
+    { // Found
+        (*iMap).second->Exist=true;
+        SAFE_RELEASE((*iMap).second->pDeviceDI8);
+        (*iMap).second->pDeviceDI8=pJoystick;
+    }
+    else
+    { // Not found - Create
+        Device * dev = new Device();
+        dev->UniqueID=UniqueID;
+        dev->Exist=true;
+        dev->pDeviceDI8=pJoystick;
+        dev->isvJoyDevice=true;
+        dev->RqPolling=false;
+        dev->ThPolling=NULL;
+        dev->isPolling=false;
+        dev->vJoyID = m_CurrentID;
+        m_DeviceDB.emplace(UniqueID,dev);
+    };
 
-	return TRUE;
+    return TRUE;
 }
 
 // Called for every DI device object (Button, axis etc)
 // Calls the coresponding class method function
 BOOL CALLBACK _EnumObjects( const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext )
 {
-		return ((CvJoyMonitor *)pContext)->EnumObjects(pdidoi);
+        return ((CvJoyMonitor *)pContext)->EnumObjects(pdidoi);
 }
 
 
 // Called for every DI device object (Button, axis etc)
 BOOL CvJoyMonitor::EnumObjects( const DIDEVICEOBJECTINSTANCE* pdidoi)
 {
-	// Get the vJoy ID
-	m_CurrentID = (pdidoi)->wReportId;
+    // Get the vJoy ID
+    m_CurrentID = (pdidoi)->wReportId;
 
-	// TODO: More data colleting in the future ...
+    // TODO: More data colleting in the future ...
 
-	return TRUE;
+    return TRUE;
 }
 
 
@@ -398,11 +398,11 @@ BOOL CvJoyMonitor::EnumObjects( const DIDEVICEOBJECTINSTANCE* pdidoi)
 // Convert vJoy ID to Unique ID
 wstring  CvJoyMonitor::Convert2UniqueID(UINT vJoyID)
 {
-	// Sanity check
-	if (vJoyID>16)
-		return L"";
+    // Sanity check
+    if (vJoyID>16)
+        return L"";
 
-	return VJOY_UNIQUEID_PREFIX+to_wstring(vJoyID);
+    return VJOY_UNIQUEID_PREFIX+to_wstring(vJoyID);
 }
 
 // Kill the polling thread for the given uniqueID
@@ -413,29 +413,29 @@ wstring  CvJoyMonitor::Convert2UniqueID(UINT vJoyID)
 void CvJoyMonitor::SuspendPolling(wstring UniqueID)
 {
     // DEBUG	return;
-	// This entire function is a critical region
-	lock_guard<recursive_mutex> lock(m_mx_ctSuspend);
+    // This entire function is a critical region
+    lock_guard<recursive_mutex> lock(m_mx_ctSuspend);
 
-	// Find entry in DB 
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap == m_DeviceDB.end() )
-		return;
+    // Find entry in DB 
+    mapDB::iterator iMap;
+    iMap = m_DeviceDB.find(UniqueID);
+    if( iMap == m_DeviceDB.end() )
+        return;
 
-	// Found - now kill thread and wait for it to exit
-	(*iMap).second->EnPolling=false;
-	if ((*iMap).second->ThPolling && (*iMap).second->ThPolling->joinable())
-		(*iMap).second->ThPolling->join();
+    // Found - now kill thread and wait for it to exit
+    (*iMap).second->EnPolling=false;
+    if ((*iMap).second->ThPolling && (*iMap).second->ThPolling->joinable())
+        (*iMap).second->ThPolling->join();
 
-	// Update device entry
-	delete((*iMap).second->ThPolling);
-	(*iMap).second->ThPolling = NULL;
-	(*iMap).second->isPolling = false;
+    // Update device entry
+    delete((*iMap).second->ThPolling);
+    (*iMap).second->ThPolling = NULL;
+    (*iMap).second->isPolling = false;
 
-	// Find entry in suspend vector and remove
-	auto iSuspend = m_ctSuspend.find(UniqueID);
-	if (iSuspend != m_ctSuspend.end())
-		m_ctSuspend.erase(iSuspend);
+    // Find entry in suspend vector and remove
+    auto iSuspend = m_ctSuspend.find(UniqueID);
+    if (iSuspend != m_ctSuspend.end())
+        m_ctSuspend.erase(iSuspend);
 }
 
 
@@ -446,170 +446,170 @@ void CvJoyMonitor::SuspendPolling(wstring UniqueID)
 // 
 void CvJoyMonitor::PollDevice(wstring UniqueID)
 {
-	HRESULT  hr;
+    HRESULT  hr;
 
 
-	// This entire function is a critical region
-	lock_guard<recursive_mutex> lock(m_mx_ctPoll);
+    // This entire function is a critical region
+    lock_guard<recursive_mutex> lock(m_mx_ctPoll);
 
-	// Find entry in DB 
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap == m_DeviceDB.end() )
-	{	// Inform that there's no device
-		PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, 0, 0);
-		return;
-	}
+    // Find entry in DB 
+    mapDB::iterator iMap;
+    iMap = m_DeviceDB.find(UniqueID);
+    if( iMap == m_DeviceDB.end() )
+    {	// Inform that there's no device
+        PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, 0, 0);
+        return;
+    }
 
-	// Found
-	(*iMap).second->RqPolling = true;
+    // Found
+    (*iMap).second->RqPolling = true;
 
-	// If does not exist - must infor higher level
-	if  (!(*iMap).second->Exist)
-		PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, 0, 0);
+    // If does not exist - must infor higher level
+    if  (!(*iMap).second->Exist)
+        PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, 0, 0);
 
-	// Check is exists, polling requested  and not running 
-	if  (!(*iMap).second->Exist || (*iMap).second->isPolling)
-		return;
-
-
-	// Set cooperative level so nothing interrupts the flow
-	hr = (*iMap).second->pDeviceDI8->SetCooperativeLevel(NULL/*m_hDummyWnd*/, DISCL_NONEXCLUSIVE|DISCL_BACKGROUND);
-	if (hr != DI_OK)
-		return;
-
-	// Set the data format (just in case)
-	hr = (*iMap).second->pDeviceDI8->SetDataFormat( &c_dfDIJoystick2 );
-	if (hr != DI_OK)
-		return;
+    // Check is exists, polling requested  and not running 
+    if  (!(*iMap).second->Exist || (*iMap).second->isPolling)
+        return;
 
 
-	// Acquire device
-	hr = (*iMap).second->pDeviceDI8->Acquire();
-	if (!(hr == DI_OK || hr == S_FALSE))
-		return;
-	
-	// now start thread and wait for it to be running
-	(*iMap).second->EnPolling=true;
-	(*iMap).second->ThPolling = new thread(_PollingThread, this, (*iMap).second);
-	if (!(*iMap).second->ThPolling)
-		return;
+    // Set cooperative level so nothing interrupts the flow
+    hr = (*iMap).second->pDeviceDI8->SetCooperativeLevel(NULL/*m_hDummyWnd*/, DISCL_NONEXCLUSIVE|DISCL_BACKGROUND);
+    if (hr != DI_OK)
+        return;
 
-	// Update device entry
-	(*iMap).second->isPolling = true;
+    // Set the data format (just in case)
+    hr = (*iMap).second->pDeviceDI8->SetDataFormat( &c_dfDIJoystick2 );
+    if (hr != DI_OK)
+        return;
 
-	// Find entry in Poll vector and remove
-	auto iPoll = m_ctPoll.find(UniqueID);
-	if (iPoll != m_ctPoll.end())
-		m_ctPoll.erase(iPoll);
+
+    // Acquire device
+    hr = (*iMap).second->pDeviceDI8->Acquire();
+    if (!(hr == DI_OK || hr == S_FALSE))
+        return;
+    
+    // now start thread and wait for it to be running
+    (*iMap).second->EnPolling=true;
+    (*iMap).second->ThPolling = new thread(_PollingThread, this, (*iMap).second);
+    if (!(*iMap).second->ThPolling)
+        return;
+
+    // Update device entry
+    (*iMap).second->isPolling = true;
+
+    // Find entry in Poll vector and remove
+    auto iPoll = m_ctPoll.find(UniqueID);
+    if (iPoll != m_ctPoll.end())
+        m_ctPoll.erase(iPoll);
 
 }
 
 // Entry point for creating a Polling Thread
 void CvJoyMonitor::_PollingThread(CvJoyMonitor * This, Device * dev)
 {
-	string ThreadName = "CvJoyMonitor Polling Thread " + to_string(dev->vJoyID);
+    string ThreadName = "CvJoyMonitor Polling Thread " + to_string(dev->vJoyID);
 
-	THREAD_NAME((char *)ThreadName.data());
-	if (This)
-		This->PollingThread(dev);
+    THREAD_NAME((char *)ThreadName.data());
+    if (This)
+        This->PollingThread(dev);
 
-	// Report that this device stopped polling
-	This->PollingStopped(dev);
+    // Report that this device stopped polling
+    This->PollingStopped(dev);
 }
 
 // This is the polling loop - running on a dedicated thread
 // Will loop as long as the corresponding EnPolling is true
 void CvJoyMonitor::PollingThread(Device * dev)
 {
-	HRESULT  hr;
-	DIJOYSTATE2 state={1}, prevState={0};
-	BTNArr btnState = {1},btnPrevState = {0} ;
+    HRESULT  hr;
+    DIJOYSTATE2 state={1}, prevState={0};
+    BTNArr btnState = {1},btnPrevState = {0} ;
 
-	bool DialOnly = false;
-	if (dev->isvJoyDevice)
-		DialOnly =  (!ExistAxis(dev->vJoyID, HID_USAGE_SL0) && ExistAxis(dev->vJoyID, HID_USAGE_SL1));
+    bool DialOnly = false;
+    if (dev->isvJoyDevice)
+        DialOnly =  (!ExistAxis(dev->vJoyID, HID_USAGE_SL0) && ExistAxis(dev->vJoyID, HID_USAGE_SL1));
 
-	while (dev && dev->pDeviceDI8 && dev->EnPolling)
-	{
-		// Poll
-		hr = dev->pDeviceDI8->Poll();
+    while (dev && dev->pDeviceDI8 && dev->EnPolling)
+    {
+        // Poll
+        hr = dev->pDeviceDI8->Poll();
 
-		// If polling fails then try to unacquire, wait then acquire again
-		// If this fails too then go to beginning of loop
-		if (hr != DI_OK && hr != DI_NOEFFECT)
-		{
-				dev->pDeviceDI8->Unacquire();
-				SAFE_RELEASE(dev->pDeviceDI8);
-				return;
-		};
+        // If polling fails then try to unacquire, wait then acquire again
+        // If this fails too then go to beginning of loop
+        if (hr != DI_OK && hr != DI_NOEFFECT)
+        {
+                dev->pDeviceDI8->Unacquire();
+                SAFE_RELEASE(dev->pDeviceDI8);
+                return;
+        };
 
-		// Get the state of the joystick - test what has changed and report changes
-		hr = dev->pDeviceDI8->GetDeviceState(sizeof(DIJOYSTATE2), (LPVOID)(&state));
+        // Get the state of the joystick - test what has changed and report changes
+        hr = dev->pDeviceDI8->GetDeviceState(sizeof(DIJOYSTATE2), (LPVOID)(&state));
 
-		if (hr != DI_OK)
-		{
-				dev->pDeviceDI8->Unacquire();
-				SAFE_RELEASE(dev->pDeviceDI8);
-				return;
-		}
-		else
-		{ // Look for changes and report
-			UCHAR iDevice = dev->vJoyID; 
-			// Axes
-			if (state.lX != prevState.lX)
-				PostAxisValue(iDevice, HID_USAGE_X, state.lX);
-			if (state.lY != prevState.lY)
-				PostAxisValue(iDevice, HID_USAGE_Y, state.lY);
-			if (state.lZ != prevState.lZ)
-				PostAxisValue(iDevice, HID_USAGE_Z, state.lZ);
-			if (state.lRx != prevState.lRx)
-				PostAxisValue(iDevice, HID_USAGE_RX, state.lRx);
-			if (state.lRy != prevState.lRy)
-				PostAxisValue(iDevice, HID_USAGE_RY, state.lRy);
-			if (state.lRz != prevState.lRz)
-				PostAxisValue(iDevice, HID_USAGE_RZ, state.lRz);
-			if (DialOnly)
-			{
-				if (state.rglSlider[0] != prevState.rglSlider[0])
-					PostAxisValue(iDevice, HID_USAGE_SL1, state.rglSlider[0]);
-			}
-			else
-			{
-				if (state.rglSlider[0] != prevState.rglSlider[0])
-					PostAxisValue(iDevice, HID_USAGE_SL0, state.rglSlider[0]);
-			}
-			if (state.rglSlider[1] != prevState.rglSlider[1])
-				PostAxisValue(iDevice, HID_USAGE_SL1, state.rglSlider[1]);
+        if (hr != DI_OK)
+        {
+                dev->pDeviceDI8->Unacquire();
+                SAFE_RELEASE(dev->pDeviceDI8);
+                return;
+        }
+        else
+        { // Look for changes and report
+            UCHAR iDevice = dev->vJoyID; 
+            // Axes
+            if (state.lX != prevState.lX)
+                PostAxisValue(iDevice, HID_USAGE_X, state.lX);
+            if (state.lY != prevState.lY)
+                PostAxisValue(iDevice, HID_USAGE_Y, state.lY);
+            if (state.lZ != prevState.lZ)
+                PostAxisValue(iDevice, HID_USAGE_Z, state.lZ);
+            if (state.lRx != prevState.lRx)
+                PostAxisValue(iDevice, HID_USAGE_RX, state.lRx);
+            if (state.lRy != prevState.lRy)
+                PostAxisValue(iDevice, HID_USAGE_RY, state.lRy);
+            if (state.lRz != prevState.lRz)
+                PostAxisValue(iDevice, HID_USAGE_RZ, state.lRz);
+            if (DialOnly)
+            {
+                if (state.rglSlider[0] != prevState.rglSlider[0])
+                    PostAxisValue(iDevice, HID_USAGE_SL1, state.rglSlider[0]);
+            }
+            else
+            {
+                if (state.rglSlider[0] != prevState.rglSlider[0])
+                    PostAxisValue(iDevice, HID_USAGE_SL0, state.rglSlider[0]);
+            }
+            if (state.rglSlider[1] != prevState.rglSlider[1])
+                PostAxisValue(iDevice, HID_USAGE_SL1, state.rglSlider[1]);
 
-			// Copy the button values to an array
-			for (int iBtn=0; iBtn<MAX_BUTTONS; iBtn++)
-				btnState[iBtn] = state.rgbButtons[iBtn];
+            // Copy the button values to an array
+            for (int iBtn=0; iBtn<MAX_BUTTONS; iBtn++)
+                btnState[iBtn] = state.rgbButtons[iBtn];
 
-			// Buttons
-			if (state.rgbButtons != prevState.rgbButtons)
-				SendButtonValue(iDevice, btnState);
+            // Buttons
+            if (state.rgbButtons != prevState.rgbButtons)
+                SendButtonValue(iDevice, btnState);
 
-			// POVs
-			for (int i=0; i<4; i++)
-			{
-				if (state.rgdwPOV[i] != prevState.rgdwPOV[i])
-					SendPovValue(iDevice, state.rgdwPOV[i], i);
-			};
+            // POVs
+            for (int i=0; i<4; i++)
+            {
+                if (state.rgdwPOV[i] != prevState.rgdwPOV[i])
+                    SendPovValue(iDevice, state.rgdwPOV[i], i);
+            };
 
-			// Update
-			btnPrevState = btnState;
-			prevState =  state;
+            // Update
+            btnPrevState = btnState;
+            prevState =  state;
 
-			Sleep_For(20); // MilliSec
-		} // Look for changes and report
+            Sleep_For(20); // MilliSec
+        } // Look for changes and report
 
-	}; // While
+    }; // While
 
 
-		// Release DI interface
-		if (dev && dev->pDeviceDI8)
-			dev->pDeviceDI8->Unacquire();
+        // Release DI interface
+        if (dev && dev->pDeviceDI8)
+            dev->pDeviceDI8->Unacquire();
 }
 
 // Instruct object to start a polling thread for the given vJoy ID
@@ -617,17 +617,17 @@ void CvJoyMonitor::PollingThread(Device * dev)
 // The central thread will read this and take care of the rest
 void CvJoyMonitor::StartPollingDevice(UINT vJoyID)
 {
-	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(vJoyID);
+    // Convert vJoy ID to Unique ID
+    wstring UniqueID = Convert2UniqueID(vJoyID);
 
-	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
-	//mapDB::iterator iMap;
-	//iMap = m_DeviceDB.find(UniqueID);
-	//if( iMap == m_DeviceDB.end() )
-	//	return;
+    // verify that this Unique ID is valid - Find corresponding device in DB by unique ID
+    //mapDB::iterator iMap;
+    //iMap = m_DeviceDB.find(UniqueID);
+    //if( iMap == m_DeviceDB.end() )
+    //	return;
 
-	lock_guard<recursive_mutex> lock(m_mx_ctPoll);
-	m_ctPoll.insert(UniqueID);
+    lock_guard<recursive_mutex> lock(m_mx_ctPoll);
+    m_ctPoll.insert(UniqueID);
 }
 
 // Instruct object to stop a polling thread for the given vJoy ID
@@ -635,92 +635,92 @@ void CvJoyMonitor::StartPollingDevice(UINT vJoyID)
 // The central thread will read this and take care of the rest
 void CvJoyMonitor::StopPollingDevice(UINT vJoyID)
 {
-	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(vJoyID);
+    // Convert vJoy ID to Unique ID
+    wstring UniqueID = Convert2UniqueID(vJoyID);
 
-	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap == m_DeviceDB.end() )
-		return;
+    // verify that this Unique ID is valid - Find corresponding device in DB by unique ID
+    mapDB::iterator iMap;
+    iMap = m_DeviceDB.find(UniqueID);
+    if( iMap == m_DeviceDB.end() )
+        return;
 
-	lock_guard<recursive_mutex> lock(m_mx_ctSuspend);
-	m_ctSuspend.insert(UniqueID);
+    lock_guard<recursive_mutex> lock(m_mx_ctSuspend);
+    m_ctSuspend.insert(UniqueID);
 }
 
 void CvJoyMonitor::PollingStopped(Device * dev)
 {
-	if (dev->Exist && dev->EnPolling)
-	{
-		UCHAR iDevice = dev->vJoyID;
-		SendMessageTimeout (m_ParentWnd, WMSPP_JMON_STP, iDevice , 0, SMTO_ABORTIFHUNG, 1000, 0);
-	}
+    if (dev->Exist && dev->EnPolling)
+    {
+        UCHAR iDevice = dev->vJoyID;
+        SendMessageTimeout (m_ParentWnd, WMSPP_JMON_STP, iDevice , 0, SMTO_ABORTIFHUNG, 1000, 0);
+    }
 }
 
 // Test if a given Axis esists in a given vJoy device
 bool CvJoyMonitor::ExistAxis(UINT vJoyID, UINT Axis)
 {
-	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(vJoyID);
+    // Convert vJoy ID to Unique ID
+    wstring UniqueID = Convert2UniqueID(vJoyID);
 
-	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap == m_DeviceDB.end() )
-		return false;
+    // verify that this Unique ID is valid - Find corresponding device in DB by unique ID
+    mapDB::iterator iMap;
+    iMap = m_DeviceDB.find(UniqueID);
+    if( iMap == m_DeviceDB.end() )
+        return false;
 
-	// Verify that the device exists and valid
-	if (!(*iMap).second->Exist || !(*iMap).second->pDeviceDI8)
-		return false;
+    // Verify that the device exists and valid
+    if (!(*iMap).second->Exist || !(*iMap).second->pDeviceDI8)
+        return false;
 
-	// Get data about axis  for this device
-	DIDEVICEOBJECTINSTANCE Info;
-	Info.dwSize = sizeof(DIDEVICEOBJECTINSTANCE);
-	HRESULT hr = (*iMap).second->pDeviceDI8->GetObjectInfo(&Info, DIMAKEUSAGEDWORD(1, Axis), DIPH_BYUSAGE);
+    // Get data about axis  for this device
+    DIDEVICEOBJECTINSTANCE Info;
+    Info.dwSize = sizeof(DIDEVICEOBJECTINSTANCE);
+    HRESULT hr = (*iMap).second->pDeviceDI8->GetObjectInfo(&Info, DIMAKEUSAGEDWORD(1, Axis), DIPH_BYUSAGE);
 
-	if (hr == S_OK)
-		return true;
-	else
-		return false;
+    if (hr == S_OK)
+        return true;
+    else
+        return false;
 }
 
 // Get the number of buttons for a given vJoy device
 int  CvJoyMonitor::GetNumButtons(UINT Id)
 {
-	// Convert vJoy ID to Unique ID
-	wstring UniqueID = Convert2UniqueID(Id);
+    // Convert vJoy ID to Unique ID
+    wstring UniqueID = Convert2UniqueID(Id);
 
-	// verify that this Unique ID is valid - Find corresponding device in DB by unique ID
-	mapDB::iterator iMap;
-	iMap = m_DeviceDB.find(UniqueID);
-	if( iMap == m_DeviceDB.end() )
-		return false;
+    // verify that this Unique ID is valid - Find corresponding device in DB by unique ID
+    mapDB::iterator iMap;
+    iMap = m_DeviceDB.find(UniqueID);
+    if( iMap == m_DeviceDB.end() )
+        return false;
 
-	// Verify that the device exists and valid
-	if (!(*iMap).second->Exist || !(*iMap).second->pDeviceDI8)
-		return false;
+    // Verify that the device exists and valid
+    if (!(*iMap).second->Exist || !(*iMap).second->pDeviceDI8)
+        return false;
 
 
-		// Get joystick capabilities
-		// extract number of Buttons
-		DIDEVCAPS Caps;
-		Caps.dwSize = sizeof(DIDEVCAPS);
-		if( FAILED((*iMap).second->pDeviceDI8->GetCapabilities(&Caps )))
-			return 0;
-		else
-			return Caps.dwButtons;
+        // Get joystick capabilities
+        // extract number of Buttons
+        DIDEVCAPS Caps;
+        Caps.dwSize = sizeof(DIDEVCAPS);
+        if( FAILED((*iMap).second->pDeviceDI8->GetCapabilities(&Caps )))
+            return 0;
+        else
+            return Caps.dwButtons;
 }
 
 // Get the number of devices that are currently active (exist==true)
 int   CvJoyMonitor::GetNumDevices(void) 
 {
-	UINT count=0;
-	// Go over DB 
-	mapDB::iterator iMap;
-	for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
-		if ((*iMap).second->Exist)
-			count++;
-	return count;
+    UINT count=0;
+    // Go over DB 
+    mapDB::iterator iMap;
+    for (iMap=m_DeviceDB.begin(); iMap!=m_DeviceDB.end(); ++iMap)
+        if ((*iMap).second->Exist)
+            count++;
+    return count;
 }
 
 // Free Device DB and perform clean up
@@ -731,44 +731,44 @@ int   CvJoyMonitor::GetNumDevices(void)
 // - Erase DB entry
 void CvJoyMonitor::FreeDeviceDB(void)
 {
-	// Go over DB 
-	
+    // Go over DB 
+    
 
-	for (auto iMap = m_DeviceDB.begin() ;iMap != m_DeviceDB.end(); iMap++)
-	{
-		SuspendPolling((*iMap).first);
-		if (!(*iMap).second)
-			continue;
-		SAFE_RELEASE((*iMap).second->pDeviceDI8);
+    for (auto iMap = m_DeviceDB.begin() ;iMap != m_DeviceDB.end(); iMap++)
+    {
+        SuspendPolling((*iMap).first);
+        if (!(*iMap).second)
+            continue;
+        SAFE_RELEASE((*iMap).second->pDeviceDI8);
 #pragma warning(suppress: 6001)
-		free ((*iMap).second);	
-	}; // While loop
-	m_DeviceDB.clear();
+        free ((*iMap).second);	
+    }; // While loop
+    m_DeviceDB.clear();
 }
 
 HWND CvJoyMonitor::CreateDummyWindow(void)
 {
-	// Create main window that will receive messages when device is inserted/removed
-	// and will relay the data to the dialog window.
-	// This window will be visible only in Debug mode
-	WNDCLASSEX WndClsEx;
-	WndClsEx.cbSize = sizeof(WNDCLASSEX);
-	WndClsEx.style = NULL;
-	WndClsEx.lpfnWndProc = MainWindowProc;
-	WndClsEx.cbClsExtra = 0;
-	WndClsEx.cbWndExtra = 0;
-	WndClsEx.hInstance = m_hInstance;
-	WndClsEx.hIcon = NULL;
-	WndClsEx.hCursor = NULL;
-	WndClsEx.hbrBackground = (HBRUSH)COLOR_WINDOW;
-	WndClsEx.lpszMenuName = NULL;
-	WndClsEx.lpszClassName = VJOY_MONITOR_CLASS;
-	WndClsEx.hIconSm = NULL;
-	ATOM WndClassMain = RegisterClassEx(&WndClsEx);
-	if (!WndClassMain)
-		return NULL;
+    // Create main window that will receive messages when device is inserted/removed
+    // and will relay the data to the dialog window.
+    // This window will be visible only in Debug mode
+    WNDCLASSEX WndClsEx;
+    WndClsEx.cbSize = sizeof(WNDCLASSEX);
+    WndClsEx.style = NULL;
+    WndClsEx.lpfnWndProc = MainWindowProc;
+    WndClsEx.cbClsExtra = 0;
+    WndClsEx.cbWndExtra = 0;
+    WndClsEx.hInstance = m_hInstance;
+    WndClsEx.hIcon = NULL;
+    WndClsEx.hCursor = NULL;
+    WndClsEx.hbrBackground = (HBRUSH)COLOR_WINDOW;
+    WndClsEx.lpszMenuName = NULL;
+    WndClsEx.lpszClassName = VJOY_MONITOR_CLASS;
+    WndClsEx.hIconSm = NULL;
+    ATOM WndClassMain = RegisterClassEx(&WndClsEx);
+    if (!WndClassMain)
+        return NULL;
 
-	HWND hwnd = CreateWindow( 
+    HWND hwnd = CreateWindow( 
         VJOY_MONITOR_CLASS,        // name of window class 
         VJOY_MONITOR_TITLE,         // title-bar string 
         WS_OVERLAPPEDWINDOW, // top-level window 
@@ -780,11 +780,11 @@ HWND CvJoyMonitor::CreateDummyWindow(void)
         (HMENU) NULL,        // use class menu 
         m_hInstance,           // handle to application instance 
         (LPVOID) this);      // no window-creation data 
-	DWORD err = GetLastError();
-	if (!hwnd)
-		return NULL;
-	else
-		return hwnd;
+    DWORD err = GetLastError();
+    if (!hwnd)
+        return NULL;
+    else
+        return hwnd;
 }
 
 /* Window Procedure for the (hidden) window*/
@@ -795,14 +795,14 @@ LRESULT CALLBACK MainWindowProc(
   _In_  LPARAM lParam
   ) 
 { 
-	static CvJoyMonitor * This = NULL;
-	static LONG W,L;
+    static CvJoyMonitor * This = NULL;
+    static LONG W,L;
 
-	  switch (uMsg) 
+      switch (uMsg) 
     { 
         case WM_CREATE: 
             // Initialize the window.
-			This = (CvJoyMonitor *)(( CREATESTRUCT *)lParam)->lpCreateParams;
+            This = (CvJoyMonitor *)(( CREATESTRUCT *)lParam)->lpCreateParams;
             return 0; 
  
         case WM_PAINT: 
@@ -817,12 +817,12 @@ LRESULT CALLBACK MainWindowProc(
             // Clean up window-specific data objects. 
             return 0; 
 
-		case WM_DEVICECHANGE:
-			 This->IncEnumCount();
-			 return TRUE;
+        case WM_DEVICECHANGE:
+             This->IncEnumCount();
+             return TRUE;
 
         default:
-			return DefWindowProc(hwnd, uMsg, wParam, lParam); 
+            return DefWindowProc(hwnd, uMsg, wParam, lParam); 
     } 
     return 0; 
 }
@@ -830,27 +830,27 @@ LRESULT CALLBACK MainWindowProc(
 // Increment the counter of requests to enumerate devices
 void CvJoyMonitor::IncEnumCount(void)
 {
-	m_EnumerateCounter++;
+    m_EnumerateCounter++;
 }
 
 int  CvJoyMonitor::GetIdByIndex(int iDevice)
 {
-	if (iDevice >= m_nvJoyDevices || iDevice < 0)
-		return 0;
+    if (iDevice >= m_nvJoyDevices || iDevice < 0)
+        return 0;
 
-	return m_Id[iDevice];
+    return m_Id[iDevice];
 }
 
 void CvJoyMonitor::StopPollingDevices(void) {}
 
 void CvJoyMonitor::PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
-	PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, iDev + (Axis<<16), AxisValue);
+    PostMessage(m_ParentWnd, WMSPP_JMON_AXIS, iDev + (Axis<<16), AxisValue);
 }
 
 void CvJoyMonitor::SendButtonValue(UCHAR iDev,  BTNArr btnState)
 {
-	SendMessageTimeout (m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState, SMTO_ABORTIFHUNG, 1000, 0);
+    SendMessageTimeout (m_ParentWnd, WMSPP_JMON_BTN, iDev , (LPARAM)&btnState, SMTO_ABORTIFHUNG, 1000, 0);
 }
 
 // iDev: One base index of the vJoy device
@@ -858,7 +858,7 @@ void CvJoyMonitor::SendButtonValue(UCHAR iDev,  BTNArr btnState)
 // iPov: Zero based index of the POV
 void CvJoyMonitor::SendPovValue(UCHAR iDev, DWORD povValue, UINT iPov)
 {
-	SendMessageTimeout (m_ParentWnd, WMSPP_JMON_POV, iDev + (iPov<<16) , (LPARAM)povValue, SMTO_ABORTIFHUNG, 1000, 0);
+    SendMessageTimeout (m_ParentWnd, WMSPP_JMON_POV, iDev + (iPov<<16) , (LPARAM)povValue, SMTO_ABORTIFHUNG, 1000, 0);
 
 }
 
@@ -902,48 +902,48 @@ bool g_isDI8;
 // Globals functions
 SPPINTERFACE_API bool vJoyMonitorInit(HINSTANCE hInstance, HWND	ParentWnd)
 {
-	LPDIRECTINPUT8          pDI=NULL;
-	// Test if DI8 installed. If Installed create an object, initialize it and store it
-	if (!ParentWnd || !hInstance)
-		return false;
+    LPDIRECTINPUT8          pDI=NULL;
+    // Test if DI8 installed. If Installed create an object, initialize it and store it
+    if (!ParentWnd || !hInstance)
+        return false;
 
-	if (g_MainObj)
-	{
-		delete g_MainObj;
-		g_MainObj = NULL;
-	};
+    if (g_MainObj)
+    {
+        delete g_MainObj;
+        g_MainObj = NULL;
+    };
 
-	// // /// //// Test if DirectInput supported.
-	// Register with the DirectInput subsystem and get a pointer
-	// to a IDirectInput interface we can use.
-	// Create a DInput object
-	if( !FAILED( DirectInput8Create( GetModuleHandle( NULL ), DIRECTINPUT_VERSION, IID_IDirectInput8, ( VOID** )&pDI, NULL ) ) )
-	{
-		g_MainObj = new CvJoyMonitor(hInstance, ParentWnd);
-		g_isDI8 = true;
-	}
-	else
-		return false;
+    // // /// //// Test if DirectInput supported.
+    // Register with the DirectInput subsystem and get a pointer
+    // to a IDirectInput interface we can use.
+    // Create a DInput object
+    if( !FAILED( DirectInput8Create( GetModuleHandle( NULL ), DIRECTINPUT_VERSION, IID_IDirectInput8, ( VOID** )&pDI, NULL ) ) )
+    {
+        g_MainObj = new CvJoyMonitor(hInstance, ParentWnd);
+        g_isDI8 = true;
+    }
+    else
+        return false;
 
-	SAFE_RELEASE( pDI );
-	if (!g_MainObj)
-		return false;
-	else
-		return true;
+    SAFE_RELEASE( pDI );
+    if (!g_MainObj)
+        return false;
+    else
+        return true;
 }
 SPPINTERFACE_API int  GetIdByIndex(int iDevice)
 {
-	if (g_MainObj)
-		return g_MainObj->GetIdByIndex(iDevice);
-	else
-		return -1;
+    if (g_MainObj)
+        return g_MainObj->GetIdByIndex(iDevice);
+    else
+        return -1;
 }
 SPPINTERFACE_API bool ExistAxis(UINT iDevice, UINT Axis)
 {
-	if (g_MainObj)
-		return g_MainObj->ExistAxis( iDevice,  Axis);
-	else
-		return false;
+    if (g_MainObj)
+        return g_MainObj->ExistAxis( iDevice,  Axis);
+    else
+        return false;
 }
 
 SPPINTERFACE_API bool ExistAxisX(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_X);}
@@ -956,40 +956,40 @@ SPPINTERFACE_API bool ExistAxisSL0(UINT iDevice) {return ExistAxis(iDevice, HID_
 SPPINTERFACE_API bool ExistAxisSL1(UINT iDevice) {return ExistAxis(iDevice, HID_USAGE_SL1);}
 SPPINTERFACE_API int  GetNumButtons(UINT iDevice) 
 {
-	if (g_MainObj)
-		return g_MainObj->GetNumButtons(iDevice);
-	else
-		return -1;
+    if (g_MainObj)
+        return g_MainObj->GetNumButtons(iDevice);
+    else
+        return -1;
 
 }
 SPPINTERFACE_API int  GetNumvJoyDevices(void)
 {
-	if (g_MainObj)
-		return g_MainObj->GetNumDevices();
-	else
-		return -1;
+    if (g_MainObj)
+        return g_MainObj->GetNumDevices();
+    else
+        return -1;
 
 }
 SPPINTERFACE_API void StartPollingDevice(UINT iDevice)
-	{
-	if (g_MainObj)
-		return g_MainObj->StartPollingDevice(iDevice);
+    {
+    if (g_MainObj)
+        return g_MainObj->StartPollingDevice(iDevice);
 }
 SPPINTERFACE_API void StopPollingDevice(UINT iDevice)
-	{
-	if (g_MainObj)
-		return g_MainObj->StopPollingDevice(iDevice);
+    {
+    if (g_MainObj)
+        return g_MainObj->StopPollingDevice(iDevice);
 }
 SPPINTERFACE_API void StopPollingDevices(void)
 {
-	if (g_MainObj)
-		return g_MainObj->StopPollingDevices();
+    if (g_MainObj)
+        return g_MainObj->StopPollingDevices();
 }
 SPPINTERFACE_API void vJoyMonitorClose(void)
 {
-	if (!g_MainObj)
-		return;
+    if (!g_MainObj)
+        return;
 
-	//StopPollingDevices();
-	delete g_MainObj;
+    //StopPollingDevices();
+    delete g_MainObj;
 }

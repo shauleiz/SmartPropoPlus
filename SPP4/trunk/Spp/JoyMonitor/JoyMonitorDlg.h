@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WinMessages.h"
+#include "..\include\WinMessages.h"		   // TODO: Fix the include path
 
 #define MAX_DISP_BUTTONS 128
 #define ROWSPACE 25			// Space between rows
@@ -39,7 +39,7 @@ protected:
 	void CreateChannelEdit(UINT);
 	void CreateIndicator(UINT);
 	HWND CreateStatics(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle, const RECT& rc,const int id,const wstring& caption);
-	void InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max=0x03ff0000,ULONG min=0);
+	void InitBars(HWND hDlg, const DWORD Color, std::vector< int> vBars,ULONG max=0x03ff0000,ULONG min=0);
 	void GetExistingDevices(HWND hDlg);
 	void CreatePovMeters(UINT nPovs);
 	void CleanPovMeters(void);
@@ -52,8 +52,8 @@ protected:
 	HWND	m_ConsoleWnd;
 	UINT m_CurJoy;
 	UINT m_nRawCh;
-	vector<const int> m_vJoyBarId;
-	vector<const int> m_vJoyTitleId;
+	vector< int> m_vJoyBarId;
+	vector< int> m_vJoyTitleId;
 	int	m_nPovs;
 	class CPovGrph * m_Pov[7];
 

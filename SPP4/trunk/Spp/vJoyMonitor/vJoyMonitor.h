@@ -96,79 +96,79 @@ Each entry represents a device - either detected or that was removed
 Access to DB by device key - Unique ID (String)
 */
 struct Device {
-	wstring UniqueID;					// Unique ID of this device
-	LPDIRECTINPUTDEVICE8 pDeviceDI8;	// Pointer to DirectInput Device
-	bool isvJoyDevice;					// Always true
-	UINT vJoyID;						// In the range 1-16 (Meaningfull only if isvJoyDevice=true)
-	thread * ThPolling;					// Pointer to polling thread
-	// Status
-	bool isPrefered;					// Not implemented
-	bool Exist;							// True only for devices that are currently enabled
-	bool isPolling;						// Set/Reset by polling thread to indicate that the polling loop is running/killed  (Default=false). 
-	bool EnPolling;						// Set to true to enable polling. Reset to kill  polling loop.
-	bool RqPolling;						// Set by external module to indicate that polling is needed. Revoked to indicate that polling is not required (default=false).
+    wstring UniqueID;					// Unique ID of this device
+    LPDIRECTINPUTDEVICE8 pDeviceDI8;	// Pointer to DirectInput Device
+    bool isvJoyDevice;					// Always true
+    UINT vJoyID;						// In the range 1-16 (Meaningfull only if isvJoyDevice=true)
+    thread * ThPolling;					// Pointer to polling thread
+    // Status
+    bool isPrefered;					// Not implemented
+    bool Exist;							// True only for devices that are currently enabled
+    bool isPolling;						// Set/Reset by polling thread to indicate that the polling loop is running/killed  (Default=false). 
+    bool EnPolling;						// Set to true to enable polling. Reset to kill  polling loop.
+    bool RqPolling;						// Set by external module to indicate that polling is needed. Revoked to indicate that polling is not required (default=false).
 };
 
 class CvJoyMonitor
 {
 // Class interface functions
 public:
-	CvJoyMonitor(void);
-	CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd);
-	virtual ~CvJoyMonitor(void);
-	bool ExistAxis(UINT iDevice, UINT Axis);
-	int  GetNumButtons(UINT iDevice);
-	int  GetNumDevices(void) ;
-	void StartPollingDevice(UINT vJoyID);
-	void StopPollingDevice(UINT vJoyID);
+    CvJoyMonitor(void);
+    CvJoyMonitor(HINSTANCE hInstance, HWND	ParentWnd);
+    virtual ~CvJoyMonitor(void);
+    bool ExistAxis(UINT iDevice, UINT Axis);
+    int  GetNumButtons(UINT iDevice);
+    int  GetNumDevices(void) ;
+    void StartPollingDevice(UINT vJoyID);
+    void StopPollingDevice(UINT vJoyID);
 
 // Private functions that are called from static/global functions
 public:
-	void CentralThread();
-	BOOL EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance);
-	BOOL EnumObjects( const DIDEVICEOBJECTINSTANCE* pdidoi);
-	void PollingThread(Device * dev);
-	void IncEnumCount(void);
-	int  GetIdByIndex(int iDevice);
-	void StopPollingDevices(void);
+    void CentralThread();
+    BOOL EnumJoysticks(const DIDEVICEINSTANCE* pdidInstance);
+    BOOL EnumObjects( const DIDEVICEOBJECTINSTANCE* pdidoi);
+    void PollingThread(Device * dev);
+    void IncEnumCount(void);
+    int  GetIdByIndex(int iDevice);
+    void StopPollingDevices(void);
     void PollingStopped(Device * dev);
 
 // Class helper functions
 private:
-	wstring Convert2UniqueID(UINT vJoyID);
-	UINT Convert2vJoyID(wstring& UniqueID);
-	void PollDevice(wstring UniqueID);
-	void SuspendPolling(wstring UniqueID);
-	HWND CreateDummyWindow(void);
-	void EnumerateDevices(void);
-	void FreeDeviceDB(void);
-	void StopCentralThread(void);
+    wstring Convert2UniqueID(UINT vJoyID);
+    UINT Convert2vJoyID(wstring& UniqueID);
+    void PollDevice(wstring UniqueID);
+    void SuspendPolling(wstring UniqueID);
+    HWND CreateDummyWindow(void);
+    void EnumerateDevices(void);
+    void FreeDeviceDB(void);
+    void StopCentralThread(void);
 
 // These functions are callback functions that call functions within the object
 private:
-	static void _CentralThread(CvJoyMonitor * This);
-	static void _PollingThread(CvJoyMonitor * This, Device * dev);
-	void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
-	void SendButtonValue(UCHAR iDev,  BTNArr btnState);
-	void SendPovValue(UCHAR iDev, DWORD povValue, UINT iPov);
+    static void _CentralThread(CvJoyMonitor * This);
+    static void _PollingThread(CvJoyMonitor * This, Device * dev);
+    void PostAxisValue(UCHAR iDev, UINT Axis, UINT32 AxisValue);
+    void SendButtonValue(UCHAR iDev,  BTNArr btnState);
+    void SendPovValue(UCHAR iDev, DWORD povValue, UINT iPov);
 
 // Private members
 private:
-	LPDIRECTINPUT8          m_pDI;	// One and only DI object 
-	int						m_EnumerateCounter; // Counts the pending request to enumerate
-	set<wstring>			m_ctSuspend; // Container (set) of keys - awaiting suspend
-	set<wstring>			m_ctPoll; // Container (set) of keys - awaiting polling
-	mapDB					m_DeviceDB; // One and only DB of devices
-	recursive_mutex			m_mx_ctSuspend; // Mutex - RW to ctSuspend is critical region
-	recursive_mutex			m_mx_ctPoll; // Mutex - RW to ctPoll is critical region
-	thread *				m_thCentral; // Pointer to central thread
-	HWND					m_hDummyWnd; // Handle to dummy window
-	bool					m_CentralKeepalive; // Central Thread is killed when this is false
-	UINT					m_CurrentID; // vJoy ID of DI device that is being enumerated
-	HINSTANCE				m_hInstance;
-	HWND					m_ParentWnd;
-	int						m_nvJoyDevices;
-	std::vector<char>		m_Id;
-	std::vector<bool>		m_vJoySelected;
+    LPDIRECTINPUT8          m_pDI;	// One and only DI object 
+    int						m_EnumerateCounter; // Counts the pending request to enumerate
+    set<wstring>			m_ctSuspend; // Container (set) of keys - awaiting suspend
+    set<wstring>			m_ctPoll; // Container (set) of keys - awaiting polling
+    mapDB					m_DeviceDB; // One and only DB of devices
+    recursive_mutex			m_mx_ctSuspend; // Mutex - RW to ctSuspend is critical region
+    recursive_mutex			m_mx_ctPoll; // Mutex - RW to ctPoll is critical region
+    thread *				m_thCentral; // Pointer to central thread
+    HWND					m_hDummyWnd; // Handle to dummy window
+    bool					m_CentralKeepalive; // Central Thread is killed when this is false
+    UINT					m_CurrentID; // vJoy ID of DI device that is being enumerated
+    HINSTANCE				m_hInstance;
+    HWND					m_ParentWnd;
+    int						m_nvJoyDevices;
+    std::vector<char>		m_Id;
+    std::vector<bool>		m_vJoySelected;
 };
 

@@ -58,12 +58,12 @@ VS_VERSION_INFO VERSIONINFO
 
 
 
+////
+//// Bitmap resources
+////
+//LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+//IDB_PLAY_BTN       Image         ".\\Play_Button.bmp"
 //
-// Bitmap resources
 //
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_PLAY_BTN       Image         ".\\Play_Button.bmp"
-
-
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_PAUSE_BTN      Image         ".\\Pause_Button.bmp"
+//LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+//IDB_PAUSE_BTN      Image         ".\\Pause_Button.bmp"

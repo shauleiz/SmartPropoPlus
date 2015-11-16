@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "smartpropoplus.h"
 #include "vJoyInterface.h"
-#include "vJoyMonitor.h"
+#include "..\vJoyMonitor\vJoyMonitor.h"	 // TODO: Change include path
 #include "JoyMonitorDlg.h"
 #include "JoyMonitor.h"
 
@@ -26,14 +26,14 @@ void				SetAvailableControls(UINT id, HWND hDlg);
 int					DetectAvailableDevices(HWND hDlg);			
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPTSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+					 _In_opt_ HINSTANCE hPrevInstance,
+					 _In_ LPTSTR    lpCmdLine,
+					 _In_ int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
- 	// TODO: Place code here.
+	// TODO: Place code here.
 	MSG msg;
 	HACCEL hAccelTable;
 
@@ -110,11 +110,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+	  CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
-      return FALSE;
+	  return FALSE;
    }
 
 
@@ -124,7 +124,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // Start the main dialog box
    Dialog	= new CJoyMonitorDlg(hInstance, hWnd);
 
-   	// Open vJoy monitor
+	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hWnd);
 
 	// Get available vJoy devices and update combo box

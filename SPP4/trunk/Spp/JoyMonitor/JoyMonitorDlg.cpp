@@ -2,8 +2,8 @@
 #include "Windowsx.h"
 #include "Commctrl.h"
 #include "resource.h"
-#include "public.h"
-#include "smartpropoplus.h"
+#include "..\include\public.h"				// TODO: Fix the include path
+#include "..\include\smartpropoplus.h"	    // TODO: Fix the include path
 #include "JoyMonitorDlg.h"
 
 
@@ -81,7 +81,7 @@ void CJoyMonitorDlg::AddDevice(int vJoyID, bool Selected)
 // vBars -  Vector of IDs of progress-bars to initialize
 // max   -	Upper progress-bar range  (Default is 0x03ff0000)
 // mib   -	Low progress-bar range  (Default is 0)
-void  CJoyMonitorDlg::InitBars(HWND hDlg, const DWORD Color, std::vector<const int> vBars,ULONG max,ULONG min)
+void  CJoyMonitorDlg::InitBars(HWND hDlg, const DWORD Color, std::vector<int> vBars,ULONG max,ULONG min)
 {
 	HWND hCh;
 

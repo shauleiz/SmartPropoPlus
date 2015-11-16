@@ -12,11 +12,11 @@
 #include "SppProcess.h"
 #include "SppConfig.h"
 #include "SppControl.h"
-#include "SppDlg.h"
-#include "SppLog.h"
+#include "..\SppUI\SppDlg.h"  // TODO: Fix the Include path
+#include "..\SppUI\SppLog.h"  // TODO: Fix the Include path					
 #include "SppDbg.h"
 #include "WinMessages.h"
-#include "vJoyMonitor.h"
+#include "..\vJoyMonitor\vJoyMonitor.h"
 //#include <vld.h>
 
 #pragma region Globals
@@ -890,7 +890,7 @@ void AudioLevelWatch()
 {
 	static bool WentAutoCh=true;
 	static bool WentAutoBr=true;
-	static WCHAR prevCh = L'';
+	static WCHAR prevCh = L'\0';
 	static UINT  prevBr = 0;
 	wstring ch = L"";
 
@@ -1949,7 +1949,9 @@ WORD	GetStartMode(LPTSTR lpCmdLine)
 	return out;
 }
 
-
+// TODO: Remove pragma and solve problem
+#pragma warning( push )
+#pragma warning( disable : 4996 )
 bool isAboveVistaSp1()
 {
 	OSVERSIONINFOEX OsInfo;
@@ -1970,6 +1972,7 @@ bool isAboveVistaSp1()
 	else
 		return false;
 }
+#pragma warning( pop )
 
 #ifdef _DEBUG
 const DWORD MS_VC_EXCEPTION=0x406D1388;
