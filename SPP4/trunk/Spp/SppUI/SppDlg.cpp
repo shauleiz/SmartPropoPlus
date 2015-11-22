@@ -8,7 +8,7 @@
 #include "public.h"
 #include "Commctrl.h"
 #include "resource.h"
-#include "vJoyMonitor.h"
+#include "..\vJoyMonitor\vJoyMonitor.h" // TODO: This is ugly. Fix it.
 #include "SppProcess.h"
 #include "SppBtnsDlg.h"
 #include "SppDlg.h"

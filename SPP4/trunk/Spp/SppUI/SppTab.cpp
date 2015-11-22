@@ -5,7 +5,7 @@
 #include "public.h"
 #include "Commctrl.h"
 #include "resource.h"
-#include "vJoyMonitor.h"
+#include "..\vJoyMonitor\vJoyMonitor.h"
 #include "SppBtnsDlg.h"
 #include "SppDlg.h"
 #include "SppTab.h"

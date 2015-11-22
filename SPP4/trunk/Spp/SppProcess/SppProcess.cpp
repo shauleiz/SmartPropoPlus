@@ -10,8 +10,8 @@
 #include "SmartPropoPlus.h"
 #include "vJoyInterface.h"
 #include "public.h"
-#include "SppAudio.h"
-#include "PulseScope.h"
+#include "..\SppAudio\SppAudio.h" // TODO: This is ugly. Fix it.
+#include "..\PulseScope\PulseScope.h"	 // TODO: This is ugly. Fix it.
 #include "WinMessages.h"
 #include "SppProcess.h"
 #include <crtdbg.h>
