@@ -506,6 +506,18 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 	// SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
 }
 
+// Disable all controls for a given device
+void CJoyMonitorDlg::DisableAllControls(UINT id)
+{
+	controls ctrl;
+	ctrl.nButtons = 0;
+	ctrl.nPovs = 0;
+	for (auto axis : ctrl.axis)
+		axis = FALSE;
+
+	EnableControls(id, &ctrl);
+}
+
 void CJoyMonitorDlg::EnableControlsBtn(UINT id, controls * ctrl)
 {
 	HWND hEdit, hLable, hRedDot, hGreenDot;
@@ -564,12 +576,11 @@ void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 
 }
 
+// Called when application detects that vJoy device is stopped
 void CJoyMonitorDlg::JoystickStopped(UCHAR iDev)
 {
-	wstring wsMessage;
-
-	wsMessage = L"vJoy Device #" + to_wstring(iDev) + L" Stopped";
-	MessageBox(m_hDlg, wsMessage.c_str(), L"Device Changed", MB_OK);
+	// Reset all controls for this device
+	DisableAllControls(iDev);
 }
 
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

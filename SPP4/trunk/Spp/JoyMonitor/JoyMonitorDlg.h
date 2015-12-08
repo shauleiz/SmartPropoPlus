@@ -26,6 +26,7 @@ public:
 	void SetPovValues(UCHAR iDev, UINT iPov, UINT32 PovValue);
 	void InitJoyMonitor(HWND hDlg);
 	void EnableControls(UINT id, controls * ctrl);
+	void DisableAllControls(UINT id);
 	void EnableControlsBtn(UINT id, controls * ctrl);
 	void SetButtonValues(UINT id, BTNArr * BtnVals);
 	void InitDevices(HWND hDlg);
