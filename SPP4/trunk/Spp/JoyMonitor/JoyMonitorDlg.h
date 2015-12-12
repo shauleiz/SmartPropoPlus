@@ -56,6 +56,7 @@ protected:
 	UINT m_nRawCh;
 	vector< int> m_vJoyBarId;
 	vector< int> m_vJoyTitleId;
+	recursive_mutex	m_mx_ctGui; // Mutex - Change GUI
 	int	m_nPovs;
 	class CPovGrph * m_Pov[7];
 

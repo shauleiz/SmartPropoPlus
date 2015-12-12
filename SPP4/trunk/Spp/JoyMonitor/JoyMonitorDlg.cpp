@@ -454,6 +454,8 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 	UINT iAxis=0;
 	UINT edt = 0;
 
+	lock_guard<recursive_mutex> lock(m_mx_ctGui);
+
 	////// Verify correct vJoy device
 	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
 	// Get the index of the selected vJoy device
@@ -470,25 +472,28 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 #endif // 0
 	////// Verified
 
+
 	// Go over all axes
-	do 
+	do
 	{
 		// Axis bars
-		hCh = GetDlgItem(m_hDlg,  ch);
+		hCh = GetDlgItem(m_hDlg, ch);
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
-		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
+		//ShowWindow(hCh, ctrl->axis[ch - IDC_X]);
+		EnableWindow(hCh, ctrl->axis[ch - IDC_X]);
 		UpdateWindow(hCh);
 
 
+		
 		// Bar titles
-		hTtl = GetDlgItem(m_hDlg,  m_vJoyTitleId[iAxis]);
-		EnableWindow(hTtl, ctrl->axis[edt]);
+		hTtl = GetDlgItem(m_hDlg, m_vJoyTitleId[iAxis]);
+		EnableWindow(hTtl, (ctrl->axis[edt] == TRUE));
 		UpdateWindow(hTtl);
 
 #if 0		
 		// Map edit fields
-		hEdt = GetDlgItem(m_hDlg,  edt);
-		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
+		hEdt = GetDlgItem(m_hDlg, edt);
+		EnableWindow(hEdt, ctrl->axis[edt - IDC_SRC_X]);
 		UpdateWindow(hEdt);
 
 #endif // 0
@@ -496,9 +501,9 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 		ch++;
 		edt++;
 		iAxis++;
-	} while (ch<=IDC_SL1);
+	} while (ch <= IDC_SL1);
 
-	EnableControlsBtn( id, ctrl);
+	EnableControlsBtn(id, ctrl);
 
 	m_nPovs = ctrl->nPovs;
 	CreatePovMeters(m_nPovs);
@@ -520,7 +525,7 @@ void CJoyMonitorDlg::DisableAllControls(UINT id)
 	controls ctrl;
 	ctrl.nButtons = 0;
 	ctrl.nPovs = 0;
-	for (auto axis : ctrl.axis)
+	for (auto& axis : ctrl.axis)
 		axis = FALSE;
 
 	EnableControls(id, &ctrl);
@@ -587,6 +592,8 @@ void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 // Called when application detects that vJoy device is stopped
 void CJoyMonitorDlg::ResetDlg(void)
 {
+	lock_guard<recursive_mutex> lock(m_mx_ctGui);
+
 	// Reset all controls for this device
 	DisableAllControls(m_CurJoy);
 
