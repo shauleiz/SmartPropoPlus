@@ -250,8 +250,12 @@ void CvJoyMonitor::CentralThread()
 
         // Need enumeration? - If enumeration counter is positive then yes
         // Kill all polling threads then start enumerating then decrement counter
-        if (m_EnumerateCounter>0)
-            EnumerateDevices();
+		if (m_EnumerateCounter > 0)
+		{
+             EnumerateDevices();  // This decrements  m_EnumerateCounter
+			 if (!m_EnumerateCounter)
+				 SendMessageTimeout(m_ParentWnd, WMSPP_JMON_STRT, 0, 0, SMTO_ABORTIFHUNG, 1000, 0);
+		}
 
         else
         {

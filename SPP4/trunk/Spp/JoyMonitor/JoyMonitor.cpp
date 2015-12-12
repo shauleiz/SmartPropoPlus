@@ -23,7 +23,7 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void				SetAvailableControls(UINT id, HWND hDlg);
-int					DetectAvailableDevices(HWND hDlg);			
+int					DetectAvailableDevices(HWND hDlg, int CurrentDevice = -1);			
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 					 _In_opt_ HINSTANCE hPrevInstance,
@@ -127,6 +127,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// Open vJoy monitor
 	bool MonitorOk = vJoyMonitorInit(hInstance, hWnd);
 
+
 	// Get available vJoy devices and update combo box
 	int selected = DetectAvailableDevices( Dialog->GetHandle());
 
@@ -141,23 +142,32 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-// Scan for the existing vJoy devices and set one of them as current
+// Scan for the existing vJoy devices and set one of them as current (CurrentDevice)
+// If the CurrentDevice soes not exist - set the first available device 
 // Call the dialog box for every detected device
 // Call the  dialog box to mark the detected one
-int DetectAvailableDevices(HWND hDlg)
+int DetectAvailableDevices(HWND hDlg, int CurrentDevice)
 {
-	bool exist=false;
+	bool set=true;
 	int sel=-1;
+
+	// Clear dialog box
+	Dialog->ResetDlg();
+
 
 	// Loop on all possible vJoy devices
 	for (int i=1; i<=16; i++)
 	{
 		if(GetVJDStatus(i) == VJD_STAT_FREE  || GetVJDStatus(i) == VJD_STAT_BUSY)
 		{
-			Dialog->AddDevice(i, !exist);
-			if (!exist)
-				sel = i;
-			exist=true;
+			if (CurrentDevice == i)
+				set = true;
+			Dialog->AddDevice(i, set);
+			if (set)
+			{
+ 				sel = i;
+				set = false;
+			}
 		}
 	}; // Loop
 
@@ -253,6 +263,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WMSPP_JMON_STRT:
+		SetAvailableControls(DetectAvailableDevices(Dialog->GetHandle(), CurrDeviceId), Dialog->GetHandle());
 		break;
 
 	case WMSPP_DLG_VJOYSEL:
