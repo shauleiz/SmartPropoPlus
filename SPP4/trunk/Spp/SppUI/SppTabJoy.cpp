@@ -129,17 +129,18 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 		// Axis bars
 		hCh = GetDlgItem(m_hDlg,  ch);
 		SendMessage(hCh, PBM_SETPOS, 0, 0);
-		ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
+		//ShowWindow(hCh, !ctrl->axis[ch - IDC_X] ? SW_HIDE : SW_SHOW);
+		EnableWindow(hCh, (ctrl->axis[ch - IDC_X] == TRUE));
 		UpdateWindow(hCh);
 
 		// Bar titles
 		hTtl = GetDlgItem(m_hDlg,  m_vJoyTitleId[iAxis]);
-		EnableWindow(hTtl, ctrl->axis[edt-IDC_SRC_X]);
+		EnableWindow(hTtl, (ctrl->axis[edt - IDC_SRC_X] == TRUE));
 		UpdateWindow(hTtl);
 
 		// Map edit fields
 		hEdt = GetDlgItem(m_hDlg,  edt);
-		EnableWindow(hEdt, ctrl->axis[edt-IDC_SRC_X]);
+		EnableWindow(hEdt, (ctrl->axis[edt-IDC_SRC_X] == TRUE));
 		UpdateWindow(hEdt);
 
 		ch++;

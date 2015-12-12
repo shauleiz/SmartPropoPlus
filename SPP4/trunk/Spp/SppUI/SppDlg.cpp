@@ -1528,7 +1528,7 @@ void SppDlg::EnableControls(UINT id, controls * ctrl)
         // Axis bars
         hCh = GetDlgItem(m_hDlg,  ch);
         SendMessage(hCh, PBM_SETPOS, 0, 0);
-        ShowWindow(hCh, ctrl->axis[ch-IDC_X]);
+        ShowWindow(hCh, !ctrl->axis[ch - IDC_X] ? SW_HIDE : SW_SHOW);
         UpdateWindow(hCh);
 
         //// Map edit fields

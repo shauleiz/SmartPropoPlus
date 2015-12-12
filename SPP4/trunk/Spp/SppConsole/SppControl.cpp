@@ -1844,7 +1844,7 @@ void SetAvailableControls(UINT id, HWND hDlg)
 	// Get data from vJoy Interface
 	ctrls.nButtons = GetVJDButtonNumber(id);
 	for (UINT i=0; i<8; i++)
-		ctrls.axis[i] = GetVJDAxisExist(id, HID_USAGE_X+i);
+		ctrls.axis[i] = (GetVJDAxisExist(id, HID_USAGE_X+i) == TRUE);
 
 	// Send data to GUI
 	SendMessage(hDlg, VJOYDEV_SETAVAIL, id, (LPARAM)&ctrls);
