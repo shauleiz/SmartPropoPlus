@@ -156,10 +156,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="vJoyMonitorOld.h" />
     <ClInclude Include="vJoyMonitor.h" />
   </ItemGroup>
   <ItemGroup>

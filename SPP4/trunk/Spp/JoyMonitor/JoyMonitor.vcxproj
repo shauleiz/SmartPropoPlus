@@ -149,9 +149,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\include\vjoyinterface.h" />
     <ClInclude Include="..\include\WinMessages.h" />
     <ClInclude Include="..\vJoyMonitor\vJoyMonitor.h" />
@@ -181,7 +178,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="JoyMonitor.ico" />
-    <Image Include="small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
