@@ -514,8 +514,6 @@ void CvJoyMonitor::_PollingThread(CvJoyMonitor * This, Device * dev)
     if (This)
         This->PollingThread(dev);
 
-    // Report that this device stopped polling
-    This->PollingStopped(dev);
 }
 
 // This is the polling loop - running on a dedicated thread
@@ -547,12 +545,14 @@ void CvJoyMonitor::PollingThread(Device * dev)
         // Get the state of the joystick - test what has changed and report changes
         hr = dev->pDeviceDI8->GetDeviceState(sizeof(DIJOYSTATE2), (LPVOID)(&state));
 
-        if (hr != DI_OK)
-        {
-                dev->pDeviceDI8->Unacquire();
-                SAFE_RELEASE(dev->pDeviceDI8);
-                return;
-        }
+		if (hr != DI_OK)
+		{
+			// Report that this device stopped polling
+			PollingStopped(dev);
+			dev->pDeviceDI8->Unacquire();
+			SAFE_RELEASE(dev->pDeviceDI8);
+			return;
+		}
         else
         { // Look for changes and report
             UCHAR iDevice = dev->vJoyID; 
