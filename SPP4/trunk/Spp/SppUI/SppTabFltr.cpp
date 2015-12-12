@@ -40,7 +40,8 @@ void SppTabFltr::Reset(void)
 
 	// Clear edit-box IDC_EDIT_FILTERFILE
 	HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
-	Edit_SetText(hFilterFile, (LPTSTR)"");
+	const char * emptyStr = "";
+	Edit_SetText(hFilterFile, TEXT(""));
 	UpdateWindow(hFilterFile);
 
 	// Clear Comb-box IDC_COMBO_FILTERS

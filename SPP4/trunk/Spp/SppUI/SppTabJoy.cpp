@@ -345,15 +345,19 @@ void SppTabJoy::SetMappingData(Mapping * Map)
 	HWND hEdtBox;
 	UINT channel;
 	TCHAR buffer[4];
-	UINT& nAxes = Map->nAxes;
-	DWORD& AxisMap = *Map->pAxisMap;
+
+	if (Map == NULL)
+		return;
+
+	//UINT& nAxes = Map->nAxes;
+	//DWORD& AxisMap = *Map->pAxisMap;
 
 	// Go through the map and read nibble by nibble
 	// Every nibble read goes to the corresponding edit box
-	for (UINT i=0; i<nAxes; i++)
+	for (UINT i=0; i<Map->nAxes; i++)
 	{
 		hEdtBox = GetDlgItem(m_hDlg,  id-i);
-		channel = ((AxisMap>>(i*4))&0xF);
+		channel = (((*Map->pAxisMap) >>(i*4))&0xF);
 		_itot_s(channel, buffer, 4, 10);
 		Edit_SetText(hEdtBox, buffer);
 	};
