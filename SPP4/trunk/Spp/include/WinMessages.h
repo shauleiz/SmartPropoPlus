@@ -87,6 +87,7 @@ UINT const WMSPP_DLG_FLTR  =			BASE_SUB+59;			// SEND Filter DLL file name and s
 UINT const WMSPP_JMON_STP	=			BASE_SUB+60;			// Inform that polling stopped for a given vJoy device
 UINT const WMSPP_DLG_RST	=			BASE_SUB+61;			// Inform that "Reset" button was pressed 
 UINT const WMSPP_JMON_POV	=			BASE_SUB+62;			// Inform of new POV status of a vJoy device
+UINT const WMSPP_JMON_STRT	=			BASE_SUB+63;			// Inform that polling stopped for a given vJoy device
 
 // Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages

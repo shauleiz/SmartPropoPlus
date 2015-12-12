@@ -249,7 +249,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 	case WMSPP_JMON_STP:
-		Dialog->JoystickStopped((UCHAR)wParam);		
+		Dialog->ResetDlg();
+		break;
+
+	case WMSPP_JMON_STRT:
 		break;
 
 	case WMSPP_DLG_VJOYSEL:

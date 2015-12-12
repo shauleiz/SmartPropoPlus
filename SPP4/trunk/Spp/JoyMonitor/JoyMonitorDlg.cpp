@@ -506,6 +506,14 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 	// SendMessage(m_BtnsDlg->GetHandle(), VJOYDEV_SETAVAIL, id, (LPARAM)ctrl);
 }
 
+// Remove all devices from combo box
+void CJoyMonitorDlg::CleanDevices(void)
+{
+	HWND hDeviceCB = GetDlgItem(m_hDlg, IDC_VJOY_DEVICE);
+	ComboBox_ResetContent(hDeviceCB);
+}
+
+
 // Disable all controls for a given device
 void CJoyMonitorDlg::DisableAllControls(UINT id)
 {
@@ -577,10 +585,13 @@ void CJoyMonitorDlg::SetButtonValues(UINT id, BTNArr * BtnVals)
 }
 
 // Called when application detects that vJoy device is stopped
-void CJoyMonitorDlg::JoystickStopped(UCHAR iDev)
+void CJoyMonitorDlg::ResetDlg(void)
 {
 	// Reset all controls for this device
-	DisableAllControls(iDev);
+	DisableAllControls(m_CurJoy);
+
+	// Clean Combo box that lists devices
+	CleanDevices();
 }
 
 INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

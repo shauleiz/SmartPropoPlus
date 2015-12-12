@@ -30,7 +30,7 @@ public:
 	void EnableControlsBtn(UINT id, controls * ctrl);
 	void SetButtonValues(UINT id, BTNArr * BtnVals);
 	void InitDevices(HWND hDlg);
-	void JoystickStopped(UCHAR iDev);
+	void ResetDlg(void);
 	void ReportDeviceSelection(void);
 	void AddDevice(int vJoyID, bool Selected);
 
@@ -45,6 +45,7 @@ protected:
 	void CreatePovMeters(UINT nPovs);
 	void CleanPovMeters(void);
 	void ShowMeterLables(int nPovs);
+	void CleanDevices(void);
 
 protected:
 	HWND m_hDlg;
