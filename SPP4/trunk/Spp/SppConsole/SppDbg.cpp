@@ -31,10 +31,11 @@ void SppDbg::StartDbgInputSignal(void)
 
 	//memcpy_s(m_FileDbgInSigName, MAX_PATH,  L"SPPDBGINSIG.TXT", sizeof( L"SPPDBGINSIG.TXT"));
 	if (!m_FileDbgInSig)
-		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+"); 
+		_wfopen_s(&m_FileDbgInSig,m_FileDbgInSigName, L"w+");
 
+
+	if (m_FileDbgInSig)
 		fprintf(m_FileDbgInSig,  "Start Logging raw input signal");
-
 }
 
 void SppDbg::StartDbgPulse(void)

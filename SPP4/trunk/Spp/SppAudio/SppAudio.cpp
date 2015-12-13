@@ -169,7 +169,7 @@ SPPINTERFACE_API CSppAudio::CSppAudio(HWND hWnd)
 	HRESULT hr = S_OK;
 	m_nMixers = 0;
 	m_CaptureDevices.clear();
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HRESULT h = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	m_CurrentId = NULL;
 	m_DbgInputSignal = FALSE;
 
@@ -201,7 +201,7 @@ CSppAudio::CSppAudio(void)
 	m_nMixers = 0;
 	m_CaptureDevices.clear();
 	// m_ChangeEventCB = NULL;
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HRESULT h = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	m_hPrntWnd = NULL;
 
 	// Set default callback functions

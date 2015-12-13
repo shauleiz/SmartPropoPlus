@@ -488,7 +488,7 @@ HRESULT CPulseScope::OnRender()
 				hr = StringCchPrintf(textBuffer, tMaxLen, L"%.2fmS", delta);
 				m_pRenderTarget->DrawText(
 					textBuffer,
-					static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
+					static_cast<UINT>(tMaxLen),
 					m_pMsrTextFormat,
 					D2D1::RectF(20.0f, 10.0f, 80.0f, 35.0f),
 					m_pCornflowerBlueBrush,
@@ -615,6 +615,9 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 // Based on
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd756686(v=vs.85).aspx
 {
+	if (nPulses<1)
+		return;
+
 	FLOAT offset = 0;			// Offset to the beginning of the longest pulse
 	FLOAT maxlength = 0;		// Size of the longest pulse (in the first half of the buffer)
 	UINT arrsize = nPulses*2+1;	// Size of array of points
@@ -634,7 +637,7 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 		m_points = NULL;
 	};
 
-	m_points = new D2D1_POINT_2F[arrsize];
+	m_points = new D2D1_POINT_2F[arrsize + 2];
 
 	// Populate each point and calculate overall offset
 	m_points[0].x = 0;
@@ -806,7 +809,7 @@ void CPulseScope::DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1)
 
 	m_pRenderTarget->DrawText(
 		textBuffer,
-		static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
+		static_cast<UINT>(tMaxLen),
 		m_pBtnTextFormat,
 		rect1,
 		m_pCornflowerBlueBrush,

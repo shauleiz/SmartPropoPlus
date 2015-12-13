@@ -1321,6 +1321,9 @@ bool CSppConfig::Load(void)
 
 	if (!_wfopen_s(&file, m_filename.c_str(), L"rb"))
 	{
+		if (!file)
+			return false;
+
 		bool result = m_doc.LoadFile(file);
 		fclose(file);
 		return result;
@@ -1343,6 +1346,9 @@ bool CSppConfig::Save(void)
 	
 	if (!_wfopen_s(&fp, m_filename.c_str(), L"w"))
 	{
+		if (!fp)
+			return false;
+
 		bool result = m_doc.SaveFile(fp);
 		fclose(fp);
 		return result;

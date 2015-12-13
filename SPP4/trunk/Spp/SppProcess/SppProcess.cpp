@@ -2566,7 +2566,7 @@ void CSppProcess::SendPPJoy(int nChannels, int * Channel)
         iMapped	= Map2Nibble(m_Mapping, i);	// Prepare mapping re-indexing
         if ((int)iMapped>nChannels)
             continue;
-        if (ch[iMapped-1]<0) // Test value - if (-1) value is illegal
+        if ((iMapped>MAX_JS_CH)||(ch[iMapped-1]<0)) // Test value - if (-1) value is illegal
             return;
         writeOk =  SetAxisDelayed(32*ch[iMapped-1], HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
     }

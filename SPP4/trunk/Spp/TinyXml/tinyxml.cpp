@@ -119,6 +119,7 @@ void TiXmlBase::EncodeString( const TIXML_STRING& str, TIXML_STRING* outString )
 
             //*ME:	warning C4267: convert 'size_t' to 'int'
             //*ME:	Int-Cast to make compiler happy ...
+#pragma warning(suppress: 6054)
             outString->append( buf, (int)strlen( buf ) );
             ++i;
         }

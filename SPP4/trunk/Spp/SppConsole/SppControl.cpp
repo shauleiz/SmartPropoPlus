@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <VersionHelpers.h>
 #include <crtdbg.h>
 #include <Shellapi.h>
 #include <condition_variable>
@@ -1272,8 +1273,8 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	wchar_t * out = new TCHAR[MAX_PATH];
 	_tsplitpath_s((const wchar_t *)FileName, NULL, NULL, NULL, NULL, ShortName, MAX_PATH, Ext, MAX_PATH);
 	_stprintf_s(out, MAX_PATH, TEXT("%s%s"), ShortName, Ext);
-	delete ShortName;
-	delete Ext;
+	delete[] ShortName;
+	delete[] Ext;
 
 
 	// Assign global handle to Filters' DLL
@@ -1312,7 +1313,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		return NULL;
 	};
 	SendMessage(hDlg, FILTER_NUM, nFilters, (LPARAM)out);
-	delete out;
+	delete[] out;
 
 	// Get selected filter
 	UINT idSel = Conf->GetSelectedFilter();
@@ -1345,7 +1346,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 			return NULL;
 
 		// If got a char* then convert to LPCWSTR
-		if (!FilterNameW || !wcslen(FilterNameW))
+		if ((!FilterNameW || !wcslen(FilterNameW)) && FilterName)
 			mbstowcs_s(&converted, FilterNameW, 255, FilterName, strlen(FilterName));
 
 		if (!FilterNameW)
@@ -1391,8 +1392,8 @@ LPVOID SelectFilterFile(LPCTSTR FilterPath)
 	wchar_t * Ext = new TCHAR[MAX_PATH];
 	_tsplitpath_s((const wchar_t *)FilterPath, NULL, NULL, NULL, NULL, FileName, MAX_PATH, Ext, MAX_PATH);
 	_stprintf_s(out, MAX_PATH, TEXT("%s%s"), FileName, Ext);
-	delete FileName;
-	delete Ext;
+	delete[] FileName;
+	delete[] Ext;
 
 	reqPopulateFilter = true;
 
@@ -1954,6 +1955,15 @@ WORD	GetStartMode(LPTSTR lpCmdLine)
 #pragma warning( disable : 4996 )
 bool isAboveVistaSp1()
 {
+
+	BOOL res = IsWindowsVistaSP1OrGreater();
+	if (res == TRUE)
+		return true;
+	else
+		return false;
+
+
+#if 0
 	OSVERSIONINFOEX OsInfo;
 	OsInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	GetVersionEx((LPOSVERSIONINFO)&OsInfo);
@@ -1971,6 +1981,8 @@ bool isAboveVistaSp1()
 		return true;
 	else
 		return false;
+#endif // 0
+
 }
 #pragma warning( pop )
 
