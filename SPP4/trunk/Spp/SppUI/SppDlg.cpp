@@ -761,6 +761,20 @@ void SppDlg::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
 #endif
 }
 
+// Joystick stopped. Reset all data related to Josticks
+void SppDlg::ResetJoystick(void)
+{
+	// Joystick Tab: Reset all data
+	((SppTabJoy *)m_hrsrc.TabJoy)->ClearAll();
+
+	//Main dialog:  Reset all joystick data
+	controls ctrl;
+	ctrl.nButtons = 0;
+	for (auto& x : ctrl.axis)
+		x = FALSE;
+	EnableControls(0, &ctrl);
+
+}
 
 // Update the position of the  progress bar that corresponds to the vJoy axis
 void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
@@ -2406,6 +2420,11 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case WMSPP_JMON_BTN:
         DialogObj->SetJoystickBtnData((UCHAR)wParam, (BTNArr *)lParam);
         break;
+
+	case WMSPP_JMON_STP:
+		DialogObj->SetJoystickDevFrame(0);
+		DialogObj->ResetJoystick();	 // Joystick stopped. Reset all data
+		break;
 
     case WMSPP_MAP_UPDT:
         DialogObj->SetMappingData((Mapping *)wParam);

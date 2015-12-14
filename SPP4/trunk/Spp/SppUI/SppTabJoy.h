@@ -25,6 +25,7 @@ public:
 	void MonitorCh(HWND hDlg);
 	void SetProcessedChData(UINT iCh, UINT data);	
 	void SetMappingData(Mapping * Map);
+	void ClearMappingData(void);
 	void SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons);
 	void vJoyMapping(void);
 	void SendMappingData(BTNArr* aButtonMap, UINT nButtons);
@@ -36,6 +37,7 @@ public:
 	void UpdateToolTip(LPVOID param);
 	void SetMappingData(void);
 	void Reset();
+	void ClearAll(void);
 
 protected:
 	void UpdateChannelView(bool Raw, UINT nCh);

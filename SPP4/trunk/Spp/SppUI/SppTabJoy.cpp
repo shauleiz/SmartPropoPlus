@@ -39,6 +39,34 @@ SppTabJoy::~SppTabJoy(void)
 	delete(m_BtnsDlg);
 }
 
+/* Called when vJoy is stopped
+ Clears/resets joystick-related controls for the tab
+ *	vJoy device frame : "vJoy device - Axis data" instead of device #
+ *	vJoy bars titles disabled
+ *	vJoy bars at 0
+ *	Mapping : edit boxes cleared
+ *	Combo box : Empty
+*/
+void  SppTabJoy::ClearAll(void)
+{
+	// Remove all entries from combo box leading to 
+	// vJoy device frame : "vJoy device - Axis data" instead of device #
+	vJoyRemoveAll();
+
+	// Clear mapping data
+	ClearMappingData();
+
+
+	// Mapping : edit boxes disabled
+	// vJoy bars titles disabled
+	// Set vJoy bars at 0
+	controls ctrl;
+	ctrl.nButtons = 0;
+	for (auto& x : ctrl.axis)
+		x = FALSE;
+	EnableControls(0, &ctrl);
+
+}
 void  SppTabJoy::Reset()
 {
 	// Select index 0 in combo IDC_VJOY_DEVICE
@@ -111,20 +139,23 @@ void SppTabJoy::EnableControls(UINT id, controls * ctrl)
 	UINT iAxis=0;
 
 	////// Verify correct vJoy device
-	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
+	HWND hCb = GetDlgItem(m_hDlg, IDC_VJOY_DEVICE);
 	// Get the index of the selected vJoy device
-	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
-	if (index == CB_ERR)
-		return;
+	if (id)
+	{
+		int index = (int)SendMessage(hCb, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+		if (index == CB_ERR)
+			return;
 
-	// Extract the device id from the item's data
-	int SelId = (int)SendMessage(hCb,(UINT) CB_GETITEMDATA   ,(WPARAM) index,(LPARAM)0);
-	if (id != SelId)
-		return;
+		// Extract the device id from the item's data
+		int SelId = (int)SendMessage(hCb, (UINT)CB_GETITEMDATA, (WPARAM)index, (LPARAM)0);
+		if (id != SelId)
+			return;
+	};
 	////// Verified
 
 	// Go over all axes
-	do 
+	do
 	{
 		// Axis bars
 		hCh = GetDlgItem(m_hDlg,  ch);
@@ -174,8 +205,11 @@ void SppTabJoy::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
 	int IdItem;
 
-	if (m_CurJoy != iDev)
-		return;
+	if (iDev)
+	{
+		if (m_CurJoy != iDev)
+			return;
+	};
 
 	switch (Axis)
 	{
@@ -337,6 +371,25 @@ void SppTabJoy::SetJoystickDevFrame(UCHAR iDev)
 #pragma endregion
 
 #pragma region Mapping of Joystick buttons and axes
+
+// Clear data related to mapping
+void SppTabJoy::ClearMappingData(void)
+{
+	UINT id = IDC_SRC_SL1;
+	UINT n = IDC_SRC_SL1 - IDC_SRC_X + 1;
+	HWND hEdtBox;
+
+	// Go through the map and read nibble by nibble
+	// Every nibble read goes to the corresponding edit box
+	for (UINT i = 0; i<n; i++)
+	{
+		hEdtBox = GetDlgItem(m_hDlg, id - i);
+		Edit_SetText(hEdtBox, TEXT(""));
+	};
+
+}
+
+
 // Fill-in the actual mapping data
 void SppTabJoy::SetMappingData(Mapping * Map)
 {

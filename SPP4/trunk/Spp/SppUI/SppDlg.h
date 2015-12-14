@@ -52,6 +52,7 @@ public: // Called from window procedure
 	void SetProcessedChData(UINT iCh, UINT data);
 	void SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue);
 	void SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue);
+	void ResetJoystick(void);
 	void SetJoystickDevFrame(UCHAR iDev);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
 	void CfgJoyMonitor(HWND);
