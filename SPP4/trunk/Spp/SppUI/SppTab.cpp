@@ -153,7 +153,7 @@ void SppTab::ResetArrayOfBars(HWND hDlg, std::vector< int> items)
 // Set the dialog box inside the tab control
 void SppTab::SetPosition(HWND hDlg)
 {
-	SetWindowPos(hDlg, HWND_TOP,20,40, 0, 0,SWP_NOSIZE);
+	SetWindowPos(hDlg, HWND_TOP,20,42, 0, 0,SWP_NOSIZE);
 }
 
 // Initialize array of progress-bars that desplay data such as channel position or axes
