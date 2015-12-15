@@ -391,7 +391,7 @@ HRESULT CPulseScope::OnRender()
 		float low = (rtSize.height/2 + sqSize*2.5f);
 		float hi  = (rtSize.height/2 - sqSize*2.5f);
 		UINT tMaxLen;
-		WCHAR textBuffer[20];
+		WCHAR textBuffer[20] = { 0 };
 		tMaxLen = sizeof(textBuffer)/sizeof(WCHAR);
 
 		for (float x = 0; x < width; x += sqSize)
@@ -488,7 +488,7 @@ HRESULT CPulseScope::OnRender()
 				hr = StringCchPrintf(textBuffer, tMaxLen, L"%.2fmS", delta);
 				m_pRenderTarget->DrawText(
 					textBuffer,
-					static_cast<UINT>(tMaxLen),
+					static_cast<UINT>(ARRAYSIZE(textBuffer)),
 					m_pMsrTextFormat,
 					D2D1::RectF(20.0f, 10.0f, 80.0f, 35.0f),
 					m_pCornflowerBlueBrush,
@@ -788,20 +788,20 @@ HRESULT CPulseScope::LoadResourceBitmap(
 
 
 
-void CPulseScope::DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1)
+void CPulseScope::DisplayPausePlayButton(bool Play, D2D1_RECT_F rect1)
 {
 	// Get render target size
 	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
 
 	// Create button rectangle
-	D2D1_ROUNDED_RECT buttonRect = D2D1::RoundedRect(rect1,3,3);
+	D2D1_ROUNDED_RECT buttonRect = D2D1::RoundedRect(rect1, 3, 3);
 
 	// Draw a filled rectangle.
 	m_pRenderTarget->FillRoundedRectangle(&buttonRect, m_pButtonColor);
 
 	// Write text (Pause/Play)
-	WCHAR textBuffer[20];
-	UINT tMaxLen = sizeof(textBuffer)/sizeof(WCHAR);
+	WCHAR textBuffer[20] = { 0 };
+	UINT tMaxLen = sizeof(textBuffer) / sizeof(WCHAR);
 	if (Play)
 		StringCchPrintf(textBuffer, tMaxLen, L"Play");
 	else
@@ -809,12 +809,12 @@ void CPulseScope::DisplayPausePlayButton(bool Play,D2D1_RECT_F rect1)
 
 	m_pRenderTarget->DrawText(
 		textBuffer,
-		static_cast<UINT>(tMaxLen),
+		static_cast<UINT>(ARRAYSIZE(textBuffer)),
 		m_pBtnTextFormat,
 		rect1,
 		m_pCornflowerBlueBrush,
 		D2D1_DRAW_TEXT_OPTIONS_NONE
-		);	
+		);
 }
 
 
