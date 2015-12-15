@@ -441,6 +441,15 @@ LRESULT CALLBACK MainWindowProc(
 			SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
 			break;
 
+  		case WMSPP_JMON_STRT:
+			// Populate the GUI with the avaiable vJoy Devices - return the number of devices
+			vJoyDevicesPopulate(hDialog);
+			vJoyDevice = Conf->SelectedvJoyDevice();
+			SetvJoyMapping(vJoyDevice);
+			SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
+			break;
+
+
 		case WMSPP_JMON_STP:
 		case WMSPP_JMON_BTN:
 		case WMSPP_PRCS_RCHMNT:
