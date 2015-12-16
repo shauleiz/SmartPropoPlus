@@ -91,6 +91,45 @@
     <Image Include="SppStopped.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="AdvancedGrey.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="AudioJackBlue.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="BackGround.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RC-TxGreen.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="FilterBlue.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="vJoyRed.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="SppControlS0.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="SppControlW10.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="SppControlW7.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="SppControlW8.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SppUI.rc">

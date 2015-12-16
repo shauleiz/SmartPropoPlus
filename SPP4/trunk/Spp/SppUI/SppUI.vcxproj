@@ -186,8 +186,21 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="AdvancedGrey.ico" />
+    <Image Include="AudioJackBlue.ico" />
+    <Image Include="BackGround.ico" />
+    <Image Include="bitmap1.bmp" />
+    <Image Include="bitmap2.bmp" />
+    <Image Include="bitmap4.bmp" />
+    <Image Include="FilterBlue.ico" />
+    <Image Include="RC-TxGreen.ico" />
     <Image Include="SppControl.ico" />
+    <Image Include="SppControlS0.ico" />
+    <Image Include="SppControlW10.ico" />
+    <Image Include="SppControlW7.ico" />
+    <Image Include="SppControlW8.ico" />
     <Image Include="SppStopped.ico" />
+    <Image Include="vJoyRed.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SppUI.rc" />
