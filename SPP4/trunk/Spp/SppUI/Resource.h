@@ -1,3 +1,12 @@
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by SppUI.rc
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include <windows.h>
+#include <commctrl.h>
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
 #ifndef IDC_STATIC
 #define IDC_STATIC (-1)
 #endif
@@ -389,3 +398,14 @@
 #define IDC_TXT_SL1                             40208
 #define IDM_DISPLAY_WIZARD                      40209
 #define IDC_STAT_FILTER                         40210
+
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        202
+#define _APS_NEXT_COMMAND_VALUE         40301
+#define _APS_NEXT_CONTROL_VALUE         2000
+#define _APS_NEXT_SYMED_VALUE           201
+#endif
+#endif

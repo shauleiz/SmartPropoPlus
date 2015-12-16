@@ -1,0 +1,13 @@
+﻿  stdafx.cpp
+  SppTabJoy.cpp
+  SppTabGen.cpp
+  SppTabFltr.cpp
+  SppTabDcdr.cpp
+  SppTabAudio.cpp
+  SppTabAdv.cpp
+  SppTab.cpp
+  SppLog.cpp
+  SppDlg.cpp
+  SppBtnsDlg.cpp
+  Generating Code...
+  SppUI.vcxproj -> C:\Users\Shaul\Documents\GitHubVisualStudio\SmartPropoPlus\SPP4\trunk\Spp\Debug\SppUI.lib
