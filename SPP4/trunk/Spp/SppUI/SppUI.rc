@@ -373,7 +373,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Menu
 //
 
-127 MENUEX
+IDM_ICON MENUEX
 BEGIN
     POPUP "",                               0,MFT_STRING,MFS_ENABLED
     BEGIN
@@ -733,25 +733,25 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-180                     ICON                    ".\\AdvancedGrey.ico"
+IDI_ADVANCED	ICON                    ".\\AdvancedGrey.ico"
 
-167                     ICON                    ".\\AudioJackBlue.ico"
+IDI_AUDIO		ICON                    ".\\AudioJackBlue.ico"
 
-182                     ICON                    ".\\BackGround.ico"
+IDI_BACKGROUND	ICON                    ".\\BackGround.ico"
 
-170                     ICON                    ".\\RC-TxGreen.ico"
+IDI_DECODER		ICON                    ".\\RC-TxGreen.ico"
 
-172                     ICON                    ".\\FilterBlue.ico"
+IDI_FILTER		ICON                    ".\\FilterBlue.ico"
 
-174                     ICON                    ".\\vJoyRed.ico"
+IDI_JOYSTICK	ICON                    ".\\vJoyRed.ico"
 
-135                     ICON                    "SppControlS0.ico"
+IDI_S0			ICON                    "SppControlS0.ico"
 
-136                     ICON                    "SppControlW10.ico"
+IDI_W10			ICON                    "SppControlW10.ico"
 
-176                     ICON                    ".\\SppControlW7.ico"
+IDI_W7			ICON                    ".\\SppControlW7.ico"
 
-134                     ICON                    "SppControlW8.ico"
+IDI_W8          ICON                    "SppControlW8.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -759,11 +759,11 @@ END
 // Bitmap
 //
 
-124                     BITMAP                  "bitmap2.bmp"
+IDB_GREENDOT                     BITMAP                  "bitmap2.bmp"
 
-153                     BITMAP                  ".\\bitmap4.bmp"
+IDB_GREYDOT                     BITMAP                  ".\\bitmap4.bmp"
 
-122                     BITMAP                  "bitmap1.bmp"
+IDB_REDDOT                     BITMAP                  "bitmap1.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
