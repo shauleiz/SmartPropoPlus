@@ -106,6 +106,30 @@ void  SppTabJoy::vJoyDevSelect(UINT id)
 	index =  (int)SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
 }
 
+// Write the version of the installed vJoy driver
+void  SppTabJoy::vJoySetVer(UINT Ver)
+{
+
+	// Test if the handle to the frame is OK
+	HWND hFrame = GetDlgItem(m_hDlg, IDC_VJOYNAME_FRM);
+	if (!hFrame)
+		return;
+
+	// Break the version value to components and
+	UINT VerComp[3] = { 0 };
+	VerComp[0] = (Ver & 0x000000FF) >> 0;
+	VerComp[1] = (Ver & 0x0000FF00) >> 8;
+ 	VerComp[2] = (Ver & 0x00FF0000) >> 16;
+
+	// create a version string
+	TCHAR BasicText[MAX_MSG_SIZE] = { 0 };
+	LoadString(m_hInstance, IDS_VJOY_FRM_TXT, BasicText, MAX_MSG_SIZE);
+	wstring VerStr = BasicText + to_wstring(VerComp[2]) + L"."  + to_wstring(VerComp[1])  + L"."  + to_wstring(VerComp[0]);
+	
+	// Update frame text
+	SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)VerStr.data());
+}
+
 // Get the selected vJoy device
 // Extract the device id from the item's data
 // Send device id to CU

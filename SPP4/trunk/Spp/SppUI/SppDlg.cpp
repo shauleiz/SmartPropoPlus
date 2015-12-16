@@ -1700,6 +1700,12 @@ void  SppDlg::vJoyRemoveAll()
 #endif
 }
 
+// Set vJoy Version information
+void  SppDlg::vJoySetVer(UINT Ver)
+{
+	((SppTabJoy *)m_hrsrc.TabJoy)->vJoySetVer(Ver);
+}
+
 // Add vJoy device entry to combo box
 // Set the id as item data
 void  SppDlg::vJoyDevAdd(UINT id)
@@ -2451,6 +2457,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
         if (lParam)
             DialogObj->vJoyDevSelect((UINT)wParam);
         break;
+
+	case VJOYDEV_SETVER:
+		DialogObj->vJoySetVer((UINT)wParam);
+		break;
 
     case VJOYDEV_REMALL:
         DialogObj->vJoyRemoveAll();

@@ -75,6 +75,7 @@ void		thDialogBox(HWND hwnd);
 void		SetMonitoring(HWND hDlg);
 void		SetPulseScope(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
+UINT		vJoyDevicesVersion(HWND hDlg);
 void		SetvJoyMapping(UINT id);
 int			SelectedvJoyDevice(void);
 void		SetAvailableControls(UINT id, HWND hDlg);
@@ -268,6 +269,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Populate the GUI with the avaiable vJoy Devices - return the number of devices
 	int nvJoyDev = vJoyDevicesPopulate(hDialog);
 
+	// Display the version of vJoy driver
+	vJoyDevicesVersion(hDialog);
+
 	// TODO: Test functions - remove later
 	if (MonitorOk)
 		StartPollingDevice(vJoyDevice); 
@@ -444,6 +448,7 @@ LRESULT CALLBACK MainWindowProc(
   		case WMSPP_JMON_STRT:
 			// Populate the GUI with the avaiable vJoy Devices - return the number of devices
 			vJoyDevicesPopulate(hDialog);
+			vJoyDevicesVersion(hDialog);
 			vJoyDevice = Conf->SelectedvJoyDevice();
 			SetvJoyMapping(vJoyDevice);
 			SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
@@ -1707,6 +1712,7 @@ void thMonitor(bool * KeepAlive)
                         vJoyDeviceEnabled = true;
 						vJoyDevice = Conf->SelectedvJoyDevice();
 						vJoyDevicesPopulate(hDialog);
+						vJoyDevicesVersion(hDialog);
 						SetvJoyMapping(vJoyDevice);
 						SetAvailableControls((UINT)vJoyDevice, hDialog);// Instruct GUI of the available Controls (Axes/Buttons)
 						//StartPollingDevice(vJoyDevice);
@@ -1746,6 +1752,27 @@ void thMonitor(bool * KeepAlive)
 
 	}; // while (*KeepAlive) 
 }
+
+// Connect to the vJoy interface
+// Get the vJoy driver version
+// send message with version (as UINT: 00aabbcc = aa.bb.cc) to dialog box
+UINT vJoyDevicesVersion(HWND hDlg)
+{
+	UINT Major, Mid, Minor, Ver;
+	LPTSTR str = (LPTSTR)GetvJoySerialNumberString();
+	if (!str || (_tcslen(str) < 5))
+		return 0;
+
+	// Version string is valid - extract data
+	_stscanf_s(str, TEXT("%d.%d.%d"), &Major, &Mid, &Minor);
+	Ver = (Major << 16) + (Mid << 8) + Minor;
+
+	// Send message to dialog box - Version
+	SendMessage(hDlg, VJOYDEV_SETVER, Ver, 0);
+
+	return Ver;
+}
+
 
 // Connect to the vJoy interface
 // Get the number of devices

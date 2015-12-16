@@ -100,6 +100,7 @@ END
 STRINGTABLE
 BEGIN
     109                     "SPPCONTROL"
+    IDS_VJOY_FRM_TXT        "vJoy Device v"
 END
 
 STRINGTABLE
@@ -579,7 +580,7 @@ IDD_JOY DIALOGEX 0, 0, 300, 186
 STYLE DS_SETFONT | DS_3DLOOK | DS_CENTER | WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_SYSMENU
 FONT 8, "Ms Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "vJoy Device",0,150,2,139,30
+    GROUPBOX        "vJoy Device",IDC_VJOYNAME_FRM,150,2,139,30
     CONTROL         "",1001,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | NOT WS_VISIBLE | WS_BORDER,157,62,10,36,WS_EX_STATICEDGE
     CTEXT           "A",1011,157,51,10,8
     CONTROL         "",1002,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | NOT WS_VISIBLE | WS_BORDER,173,62,10,36,WS_EX_STATICEDGE
@@ -596,7 +597,7 @@ BEGIN
     CTEXT           "G",1017,253,51,8,8
     CONTROL         "",1008,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | NOT WS_VISIBLE | WS_BORDER,269,62,10,36,WS_EX_STATICEDGE
     CTEXT           "H",1018,269,51,8,8
-    GROUPBOX        "R/C Channels (Filtered)",40000,150,37,139,68,NOT WS_VISIBLE
+    GROUPBOX        "R/C Channels (Filtered)",IDC_OUT_CHANNELS,150,37,139,68,NOT WS_VISIBLE
     GROUPBOX        "R/C Channels",1009,150,37,139,68
     CONTROL         "",40013,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | WS_BORDER,157,62,10,36,WS_EX_STATICEDGE
     CTEXT           "1",40030,157,51,10,8
@@ -630,7 +631,7 @@ BEGIN
     CTEXT           "sl0",40207,255,123,10,8
     CONTROL         "",40094,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | WS_BORDER,271,134,10,36,WS_EX_STATICEDGE
     CTEXT           "sl1",40208,269,123,10,8
-    GROUPBOX        "Joystick Monitor",40135,150,109,139,68
+    GROUPBOX        "Joystick Monitor",IDC_VJOY_AXES,150,109,139,68
     GROUPBOX        "Mapping",-1,15,2,117,175
     LTEXT           "X Axis",40095,21,13,30,14,SS_CENTERIMAGE
     LTEXT           "Y Axis",40096,21,30,30,8,SS_CENTERIMAGE
@@ -733,37 +734,25 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ADVANCED	ICON                    ".\\AdvancedGrey.ico"
+IDI_ADVANCED            ICON                    ".\\AdvancedGrey.ico"
 
-IDI_AUDIO		ICON                    ".\\AudioJackBlue.ico"
+IDI_AUDIO               ICON                    ".\\AudioJackBlue.ico"
 
-IDI_BACKGROUND	ICON                    ".\\BackGround.ico"
+IDI_BACKGROUND          ICON                    ".\\BackGround.ico"
 
-IDI_DECODER		ICON                    ".\\RC-TxGreen.ico"
+IDI_DECODER             ICON                    ".\\RC-TxGreen.ico"
 
-IDI_FILTER		ICON                    ".\\FilterBlue.ico"
+IDI_FILTER              ICON                    ".\\FilterBlue.ico"
 
-IDI_JOYSTICK	ICON                    ".\\vJoyRed.ico"
+IDI_JOYSTICK            ICON                    ".\\vJoyRed.ico"
 
-IDI_S0			ICON                    "SppControlS0.ico"
+IDI_S0                  ICON                    "SppControlS0.ico"
 
-IDI_W10			ICON                    "SppControlW10.ico"
+IDI_W10                 ICON                    "SppControlW10.ico"
 
-IDI_W7			ICON                    ".\\SppControlW7.ico"
+IDI_W7                  ICON                    ".\\SppControlW7.ico"
 
-IDI_W8          ICON                    "SppControlW8.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_GREENDOT                     BITMAP                  "bitmap2.bmp"
-
-IDB_GREYDOT                     BITMAP                  ".\\bitmap4.bmp"
-
-IDB_REDDOT                     BITMAP                  "bitmap1.bmp"
+IDI_W8                  ICON                    "SppControlW8.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -778,7 +767,7 @@ BEGIN
     BEGIN
     END
 
-    149, DIALOG
+    IDD_JOY, DIALOG
     BEGIN
     END
 END
@@ -794,6 +783,18 @@ END
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_GREENDOT            BITMAP                  "bitmap2.bmp"
+
+IDB_GREYDOT             BITMAP                  ".\\bitmap4.bmp"
+
+IDB_REDDOT              BITMAP                  "bitmap1.bmp"
 
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////

@@ -15,6 +15,7 @@ public:
 	void vJoyRemoveAll(void);
 	void vJoyDevAdd(UINT id);
 	void vJoyDevSelect(UINT id);
+	void vJoySetVer(UINT Ver);
 	void vJoySelected(HWND hCb);
 	void EnableControls(UINT id, controls * ctrl);
 	void CreateBtnsDlg(HWND hDlg);
