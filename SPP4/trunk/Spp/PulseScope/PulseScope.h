@@ -68,6 +68,9 @@ private:
 	// Display Play/Pause button
 	void DisplayPausePlayButton(bool Play,D2D1_RECT_F rect);
 
+	// Close button
+	void DisplayCloseButton(void);
+
 	// Display right and left scroll buttons
 	void DisplayRightScrollButton(void);
 	void DisplayLeftScrollButton(void);
@@ -111,11 +114,14 @@ private:
 	bool m_isPlaying;
 	D2D1_POINT_2F m_measureStartPoint,  m_measureEndPoint;
 	D2D1_RECT_F m_PlayPauseRect;
+	D2D1_RECT_F m_close_button_rect;
 	D2D1_RECT_F m_right_button_rect;
 	D2D1_RECT_F m_left_button_rect;
 	float m_manual_shift;
 	bool m_manual_shift_pressed_r;
 	bool m_manual_shift_pressed_l;
+	bool m_close_button_pressed;
+	HWND m_hWndParent;
 
 };
 PULSESCOPE_API void Pulse2Scope(int index, int length, bool low, LPVOID timestamp, LPVOID Param);

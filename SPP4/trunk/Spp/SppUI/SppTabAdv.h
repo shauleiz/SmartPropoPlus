@@ -8,6 +8,7 @@ public:
 	virtual ~SppTabAdv(void);
 	SppTabAdv(HINSTANCE hInstance, HWND TopDlgWnd);
 
+	void SetPulseScope(bool cb);
 	void PulseScope(WORD cb);
 	void ShowLogWindow(WORD cb);
 	void RecordInSignal(WORD cb);

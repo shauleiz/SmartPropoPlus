@@ -5,6 +5,7 @@
 #include <Windowsx.h>
 #include "PulseScope.h"
 #include <StrSafe.h>
+#include <WinMessages.h>
 
 
 // This is an example of an exported variable
@@ -30,6 +31,7 @@ m_offset(0),
 m_isMeasuring(false),
 m_isPlaying(true),
 m_PlayPauseRect(D2D1::RectF(10,30,100,60)),
+m_close_button_rect(D2D1::RectF()),
 m_left_button_rect(D2D1::RectF()),
 m_right_button_rect(D2D1::RectF()),
 m_manual_shift(0),
@@ -60,6 +62,7 @@ HRESULT CPulseScope::Initialize(HWND hWndParent )
 // resources.
 {
 	HRESULT hr;
+	m_hWndParent = hWndParent;
 
 	// Initialize device-indpendent resources, such
 	// as the Direct2D factory.
@@ -285,6 +288,7 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 			case WM_LBUTTONUP:
 				pPulseScope->m_manual_shift_pressed_r=false;
 				pPulseScope->m_manual_shift_pressed_l=false;
+				pPulseScope->m_close_button_pressed = false;
 				break;
 
 			case WM_LBUTTONDOWN:
@@ -295,6 +299,10 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 				else if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_right_button_rect))
 				{/* Right scroll key */
 					pPulseScope->m_manual_shift_pressed_r=true;
+				}
+				else if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_close_button_rect))
+				{/* Close button */
+					SendMessage(pPulseScope->m_hWndParent, WMSPP_DLG_PLSSCOP, FALSE, 0);
 				}
 				else if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_PlayPauseRect))
 				{
@@ -312,6 +320,8 @@ LRESULT CALLBACK CPulseScope::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 					pPulseScope->m_manual_shift_pressed_l = false;
 				if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_right_button_rect))
 					pPulseScope->m_manual_shift_pressed_r = false;
+ 				if (inRect(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) , pPulseScope->m_close_button_rect))
+					pPulseScope->m_close_button_pressed = false;
 
 				if (wParam & MK_LBUTTON)
 					pPulseScope->Measure(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
@@ -449,6 +459,9 @@ HRESULT CPulseScope::OnRender()
 
 		// Play/Pause button
 		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
+
+		// TODO: Close Button
+		DisplayCloseButton();
 
 
 		/////////  Draw wave form //////////////////////////////////////////////////////
@@ -786,7 +799,32 @@ HRESULT CPulseScope::LoadResourceBitmap(
 }
 
 
+void CPulseScope::DisplayCloseButton(void)
+{
+	// Get render target size
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
 
+	// Create button rectangle
+	m_close_button_rect = D2D1::RectF(rtSize.width - 60, 30, rtSize.width - 5, 60);
+	D2D1_ROUNDED_RECT buttonRect = D2D1::RoundedRect(m_close_button_rect, 3, 3);
+
+	// Draw a filled rectangle.
+	m_pRenderTarget->FillRoundedRectangle(&buttonRect, m_pButtonColor);
+
+	// Write text (Close)
+	WCHAR textBuffer[20] = { 0 };
+	UINT tMaxLen = sizeof(textBuffer) / sizeof(WCHAR);
+	StringCchPrintf(textBuffer, tMaxLen, L"Close");
+
+	m_pRenderTarget->DrawText(
+		textBuffer,
+		static_cast<UINT>(ARRAYSIZE(textBuffer)),
+		m_pBtnTextFormat,
+		m_close_button_rect,
+		m_pMeasureBrush,
+		D2D1_DRAW_TEXT_OPTIONS_NONE
+		);
+}
 
 void CPulseScope::DisplayPausePlayButton(bool Play, D2D1_RECT_F rect1)
 {

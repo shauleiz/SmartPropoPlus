@@ -410,6 +410,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_PLSSCOP:
 			PulseScope((BOOL)wParam);
 			Conf->PulseScope(wParam !=0); // Silly cast to bool to evoid warning
+			SetPulseScope(hDialog);
 			break;
 
 		case WMSPP_DLG_LOG:

@@ -29,6 +29,20 @@ SppTabAdv::SppTabAdv(HINSTANCE hInstance, HWND TopDlgWnd) :  SppTab( hInstance, 
 {
 }
 
+// Update check box
+void  SppTabAdv::SetPulseScope(bool cb)
+{
+	// Set checkbox
+	HWND hChkBox = GetDlgItem(m_hDlg, IDC_PLS_SCOPE);
+	if (!hChkBox)
+		return;
+
+	if (cb)
+		Button_SetCheck(hChkBox, BST_CHECKED);
+	else
+		Button_SetCheck(hChkBox, BST_UNCHECKED);
+}
+
 // Tell the parent window (Main application)
 // to stop/start displaying pulse scope
 void  SppTabAdv::PulseScope(WORD cb)
@@ -186,6 +200,7 @@ INT_PTR CALLBACK MsgHndlTabAdvDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 			DialogObj->UpdateToolTip((LPVOID)lParam);
 			return  (INT_PTR)TRUE;
 		};
+ 		break;
 
 	default:
 		break;

@@ -1368,7 +1368,8 @@ void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 // Start/Stop Pulse Scope
 void  SppDlg::SetPulseScope(bool cb)
 {
-    
+	((SppTabAdv *)m_hrsrc.TabAdvnc)->SetPulseScope(cb);
+
     // Set checkbox
     HWND hChkBox = GetDlgItem(m_hDlg,  IDC_PLS_SCOPE);
     if (!hChkBox)
