@@ -1682,6 +1682,12 @@ void thMonitor(bool * KeepAlive)
 		// Gets Audio Levels - optimizes and Updates GUI
 		AudioLevelWatch();
 
+		// Inform SppProcess of the current info
+		// This will go to the SppScope information pane
+		if (Spp)
+			Spp->Info2Scope(BitRate, isRight, Audio->GetNumberChannels());
+
+
 		//  Compute the state of the Operation state machine and inform GUI
 		ComputeOperatState(); // TODO: Much tweeking
 
