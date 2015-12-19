@@ -84,3 +84,49 @@ PULSESCOPE_API void Pulse2Scope(int index, int length, bool low, LPVOID timestam
 	};
 }
 
+PULSESCOPE_API void WaveInfo2Scope(PULSE_INFO * Info, LPVOID Param)
+{
+	/*
+		This function calls the Scope function that prints Information
+		It creates a string and sends it to the scope for dispaly
+	*/
+
+	// If Param is NULL then error because the scope object must be valid - return
+	if (!Param)
+		return;
+
+	// If Info is NULL - clear the info field of the Scope
+	if (!Info)
+		// TODO: Call CPulseScope::ClearWaveInfo()
+		return;
+
+	// Create a string and calculate size
+	// Channel:
+	WCHAR strCh[10];
+	if (Info->nChannels == 1)
+		wsprintf(strCh, L"Mono ");
+	else if (Info->isRight)
+ 		wsprintf(strCh, L"Right ");
+	else
+		wsprintf(strCh, L"Left ");
+
+	// Bitrate
+	WCHAR strBr[3];
+	if (Info->BitRate >0)
+		wsprintf(strBr, L"%2d", Info->BitRate);
+	else
+		wsprintf(strBr, L"?");
+
+
+	// Wave Rate
+	WCHAR strWr[8];
+	float  fWaveRate = (float)(Info->WaveRate) / 1000;
+	swprintf(strWr, 7,L"%3.1f", fWaveRate);
+
+	static WCHAR strOut[40];
+	swprintf(strOut, 39,L"%s %sbit %sKb/S", strCh, strBr, strWr);
+	size_t size;
+	size = wcslen(strOut);
+	((CPulseScope *)Param)->SetWaveInfo(strOut, size);
+
+}

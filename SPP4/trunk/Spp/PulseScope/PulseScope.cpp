@@ -34,9 +34,12 @@ m_PlayPauseRect(D2D1::RectF(10,30,100,60)),
 m_close_button_rect(D2D1::RectF()),
 m_left_button_rect(D2D1::RectF()),
 m_right_button_rect(D2D1::RectF()),
+m_info_pane_rect(D2D1::RectF()),
 m_manual_shift(0),
 m_manual_shift_pressed_r(false),
-m_manual_shift_pressed_l(false)
+m_manual_shift_pressed_l(false)	,
+m_InfoText(NULL),
+m_InfoTextSize(0)
 {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	return;
@@ -457,6 +460,9 @@ HRESULT CPulseScope::OnRender()
 		if (m_manual_shift_pressed_l)
 			m_manual_shift+=50;
 
+		// Information Pane
+		DisplayWaveInfo();
+
 		// Play/Pause button
 		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
 
@@ -680,6 +686,12 @@ void CPulseScope::DisplayPulseData(UINT nPulses, float *Length, float *Value)
 	PostMessage(m_hwnd, WM_BUFF_READY, (WPARAM)arrsize, (LPARAM)offset);
 }
 
+void CPulseScope::SetWaveInfo(WCHAR * strOut, size_t size)
+{
+	m_InfoText = strOut;
+	m_InfoTextSize = size;
+
+}
 
 
 HRESULT CPulseScope::LoadResourceBitmap(
@@ -855,7 +867,6 @@ void CPulseScope::DisplayPausePlayButton(bool Play, D2D1_RECT_F rect1)
 		);
 }
 
-
 void CPulseScope::DisplayRightScrollButton(void)
 // Draw right arrow button
 {
@@ -908,6 +919,39 @@ void CPulseScope::DisplayLeftScrollButton(void)
 	SafeRelease(&pSink);
 	m_pRenderTarget->FillGeometry(TriangleLeftGeometry, m_pArrowColor);
 	m_pRenderTarget->DrawRectangle(m_left_button_rect ,m_pArrowColor);
+
+}
+
+// Display Information Pane
+void CPulseScope::DisplayWaveInfo() 
+{	
+	if (!m_InfoText)
+		return;
+
+	FLOAT  info_left = m_left_button_rect.right+5;
+	FLOAT  info_right = m_right_button_rect.left-5;
+	FLOAT  info_top = m_right_button_rect.top;
+ 	FLOAT  info_bottom = m_right_button_rect.bottom;
+
+	D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+	m_info_pane_rect = D2D1::RectF(info_left, info_top, info_right, info_bottom);
+
+	// Draw a rectangle.
+	m_pRenderTarget->DrawRectangle(&m_info_pane_rect, m_pCornflowerBlueBrush);
+
+	// Write text 
+	WCHAR textBuffer[500] = { 0 };
+	UINT tMaxLen = sizeof(textBuffer) / sizeof(WCHAR);
+	StringCchPrintf(textBuffer, tMaxLen, m_InfoText);
+
+	m_pRenderTarget->DrawText(
+		textBuffer,
+		static_cast<UINT>(ARRAYSIZE(textBuffer)),
+		m_pBtnTextFormat,
+		m_info_pane_rect,
+		m_pCornflowerBlueBrush,
+		D2D1_DRAW_TEXT_OPTIONS_NONE | D2D1_DRAW_TEXT_OPTIONS_CLIP
+		);
 
 }
 

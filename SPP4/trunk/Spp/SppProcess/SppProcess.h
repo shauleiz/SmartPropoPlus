@@ -123,6 +123,7 @@ public:
     SPPMAIN_API void MappingChanged(Mapping* m, UINT vJoyId);
     SPPMAIN_API void SetAudioChannel(bool Left=true);
     SPPMAIN_API bool RegisterPulseMonitor(int index, bool Register);
+	SPPMAIN_API void Info2Scope(int BitRate, BOOL isRight, int nChannels);
     SPPMAIN_API int  GetPositionDataQuality(void);
     SPPMAIN_API int  GetJoystickCommQuality(void);
     SPPMAIN_API void SetDecoderScanning(BOOL Start, BOOL Forever, int Timeout);

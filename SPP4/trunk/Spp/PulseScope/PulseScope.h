@@ -28,6 +28,13 @@ struct PULSE_DATA {
 	float	*pYBuff;
 };
 
+struct PULSE_INFO {
+	UINT WaveRate;
+	int BitRate;
+	int isRight;
+	int nChannels;
+};
+
 // This class is exported from the PulseScope.dll
 class PULSESCOPE_API CPulseScope {
 public:
@@ -37,6 +44,10 @@ public:
 
 	// Get pulse data - Prepare it for scope to render
 	void DisplayPulseData(UINT nPulses, float *Length, float *Value);
+
+	// Get Info text to display
+	void SetWaveInfo(WCHAR * strOut, size_t size);
+
 
 public:
 	HWND m_hwnd;
@@ -75,6 +86,8 @@ private:
 	void DisplayRightScrollButton(void);
 	void DisplayLeftScrollButton(void);
 
+	// Display Information Pane
+	void DisplayWaveInfo(void);
 
 
 	HRESULT CPulseScope::LoadResourceBitmap(
@@ -117,14 +130,18 @@ private:
 	D2D1_RECT_F m_close_button_rect;
 	D2D1_RECT_F m_right_button_rect;
 	D2D1_RECT_F m_left_button_rect;
+	D2D1_RECT_F m_info_pane_rect;
 	float m_manual_shift;
 	bool m_manual_shift_pressed_r;
 	bool m_manual_shift_pressed_l;
 	bool m_close_button_pressed;
 	HWND m_hWndParent;
+	WCHAR * m_InfoText;
+	size_t m_InfoTextSize;
 
 };
 PULSESCOPE_API void Pulse2Scope(int index, int length, bool low, LPVOID timestamp, LPVOID Param);
+PULSESCOPE_API void WaveInfo2Scope(PULSE_INFO * Info, LPVOID Param);
 PULSESCOPE_API CPulseScope * InitPulseScope(HWND hWndParent);
 PULSESCOPE_API void DeletePulseScope(CPulseScope *);
 void		WINAPI WinThread(void);

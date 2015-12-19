@@ -55,7 +55,8 @@ SPPMAIN_API CSppProcess::CSppProcess() :
     m_PosUpdateCounter(0),
     m_PosUpdateCounterFactor(25),
     m_JoyQual(0),
-    m_vPulsesIndex(0)
+    m_vPulsesIndex(0),
+	m_iPulseMonitor(-1)
 {
     UINT nCh = sizeof(m_Position)/sizeof(m_Position[0]);
     for (UINT i=0; i<nCh; i++)
@@ -99,6 +100,32 @@ SPPMAIN_API bool CSppProcess::RegisterPulseMonitor(int index, bool Register)
     return true;
 }
 
+SPPMAIN_API void CSppProcess::Info2Scope(int BitRate, int isRight, int nChannels)
+{
+	static int br = -1, rCh = -1, nCh = -2;
+	static UINT wr = 0;
+
+	// Use only if scope is active
+	if (m_fPulseMonitor == NULL)
+		return;
+
+	// Test if a change occured
+	if ((wr == m_WaveRate) && (br == BitRate) && (rCh == isRight) && (nCh == nChannels))
+		return;
+
+	// Some chage has occured - update values and call the display function
+	wr = m_WaveRate;
+	br = BitRate;
+	rCh = isRight;
+	nCh = nChannels;
+
+	PULSE_INFO Info;
+	Info.WaveRate = m_WaveRate;
+	Info.BitRate = BitRate;
+	Info.isRight = isRight;
+	Info.nChannels = nChannels;
+	WaveInfo2Scope(&Info, (LPVOID)m_PulseScopeObj);
+}
 
 SPPMAIN_API void CSppProcess::SelectMod(LPCTSTR ModType)
 {
