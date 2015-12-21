@@ -71,23 +71,28 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(ExecutablePath)</ExecutablePath>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,13 +112,20 @@
       </AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>
-      </Message>
+      <Message>Generating Version file</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+    </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -135,22 +147,21 @@
       </AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>Copy /Y Resource.h ..\Include\.
-copy /y "$(SolutionDir)x64\Win7 Debug\vJoyInterface.*"  $(OutDir).</Command>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Copy files</Message>
+      <Message>Generating Version file</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+      <Message>Deleting Version file</Message>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
       </Command>
     </PreLinkEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -172,6 +183,18 @@ copy /y "$(SolutionDir)x64\Win7 Debug\vJoyInterface.*"  $(OutDir).</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generating Version file</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -195,9 +218,23 @@ copy /y "$(SolutionDir)x64\Win7 Debug\vJoyInterface.*"  $(OutDir).</Command>
     <ResourceCompile>
       <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generating Version file</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\SmartPropoPlus.h" />
+    <ClInclude Include="gen_versioninfo.h" />
+    <ClInclude Include="Header.h" />
     <ClInclude Include="SppConfig.h" />
     <ClInclude Include="SppControl.h" />
     <ClInclude Include="SppDbg.h" />

@@ -3,11 +3,22 @@
 // http://www.resedit.net
 
 #include <windows.h>
-//#include <commctrl.h>
-//#include <richedit.h>
-#include "resource.h"
+#include <commctrl.h>
+#include <gen-versioninfo.h>
 
+#ifdef X64
+#define BITNESS_STR					"x64"
+#else
+#define BITNESS_STR					"x86"
+#endif
 
+#ifdef _DEBUG
+#define CONF_STR					"d"
+#else
+#define CONF_STR					""
+#endif
+
+#define PRODVER					PRODVER_TAG " Commit:" PRODVER_SHA1 " Compile:" BITNESS_STR CONF_STR 
 
 
 //
@@ -15,29 +26,30 @@
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 VS_VERSION_INFO VERSIONINFO
-    FILEVERSION     0,4,0,0
-    PRODUCTVERSION  0,4,0,0
-    FILEOS          VOS__WINDOWS32
-    FILETYPE        VFT_DLL
-    FILESUBTYPE     VFT2_UNKNOWN
-    FILEFLAGSMASK   0x0000003F
-    FILEFLAGS       0x00000000
+FILEVERSION     VER_H_, VER_M_, VER_L_, BUILD
+PRODUCTVERSION  0, 4, 0, 1
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_APP
+FILESUBTYPE     VFT2_UNKNOWN
+FILEFLAGSMASK   0x0000003F
+FILEFLAGS       0x00000020
 {
-    BLOCK "StringFileInfo"
-    {
-        BLOCK "040904B0"
-        {
-            VALUE "Comments", "Joystick channels post processor. CCPM filter initiated by Juan Jose Rubio Marin"
-            VALUE "FileDescription", "Joystick channels post processor for SmartPropoPlus"
-            VALUE "FileVersion", "0, 4, 0, 0"
-            VALUE "InternalName", "Filter"
-            VALUE "LegalCopyright", "Copyright (C) 2006-2013"
-            VALUE "OriginalFilename", "Filter.DLL"
-            VALUE "ProductName", "Filters for SmartPropoPlus"
-            VALUE "ProductVersion", PRODVER
-        }
-        BLOCK "0800FDE9"
-        {
+	BLOCK "StringFileInfo"
+	{
+		BLOCK "040904B0"
+		{
+			VALUE "Comments", "Joystick channels post processor. CCPM filter initiated by Juan Jose Rubio Marin"
+			VALUE "CompanyName", "Shaul Eizikovich"
+			VALUE "FileDescription", "Joystick channels post processor for SmartPropoPlus"
+			VALUE "FileVersion", FILEVER
+			VALUE "InternalName", "Filter"
+			VALUE "LegalCopyright", "Copyright © 2006-2015 Shaul Eizikovich"
+			VALUE "OriginalFilename", "Filter.DLL"
+			VALUE "ProductName", "Filters for SmartPropoPlus"
+			VALUE "ProductVersion", PRODVER
+		}
+		BLOCK "0800FDE9"
+		{
             VALUE "Comments", ""
             VALUE "CompanyName", ""
             VALUE "FileDescription", ""

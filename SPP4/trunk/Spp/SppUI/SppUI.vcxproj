@@ -69,18 +69,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)Include;$(IncludePath);$(SolutionDir)SppProcess</IncludePath>
     <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)Include;$(IncludePath);$(SolutionDir)SppProcess</IncludePath>
     <TargetExt>.lib</TargetExt>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.lib</TargetExt>
     <IncludePath>$(SolutionDir)Include;$(SolutionDir)SppProcess;$(IncludePath)</IncludePath>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.lib</TargetExt>
     <IncludePath>$(SolutionDir)Include;$(SolutionDir)SppProcess;$(IncludePath)</IncludePath>
+    <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,7 +101,18 @@
     </Lib>
     <ResourceCompile>
       <ResourceOutputFileName>$(OutDir)$(TargetName).res</ResourceOutputFileName>
+      <PreprocessorDefinitions>_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generating Version file</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -115,7 +130,18 @@
     <ResourceCompile>
       <ShowProgress>true</ShowProgress>
       <ResourceOutputFileName>$(OutDir)$(TargetName).res</ResourceOutputFileName>
+      <PreprocessorDefinitions>_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generating Version file</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -137,6 +163,16 @@
     <ResourceCompile>
       <ResourceOutputFileName>$(OutDir)$(TargetName).res</ResourceOutputFileName>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generating Version file</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -158,6 +194,16 @@
     <ResourceCompile>
       <ResourceOutputFileName>$(OutDir)$(TargetName).res</ResourceOutputFileName>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>$(OutDir)CreateVersion.exe $(ProjectDir)gen-versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Generating Version file</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>Deleting Version file</Message>
+      <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />

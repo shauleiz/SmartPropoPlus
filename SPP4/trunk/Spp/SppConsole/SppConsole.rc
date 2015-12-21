@@ -4,19 +4,30 @@
 
 #include <windows.h>
 #include <commctrl.h>
-//#include <richedit.h>
-#include "resource.h"
+#include <gen-versioninfo.h>
 
+#ifdef X64
+#define BITNESS_STR					"x64"
+#else
+#define BITNESS_STR					"x86"
+#endif
 
+#ifdef _DEBUG
+#define CONF_STR					"d"
+#else
+#define CONF_STR					""
+#endif
+
+#define PRODVER					PRODVER_TAG " Commit:" PRODVER_SHA1 " Compile:" BITNESS_STR CONF_STR 
 
 
 //
 // Version Information resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-1 VERSIONINFO
-    FILEVERSION     0,4,0,1
-    PRODUCTVERSION  0,4,0,1
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION     VER_H_, VER_M_, VER_L_, BUILD
+	PRODUCTVERSION  0,4,0,1
     FILEOS          VOS__WINDOWS32
     FILETYPE        VFT_APP
     FILESUBTYPE     VFT2_UNKNOWN

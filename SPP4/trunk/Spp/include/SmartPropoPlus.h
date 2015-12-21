@@ -89,6 +89,12 @@ extern "C"
 #define	VER_GUI		0x0003030b /* GUI File Version */
 #define	VJOY_MIN_VER	0x202	/* Minimum vJoy version supported */
 
+// Version parts
+#define VER_X_	0
+#define VER_H_	4
+#define VER_M_	0
+#define VER_L_	1
+
 
 #define TX_VOLUME_MIC		5
 #define TX_VOLUME_LINE		5
@@ -164,7 +170,7 @@ extern "C"
 #define SPP_HOME_TITLE		"SmartPropoPlus Home"
 #define	SPP_MAIN_TEXT		"\
 Version %d.%d.%d - Build %s\n\
-Copyright (c) 2005-2012 by Shaul Eizikovich\n\n\
+Copyright (c) 2005-2015 by Shaul Eizikovich\n\n\
 This software is based on SmartPropo by Tsutomu SEKI\n\
 You may use and destribute this program freely.\n\n\
 SmartPropoPlus enables you to connect your R/C transmitter to your computer through \

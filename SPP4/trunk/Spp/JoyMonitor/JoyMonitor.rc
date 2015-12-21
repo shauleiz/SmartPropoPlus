@@ -142,39 +142,3 @@ IDI_JOYMONITOR     ICON           "JoyMonitor.ico"
 
 
 
-//
-// Version Information resources
-//
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-1 VERSIONINFO
-    FILEVERSION     0,4,0,0
-    PRODUCTVERSION  0,4,0,0
-    FILEOS          VOS__WINDOWS32
-    FILETYPE        VFT_APP
-    FILESUBTYPE     VFT2_UNKNOWN
-    FILEFLAGSMASK   0x0000003F
-    FILEFLAGS       0x00000020
-{
-    BLOCK "StringFileInfo"
-    {
-        BLOCK "0000FDE9"
-        {
-            VALUE "Comments", "JoyMonitor - Monitor vJoy devices"
-            VALUE "CompanyName", "Shaul Eizikovich"
-            VALUE "FileDescription", "JoyMonitor"
-            VALUE "FileVersion", "0,4,0,0"
-            VALUE "InternalName", "JoyMonitor.exe"
-            VALUE "LegalCopyright", "Copyright © 2014 Shaul Eizikovich"
-            VALUE "LegalTrademarks", ""
-            VALUE "OriginalFilename", "JoyMonitor.EXE"
-            VALUE "PrivateBuild", "0.0.3.1"
-            VALUE "ProductName", "SmartPropoPlus Application"
-            VALUE "ProductVersion", "0,4,0,0 Build 20140925"
-            VALUE "SpecialBuild", "0.0.0.0"
-        }
-    }
-    BLOCK "VarFileInfo"
-    {
-        VALUE "Translation", 0x0000, 0xFDE9
-    }
-}
