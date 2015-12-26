@@ -412,7 +412,7 @@ HRESULT CPulseScope::OnRender()
 			m_pRenderTarget->DrawLine(D2D1::Point2F(x, 0.0f), D2D1::Point2F(x, rtSize.height), m_pLightSlateGrayBrush, 0.5f);
 
 		// Add text - Time and Voltage
-		hr = StringCchPrintf(textBuffer, tMaxLen, L"%dmS", static_cast<UINT>(x/sqSize));
+		hr = StringCchPrintf(textBuffer, tMaxLen, L"%umS", static_cast<UINT>(x/sqSize));
 		m_pRenderTarget->DrawText(
 			textBuffer,
 			static_cast<UINT>(wcsnlen(textBuffer, ARRAYSIZE(textBuffer))),
@@ -474,6 +474,8 @@ HRESULT CPulseScope::OnRender()
 		// Implement as Path Geometry
 		hr = m_pDirect2dFactory->CreatePathGeometry(&m_pWaveGeometry);
 		hr = m_pWaveGeometry->Open(&pSink);
+		if (hr != S_OK)
+			return hr;
 		pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 		if (m_points && m_npoints>3)
 		{
@@ -875,13 +877,17 @@ void CPulseScope::DisplayRightScrollButton(void)
 
 	ID2D1GeometrySink *pSink = NULL;
 	ID2D1PathGeometry * TriangleRightGeometry;
-	m_pDirect2dFactory->CreatePathGeometry(&TriangleRightGeometry);
+	HRESULT hr = m_pDirect2dFactory->CreatePathGeometry(&TriangleRightGeometry);
+	if (hr != S_OK)
+		return;
 	D2D1_POINT_2F TriangleRightPoints[3] = {
 		D2D1::Point2F(m_right_button_rect.right-5,  (m_right_button_rect.top+m_right_button_rect.bottom)/2),
 		D2D1::Point2F(m_right_button_rect.right-15, (m_right_button_rect.top+m_right_button_rect.bottom)/2-10),
 		D2D1::Point2F(m_right_button_rect.right-15, (m_right_button_rect.top+m_right_button_rect.bottom)/2+10)
 	};
-	TriangleRightGeometry->Open(&pSink);
+	hr = TriangleRightGeometry->Open(&pSink);
+	if (hr != S_OK)
+		return;
 	pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 	pSink->BeginFigure(
 		D2D1::Point2F(m_right_button_rect.right-5, (m_right_button_rect.bottom+m_right_button_rect.top)/2),
@@ -902,13 +908,18 @@ void CPulseScope::DisplayLeftScrollButton(void)
 
 	ID2D1GeometrySink *pSink = NULL;
 	ID2D1PathGeometry * TriangleLeftGeometry;
-	m_pDirect2dFactory->CreatePathGeometry(&TriangleLeftGeometry);
+	HRESULT hr = m_pDirect2dFactory->CreatePathGeometry(&TriangleLeftGeometry);
+	if (hr != S_OK)
+		return;
 	D2D1_POINT_2F TriangleLeftPoints[3] = {
 		D2D1::Point2F(m_left_button_rect.left+5, (m_left_button_rect.top+m_left_button_rect.bottom)/2),
 		D2D1::Point2F(m_left_button_rect.left+15, (m_left_button_rect.top+m_left_button_rect.bottom)/2-10),
 		D2D1::Point2F(m_left_button_rect.left+15, (m_left_button_rect.top+m_left_button_rect.bottom)/2+10)
 	};
-	TriangleLeftGeometry->Open(&pSink);
+	hr = TriangleLeftGeometry->Open(&pSink);
+	if (hr != S_OK)
+		return;
+
 	pSink->SetFillMode(D2D1_FILL_MODE_WINDING);
 	pSink->BeginFigure(
 		D2D1::Point2F(m_left_button_rect.left+5, (m_left_button_rect.top+m_left_button_rect.bottom)/2),

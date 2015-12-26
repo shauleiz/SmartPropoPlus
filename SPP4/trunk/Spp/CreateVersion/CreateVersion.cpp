@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
 	FILE * f;
 	errno_t err = fopen_s(&f, filename, "w+");
-	if (err)
+	if (err || !f)
 	{
 		fprintf(stderr, "Could not oupen output file name (errno=%d)\n", err);
 		exit(-6);

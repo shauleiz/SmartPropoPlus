@@ -11,7 +11,7 @@
 CSppConfig::CSppConfig(LPTSTR FileName) 
 {
 	HRESULT hr = S_OK;
-	PWSTR path;
+	PWSTR path = NULL;
 	wstring w_full_path;
 	string full_path;
 	bool loaded, saved;
@@ -20,6 +20,9 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	lock_guard<recursive_mutex> lock(m_mx_General);
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
+	if (hr != S_OK)
+		return;
+
 	// TEST Only path = L"C:\\תיקיית ניסיון";
 	w_full_path = path;
 	m_filename = w_full_path + TEXT("\\") + DEF_CONF_DIR + TEXT("\\") + FileName;

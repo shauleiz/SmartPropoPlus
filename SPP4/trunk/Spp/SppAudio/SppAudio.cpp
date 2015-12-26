@@ -352,9 +352,13 @@ HRESULT	CSppAudio::Enumerate(void)
 	{
 		// Get pointer to endpoint number iEndPoint.
 		hr = m_pCaptureDeviceCollect->Item(iEndPoint, &pDevice);
+		if (FAILED(hr))
+			pDevice = NULL;
 		EXIT_ON_ERROR(hr);
 
 		hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+		if (FAILED(hr))
+			pProps = NULL;
 		EXIT_ON_ERROR(hr);
 
 		// Initialize container for property value.
@@ -575,7 +579,7 @@ bool	CSppAudio::IsCaptureDevice(PVOID Id)
 {
 	IMMEndpoint * pEndpoint = NULL;
 	IMMDevice *pDevice = NULL;
-	EDataFlow dataflow;
+	EDataFlow dataflow = eRender;
 	bool result = false;
 
 	// Get device by ID
@@ -584,6 +588,7 @@ bool	CSppAudio::IsCaptureDevice(PVOID Id)
 	{
 		//LogStatus(ISCAP_IDNOTFOUND,WARN,Id,m_LogParam);
 		LogMessageWithId(WARN, IDS_W_ISCAP_IDNOTFOUND, Id);
+		pDevice = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -597,8 +602,8 @@ bool	CSppAudio::IsCaptureDevice(PVOID Id)
 	};
 
 	// Sanity chack
-	pEndpoint->GetDataFlow(&dataflow);
-	if (dataflow != eCapture)
+	hr = pEndpoint->GetDataFlow(&dataflow);
+	if ((!FAILED(hr) &&dataflow != eCapture) || FAILED(hr))
 		EXIT_ON_ERROR(hr);
 
 	result = true;
@@ -628,6 +633,7 @@ bool	CSppAudio::IsExternal(PVOID Id)
 	if (FAILED(hr))
 	{
 		//LogStatus(ISEXT_IDNOTFOUND,WARN,Id,m_LogParam);
+		pDevice = NULL;
 		LogMessageWithId(WARN, IDS_W_ISEXT_IDNOTFOUND, Id);
 		EXIT_ON_ERROR(hr);
 	};
@@ -638,6 +644,7 @@ bool	CSppAudio::IsExternal(PVOID Id)
 	{
 		//LogStatus(ISEXT_TOPO,WARN,Id,m_LogParam);
 		LogMessageWithId(WARN, IDS_W_ISEXT_TOPO, Id);
+		pDeviceTopology = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 		
@@ -648,6 +655,7 @@ bool	CSppAudio::IsExternal(PVOID Id)
 	{
 		//LogStatus(ISEXT_NOCONN,WARN,Id,m_LogParam);
 		LogMessageWithId(WARN, IDS_W_ISEXT_NOCONN, Id);
+		pConnFrom = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -658,6 +666,8 @@ bool	CSppAudio::IsExternal(PVOID Id)
         // The adapter device is not currently active.
         hr = E_NOINTERFACE;
     }
+	if FAILED(hr)
+		pConnTo = NULL;
     EXIT_ON_ERROR(hr);
 
 	hr = pConnTo->GetType(&Type);
@@ -759,11 +769,15 @@ SPPINTERFACE_API HRESULT CSppAudio::GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJ
     // Get the endpoint device's IDeviceTopology interface.
     hr = pDevice->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL,
                            NULL, (void**)&pDeviceTopology);
+	if (FAILED(hr))
+		pDeviceTopology = NULL;
     EXIT_ON_ERROR(hr)
 
     // The device topology for an endpoint device always
     // contains just one connector (connector number 0).
     hr = pDeviceTopology->GetConnector(0, &pConnFrom);
+	if (FAILED(hr))
+		pConnFrom = NULL;
     EXIT_ON_ERROR(hr)
 
     // Step across the connection to the jack on the adapter.
@@ -773,7 +787,9 @@ SPPINTERFACE_API HRESULT CSppAudio::GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJ
         // The adapter device is not currently active.
         hr = E_NOINTERFACE;
     }
-    EXIT_ON_ERROR(hr)
+	if (FAILED(hr))
+		pConnTo = NULL;
+	EXIT_ON_ERROR(hr)
 
     // Get the connector's IPart interface.
     hr = pConnTo->QueryInterface(__uuidof(IPart), (void**)&pPart);
@@ -860,6 +876,7 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_DEVPEAK_IDNOTFOUND, Id, GetWasapiText(hr));
 		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
 		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		pDevice = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -872,6 +889,7 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 			LogMessage(WARN, IDS_W_DEVPEAK_ACTCLNT);
 			LogMessageWithId(WARN, IDS_W_DEVPEAK_ACTCLNT, Id, GetWasapiText(hr));
 		}
+		pAudioClient = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -883,6 +901,7 @@ SPPINTERFACE_API int CSppAudio::GetNumberChannels(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_DEVPEAK_MXFRMT, Id, GetWasapiText(hr));
 		//LogStatus(DEVPEAK_MXFRMT,WARN,Id,m_LogParam);
 		//LogStatus(DEVPEAK_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
+		pwfx = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -986,6 +1005,7 @@ bool 	CSppAudio::AddCaptureDevice(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_ADDDEV_IDNOTFOUND, Id,GetWasapiText(hr));
 		//LogStatus(ADDDEV_IDNOTFOUND,WARN,Id,m_LogParam);
 		//LogStatus(ADDDEV_IDNOTFOUND,WARN,m_LogParam);
+		pDevice = NULL;
 		goto bad_exit;
 	};
 
@@ -1009,6 +1029,7 @@ bool 	CSppAudio::AddCaptureDevice(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_ADDDEV_PROP, Id,GetWasapiText(hr));
 		//LogStatus(ADDDEV_PROP,WARN,Id,m_LogParam);
 		//LogStatus(ADDDEV_PROP,WARN,GetWasapiText(hr),m_LogParam);
+		pProps = NULL;
 		goto bad_exit;
 	};
 
@@ -1167,6 +1188,7 @@ float CSppAudio::GetChannelPeak(PVOID Id, int iChannel)
 		LogMessageWithId(WARN, IDS_W_CHPEAK_IDNOTFOUND,Id, GetWasapiText(hr));
 		//LogStatus(CHPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
 		//LogStatus(CHPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		pDevice = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1179,6 +1201,7 @@ float CSppAudio::GetChannelPeak(PVOID Id, int iChannel)
 		LogMessageWithId(WARN, IDS_W_CHPEAK_ACTCLNT,Id, GetWasapiText(hr));
 		//LogStatus(CHPEAK_ACTCLNT,WARN,Id,m_LogParam);
 		//LogStatus(CHPEAK_ACTCLNT,WARN,GetWasapiText(hr),m_LogParam);
+		pAudioClient = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1189,6 +1212,7 @@ float CSppAudio::GetChannelPeak(PVOID Id, int iChannel)
 		LogMessageWithId(WARN, IDS_W_CHPEAK_MXFRMT,Id, GetWasapiText(hr));
 		//LogStatus(CHPEAK_MXFRMT,WARN,Id,m_LogParam);
 		//LogStatus(CHPEAK_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
+		pwfx = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1212,6 +1236,7 @@ float CSppAudio::GetChannelPeak(PVOID Id, int iChannel)
 		LogMessageWithId(WARN, IDS_W_CHPEAK_ACTMTR,Id, GetWasapiText(hr));
 		//LogStatus(CHPEAK_ACTMTR,WARN,Id,m_LogParam);
 		//LogStatus(CHPEAK_ACTMTR,WARN,GetWasapiText(hr),m_LogParam);
+		pMeterInfo = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1279,6 +1304,7 @@ double CSppAudio::GetDevicePeak(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_DEVPEAK_IDNOTFOUND,Id, GetWasapiText(hr));
 		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,Id,m_LogParam);
 		//LogStatus(DEVPEAK_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		pDevice = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1290,6 +1316,7 @@ double CSppAudio::GetDevicePeak(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_DEVPEAK_ACTCLNT,Id, GetWasapiText(hr));
 		//LogStatus(DEVPEAK_ACTCLNT,WARN,Id,m_LogParam);
 		//LogStatus(DEVPEAK_ACTCLNT,WARN,GetWasapiText(hr),m_LogParam);
+		pAudioClient = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1300,6 +1327,7 @@ double CSppAudio::GetDevicePeak(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_DEVPEAK_MXFRMT,Id, GetWasapiText(hr));
 		//LogStatus(DEVPEAK_MXFRMT,WARN,Id,m_LogParam);
 		//LogStatus(DEVPEAK_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
+		pwfx = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1325,6 +1353,7 @@ double CSppAudio::GetDevicePeak(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_DEVPEAK_ACTMTR,Id, GetWasapiText(hr));
 		//LogStatus(DEVPEAK_ACTMTR,WARN,Id,m_LogParam);
 		//LogStatus(DEVPEAK_ACTMTR,WARN,GetWasapiText(hr),m_LogParam);
+		pMeterInfo = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1481,7 +1510,7 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 {
 	HRESULT hr=S_OK;
 	IMMDevice * pDevice = NULL;
-	WAVEFORMATEX  *outFormat;
+	WAVEFORMATEX  *outFormat = NULL;
 	WAVEFORMATEX *pwfx = NULL;
 
 	// Sanity check
@@ -1501,6 +1530,7 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_INITEP_IDNOTFOUND,Id, GetWasapiText(hr));
 		//LogStatus(INITEP_IDNOTFOUND,WARN,Id,m_LogParam);
 		//LogStatus(INITEP_IDNOTFOUND,WARN,GetWasapiText(hr),m_LogParam);
+		pDevice = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1522,6 +1552,7 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 		LogMessageWithId(WARN, IDS_W_INITEP_MXFRMT,Id, GetWasapiText(hr));
 		//LogStatus(INITEP_MXFRMT,WARN,Id,m_LogParam);
 		//LogStatus(INITEP_MXFRMT,WARN,GetWasapiText(hr),m_LogParam);
+		pwfx = NULL;
 		EXIT_ON_ERROR(hr);
 	};
 
@@ -1561,10 +1592,12 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 			LogMessageWithId(ERR, IDS_E_INITEP_FRMTSUP,Id, GetWasapiText(hr));
 			//LogStatus(INITEP_FRMT1,ERR,Id,m_LogParam);
 			//LogStatus(INITEP_FRMT1,ERR,GetWasapiText(hr),m_LogParam);
+			pwfx = outFormat = NULL;
 			EXIT_ON_ERROR(hr);
 		};
 	};
 
+#pragma warning( disable : 6102 )
 	// Initialize the endpoint 
 	hr = m_pAudioClient->Initialize(
 		AUDCLNT_SHAREMODE_SHARED,			// shared mode
@@ -1582,6 +1615,7 @@ HRESULT CSppAudio::InitEndPoint(PVOID Id)
 		EXIT_ON_ERROR(hr);
 	};
 	// Note: AUDCLNT_E_DEVICE_IN_USE == 0x8889000a;
+#pragma warning( default : 6102 )
 
 
 	//  sets the event handle that the system signals when an audio buffer is ready to be processed by the client.
@@ -1676,6 +1710,7 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		return S_FALSE;
 	};
 
+#pragma warning( disable : 6102 )
 
 	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL, m_LogAudioParam);
 	UINT32 pad=0;
@@ -1690,8 +1725,11 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 			m_pCaptureClient->ReleaseBuffer(packetLength);
 			LogMessage(ERR, IDS_E_PROCPACK_GETBUF, GetWasapiText(hr));
 			//LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr),m_LogParam);
+			packetLength = NULL;
 			return hr;
 		}; 
+
+#pragma warning( default : 6102 )
 
 		// Detect glitch in data (Unused in Vista)
 		if (flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
@@ -1785,7 +1823,7 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 
 
 	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL, m_LogAudioParam);
-
+#pragma warning( disable : 6102 )
 	// Get pointer to next data packet in capture buffer.
 	pDataIn = 0;
 	flags = 0;
@@ -1795,8 +1833,10 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 		m_pCaptureClient->ReleaseBuffer(packetLength);
 		LogMessage(ERR, IDS_E_PROCPACK_GETBUF, GetWasapiText(hr));
 		//LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr),m_LogParam);
+		packetLength = NULL;
 		return hr;
 	};
+#pragma warning( default : 6102 )
 
 	// If debugging required then send the buffer content for debugging
 	if (m_DbgInputSignal && m_hPrntWnd)
@@ -1832,6 +1872,7 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 		// In case of failure - continue
 		LogMessage(ERR, IDS_E_PROCPACK_RLS, GetWasapiText(hr));
 		//LogStatus(PROCPACK_RLS,ERR,GetWasapiText(hr),m_LogParam);
+		packetLength = NULL;
 		return hr;
 	};
 
