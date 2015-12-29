@@ -14,7 +14,7 @@
 #define DllX64Folder ".\Externals\x64"
 #define SppIconFile "..\SppUI\SppControl.ico"
 #define SppExec "SppConsole.exe"
-#define vJoyInstaller "vJoyInstall.exe"
+#define vJoyInstaller "vJoySetup.exe"
 
 ; Get product version from the exectutable
 #define SrcExe Src64Folder+"\"+SppExec
@@ -35,7 +35,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 CreateAppDir=true
 OutputDir=.
-OutputBaseFilename=Spp4Installer
+OutputBaseFilename=SppSetup
 SetupIconFile=.\Installer.ico
 UninstallDisplayIcon={app}\UnInstaller.ico
 Compression=lzma/Max
@@ -43,10 +43,10 @@ SolidCompression=true
 DefaultDirName={pf}\{#MyShortAppName}
 DefaultGroupName={#MyShortAppName}
 VersionInfoCompany=Shaul Eizikovich
-AppCopyright=Copyright (c) 2005-2014 by Shaul Eizikovich
+AppCopyright=Copyright (c) 2005-2015 by Shaul Eizikovich
 MinVersion = 6.0.6000sp2
-;SignTool=Sig sign /a /v /s My /t http://timestamp.digicert.com $f
-;SignedUninstaller=yes
+SignTool=sig sign /a /v /i DigiCert /t http://timestamp.digicert.com $f
+SignedUninstaller=yes
 DisableDirPage=no
 DisableProgramGroupPage=no
 DisableReadyMemo=no
@@ -84,7 +84,7 @@ Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#SppExec}" ; WorkingDir: "
 ;Filename: "{code:vJoyUnInstaller}";  Parameters: "/LOG /silent " ; StatusMsg: "Uninstalling vJoy device"; Flags: waituntilterminated
 
 [Run]
-Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /SILENT /NORESTART /SUPPRESSMSGBOXES  /COMPONENTS=""Apps\vJoyFeeder,Apps\vJoyMon"" "  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
+Filename: "{app}\{#vJoyInstaller}";  Parameters: "/LOG /VERYSILENT /SUPPRESSMSGBOXES  /COMPONENTS=""Apps\vJoyFeeder,Apps\vJoyMon"" "  ; WorkingDir: "{app}"; Flags: waituntilterminated RunHidden; StatusMsg: "Installing vJoy device"
 Filename: "{app}\{#SppExec}";  Flags: nowait postinstall
 
 [Registry]
