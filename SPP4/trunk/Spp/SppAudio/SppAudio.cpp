@@ -1738,7 +1738,8 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 			hr = AUDCLNT_E_BUFFER_ERROR;
 			LogMessage(WARN, IDS_W_PROCPACK_DISC, GetWasapiText(hr));
 			//LogStatus(PROCPACK_DISC,WARN,GetWasapiText(hr),m_LogParam);
-			return 	hr;
+			//return 	hr;
+			hr = S_OK;
 		};
 
 
@@ -1850,7 +1851,8 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 		hr = AUDCLNT_E_BUFFER_ERROR;
 		LogMessage(WARN, IDS_W_PROCPACK_DISC, GetWasapiText(hr));
 		//LogStatus(PROCPACK_DISC,WARN,GetWasapiText(hr),m_LogParam);
-		return 	hr;
+		//return 	hr;
+		hr = S_OK;
 	};
 
 
