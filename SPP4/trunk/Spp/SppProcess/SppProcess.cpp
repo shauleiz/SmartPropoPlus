@@ -106,7 +106,7 @@ SPPMAIN_API void CSppProcess::Info2Scope(int BitRate, int isRight, int nChannels
 	static UINT wr = 0;
 
 	// Use only if scope is active
-	if (m_fPulseMonitor == NULL)
+	if (m_fPulseMonitor == NULL || m_PulseScopeObj == NULL)
 		return;
 
 	// Test if a change occured
