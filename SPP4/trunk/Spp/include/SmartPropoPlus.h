@@ -20,6 +20,7 @@ extern "C"
 #define MOD_TYPE_PPMP	_T("PPMPOS")
 #define MOD_TYPE_PPMN	_T("PPMNEG")
 #define MOD_TYPE_PPMW	_T("PPMW")
+#define MOD_TYPE_PPMT	_T("PPMT9X")
 #define MOD_TYPE_JR 	_T("JR")
 #define MOD_TYPE_FUT	_T("FUT")
 #define MOD_TYPE_AIR1	_T("AIR1")
@@ -30,6 +31,7 @@ extern "C"
 #define MOD_NAME_PPMP	_T("Positive")
 #define MOD_NAME_PPMN	_T("Negative")
 #define MOD_NAME_PPMW	_T("Walkera")
+#define MOD_NAME_PPMT	_T("Turnigy 9X")
 #define MOD_NAME_JR 	_T("JR/Graupner")
 #define MOD_NAME_FUT	_T("Futaba")
 #define MOD_NAME_AIR1	_T("Sanwa/Airtronics [1]")
@@ -40,6 +42,7 @@ extern "C"
 #define MOD_FNAME_PPMP	_T("PPM (Positive)")
 #define MOD_FNAME_PPMN	_T("PPM (Negative)")
 #define MOD_FNAME_PPMW	_T("PPM (Walkera)")
+#define MOD_FNAME_PPMT	_T("PPM (Turnigy 9X)")
 #define MOD_FNAME_JR 	_T("PCM - JR/Graupner")
 #define MOD_FNAME_FUT	_T("PCM - Futaba")
 #define MOD_FNAME_AIR1	_T("PCM - Sanwa/Airtronics [1]")
@@ -52,6 +55,7 @@ extern "C"
 						MOD_TYPE_PPMP, MOD_NAME_PPMP,\
 						MOD_TYPE_PPMN, MOD_NAME_PPMN,\
 						MOD_TYPE_PPMW, MOD_NAME_PPMW,\
+						MOD_TYPE_PPMT, MOD_NAME_PPMT,\
 						MOD_TYPE_JR,  MOD_NAME_JR,\
 						MOD_TYPE_FUT, MOD_NAME_FUT,\
 						MOD_TYPE_AIR1,MOD_NAME_AIR1,\

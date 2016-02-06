@@ -140,6 +140,8 @@ private:
     void ProcessPulseWK2401Ppm(int width, BOOL input);
     void ProcessPulseFutabaPpm(int width, BOOL input);
     void ProcessPulseJrPpm(int width, BOOL input);
+	void ProcessPulseTurnigy9XPpm(int width, BOOL input);
+
 
     void SendPPJoy(int nChannels, int *Channel);
     int RunJsFilter(int * ch, int nChannels);
