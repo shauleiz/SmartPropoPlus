@@ -131,7 +131,7 @@ void SppDbg::InputSignalReady(PBYTE buffer, PVOID info)
 	sInputSig = (InputSignalStruct *)info;
 
 	// Print packet header
-	fprintf(m_FileDbgInSig,  "\n>>> Packet %d, nCh %d, Bits %d, Frames %d\n",  sInputSig->dwCount, sInputSig->nChannels, sInputSig->wBitsPerSample,sInputSig->bSize);
+	fprintf(m_FileDbgInSig,  "\n>>> Packet %u, nCh %u, Bits %u, Frames %u\n",  sInputSig->dwCount, sInputSig->nChannels, sInputSig->wBitsPerSample,sInputSig->bSize);
 
 	// Print 32 frames per line.
 	// If 8-bit samples then print two-digit Hex
@@ -191,7 +191,7 @@ void SppDbg::PulseReady(PVOID buffer, UINT ArraySize)
 	DbgPulseInfo * sPulseInfo = (DbgPulseInfo *)buffer;
 
 	// Print Pulse data
-	fprintf(m_FileDbgPulse,  "\n>>> Pulse length (Raw/Normalized): %d/%d, ", sPulseInfo->RawPulse,  sPulseInfo->NormPulse);
+	fprintf(m_FileDbgPulse,  "\n>>> Pulse length (Raw/Normalized): %u/%u, ", sPulseInfo->RawPulse,  sPulseInfo->NormPulse);
 	if (sPulseInfo->negative)
 		fprintf(m_FileDbgPulse,  "Low\n");
 	else
@@ -208,7 +208,7 @@ void SppDbg::PulseReady(PVOID buffer, UINT ArraySize)
 			fprintf(m_FileDbgPulse,  ">> %3d,  ", line++);
 		row++;
 
-		fprintf(m_FileDbgPulse,  "%06d", Samples[i]);
+		fprintf(m_FileDbgPulse,  "%06u", Samples[i]);
 		if (row == 16)
 		{
 			fprintf(m_FileDbgPulse,"\n");

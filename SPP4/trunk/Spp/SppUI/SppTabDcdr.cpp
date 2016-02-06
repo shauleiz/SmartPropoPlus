@@ -124,9 +124,9 @@ void SppTabDcdr::AddLine2DcdrList(MOD * mod, LPCTSTR SelType)
 			// Select list item
 			SendMessage(hPPMList, LB_SETCURSEL , pos, 0);
 			// Get a handle to the parent window
-			LPCTSTR mod = (LPCTSTR)SendMessage(hPPMList, LB_GETITEMDATA, pos, NULL);
+			LPCTSTR s_mod = (LPCTSTR)SendMessage(hPPMList, LB_GETITEMDATA, pos, NULL);
 			// Set new decoder
-			SendMessage(m_TopDlgWnd, WMSPP_DLG_MOD, (WPARAM)mod, 0);
+			SendMessage(m_TopDlgWnd, WMSPP_DLG_MOD, (WPARAM)s_mod, 0);
 
 		}
 	}
@@ -143,9 +143,9 @@ void SppTabDcdr::AddLine2DcdrList(MOD * mod, LPCTSTR SelType)
 			// Select list item
 			SendMessage(hPCMList, LB_SETCURSEL , pos, 0);
 			// Get a handle to the parent window
-			LPCTSTR mod = (LPCTSTR)SendMessage(hPCMList, LB_GETITEMDATA, pos, NULL);
+			LPCTSTR s_mod = (LPCTSTR)SendMessage(hPCMList, LB_GETITEMDATA, pos, NULL);
 			// Set new decoder
-			SendMessage(m_TopDlgWnd, WMSPP_DLG_MOD, (WPARAM)mod, 0);
+			SendMessage(m_TopDlgWnd, WMSPP_DLG_MOD, (WPARAM)s_mod, 0);
 		}
 	};
 }

@@ -133,7 +133,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WM_INTERSPPAPPS		= RegisterWindowMessage(INTERSPPAPPS);
 	if (!WM_INTERSPPAPPS)
 	{
-		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_INTERSPPAPPS, WM_INTERSPPAPPS);
+		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_INTERSPPAPPS, static_cast<INT>(WM_INTERSPPAPPS));
 		::MessageBox(NULL,msg, SPP_MSG , MB_SYSTEMMODAL);
 		return -1;
 	};
@@ -1162,7 +1162,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 		// Update Audio
 		if (jack.Default)
 		{
-			UINT BitRate = Conf->GetAudioDeviceBitRate(jack.id);
+			BitRate = Conf->GetAudioDeviceBitRate(jack.id);
 			std::wstring Channel = Conf->GetAudioDeviceChannel(jack.id);
 			if (!BitRate)
 				BitRate = DEF_BITRATE;
@@ -1765,7 +1765,7 @@ void thMonitor(bool * KeepAlive)
 // send message with version (as UINT: 00aabbcc = aa.bb.cc) to dialog box
 UINT vJoyDevicesVersion(HWND hDlg)
 {
-	UINT Major, Mid, Minor, Ver;
+	INT Major, Mid, Minor, Ver;
 	LPTSTR str = (LPTSTR)GetvJoySerialNumberString();
 	if (!str || (_tcslen(str) < 5))
 		return 0;
