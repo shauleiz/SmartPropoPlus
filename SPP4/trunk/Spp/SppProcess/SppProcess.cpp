@@ -1555,6 +1555,129 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
   */
  void  CSppProcess::ProcessPulseTurnigy9XPpm(int width, BOOL input)
  {
+	 
+		 static int sync = 0;
+
+		 int newdata;				/* Current width in joystick values */
+		 static int data[14];		/* Array of pulse widthes in joystick values */
+		 static int datacount = 0;	/* pulse index (corresponds to channel index) */
+		 static int former_sync = 0;
+		 static bool prev_sep = false;
+		 char tbuffer[9];
+		 static int i = 0;
+		 static int PrevWidth[14];	/* array of previous width values */
+		 static int last_separator_width = 0; /* Added to sypport PPM for Turngy 9x */
+
+		 if (width < PPM_GLITCH)
+			 return;
+
+		 if (gDebugLevel >= 2 && gCtrlLogFile && !(_strtime_s(tbuffer, 10))/*&& !(i++%50)*/)
+			 fprintf(gCtrlLogFile, "\n%s - ProcessPulsePpm(width=%d, input=%d)", tbuffer, width, input);
+
+		 /* If pulse is a separator then go to the next one */
+		 if (width < PPM_SEP || former_sync)
+		 {
+			 prev_sep = true;
+			 former_sync = 0;
+			 return;
+			 last_separator_width = width;   /* Added to sypport PPM for Turngy 9x */
+		 };
+
+		 // Two separators in a row is an error - resseting
+		 if ((width < PPM_SEP) && prev_sep)
+		 {
+			 prev_sep = true;
+			 m_nChannels = 0;
+			 datacount = 0;
+			 return;
+		 };
+
+
+		 /* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
+		 if (/*sync == 0 && */width > PPM_TRIG) {
+			 sync = 1;
+			 if (datacount)
+				 m_PosUpdateCounter++;
+			 m_nChannels = datacount;
+			 datacount = 0;
+			 former_sync = 1;
+			 prev_sep = false;
+			 return;
+		 }
+
+		 if (!sync)
+			 return; /* still waiting for sync */
+
+					 // Two long pulse in a row is an error - resseting
+		 if (width > PPM_SEP)
+		 {
+			 if (!prev_sep)
+			 {
+				 m_nChannels = 0;
+				 datacount = 0;
+				 prev_sep = false;
+				 return;
+			 }
+			 else
+				 prev_sep = false;
+		 };
+
+		 // Cancel jitter
+		 if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
+			 width = PrevWidth[datacount];
+		 PrevWidth[datacount] = width;
+
+
+		 /* convert pulse width in samples to joystick position values (newdata)
+		 joystick position of 0 correspond to width over 100 samples (2.25mSec)
+		 joystick position of 1023 correspond to width under 30 samples (0.68mSec)*/
+		 if (input || m_JsChPostProc_selected != -1)
+			 newdata = (int)(1024 - (width + last_separator_width - 192.0) / (192.0) * 1024); /* JR */
+		 else
+			 newdata = (int)((width + last_separator_width - 192.0) / (192.0) * 1024);		/* Futaba */
+
+
+																							/* Trim values into 0-1023 boundries */
+		 if (newdata < 0) newdata = 0;
+		 else if (newdata > 1023) newdata = 1023;
+
+		 /* Update data - do not allow abrupt change */
+		 if (data[datacount] - newdata > 100) data[datacount] -= 100;
+		 else if (newdata - data[datacount] > 100) data[datacount] += 100;
+		 else data[datacount] = (data[datacount] + newdata) / 2;
+
+
+		 //if (input|| m_JsChPostProc_selected!=-1)
+		 m_Position[datacount] = data[datacount];	/* JR - Assign data to joystick channels */
+													//else
+													//	switch (datacount)
+													//{ // Futaba
+													//case 0: 	m_Position[1]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 1: 	m_Position[2]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 2: 	m_Position[0]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 3: 	m_Position[3]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 4: 	m_Position[4]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 5: 	m_Position[5]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 6: 	m_Position[6]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 7: 	m_Position[7]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 8: 	m_Position[8]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 9: 	m_Position[9]  = data[datacount];	break;/* Assign data to joystick channels */
+													//case 10: 	m_Position[10] = data[datacount];	break;/* Assign data to joystick channels */
+													//case 11: 	m_Position[11] = data[datacount];	break;/* Assign data to joystick channels */
+													//};
+
+													// Send Position and number of channels to the virtual joystick
+		 SendPPJoy(m_nChannels, m_Position);
+
+		 if (gDebugLevel >= 3 && gCtrlLogFile /*&& !(i++%50)*/)
+			 fprintf(gCtrlLogFile, " data[%d]=%d", datacount, data[datacount]);
+
+		 if (datacount == 11)
+			 sync = 0;			/* Reset sync after channel 12 */
+
+		 datacount++;
+		 return;
+
  }
 
  /*
