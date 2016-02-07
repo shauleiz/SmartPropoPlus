@@ -10,8 +10,8 @@
 #include "SmartPropoPlus.h"
 #include "vJoyInterface.h"
 #include "public.h"
-#include "..\SppAudio\SppAudio.h" // TODO: This is ugly. Fix it.
-#include "..\PulseScope\PulseScope.h"	 // TODO: This is ugly. Fix it.
+#include "SppAudio.h" 
+#include "PulseScope.h"
 #include "WinMessages.h"
 #include "SppProcess.h"
 #include <crtdbg.h>
@@ -1343,7 +1343,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     //};
                 
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(m_nChannels, m_Position);
+    Send2vJoy(m_nChannels, m_Position);
 
     if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
         fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -1438,7 +1438,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     //};
             
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(11, m_Position);
+    Send2vJoy(11, m_Position);
 
     if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
         fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -1530,7 +1530,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     //};
                 
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(11, m_Position);
+    Send2vJoy(11, m_Position);
 
     if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
 
@@ -1608,7 +1608,7 @@ void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
     m_Position[datacount] = data[datacount];	/* Assign data to joystick channels */
 
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(11, m_Position);
+    Send2vJoy(11, m_Position);
 
     if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
         fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -1806,7 +1806,7 @@ void CSppProcess::ProcessPulseFutabaPcm(int width, BOOL input)
         case 32: sync = 0;/* End of odd frame. Wait for sync */
             
         m_nChannels = 10;  // Fixed number of channels
-        SendPPJoy(m_nChannels, m_Position);
+        Send2vJoy(m_nChannels, m_Position);
     };
 
     return;
@@ -1865,7 +1865,7 @@ void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
         case 30: sync = 0;
             
         m_nChannels = 8; // Fixed number of channels
-        SendPPJoy(m_nChannels, m_Position);
+        Send2vJoy(m_nChannels, m_Position);
     };
 
      return;
@@ -1936,7 +1936,7 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 
 
                 
-                SendPPJoy(fixed_n_channel, m_Position);
+                Send2vJoy(fixed_n_channel, m_Position);
 
                 
             };
@@ -2028,7 +2028,7 @@ void CSppProcess::ProcessPulseAirPcm2(int width, BOOL input)
                 m_Position[5] = smooth(m_Position[5], Convert20bits(data[5])); // Flaps		(Ch6)
 
                 m_nChannels = 6;
-                SendPPJoy(m_nChannels, m_Position);
+                Send2vJoy(m_nChannels, m_Position);
 
                 if (width<420 && width>390)
                     m_PosUpdateCounter++;
@@ -2156,7 +2156,7 @@ void CSppProcess::ProcessPulseWalPcm(int width, BOOL input)
         };
         nPulse = 0;
 
-                SendPPJoy(fixed_n_channel, m_Position);
+                Send2vJoy(fixed_n_channel, m_Position);
     };
     return;
 }
@@ -2556,9 +2556,8 @@ _inline double  CSppProcess::CalcThreshold(int value)
     return(threthold); 
 }
 
-// TODO: Rename to Send2vJoy
 // TODO: Normalize the calling functions to the range 0-32K
-void CSppProcess::SendPPJoy(int nChannels, int * Channel)
+void CSppProcess::Send2vJoy(int nChannels, int * Channel)
 {
     BOOL writeOk;
     UINT rID = m_vJoyDeviceId;

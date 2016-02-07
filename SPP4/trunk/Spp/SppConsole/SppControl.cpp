@@ -13,8 +13,8 @@
 #include "SppProcess.h"
 #include "SppConfig.h"
 #include "SppControl.h"
-#include "..\SppUI\SppDlg.h"  // TODO: Fix the Include path
-#include "..\SppUI\SppLog.h"  // TODO: Fix the Include path					
+#include "SppDlg.h"
+#include "SppLog.h"					
 #include "SppDbg.h"
 #include "WinMessages.h"
 #include "..\vJoyMonitor\vJoyMonitor.h"
@@ -608,7 +608,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_SCAN:
 			if (Spp)
 				// Start (TRUE), search until detection (FALSE), or until timeout (3000mS)
-				Spp->SetDecoderScanning(TRUE, FALSE, 3000); // TODO: Replace 3000 with defined constant
+				Spp->SetDecoderScanning(TRUE, FALSE, DECODER_TIMEOUT);
 			break;
  
         default: 
@@ -1261,7 +1261,6 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 
 
-	// TODO: Recompile DLL without MFC
 
 	// TODO: Release former library
 

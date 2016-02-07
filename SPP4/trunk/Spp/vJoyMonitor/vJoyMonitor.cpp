@@ -146,8 +146,8 @@ set m_ctPoll:
 */
 
 #include "stdafx.h"
-#include "..\include\WinMessages.h"      // TODO: This is ugly. Fix it.
-#include "..\include\SmartPropoPlus.h"	 // TODO: This is ugly. Fix it.
+#include "WinMessages.h"      
+#include "SmartPropoPlus.h"	
 #include "vJoyMonitor.h"
 
 // Forward Declarations
