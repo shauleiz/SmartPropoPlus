@@ -28,7 +28,6 @@ class CSppConfig * Conf = NULL;
 class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
-class CPulseScope * PulseScopeObj = NULL;
 class SppDlg *	Dialog = NULL;
 class CSppProcess * Spp = NULL;
 LPCTSTR AudioId = NULL;
@@ -660,14 +659,23 @@ bool		AppExit(void)
 	if (kill == IDNO)
 		return false;
 
+	// Kill Log Window
+	if (hLog)
+		SendMessage(hLog, WM_DESTROY, 0, 0);
+	if (LogWin)
+		delete(LogWin);
+
+ 	// Clean-up the Scope window
+	if (Spp)
+		Spp->RegisterPulseMonitor(1,  false);
+
+
 	// Kill Dialog box
 	SendMessage(hDialog, WM_DESTROY, 0,0);
 	delete(Dialog);
 
 	// Stop thread "CvJoyMonitor Central thread (Loop)"
 	 vJoyMonitorClose();
-
-	exit(0); // TODO: Try a cleaner exit based on the following - Current problem: Stuck when sleeping
 
 	// Stop thread "SppControl Monitor Thread"
 	Monitor = false;
@@ -679,19 +687,17 @@ bool		AppExit(void)
 	if (Spp)
 		delete(Spp);
 
-	// Kill Scope thread
 
 
 	// Clean Up
 	delete(Conf);
 	delete(Audio);
 	delete(DbgObj);
-	delete(LogWin);
 
-	// TODO: Clean-up the Scope window
 
-	// Exit
+	// Exit	 
 	exit(0);
+	
 }
 
 // Start/Stop monitoring the pulse data using Pulse Scope
@@ -1593,7 +1599,7 @@ void	LogMessage(int Severity, int Code, LPCTSTR Msg)
 			Msg = pBuf;
 	};
 
-	SendMessage(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg);
+	SendMessageTimeout(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg, SMTO_ABORTIFHUNG, 1000, NULL);
 }
 
 void	LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg)

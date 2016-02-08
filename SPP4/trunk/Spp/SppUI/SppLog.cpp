@@ -146,6 +146,11 @@ INT_PTR CALLBACK  DlgAudioLog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		DialogObj = (SppLog *)lParam;
 		return (INT_PTR)TRUE;
 
+	case WM_DESTROY:
+		EndDialog(hDlg, IDCANCEL);
+		hDlg = NULL;
+		return (INT_PTR)TRUE;
+
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
