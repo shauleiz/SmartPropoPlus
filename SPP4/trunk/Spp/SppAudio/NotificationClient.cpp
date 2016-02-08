@@ -111,7 +111,7 @@ HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnDeviceStateChanged(LPCWSTR pw
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnPropertyValueChanged(LPCWSTR pwstrDeviceId, const PROPERTYKEY key)
+HRESULT STDMETHODCALLTYPE CMMNotificationClient::OnPropertyValueChanged(_In_ LPCWSTR pwstrDeviceId, _In_ const PROPERTYKEY key)
 {
 	// Notify caller of the change
 	_Parent->PropertyValueChanged(pwstrDeviceId, key);

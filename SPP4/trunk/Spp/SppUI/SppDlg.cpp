@@ -8,7 +8,7 @@
 #include "public.h"
 #include "Commctrl.h"
 #include "resource.h"
-#include "..\vJoyMonitor\vJoyMonitor.h" // TODO: This is ugly. Fix it.
+#include "vJoyMonitor.h"
 #include "SppProcess.h"
 #include "SppBtnsDlg.h"
 #include "SppDlg.h"
@@ -17,12 +17,6 @@
 #pragma comment (lib,"UxTheme.lib")
 
 #define MAX_LOADSTRING 100
-
-// TODO: Remove all the following defines when done with tab development
-#define TAB_AUDIO_ON	1
-#define TAB_DCDR_ON		1
-#define TAB_FLTR_ON		1
-#define TAB_JOY_ON		1
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -567,25 +561,7 @@ void  SppDlg::OnSelChanged(HWND hDlg)
 void SppDlg::DisplayAudioLevels(HWND hDlg, PVOID Id, UINT Left, UINT Right)
 {
 
-#if TAB_AUDIO_ON
     ((SppTabAudio *)m_hrsrc.TabAudio)->DisplayAudioLevels( Id,  Left,  Right);
-#else
-    HWND hAudioList = GetDlgItem(hDlg,  IDC_LIST_AUDIOSRC);
-
-    wstring str;
-    if (Right>100) // If Right channel is over 100 then this is a mono device
-        str = to_wstring(Left); // Mono
-    else
-        str = to_wstring(Left) + L"/" +  to_wstring(Right);
-
-    // Get item index of by Id
-    int i = FindItemById(hAudioList, (LPCTSTR)Id);
-    if (i<0)
-        return;
-
-    // Set text in the format L/R (e.g. 98/3)
-    ListView_SetItemText(hAudioList, i , 1, (LPTSTR)str.c_str());
-#endif
 }
 
 // Find audio item in list view by its id
@@ -615,18 +591,11 @@ int SppDlg::FindItemById(HWND hListView, LPCTSTR Id)
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetRawChData(UINT iCh, UINT data)
 {
-#if TAB_FLTR_ON
     ((SppTabFltr *)m_hrsrc.TabFltr)->SetRawChData( iCh,  data);
-#endif
 
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetRawChData( iCh,  data);
-#endif
 
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->SetRawChData( iCh,  data);
-#else
-#endif
 
     // Check if this channel is supported
     if (iCh > (IDC_CH8-IDC_CH1))
@@ -655,12 +624,8 @@ void SppDlg::SetNumberProcCh(UINT nCh)
 // Update the number of raw channels
 void SppDlg::SetNumberRawCh(UINT nCh)
 {	
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->SetNumberRawCh(nCh);
-#endif	
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetNumberRawCh(nCh);
-#endif	
     static UINT prevVal=100;
 
     // Prevent flicker
@@ -690,33 +655,14 @@ void SppDlg::SetNumberRawCh(UINT nCh)
 // Update the decoder quality value in the GUI
 void SppDlg::SetDecoderQuality(UINT Quality)
 {
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->SetDecoderQuality(Quality);
-#else
-    static UINT prevVal=100;
-
-    // Prevent flicker
-    if (prevVal == Quality)
-        return;
-    prevVal = Quality;
-
-    // Update text of static frame
-    HWND hFrame = GetDlgItem(m_hDlg,  IDC_SIG_DEC);
-    wstring txt = L"Signal Decoder ( Quality: " + to_wstring(Quality) + L")";
-    SendMessage(hFrame, WM_SETTEXT, 0, (LPARAM)txt.data());
-#endif
 }
 
 // Update the position of the progress bar that corresponds to the channel
 void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 {
-#if TAB_FLTR_ON
     ((SppTabFltr *)m_hrsrc.TabFltr)->SetProcessedChData(iCh, data);
-#endif
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetProcessedChData(iCh, data);
-#else
-#endif
 
     // Check if this channel is supported
     if (iCh > (IDC_CHPP8-IDC_CHPP1))
@@ -730,10 +676,7 @@ void  SppDlg::SetProcessedChData(UINT iCh, UINT data)
 // Update the frame text of the vJoy device vJoy axes
 void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickDevFrame( iDev);
-#else
-#endif
 
     static UINT id=100;
     wstring txt;
@@ -754,11 +697,7 @@ void SppDlg::SetJoystickDevFrame(UCHAR iDev)
 
 void SppDlg::SetJoystickBtnData(UCHAR iDev, BTNArr * BtnValue)
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickBtnData( iDev,  BtnValue);
-#else
-    SendMessage(m_BtnsDlg->GetHandle(), WMSPP_JMON_BTN, iDev, (LPARAM)BtnValue);
-#endif
 }
 
 // Joystick stopped. Reset all data related to Josticks
@@ -779,10 +718,7 @@ void SppDlg::ResetJoystick(void)
 // Update the position of the  progress bar that corresponds to the vJoy axis
 void SppDlg::SetJoystickAxisData(UCHAR iDev, UINT Axis, UINT32 AxisValue)
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetJoystickAxisData( iDev,  Axis,  AxisValue);
-#else
-#endif
     int IdItem;
 
     switch (Axis)
@@ -900,90 +836,22 @@ void SppDlg::OnStreamStopStart(void)
 // Set the selected filter to be displayed in the filter Combo Box
 void SppDlg::SelFilter(int FilterId)
 {
-#if TAB_FLTR_ON
     ((SppTabFltr *)m_hrsrc.TabFltr)->SelFilter(FilterId);
-#else
-    // Get the index of the filter (By ID)
-    int i=0, data;
-    HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
-    HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
-    while ((data = (int)ComboBox_GetItemData(hCombo, i)) != CB_ERR)
-    {
-        if (data == FilterId)
-        {
-            // Select
-            int res = ComboBox_SetCurSel(hCombo, i);
-            // Checks the checkbox
-            Button_SetCheck(hFilterCB, BST_CHECKED);
-            break;
-        };
-        i++;
-    };
-#endif
 }
 
 void SppDlg::InitFilter(int nFilters, LPTSTR FilterName)
 {
-#if TAB_FLTR_ON
     ((SppTabFltr *)m_hrsrc.TabFltr)->InitFilter( nFilters,  FilterName);
-#else
-    // Clear Filter display
-    HWND hCombo = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
-    SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
-
-    // If there are filters then prepare data for selection
-    if (nFilters)
-    {
-        // Bring "-- Select Filter --" to top
-        ComboBox_SetText(hCombo, TEXT("-- Select Filter --"));
-
-        // Display File name
-        HWND hFilterFile	= GetDlgItem(m_hDlg,  IDC_EDIT_FILTERFILE);
-        Edit_SetText(hFilterFile, FilterName);
-        UpdateWindow(hFilterFile);
-    }
-    else
-    {
-        ComboBox_Enable(hCombo, FALSE);
-        HWND hFilterCB		= GetDlgItem(m_hDlg,  IDC_CH_FILTER);
-        Button_SetCheck(hFilterCB, BST_UNCHECKED);
-    };
-#endif
 }
 
 void SppDlg::AddLine2FilterListA(int FilterID, const char * FilterName)
 {
-#if TAB_FLTR_ON
     ((SppTabFltr *)m_hrsrc.TabFltr)->AddLine2FilterListA( FilterID,  FilterName);
-#else
-    HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
-
-    ComboBox_Enable(hFilterList, TRUE);
-    // Convert to a wchar_t*
-    size_t origsize = strlen(FilterName) + 1;
-    const size_t newsize = 100;
-    size_t convertedChars = 0;
-    wchar_t FilterNameW[newsize];
-    mbstowcs_s(&convertedChars, FilterNameW, origsize, FilterName, _TRUNCATE); // Filter names are converted from ASCII to UNICODE
-
-    int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterNameW ); 
-    SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
-#endif
 }
 
 void SppDlg::AddLine2FilterListW(int FilterID, LPCWSTR FilterName)
 {
-#if TAB_FLTR_ON
     ((SppTabFltr *)m_hrsrc.TabFltr)->AddLine2FilterListW( FilterID,  FilterName);
-#else
-
-    HWND hFilterList = GetDlgItem(m_hDlg,  IDC_COMBO_FILTERS);
-
-    ComboBox_Enable(hFilterList, TRUE);
-
-    int index = (int)SendMessage(hFilterList,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)FilterName ); 
-    SendMessage(hFilterList,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)FilterID ); 
-#endif
 }
 
 LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
@@ -1015,9 +883,7 @@ LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
 void SppDlg::AddLine2ModList(MOD * mod, LPCTSTR SelType)
 {
         
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->AddLine2DcdrList( mod,  SelType);
-#endif	
 
     if (!mod)
         return;
@@ -1072,9 +938,7 @@ void SppDlg::SelectDecoder(LPCTSTR Decoder)
 
     // Copy text to Info Pane
     Edit_SetText(GetDlgItem(m_hDlg,IDS_DECODER), GetDecoderFullName(Decoder));
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->SelectDecoder( Decoder);
-#endif
     for (int l=0; l<2; l++)
     { // Loop on both lists (PPM/PCM)
         // Get a list (PPM/PCM)
@@ -1114,9 +978,7 @@ void SppDlg::SelectDecoderFailed(void)
 // - Show scan button
 void SppDlg::DecoderAuto(bool automode)
 {
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->DecoderAuto( automode);
-#endif
 
     HWND hBtn = GetDlgItem(m_hDlg,  IDC_BTN_SCAN);
 
@@ -1137,26 +999,8 @@ void SppDlg::DecoderAuto(bool automode)
 // Gets the new value of the checkbox and sends it to the CU
 void SppDlg::AutoDecParams(void)
 {
-#if TAB_DCDR_ON
     ((SppTabDcdr *)m_hrsrc.TabDcdr)->AutoDecParams( );
-#else
-    if (BST_CHECKED == IsDlgButtonChecked(m_hDlg,   IDC_DEC_AUTO))
-        SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 1);
-    else
-        SendMessage(m_ConsoleWnd, WMSPP_DLG_AUTO, AUTODECODE, 0);
-#endif
 }
-
-#if !TAB_JOY_ON
-void SppDlg::ShowButtonMapWindow(void)
-{
-    if (!m_BtnsDlg)
-        return;
-
-    vJoySelected(GetDlgItem(m_hDlg,IDC_VJOY_DEVICE));
-    m_BtnsDlg->Show();
-}
-#endif
 
 
 // Tell the parent window (Main application)
@@ -1188,15 +1032,6 @@ void  SppDlg::RecordInSignal(WORD cb)
 
 }
 
-#if !TAB_JOY_ON
-// Mapping button clicked
-// Send all mapping info to the control unit
-void  SppDlg::vJoyMapping(void)
-{
-    SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_SEND,0, 0);
-    
-}
-#endif
 
 // Set the parameters of the audio (8/16 bits Left/Right/Mono)
 // If Bitrate = 0 then don't change
@@ -1224,83 +1059,12 @@ void SppDlg::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 
     Edit_SetText(GetDlgItem(m_hDlg,IDS_AUDIO_CHBITS),s.data());
 
-#if TAB_AUDIO_ON
     ((SppTabAudio *)m_hrsrc.TabAudio)->AudioChannelParams(Bitrate,  Channel);
-#else
-    if (Bitrate == 8)
-        CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_8);
-    else if (Bitrate == 16)
-        CheckRadioButton(m_hDlg, IDC_AUD_8, IDC_AUD_16, IDC_AUD_16);
-
-    if (Channel)
-    {
-        if (Channel == TEXT('M'))
-        {
-            CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_MONO);
-            ShowWindow(GetDlgItem(m_hDlg,  IDC_LEFT), SW_HIDE);
-            ShowWindow(GetDlgItem(m_hDlg,  IDC_RIGHT), SW_HIDE);
-            ShowWindow(GetDlgItem(m_hDlg,  IDC_MONO), SW_SHOW);
-        }
-        else
-        {
-            ShowWindow(GetDlgItem(m_hDlg,  IDC_LEFT), SW_SHOW);
-            ShowWindow(GetDlgItem(m_hDlg,  IDC_RIGHT), SW_SHOW);
-            ShowWindow(GetDlgItem(m_hDlg,  IDC_MONO), SW_HIDE);
-            if (Channel == TEXT('L'))
-                CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_LEFT);
-            else if (Channel == TEXT('R'))
-                CheckRadioButton(m_hDlg, IDC_LEFT, IDC_RIGHT, IDC_RIGHT);
-        }
-    };
-#endif
 }
 
 void SppDlg::AudioAutoParams(WORD Mask, WORD Flags)
 {
-#if TAB_AUDIO_ON
     ((SppTabAudio *)m_hrsrc.TabAudio)->AudioAutoParams( Mask,  Flags);
-#else
-    // Auto channel selection
-    if (Mask&AUTOCHANNEL)
-    {
-        HWND hLeft = GetDlgItem(m_hDlg,  IDC_LEFT);
-        HWND hMono = GetDlgItem(m_hDlg,  IDC_MONO);
-        HWND hRight = GetDlgItem(m_hDlg,  IDC_RIGHT);
-        if (Flags&AUTOCHANNEL)
-        {
-            EnableWindow(hLeft, FALSE);
-            EnableWindow(hMono, FALSE);
-            EnableWindow(hRight, FALSE);
-            CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_CHECKED);
-        }
-        else
-        {
-            EnableWindow(hLeft, TRUE);
-            EnableWindow(hMono, TRUE);
-            EnableWindow(hRight, TRUE);
-            CheckDlgButton(m_hDlg,  IDC_CH_AUTO, BST_UNCHECKED);
-        }
-    }
-
-    // Auto bit rate selection
-    if (Mask&AUTOBITRATE)
-    {
-        HWND h8 = GetDlgItem(m_hDlg,  IDC_AUD_8);
-        HWND h16 = GetDlgItem(m_hDlg,  IDC_AUD_16);
-        if (Flags&AUTOBITRATE)
-        {
-            EnableWindow(h8, FALSE);
-            EnableWindow(h16, FALSE);
-            CheckDlgButton(m_hDlg,  IDC_AUD_AUTO, BST_CHECKED);
-        }
-        else
-        {
-            EnableWindow(h8, TRUE);
-            EnableWindow(h16, TRUE);
-            CheckDlgButton(m_hDlg,  IDC_AUD_AUTO, BST_UNCHECKED);
-        }
-    }
-#endif
 }
 
 //// Get the parameters of the audio (8/16 bits Left/Right/Mono)
@@ -1506,21 +1270,11 @@ void SppDlg::SetFilterInfo(LPTSTR FileName,  LPTSTR FilterName)
     
 }
 
-#if !TAB_JOY_ON
-// Fill-in the actual button-mapping data - pass message to button-mapping dialog
-void SppDlg::SetButtonsMappingData(BTNArr* aButtonMap, UINT nButtons)
-{
-    SendMessage(m_BtnsDlg->GetHandle(), WMSPP_MAPBTN_UPDT,(WPARAM)aButtonMap, nButtons);
-}
-#endif
 
 // Enable/disable controls according to vJoy device settings
 void SppDlg::EnableControls(UINT id, controls * ctrl)
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->EnableControls( id,   ctrl);
-#else
-#endif
     UINT ch= IDC_X;
     UINT edt = IDC_SRC_X;
     HWND hCh;
@@ -1604,29 +1358,7 @@ void SppDlg::SendMappingData(BTNArr* aButtonMap, UINT nButtons)
 void SppDlg::SetMappingData(Mapping * Map)
 {
 
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetMappingData(Map);
-#else
-
-    UINT id = IDC_SRC_SL1;
-    HWND hEdtBox;
-    UINT channel;
-    TCHAR buffer[4];
-    UINT& nAxes = Map->nAxes;
-    DWORD& AxisMap = *Map->pAxisMap;
-
-    // Go through the map and read nibble by nibble
-    // Every nibble read goes to the corresponding edit box
-    for (UINT i=0; i<nAxes; i++)
-    {
-        hEdtBox = GetDlgItem(m_hDlg,  id-i);
-        channel = ((AxisMap>>(i*4))&0xF);
-        _itot_s(channel, buffer, 2, 10);
-        Edit_SetText(hEdtBox, buffer);
-    };
-
-    SetButtonsMappingData(Map->ButtonArray, Map->nButtons);
-#endif
 }
 
 
@@ -1695,12 +1427,7 @@ void  SppDlg::vJoySelected(HWND hCb)
 // Remove all vJoy Entries
 void  SppDlg::vJoyRemoveAll()
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->vJoyRemoveAll( );
-#else
-    HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
-    SendMessage(hCombo,(UINT) CB_RESETCONTENT ,(WPARAM) 0,(LPARAM)0); 
-#endif
 }
 
 // Set vJoy Version information
@@ -1713,29 +1440,13 @@ void  SppDlg::vJoySetVer(UINT Ver)
 // Set the id as item data
 void  SppDlg::vJoyDevAdd(UINT id)
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->vJoyDevAdd( id);
-#else
-    wstring vjoyid = L"vJoy " + to_wstring(id);
-    HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
-    int index = (int)SendMessage(hCombo,(UINT) CB_ADDSTRING,(WPARAM) 0,(LPARAM)(vjoyid.data()) ); 
-    SendMessage(hCombo,(UINT) CB_SETITEMDATA ,(WPARAM) index,(LPARAM)id ); 
-#endif
 }
 
 // Set the selected vJoy device
 void  SppDlg::vJoyDevSelect(UINT id)
 {
-#if TAB_JOY_ON
     ((SppTabJoy *)m_hrsrc.TabJoy)->vJoyDevSelect( id);
-#else
-    wstring vjoyid = L"vJoy " + to_wstring(id);
-    HWND hCombo = GetDlgItem(m_hDlg,  IDC_VJOY_DEVICE);
-    int index = (int)SendMessage(hCombo,(UINT) CB_FINDSTRINGEXACT ,(WPARAM) -1,(LPARAM)(vjoyid.data()) ); 
-    if (index == CB_ERR)
-        return;
-    index =  (int)SendMessage(hCombo,(UINT) CB_SETCURSEL ,(WPARAM) index, 0); 
-#endif
 }
 
 // Informs Parent window (CU) that the user pressed OK or Cancel button
@@ -2201,10 +1912,6 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
         DialogObj->CreateToolTip(hDlg); // Initialize tooltip object
         DialogObj->InitBackgroundImage(hDlg); // Initialize backgrown image
 
-#if !TAB_JOY_ON
-        DialogObj->CreateBtnsDlg(hDlg); // Create button dialog box
-#endif
-//		DialogObj->InitAudioDisplay(hDlg); // Initialize audio source display
         return (INT_PTR)TRUE;
 
     case WM_SYSCOMMAND:
@@ -2280,19 +1987,6 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
             break;
         };
         
-#if !TAB_JOY_ON
-        if (LOWORD(wParam)  == IDC_BTN_MAP && HIWORD(wParam) == BN_CLICKED )
-        {
-            DialogObj->vJoyMapping();
-            break;
-        }
-
-        if (LOWORD(wParam)  == IDC_BTN_MAPBTNS && HIWORD(wParam) == BN_CLICKED )
-        {
-            DialogObj->ShowButtonMapWindow();
-            break;
-        }
-#endif
 
         if (LOWORD(wParam)  == IDC_BTN_SCAN && HIWORD(wParam) == BN_CLICKED )
         {
@@ -2541,13 +2235,6 @@ HWND SppDlg::GetHandle(void)
     return m_hDlg;
 }
 
-#if !TAB_JOY_ON
-// Create Button mapping dialog box
-void SppDlg::CreateBtnsDlg(HWND hDlg)
-{
-    m_BtnsDlg = new SppBtnsDlg(m_hInstance, hDlg);
-}
-#endif
 
 // Initialize Filters section
 void SppDlg::InitFilterDisplay(HWND hDlg)

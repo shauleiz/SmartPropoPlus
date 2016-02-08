@@ -143,7 +143,7 @@ private:
 	void ProcessPulseTurnigy9XPpm(int width, BOOL input);
 
 
-    void SendPPJoy(int nChannels, int *Channel);
+    void Send2vJoy(int nChannels, int *Channel);
     int RunJsFilter(int * ch, int nChannels);
     __inline  int  smooth(int orig, int newval);
     int  __fastcall Convert15bits(unsigned int in);

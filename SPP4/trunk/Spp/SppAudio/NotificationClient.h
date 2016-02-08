@@ -26,7 +26,7 @@ public:
 	HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId);
 	HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId);
 	HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState);
-	HRESULT STDMETHODCALLTYPE OnPropertyValueChanged( LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
+	HRESULT STDMETHODCALLTYPE OnPropertyValueChanged( _In_ LPCWSTR pwstrDeviceId, _In_ const PROPERTYKEY key);
 	ULONG STDMETHODCALLTYPE Release();
 
 protected:

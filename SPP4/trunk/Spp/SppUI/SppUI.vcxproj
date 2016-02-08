@@ -67,24 +67,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Include;$(IncludePath);$(SolutionDir)SppProcess</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(SolutionDir)vJoyMonitor;$(IncludePath);$(SolutionDir)SppProcess</IncludePath>
     <TargetExt>.lib</TargetExt>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Include;$(IncludePath);$(SolutionDir)SppProcess</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(SolutionDir)vJoyMonitor;$(IncludePath);$(SolutionDir)SppProcess</IncludePath>
     <TargetExt>.lib</TargetExt>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.lib</TargetExt>
-    <IncludePath>$(SolutionDir)Include;$(SolutionDir)SppProcess;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(SolutionDir)vJoyMonitor;$(SolutionDir)SppProcess;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.lib</TargetExt>
-    <IncludePath>$(SolutionDir)Include;$(SolutionDir)SppProcess;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(SolutionDir)vJoyMonitor;$(SolutionDir)SppProcess;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

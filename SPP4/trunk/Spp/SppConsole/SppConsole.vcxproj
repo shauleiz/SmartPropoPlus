@@ -70,7 +70,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)SppUI;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
@@ -78,7 +78,7 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)SppUI;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(ExecutablePath)</ExecutablePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
@@ -86,14 +86,16 @@
     <LinkIncremental>false</LinkIncremental>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)SppUI;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)SppUI;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI</IncludePath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(ExecutablePath)</ExecutablePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

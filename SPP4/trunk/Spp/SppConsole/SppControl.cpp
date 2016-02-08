@@ -13,8 +13,8 @@
 #include "SppProcess.h"
 #include "SppConfig.h"
 #include "SppControl.h"
-#include "..\SppUI\SppDlg.h"  // TODO: Fix the Include path
-#include "..\SppUI\SppLog.h"  // TODO: Fix the Include path					
+#include "SppDlg.h"
+#include "SppLog.h"					
 #include "SppDbg.h"
 #include "WinMessages.h"
 #include "..\vJoyMonitor\vJoyMonitor.h"
@@ -28,7 +28,6 @@ class CSppConfig * Conf = NULL;
 class CSppAudio * Audio = NULL;
 class SppLog * LogWin = NULL;
 class SppDbg * DbgObj = NULL;
-class CPulseScope * PulseScopeObj = NULL;
 class SppDlg *	Dialog = NULL;
 class CSppProcess * Spp = NULL;
 LPCTSTR AudioId = NULL;
@@ -133,7 +132,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WM_INTERSPPAPPS		= RegisterWindowMessage(INTERSPPAPPS);
 	if (!WM_INTERSPPAPPS)
 	{
-		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_INTERSPPAPPS, WM_INTERSPPAPPS);
+		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_INTERSPPAPPS, static_cast<INT>(WM_INTERSPPAPPS));
 		::MessageBox(NULL,msg, SPP_MSG , MB_SYSTEMMODAL);
 		return -1;
 	};
@@ -608,7 +607,7 @@ LRESULT CALLBACK MainWindowProc(
 		case WMSPP_DLG_SCAN:
 			if (Spp)
 				// Start (TRUE), search until detection (FALSE), or until timeout (3000mS)
-				Spp->SetDecoderScanning(TRUE, FALSE, 3000); // TODO: Replace 3000 with defined constant
+				Spp->SetDecoderScanning(TRUE, FALSE, DECODER_TIMEOUT);
 			break;
  
         default: 
@@ -660,14 +659,23 @@ bool		AppExit(void)
 	if (kill == IDNO)
 		return false;
 
+	// Kill Log Window
+	if (hLog)
+		SendMessage(hLog, WM_DESTROY, 0, 0);
+	if (LogWin)
+		delete(LogWin);
+
+ 	// Clean-up the Scope window
+	if (Spp)
+		Spp->RegisterPulseMonitor(1,  false);
+
+
 	// Kill Dialog box
 	SendMessage(hDialog, WM_DESTROY, 0,0);
 	delete(Dialog);
 
 	// Stop thread "CvJoyMonitor Central thread (Loop)"
 	 vJoyMonitorClose();
-
-	exit(0); // TODO: Try a cleaner exit based on the following - Current problem: Stuck when sleeping
 
 	// Stop thread "SppControl Monitor Thread"
 	Monitor = false;
@@ -679,19 +687,17 @@ bool		AppExit(void)
 	if (Spp)
 		delete(Spp);
 
-	// Kill Scope thread
 
 
 	// Clean Up
 	delete(Conf);
 	delete(Audio);
 	delete(DbgObj);
-	delete(LogWin);
 
-	// TODO: Clean-up the Scope window
 
-	// Exit
+	// Exit	 
 	exit(0);
+	
 }
 
 // Start/Stop monitoring the pulse data using Pulse Scope
@@ -1162,7 +1168,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 		// Update Audio
 		if (jack.Default)
 		{
-			UINT BitRate = Conf->GetAudioDeviceBitRate(jack.id);
+			BitRate = Conf->GetAudioDeviceBitRate(jack.id);
 			std::wstring Channel = Conf->GetAudioDeviceChannel(jack.id);
 			if (!BitRate)
 				BitRate = DEF_BITRATE;
@@ -1261,7 +1267,6 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 
 
-	// TODO: Recompile DLL without MFC
 
 	// TODO: Release former library
 
@@ -1594,7 +1599,7 @@ void	LogMessage(int Severity, int Code, LPCTSTR Msg)
 			Msg = pBuf;
 	};
 
-	SendMessage(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg);
+	SendMessageTimeout(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg, SMTO_ABORTIFHUNG, 1000, NULL);
 }
 
 void	LogMessageExt(int Severity, int Code, UINT Src, LPCTSTR Msg)
@@ -1765,7 +1770,7 @@ void thMonitor(bool * KeepAlive)
 // send message with version (as UINT: 00aabbcc = aa.bb.cc) to dialog box
 UINT vJoyDevicesVersion(HWND hDlg)
 {
-	UINT Major, Mid, Minor, Ver;
+	INT Major, Mid, Minor, Ver;
 	LPTSTR str = (LPTSTR)GetvJoySerialNumberString();
 	if (!str || (_tcslen(str) < 5))
 		return 0;

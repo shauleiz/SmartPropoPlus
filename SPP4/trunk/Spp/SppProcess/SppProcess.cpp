@@ -10,8 +10,8 @@
 #include "SmartPropoPlus.h"
 #include "vJoyInterface.h"
 #include "public.h"
-#include "..\SppAudio\SppAudio.h" // TODO: This is ugly. Fix it.
-#include "..\PulseScope\PulseScope.h"	 // TODO: This is ugly. Fix it.
+#include "SppAudio.h" 
+#include "PulseScope.h"
 #include "WinMessages.h"
 #include "SppProcess.h"
 #include <crtdbg.h>
@@ -1092,13 +1092,13 @@ int CSppProcess::InitModulationMap(void)
     tmp.Qreset = 25;
     m_ModulationMap.emplace(tmp.Type, tmp);
 
-	// PPM (Walkera)
+    // PPM (Walkera)
 	tmp.func = [=](int width, BOOL input) {this->ProcessPulseWK2401Ppm(width, input); };
-	tmp.Name = MOD_NAME_PPMW;
+    tmp.Name = MOD_NAME_PPMW;
 	tmp.Subtype = _T("PPM");
-	tmp.Type = MOD_TYPE_PPMW;
-	tmp.Qreset = 25;
-	m_ModulationMap.emplace(tmp.Type, tmp);
+    tmp.Type = MOD_TYPE_PPMW;
+    tmp.Qreset = 25;
+    m_ModulationMap.emplace(tmp.Type, tmp);
 
 	// PPM (Turnigy 9X)
 	tmp.func = [=](int width, BOOL input) {this->ProcessPulseTurnigy9XPpm(width, input); };
@@ -1351,7 +1351,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     //};
                 
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(m_nChannels, m_Position);
+    Send2vJoy(m_nChannels, m_Position);
 
     if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
         fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -1446,7 +1446,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     //};
             
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(11, m_Position);
+    Send2vJoy(11, m_Position);
 
     if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
         fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
@@ -1538,7 +1538,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     //};
                 
     // Send Position and number of channels to the virtual joystick
-    SendPPJoy(11, m_Position);
+    Send2vJoy(11, m_Position);
 
     if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
 
@@ -1546,7 +1546,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
     return ;
 }
   //#endif
-  /*
+/*
   Process Pulse for Turnigy 9X PPM
   This is just a permiscuous PPM that does not follow the PPM standard
 
@@ -1681,87 +1681,87 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
  }
 
  /*
- Process Pulse for Walkera WK-2401 PPM
- This is just a permiscuous PPM that does not follow the PPM standard
+    Process Pulse for Walkera WK-2401 PPM
+    This is just a permiscuous PPM that does not follow the PPM standard
 
- This is how it works:
- 1. Minimal pulse width is 5
- 2. Any pulse of over PPMW_TRIG (=200) is considered as a sync pulse.
- 3. Polarity ('input') of the Sync pulse is the polarity of the following data pulses
- */
- void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
- {
-	 static int sync = 0;
-	 static BOOL Polarity;
+    This is how it works:
+    1. Minimal pulse width is 5
+    2. Any pulse of over PPMW_TRIG (=200) is considered as a sync pulse. 
+    3. Polarity ('input') of the Sync pulse is the polarity of the following data pulses
+*/
+void  CSppProcess::ProcessPulseWK2401Ppm(int width, BOOL input)
+{
+    static int sync = 0;
+    static BOOL Polarity;
 
-	 int newdata;				/* Current width in joystick values */
-	 static int data[14];		/* Array of pulse widthes in joystick values */
-	 static int datacount = 0;	/* pulse index (corresponds to channel index) */
-	 static int former_sync = 0;
+    int newdata;				/* Current width in joystick values */
+    static int data[14];		/* Array of pulse widthes in joystick values */
+    static int datacount = 0;	/* pulse index (corresponds to channel index) */
+    static int former_sync = 0;
 	 char tbuffer[9];
-	 static int i = 0;
-	 static int PrevWidth[14];	/* array of previous width values */
+    static int i = 0;
+    static int PrevWidth[14];	/* array of previous width values */
 
-	 if (width < 5)
-		 return;
+    if (width < 5)
+        return;
 
-	 if (gDebugLevel >= 2 && gCtrlLogFile && !(_strtime_s(tbuffer, 9)))
-		 fprintf(gCtrlLogFile, "\n%s - ProcessPulseWK2401Ppm(width=%d, input=%d)", tbuffer, width, input);
+    if (gDebugLevel>=2 && gCtrlLogFile && !(_strtime_s( tbuffer, 9 )))
+        fprintf(gCtrlLogFile,"\n%s - ProcessPulseWK2401Ppm(width=%d, input=%d)", tbuffer, width, input);
 
-	 /* sync is detected at the end of a very long pulse (over  4.5mSec) */
-	 if (width > PPMW_TRIG) {
-		 sync = 1;
-		 if (datacount)
-			 m_PosUpdateCounter++;
-		 m_nChannels = datacount;
-		 datacount = 0;
-		 Polarity = input;
-		 return;
-	 }
+    /* sync is detected at the end of a very long pulse (over  4.5mSec) */
+    if (width > PPMW_TRIG) {
+        sync = 1;
+        if (datacount)
+            m_PosUpdateCounter++;
+        m_nChannels = datacount;
+        datacount = 0;
+        Polarity = input;
+        return;
+    }
 
-	 if (!sync)
-		 return; /* still waiting for sync */
+    if (!sync) 
+        return; /* still waiting for sync */
 
-				 // If this pulse is a separator - read the next pulse
-	 if (Polarity != input)
-		 return;
+    // If this pulse is a separator - read the next pulse
+    if (Polarity != input)
+        return;
 
-	 // Cancel jitter /* Version 3.3.3 */
-	 if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
-		 width = PrevWidth[datacount];
-	 PrevWidth[datacount] = width;
-
-
-	 /* convert pulse width in samples to joystick Position values (newdata)
-	 joystick Position of 0 correspond to width over 100 samples (2.25mSec)
-	 joystick Position of 1023 correspond to width under 30 samples (0.68mSec)*/
-	 newdata = (int)((width - PPMW_MIN) / (PPMW_MAX - PPMW_MIN) * 1024);
-
-	 /* Trim values into 0-1023 boundries */
-	 if (newdata < 0) newdata = 0;
-	 else if (newdata > 1023) newdata = 1023;
-
-	 /* Update data - do not allow abrupt change */
-	 if (data[datacount] - newdata > 100) data[datacount] -= 100;
-	 else if (newdata - data[datacount] > 100) data[datacount] += 100;
-	 else data[datacount] = (data[datacount] + newdata) / 2;
+    // Cancel jitter /* Version 3.3.3 */
+    if (abs(PrevWidth[datacount] - width) < PPM_JITTER)
+        width = PrevWidth[datacount];
+    PrevWidth[datacount] = width;
 
 
-	 m_Position[datacount] = data[datacount];	/* Assign data to joystick channels */
+    /* convert pulse width in samples to joystick Position values (newdata)
+    joystick Position of 0 correspond to width over 100 samples (2.25mSec)
+    joystick Position of 1023 correspond to width under 30 samples (0.68mSec)*/
+    newdata = (int)((width - PPMW_MIN) / (PPMW_MAX - PPMW_MIN) * 1024);
 
-												// Send Position and number of channels to the virtual joystick
-	 SendPPJoy(11, m_Position);
+    /* Trim values into 0-1023 boundries */
+    if (newdata < 0) newdata = 0;
+    else if (newdata > 1023) newdata = 1023;
 
-	 if (gDebugLevel >= 3 && gCtrlLogFile /*&& !(i++%50)*/)
-		 fprintf(gCtrlLogFile, " data[%d]=%d", datacount, data[datacount]);
+    /* Update data - do not allow abrupt change */
+    if (data[datacount] - newdata > 100) data[datacount] -= 100;
+    else if (newdata - data[datacount] > 100) data[datacount] += 100;
+    else data[datacount] = (data[datacount] + newdata) / 2;
 
-	 if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
+    
+    m_Position[datacount] = data[datacount];	/* Assign data to joystick channels */
 
-	 datacount++;
-	 return;
- }
+    // Send Position and number of channels to the virtual joystick
+    Send2vJoy(11, m_Position);
 
- //---------------------------------------------------------------------------
+    if (gDebugLevel>=3 && gCtrlLogFile /*&& !(i++%50)*/)
+        fprintf(gCtrlLogFile," data[%d]=%d", datacount, data[datacount]);
+
+    if (datacount == 11)	sync = 0;			/* Reset sync after channel 12 */
+
+    datacount++;
+    return;
+}
+
+  //---------------------------------------------------------------------------
 /*
     Futaba PCM1024Z format
     Based on the following documents:
@@ -1948,7 +1948,7 @@ void CSppProcess::ProcessPulseFutabaPcm(int width, BOOL input)
         case 32: sync = 0;/* End of odd frame. Wait for sync */
             
         m_nChannels = 10;  // Fixed number of channels
-        SendPPJoy(m_nChannels, m_Position);
+        Send2vJoy(m_nChannels, m_Position);
     };
 
     return;
@@ -2007,7 +2007,7 @@ void CSppProcess::ProcessPulseJrPcm(int width, BOOL input)
         case 30: sync = 0;
             
         m_nChannels = 8; // Fixed number of channels
-        SendPPJoy(m_nChannels, m_Position);
+        Send2vJoy(m_nChannels, m_Position);
     };
 
      return;
@@ -2078,7 +2078,7 @@ void CSppProcess::ProcessPulseAirPcm1(int width, BOOL input)
 
 
                 
-                SendPPJoy(fixed_n_channel, m_Position);
+                Send2vJoy(fixed_n_channel, m_Position);
 
                 
             };
@@ -2170,7 +2170,7 @@ void CSppProcess::ProcessPulseAirPcm2(int width, BOOL input)
                 m_Position[5] = smooth(m_Position[5], Convert20bits(data[5])); // Flaps		(Ch6)
 
                 m_nChannels = 6;
-                SendPPJoy(m_nChannels, m_Position);
+                Send2vJoy(m_nChannels, m_Position);
 
                 if (width<420 && width>390)
                     m_PosUpdateCounter++;
@@ -2298,7 +2298,7 @@ void CSppProcess::ProcessPulseWalPcm(int width, BOOL input)
         };
         nPulse = 0;
 
-                SendPPJoy(fixed_n_channel, m_Position);
+                Send2vJoy(fixed_n_channel, m_Position);
     };
     return;
 }
@@ -2698,9 +2698,8 @@ _inline double  CSppProcess::CalcThreshold(int value)
     return(threthold); 
 }
 
-// TODO: Rename to Send2vJoy
 // TODO: Normalize the calling functions to the range 0-32K
-void CSppProcess::SendPPJoy(int nChannels, int * Channel)
+void CSppProcess::Send2vJoy(int nChannels, int * Channel)
 {
     BOOL writeOk;
     UINT rID = m_vJoyDeviceId;
