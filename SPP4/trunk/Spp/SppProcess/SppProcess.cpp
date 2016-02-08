@@ -1667,7 +1667,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 													//};
 
 													// Send Position and number of channels to the virtual joystick
-		 SendPPJoy(m_nChannels, m_Position);
+		 Send2vJoy(m_nChannels, m_Position);
 
 		 if (gDebugLevel >= 3 && gCtrlLogFile /*&& !(i++%50)*/)
 			 fprintf(gCtrlLogFile, " data[%d]=%d", datacount, data[datacount]);
