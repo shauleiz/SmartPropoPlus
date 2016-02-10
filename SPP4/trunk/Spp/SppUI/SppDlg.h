@@ -36,7 +36,7 @@ public:
 	void Show();
 	void Hide();
 	void RegisterEndEvent(HANDLE * h);
-	bool MsgLoop(MSG * msg);
+	bool MsgLoop(void);
 	HWND GetHandle(void);
 
 public: // Called from window procedure
@@ -140,6 +140,5 @@ protected:
 	BOOL m_WizMinimized;
 	DWORD m_color;
 	HWND  m_hTarget;
-	BOOL m_KeepThread;
 };
 
