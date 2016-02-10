@@ -40,6 +40,7 @@ SppDlg::SppDlg(HINSTANCE hInstance, HWND	ConsoleWnd)
     m_ConsoleWnd = ConsoleWnd;
     m_StreamingState = true;
     m_hTarget = NULL;
+	m_KeepThread = true;
 
     // Create the dialog box (Hidden) 
     m_hDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_SPPDIAG), NULL, MsgHndlDlg, (LPARAM)this);	
@@ -58,6 +59,9 @@ SppDlg::~SppDlg(void)
     // Remove notification icon
     if (m_tnid.cbSize)
         Shell_NotifyIcon(NIM_DELETE, &m_tnid);
+
+	// Kill the Message Loop
+	m_KeepThread = false;
 
     // Cleanup
     delete(m_hrsrc.TabAudio);
@@ -108,11 +112,12 @@ bool SppDlg::MsgLoop(void)
         else if (!IsWindow(m_hDlg))
             return true;
 
-        else if (!IsDialogMessage(m_hDlg, &msg)) 
+        else if (!IsDialogMessage(m_hDlg, msg)) 
         { 
-            TranslateMessage(&msg); 
-            DispatchMessage(&msg); 
+            TranslateMessage(msg); 
+            DispatchMessage(msg); 
         } 
+
     } 
 
     return true;
@@ -1865,7 +1870,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case WM_DESTROY:
             DestroyWindow(hDlg);
             hDlg = NULL;
-//			PostQuitMessage(0);
+			//PostQuitMessage(0);
             return (INT_PTR)TRUE;
 
     case WM_NOTIFY:
