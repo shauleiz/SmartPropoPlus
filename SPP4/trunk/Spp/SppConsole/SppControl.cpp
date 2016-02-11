@@ -23,6 +23,7 @@
 #pragma region Globals
 
 // Globals
+HWND hMain = NULL;
 HWND hDialog;
 class CSppConfig * Conf = NULL;
 class CSppAudio * Audio = NULL;
@@ -54,6 +55,7 @@ bool StopCapture=false;
 bool dialogbox_is_ready(false);
 std::mutex mtx_dialogbox;
 std::condition_variable cv_dialogbox;
+
 
 #pragma endregion Globals
 
@@ -186,6 +188,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!hwnd)
 		return false;
 
+	// Store handle to main window as global
+	hMain = hwnd;
+
 	// Get Configuration file
 	Conf = new CSppConfig();
 
@@ -288,6 +293,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Loop forever in the dialog box until user kills it
 	MessageLoop();
+	return 0;
  
 ExitApp:
 
@@ -313,16 +319,17 @@ LRESULT CALLBACK MainWindowProc(
             // Paint the window's client area. 
             return 0; 
  
-        case WM_SIZE: 
-            // Set the size and position of the window. 
-            return 0; 
- 
-        case WM_DESTROY: 
-            // Clean up window-specific data objects. 
-            return 0; 
+		case WM_SIZE:
+			// Set the size and position of the window. 
+			return 0;
+
+		case WM_DESTROY:
+			hwnd = NULL;
+			PostQuitMessage(0);
+			return (INT_PTR)TRUE;
 
 		case WM_DEVICECHANGE:
-			 return TRUE;
+			return TRUE;
 
  
         ////////////////////////////////////////// 
@@ -627,6 +634,7 @@ void MessageLoop(void)
 		if (bRet == -1)
 		{
 			// handle the error and possibly exit
+			return;
 		}
 		else
 		{
@@ -637,9 +645,13 @@ void MessageLoop(void)
 				Dialog->Iconified(false);
 			};
 
-			TranslateMessage(&winmsg); 
-			DispatchMessage(&winmsg); 
+			TranslateMessage(&winmsg);
+			DispatchMessage(&winmsg);
 		}
+
+		if (!IsWindow(hMain))
+			return;
+
 	}
 }
 
@@ -687,16 +699,17 @@ bool		AppExit(void)
 	if (Spp)
 		delete(Spp);
 
-
+	// Kill main window
+	SendMessage(hMain, WM_DESTROY, 0,0);
 
 	// Clean Up
 	delete(Conf);
 	delete(Audio);
 	delete(DbgObj);
 
+	return true;
 
-	// Exit	 
-	exit(0);
+	// Exit	 exit(0);
 	
 }
 
@@ -1665,6 +1678,7 @@ void thDialogBox(HWND hwnd)
 	cv_dialogbox.notify_one();
 	mtx_dialogbox.unlock();
 	Dialog->MsgLoop();
+	lk.release();
 }
 
 // Monitor Thread

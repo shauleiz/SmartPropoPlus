@@ -113,6 +113,7 @@ bool SppDlg::MsgLoop(void)
             TranslateMessage(&msg); 
             DispatchMessage(&msg); 
         } 
+
     } 
 
     return true;
@@ -864,8 +865,6 @@ LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
         return MOD_FNAME_PPMN;
 	if (!_tcscmp(Type, MOD_TYPE_PPMW))
 		return MOD_FNAME_PPMW;
-	if (!_tcscmp(Type, MOD_TYPE_PPMT))
-		return MOD_FNAME_PPMT;
 	if (!_tcscmp(Type,MOD_TYPE_JR))
         return MOD_FNAME_JR;
     if (!_tcscmp(Type,MOD_TYPE_FUT))
