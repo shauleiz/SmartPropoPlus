@@ -863,9 +863,9 @@ LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
         return MOD_FNAME_PPMP;
     if (!_tcscmp(Type,MOD_TYPE_PPMN))
         return MOD_FNAME_PPMN;
-    if (!_tcscmp(Type,MOD_TYPE_PPMW))
-        return MOD_FNAME_PPMW;
-    if (!_tcscmp(Type,MOD_TYPE_JR))
+	if (!_tcscmp(Type, MOD_TYPE_PPMW))
+		return MOD_FNAME_PPMW;
+	if (!_tcscmp(Type,MOD_TYPE_JR))
         return MOD_FNAME_JR;
     if (!_tcscmp(Type,MOD_TYPE_FUT))
         return MOD_FNAME_FUT;
@@ -1866,7 +1866,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case WM_DESTROY:
             DestroyWindow(hDlg);
             hDlg = NULL;
-			//PostQuitMessage(0);
+//			PostQuitMessage(0);
             return (INT_PTR)TRUE;
 
     case WM_NOTIFY:
