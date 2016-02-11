@@ -684,6 +684,7 @@ bool		AppExit(void)
 
 	// Kill Dialog box
 	SendMessage(hDialog, WM_DESTROY, 0,0);
+	delete(Dialog);
 
 	// Stop thread "CvJoyMonitor Central thread (Loop)"
 	 vJoyMonitorClose();
@@ -705,7 +706,6 @@ bool		AppExit(void)
 	delete(Conf);
 	delete(Audio);
 	delete(DbgObj);
-	delete(Dialog);
 
 	return true;
 
