@@ -25,8 +25,10 @@ SppLog::SppLog(void) : m_hLogDlg(NULL)
 
 SppLog::SppLog(HINSTANCE hInstance, HWND	ConsoleWnd)
 {
+	m_hInstance = hInstance;
 	m_hLogDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_LOGDLG), NULL, DlgAudioLog,  (LPARAM)this);
 	//SetWindowLong(m_hLogDlg, GWL_STYLE, WS_CHILD);
+
 }
 
 SppLog::~SppLog(void)
@@ -46,7 +48,10 @@ void SppLog::Hide()
 
 void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 {
-		if (!m_hLogDlg)
+	TCHAR pBuf[1000] = { NULL };
+	int len;
+
+	if (!m_hLogDlg)
 		return;
 
 	// Initialize
@@ -90,7 +95,10 @@ void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 		wmemcpy(src,L"<Cntrl ",sizeof(L"<Cntrl ")/sizeof(TCHAR));
 		break;
 	case WMSPP_LOG_AUDIO:
-		wmemcpy(src,L"<Audio ",sizeof(L"<Audio ")/sizeof(TCHAR));
+		wmemcpy(src, L"<Audio ", sizeof(L"<Audio ") / sizeof(TCHAR));
+		break;
+	case WMSPP_LOG_CONFIG:
+		wmemcpy(src, L"<Confg ", sizeof(L"<Confg ") / sizeof(TCHAR));
 		break;
 	case WMSPP_LOG_PRSC:
 		wmemcpy(src,L"<Prcss ",sizeof(L"<Prcss ")/sizeof(TCHAR));
@@ -117,10 +125,22 @@ void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
 	SendMessage(hEdit,EM_SETSEL    , lr, lr);
 	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)prtcode);
-	// Data
-	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
-	SendMessage(hEdit,EM_SETSEL    , lr, lr);
-	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)(LPCWSTR)Data);
+	// Code String
+	len = LoadString(m_hInstance, Code, reinterpret_cast< LPWSTR >(&pBuf), sizeof(pBuf) / sizeof(TCHAR));
+	if (len)
+	{
+		lr = SendMessage(hEdit, EM_GETTEXTLENGTHEX, (WPARAM)&tl, 0);
+		SendMessage(hEdit, EM_SETSEL, lr, lr);
+		SendMessage(hEdit, EM_REPLACESEL, TRUE, (LPARAM)(LPCWSTR)pBuf);
+	}
+	// Data	
+	if (Data)
+	{
+		lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+		SendMessage(hEdit,EM_SETSEL    , lr, lr);
+		SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)(LPCWSTR)Data); 
+	}
+	
 	// New line
 	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
 	SendMessage(hEdit,EM_SETSEL    , lr, lr);
@@ -173,11 +193,18 @@ INT_PTR CALLBACK  DlgAudioLog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		DialogObj->LogAudioUnit((int)wParam, WMSPP_LOG_PRSC, message-WMSPP_LOG_PRSC, (LPVOID)lParam);
 		break;
 
-	case WMSPP_LOG_AUDIO+INFO:
-	case WMSPP_LOG_AUDIO+WARN:
-	case WMSPP_LOG_AUDIO+ERR:
-	case WMSPP_LOG_AUDIO+FATAL:
-		DialogObj->LogAudioUnit((int)wParam, WMSPP_LOG_AUDIO, message-WMSPP_LOG_AUDIO, (LPVOID)lParam);
+	case WMSPP_LOG_AUDIO + INFO:
+	case WMSPP_LOG_AUDIO + WARN:
+	case WMSPP_LOG_AUDIO + ERR:
+	case WMSPP_LOG_AUDIO + FATAL:
+		DialogObj->LogAudioUnit((int)wParam, WMSPP_LOG_AUDIO, message - WMSPP_LOG_AUDIO, (LPVOID)lParam);
+		break;
+
+	case WMSPP_LOG_CONFIG + INFO:
+	case WMSPP_LOG_CONFIG + WARN:
+	case WMSPP_LOG_CONFIG + ERR:
+	case WMSPP_LOG_CONFIG + FATAL:
+		DialogObj->LogAudioUnit((int)wParam, WMSPP_LOG_CONFIG, message - WMSPP_LOG_CONFIG, (LPVOID)lParam);
 		break;
 
 	}

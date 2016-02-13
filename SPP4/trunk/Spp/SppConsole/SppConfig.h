@@ -1,6 +1,6 @@
 #pragma once
 #define TIXML_USE_STL 1
-#include "..\TinyXml\TinyXml.h"	 // TODO: Fix the include path
+#include "TinyXml.h"
 #include <array>
 
 #ifdef X64
@@ -62,7 +62,7 @@ class CSppConfig
 {
 public:
 	//CSppConfig(void);
-	CSppConfig(LPTSTR FileName = DEF_CONF_FILE);
+	CSppConfig(HWND m_hPrntWnd, LPTSTR FileName = DEF_CONF_FILE);
 	virtual 		~CSppConfig(void);
 
 	// vJoy
@@ -152,6 +152,8 @@ private:
 
 	int				GetGeneralElemetsBool(const char * Element);
 	bool			SetGeneralElemetsBool(const char * Element, bool Val);
+	void			LogMessage(int Severity, int Code, LPCTSTR Msg = NULL);
+
 
 
 private:
@@ -159,7 +161,8 @@ private:
 	recursive_mutex			m_mx_General;
 	FILE *					m_pFile;
 	wstring					m_filename;
-
+	HWND					m_hPrntWnd;
+	HMODULE					m_hInstance;
 };
 
 string utf8_encode(const wstring &wstr);

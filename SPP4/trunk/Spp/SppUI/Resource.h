@@ -397,6 +397,10 @@
 #define IDC_TXT_SL1                     40208
 #define IDM_DISPLAY_WIZARD              40209
 #define IDC_STAT_FILTER                 40210
+#define IDS_E_AUDIOID					40211
+#define IDS_I_CONF_CREATED				40212
+#define IDS_E_CONF_NOFOLDER				40213
+#define IDS_I_CONF_CREATEFOLDER			40214
 
 // Next default values for new objects
 // 

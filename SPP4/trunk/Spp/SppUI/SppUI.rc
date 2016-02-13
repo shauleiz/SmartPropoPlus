@@ -356,6 +356,10 @@ BEGIN
     40200                   "Display Pulse Signal"
     40201                   "Set SmartPropoPlus to its default configuration\r\nCurrent configuration will be losst!"
     40202                   "Reset Configuration"
+	40211					"Audio jack ID is missing"
+	40212					"Configuration File Opened: "
+	40213					"Cannot open folder for Config file - Aborting"
+	40214					"Creating folder for Config file: "
 END
 
 #endif    // English (United States) resources

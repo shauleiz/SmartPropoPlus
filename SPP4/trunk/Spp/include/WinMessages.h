@@ -95,5 +95,6 @@ UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log message
 UINT const WMSPP_LOG_CNTRL	=				WMSPP_LOG_BASE + 0;				// Base value for log messages comming from SppControl
 UINT const WMSPP_LOG_AUDIO	=				WMSPP_LOG_BASE + 1000;			// Base value for log messages comming from SppAudio
 UINT const WMSPP_LOG_PRSC	=				WMSPP_LOG_BASE + 2000;			// Base value for log messages comming from SppProcess
+UINT const WMSPP_LOG_CONFIG =				WMSPP_LOG_BASE + 3000;			// Base value for log messages comming from SppConfig
 
 

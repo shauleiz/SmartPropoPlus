@@ -20,5 +20,6 @@ public:
 
 private:
 	HWND m_hLogDlg;
+	HINSTANCE m_hInstance;
 };
 

@@ -192,7 +192,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	hMain = hwnd;
 
 	// Get Configuration file
-	Conf = new CSppConfig();
+	Conf = new CSppConfig(hMain);
 
 	// If Start mode is 'Normal' - get set up from configulation file
 	// Calculate the status of the GUI (Wizard/Iconified)
@@ -512,13 +512,20 @@ LRESULT CALLBACK MainWindowProc(
 			LogMessageExt(uMsg-WMSPP_LOG_PRSC, (int)wParam, WMSPP_LOG_PRSC, (LPCTSTR)lParam);
 			break;
  
-		case WMSPP_LOG_AUDIO+INFO:
-		case WMSPP_LOG_AUDIO+WARN:
-		case WMSPP_LOG_AUDIO+ERR:
-		case WMSPP_LOG_AUDIO+FATAL:
-			LogMessageExt(uMsg-WMSPP_LOG_AUDIO, (int)wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
+		case WMSPP_LOG_AUDIO + INFO:
+		case WMSPP_LOG_AUDIO + WARN:
+		case WMSPP_LOG_AUDIO + ERR:
+		case WMSPP_LOG_AUDIO + FATAL:
+			LogMessageExt(uMsg - WMSPP_LOG_AUDIO, (int)wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
 			break;
- 
+
+		case WMSPP_LOG_CONFIG + INFO:
+		case WMSPP_LOG_CONFIG + WARN:
+		case WMSPP_LOG_CONFIG + ERR:
+		case WMSPP_LOG_CONFIG + FATAL:
+			LogMessageExt(uMsg - WMSPP_LOG_CONFIG, (int)wParam, WMSPP_LOG_CONFIG, (LPCTSTR)lParam);
+			break;
+
 		case WMSPP_AUDIO_INSIG:
 			DbgObj->InputSignalReady((PBYTE)wParam, (PVOID)lParam);
 			break;
@@ -673,9 +680,10 @@ bool		AppExit(void)
 
 	// Kill Log Window
 	if (hLog)
+	{
 		SendMessage(hLog, WM_DESTROY, 0, 0);
-	if (LogWin)
-		delete(LogWin);
+		hLog = NULL;
+	}
 
  	// Clean-up the Scope window
 	if (Spp)
@@ -706,6 +714,8 @@ bool		AppExit(void)
 	delete(Conf);
 	delete(Audio);
 	delete(DbgObj);
+	if (LogWin)
+		delete(LogWin);
 
 	return true;
 
@@ -931,7 +941,10 @@ void AudioLevelWatch()
 	wstring ch = L"";
 
 	if (!AudioId)
-		return; // TODO: Add log here - this is an error
+	{
+		LogMessage(ERROR, IDS_E_AUDIOID);
+		return;
+	}
 	// Initializing channel state
 	//if (isRight==-1)
 	//{
@@ -1601,16 +1614,6 @@ void	LogMessage(int Severity, int Code, LPCTSTR Msg)
 {
 	if (!hLog)
 		return;
-
-	TCHAR pBuf[1000] = {NULL};
-	int len;
-
-	if (!Msg)
-	{
-		len = LoadString(g_hInstance, Code, reinterpret_cast< LPWSTR >( &pBuf ), sizeof(pBuf)/sizeof(TCHAR) );
-		if (len)
-			Msg = pBuf;
-	};
 
 	SendMessageTimeout(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg, SMTO_ABORTIFHUNG, 1000, NULL);
 }

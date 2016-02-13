@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Knownfolders.h"
 #include "Shlobj.h"
+#include "WinMessages.h"
+#include "Resource.h"
 #include "SmartPropoPlus.h"
 #include "public.h"
 #include "SppProcess.h"
@@ -8,7 +10,7 @@
 //#include <vld.h>
 
 
-CSppConfig::CSppConfig(LPTSTR FileName) 
+CSppConfig::CSppConfig(HWND hWnd, LPTSTR FileName)
 {
 	HRESULT hr = S_OK;
 	PWSTR path = NULL;
@@ -18,12 +20,16 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	//const char *ErrorTxt;
 
 	lock_guard<recursive_mutex> lock(m_mx_General);
+	m_hPrntWnd = hWnd;
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
 	if (hr != S_OK)
-		return;
+	{
+ 		return;
+		LogMessage(ERROR, IDS_E_CONF_NOFOLDER);
+	}
 
-	// TEST Only path = L"C:\\תיקיית ניסיון";
+	m_hInstance = GetModuleHandle(NULL);
 	w_full_path = path;
 	m_filename = w_full_path + TEXT("\\") + DEF_CONF_DIR + TEXT("\\") + FileName;
 	full_path = utf8_encode(w_full_path);
@@ -40,14 +46,16 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 		w_full_path = w_full_path + TEXT("\\") + DEF_CONF_DIR;
 		CreateDirectory(w_full_path.c_str(), 0);
 		CreateDefaultConfig(&m_doc);
+		LogMessage(ERROR, IDS_I_CONF_CREATEFOLDER, w_full_path.c_str());
 	};
-	// TODO: Log operation
 
 
 	saved = Save();
 	if (!saved)
 		m_doc = NULL;
+	LogMessage(INFO, IDS_I_CONF_CREATED, FileName);
 }
+
 
 CSppConfig::~CSppConfig(void)
 {
@@ -1625,6 +1633,24 @@ int	CSppConfig::GetGeneralElemetsBool(const char * Element)
 		return val;
 }
 
+void	CSppConfig::LogMessage(int Severity, int Code, LPCTSTR Msg)
+{
+	if (!m_hPrntWnd)
+		return;
+
+	TCHAR pBuf[1000] = { NULL };
+	int len;
+
+	if (!Msg)
+	{
+		len = LoadString(m_hInstance, Code, reinterpret_cast<LPWSTR>(&pBuf), sizeof(pBuf) / sizeof(TCHAR));
+		if (len)
+			Msg = pBuf;
+	};
+
+	PostMessage(m_hPrntWnd, WMSPP_LOG_CONFIG + Severity, (WPARAM)Code, (LPARAM)Msg);
+
+}
 
 void CSppConfig::Test(void)
 {
@@ -1764,4 +1790,5 @@ TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, wstring Valu
 
 	return ModHandle;
 }
+
 
