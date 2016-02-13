@@ -211,6 +211,10 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define CN_NO_INTERSPPAPPS		TEXT("wWinMain(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS")
 #define CN_NO_DECODER			TEXT("Could not detect the encoding of the input signal\r\nTry to select the decoder manually")
 #define CN_NO_DECODER_HDR		TEXT("Encoding Detection")
+#define CN_NO_TABCONTROL		TEXT("Cannot find the Tab-Control - Aborting...")
+#define CN_NO_TABCONTROL_HDR	TEXT("SmartPropoPlus Error")
+#define CN_NO_TABRECT			TEXT("Cannot find the Tab-Control graphical rectangle - Aborting...")
+#define CN_NO_TABRECT_HDR		TEXT("SmartPropoPlus Error")
 
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1

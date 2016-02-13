@@ -383,16 +383,22 @@ int SppDlg::InitTabs(HWND hDlg)
 
     // Initialize structure that represents tabs
     m_hrsrc.hwndTab = GetDlgItem(hDlg,  IDC_TABS);
-    if (!m_hrsrc.hwndTab) // TODO: Add log
-        return 0;
+	if (!m_hrsrc.hwndTab)
+	{	
+		MessageBox(hDlg, CN_NO_TABCONTROL, CN_NO_TABCONTROL_HDR, MB_OK | MB_ICONERROR | MB_TOPMOST);
+		return 0;
+	}
             
     // Fix white background around tab icon
     SetWindowTheme(m_hrsrc.hwndTab, L" ", L" ");
 
     // Get the tab rectangle
     BOOL GotRect = GetWindowRect(m_hrsrc.hwndTab, &m_hrsrc.rcDisplay);
-    if (!GotRect) // TODO: Add log
-        return 0;
+    if (!GotRect)
+	{
+		MessageBox(hDlg, CN_NO_TABRECT, CN_NO_TABRECT_HDR, MB_OK | MB_ICONERROR | MB_TOPMOST);
+		return 0;
+	}
 
     // Create child dialogs and tabs
     tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM ;
@@ -780,10 +786,13 @@ void SppDlg::SetStreamingState(BOOL isProcessingAudio)
     SetStreamingButton(isProcessingAudio);
 
     // Show/Hide Tab control
-    if (isProcessingAudio)
-        ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), SW_SHOW);
+	int ShowState;
+	if (isProcessingAudio)
+		ShowState = SW_SHOW;
     else
-        ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), SW_HIDE);
+		ShowState = SW_HIDE;
+
+	ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), ShowState);
     
 
     // Enable/Disable Info frame
@@ -797,7 +806,34 @@ void SppDlg::SetStreamingState(BOOL isProcessingAudio)
     EnableWindow(GetDlgItem(m_hDlg,  IDS_JOY),  isProcessingAudio);
     EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_CHBITS),  isProcessingAudio);
     EnableWindow(GetDlgItem(m_hDlg,  IDS_DECODER_NCH),  isProcessingAudio);
-    // TODO: Enable/Disable all Progress bars
+    
+	// Enable/Disable all Progress bars
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH1), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH2), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH3), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH4), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH5), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH6), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH7), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH8), ShowState);
+
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP1), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP2), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP3), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP4), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP5), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP6), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP7), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP8), ShowState);
+
+	ShowWindow(GetDlgItem(m_hDlg, IDC_X), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_Y), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_Z), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_RX), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_RY), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_RZ), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_SL0), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_SL1), ShowState);
 
     DisplayBackgroundImage(!isProcessingAudio);
 }
