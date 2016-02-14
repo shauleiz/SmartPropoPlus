@@ -70,7 +70,3 @@ inline void SafeRelease(
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
-
-
-
-// TODO: reference additional headers your program requires here

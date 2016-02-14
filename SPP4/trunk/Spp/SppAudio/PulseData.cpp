@@ -102,8 +102,7 @@ HRESULT	CPulseData::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 		PulseLength = NormalizePulse(PulseLength);
 
 		// If valid pulse the process the pulse
-		// TODO (?): Very short pulses are ignored (Glitch)
-		if (PulseLength/*>3*/)
+		if (PulseLength)
 			ProcessPulse(PulseLength, negative,m_ProcPulseParam);
 	};
 

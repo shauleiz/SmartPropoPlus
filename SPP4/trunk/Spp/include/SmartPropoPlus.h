@@ -215,6 +215,9 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define CN_NO_TABCONTROL_HDR	TEXT("SmartPropoPlus Error")
 #define CN_NO_TABRECT			TEXT("Cannot find the Tab-Control graphical rectangle - Aborting...")
 #define CN_NO_TABRECT_HDR		TEXT("SmartPropoPlus Error")
+#define CN_ILL_DLLFILE			TEXT("This DLL File is not a valid Filter File")
+#define CN_ILL_DLLFILE_HDR		TEXT("Open Filter File")
+
 
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1

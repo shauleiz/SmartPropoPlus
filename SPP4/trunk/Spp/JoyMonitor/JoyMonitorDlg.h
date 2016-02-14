@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\include\WinMessages.h"		   // TODO: Fix the include path
+#include "WinMessages.h"
 
 #define MAX_DISP_BUTTONS 128
 #define ROWSPACE 25			// Space between rows

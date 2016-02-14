@@ -2,8 +2,8 @@
 #include "Windowsx.h"
 #include "Commctrl.h"
 #include "resource.h"
-#include "..\include\public.h"				// TODO: Fix the include path
-#include "..\include\smartpropoplus.h"	    // TODO: Fix the include path
+#include "public.h"			
+#include "smartpropoplus.h"
 #include "JoyMonitorDlg.h"
 
 
@@ -459,7 +459,7 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 	////// Verify correct vJoy device
 	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
 	// Get the index of the selected vJoy device
-	int index = 0; // TODO: (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); 
+	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); // TODO: Test
 	if (index == CB_ERR)
 		return;
 

@@ -466,7 +466,7 @@ HRESULT CPulseScope::OnRender()
 		// Play/Pause button
 		DisplayPausePlayButton(!m_isPlaying, m_PlayPauseRect);
 
-		// TODO: Close Button
+		// Close Button
 		DisplayCloseButton();
 
 
