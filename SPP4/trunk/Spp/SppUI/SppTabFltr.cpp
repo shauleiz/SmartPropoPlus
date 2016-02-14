@@ -174,7 +174,7 @@ void SppTabFltr::OnFilterFileBrowse(void)
 	info = SendMessage(m_TopDlgWnd, WMSPP_DLG_FLTRFILE , (WPARAM)ofn.lpstrFile, 0);
 	if (!info)
 	{
-		MessageBox(m_hDlg, TEXT("Illegal DLL File"), TEXT("Filter File"), MB_ICONERROR); // TODO: Replace strings
+		MessageBox(m_hDlg, CN_ILL_DLLFILE, CN_ILL_DLLFILE_HDR, MB_ICONERROR);
 		return;
 	}
 
