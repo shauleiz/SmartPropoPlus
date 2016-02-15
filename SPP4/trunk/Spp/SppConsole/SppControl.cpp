@@ -82,6 +82,7 @@ int			SelectedvJoyDevice(void);
 void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
+bool		isUnique(void);
 void		AudioLevelWatch();
 UINT		GetAudioQuality(bool);
 void		PulseScope(BOOL start);
@@ -141,16 +142,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		
 	/* Test if another SppControl is running */
-	HANDLE hMuxex;
-	if (hMuxex=OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXCONSOLE))
-	{	// another instance is already running and the second instance is NOT 
-		// launched iconified then Broadcast a message.
-		//TODO: if (!m_Iconified)
-			::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+	if (!isUnique())
 		return -2;
-	}
-	else
-		hMuxex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
 	// Create main window that will receive messages from other parts of the application
 	// and will relay the data to the dialog window.
@@ -2014,6 +2007,42 @@ WORD	GetStartMode(LPTSTR lpCmdLine)
 
 	LocalFree(argv);
 	return out;
+}
+
+// This function is responsible that ther is only one SPP process
+// 	+ Tries to open mutex MUTXCONSOLE.
+//  + If fails, creates this mutex.
+//		+ If fails : Displays an error dialog box and returns FALSE
+//		+ If succeeds : Returns TRUE
+//  + If succeeds to open this mutex it means another SPP process exists
+//		+ Display an error dialog box
+//		+ Send message WM_INTERSPPCONSOLE to existing process.
+//		+ Returns FALSE
+bool isUnique(void)
+{
+	TCHAR msg[MAX_MSG_SIZE];
+	HANDLE hMutex;
+	if (hMutex = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXCONSOLE))
+	{	// another instance is already running - Display error message and inform the other instance
+		::MessageBox(NULL, CN_NO_NOT_UNIQUE, SPP_MSG, MB_SYSTEMMODAL);
+		::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+		return false;
+	}
+	else
+		// Single SPP Process - Create a mutex to secure its uniqueness
+		hMutex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
+
+	// Test the handle to the mutex
+	if (!hMutex)
+	{
+		DWORD errcode =  GetLastError();
+		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_BAD_MUTEX, static_cast<UINT>(errcode));
+		::MessageBox(NULL, msg, SPP_MSG, MB_SYSTEMMODAL);
+		return false;
+	}
+
+
+	return true;
 }
 
 // TODO: Remove pragma and solve problem

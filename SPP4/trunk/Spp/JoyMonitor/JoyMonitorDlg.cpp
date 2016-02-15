@@ -459,7 +459,7 @@ void CJoyMonitorDlg::EnableControls(UINT id, controls * ctrl)
 	////// Verify correct vJoy device
 	HWND hCb = GetDlgItem(m_hDlg,IDC_VJOY_DEVICE);
 	// Get the index of the selected vJoy device
-	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0); // TODO: Test
+	int index = (int)SendMessage(hCb,(UINT) CB_GETCURSEL  ,(WPARAM) 0,(LPARAM)0);
 	if (index == CB_ERR)
 		return;
 
