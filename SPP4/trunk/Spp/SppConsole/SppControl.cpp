@@ -82,6 +82,7 @@ int			SelectedvJoyDevice(void);
 void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
+int			ConfUniq(bool config, bool hide);
 bool		isUnique(void);
 void		AudioLevelWatch();
 UINT		GetAudioQuality(bool);
@@ -617,6 +618,12 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->SetDecoderScanning(TRUE, FALSE, DECODER_TIMEOUT);
 			break;
  
+		case WM_INTERSPPAPPSGETUNIQ:
+			if (ConfUniq(wParam, lParam) == 1)
+				return UNIQUE_MSG_HIDE;
+			else
+ 				return UNIQUE_MSG_SHOW;
+
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
     } 
@@ -2009,6 +2016,24 @@ WORD	GetStartMode(LPTSTR lpCmdLine)
 	return out;
 }
 
+// This function  configures the "Don't Show again" for the message box 
+// that warns that there is another SPP process
+//
+// Parameters:
+//	config: If true then SET configuration. If false GET configuration.
+//  hide: Only if config==true: If true set option to hide dialog box
+int ConfUniq(bool config,  bool hide)
+{
+	// Configure only if config==true
+	if (config!=true)
+		return Conf->HideUnqMsg();
+
+	// Configure
+	Conf->HideUnqMsg(hide);
+	return 0;
+}
+
+
 // This function is responsible that ther is only one SPP process
 // 	+ Tries to open mutex MUTXCONSOLE.
 //  + If fails, creates this mutex.
@@ -2020,17 +2045,70 @@ WORD	GetStartMode(LPTSTR lpCmdLine)
 //		+ Returns FALSE
 bool isUnique(void)
 {
+	HWND hOtherWin = NULL;
+	ULONG_PTR MsgResult = 0;
+	LRESULT res=0;
 	TCHAR msg[MAX_MSG_SIZE];
-	HANDLE hMutex;
-	if (hMutex = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXCONSOLE))
-	{	// another instance is already running - Display error message and inform the other instance
-		::MessageBox(NULL, CN_NO_NOT_UNIQUE, SPP_MSG, MB_SYSTEMMODAL);
-		::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
-		return false;
+
+	// Prepare a Task dialog box
+	TASKDIALOGCONFIG config = { sizeof(TASKDIALOGCONFIG) };
+	int selectedButtonId = 0;
+	int selectedRadioButtonId = 0;
+	BOOL verificationChecked = FALSE;
+	config.pszWindowTitle = SPP_MSG;
+	config.pszMainInstruction = CN_NO_UNIQUE_MAIN;
+	config.pszContent = CN_NO_UNIQUE;
+
+	// Get a handle to a mutex created by another SPP process
+	// If does not exists - No other process so skip the IPC and create such a mutex
+	HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXCONSOLE);
+	
+	// Find the handle to the already existing Window
+	hOtherWin = FindWindow(MAIN_CLASS_NAME, MAIN_WND_TITLE);
+
+	// another instance is already running - communicate with it
+	if (hMutex && hOtherWin)
+	{	
+		// If exists, get the state of the "Don't show again" option
+		res = SendMessageTimeout(hOtherWin, WM_INTERSPPAPPSGETUNIQ, 0, 0, SMTO_ABORTIFHUNG | SMTO_ERRORONEXIT, 100, &MsgResult);
+
+		if (res)
+		{
+			// If the existing process does not support this message (Old version of SPP): Return 1, MsgResult==0;
+			//     Display dialog box:  NO "Don't show again" option
+			if (MsgResult == 0)
+			{
+				config.pszVerificationText = NULL;
+				::TaskDialogIndirect(&config, &selectedButtonId, &selectedRadioButtonId, &verificationChecked);
+				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+			}
+
+			// If the existing process support this message ( Return 1, MsgResult!=0;) then:
+			// If MsgResult==UNIQUE_MSG_HIDE then don't display dialog box
+			else if (MsgResult == UNIQUE_MSG_HIDE)
+				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+
+			// If the existing process support this message ( Return 1, MsgResult!=0;) then:
+			// If MsgResult!=UNIQUE_MSG_HIDE then display dialog box WITH "Don't show again" option
+			// And pass user selection to running process
+			else
+			{
+				config.pszVerificationText = CN_NO_UNIQUE_CB;
+				::TaskDialogIndirect(&config, &selectedButtonId,  &selectedRadioButtonId, &verificationChecked);
+				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+
+				// Instuct the existing process to change "Don't show again" option in the configuration file
+				res = SendMessageTimeout(hOtherWin, WM_INTERSPPAPPSGETUNIQ, 1, verificationChecked, SMTO_ABORTIFHUNG | SMTO_ERRORONEXIT, 100, NULL);
+
+			}
+			return false;
+		};
+
+		// If the existing process does not respond: Return 0 then ignore it and continue with this project.
 	}
-	else
-		// Single SPP Process - Create a mutex to secure its uniqueness
-		hMutex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
+
+	// Single SPP Process - Create a mutex to secure its uniqueness
+	hMutex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
 	// Test the handle to the mutex
 	if (!hMutex)

@@ -49,6 +49,7 @@
 #define SPP_GENERAL	"General"
 #define SPP_MONCHNL	"Monitor_CH"
 #define SPP_PLSSCP	"Pulse_SCP"
+#define SPP_UNQMSG	"Hide_Unique_Msg"
 #define SPP_SHOWLOG	"Show_Log"
 #define SPP_CHECKED	"Checked"
 #define SPP_BTNPREF	"Button"
@@ -111,6 +112,8 @@ public:
 	bool			MonitorChannels(bool Monitor);
 	int				PulseScope();
 	bool			PulseScope(bool Monitor);
+	int				HideUnqMsg();
+	bool			HideUnqMsg(bool Hide);
 	int				ShowLog();
 	bool			ShowLog(bool Monitor);
 	bool			Wizard();

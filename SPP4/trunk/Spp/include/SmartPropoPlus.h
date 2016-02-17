@@ -209,7 +209,9 @@ For further details please go to the SmartPropoPlus Home using the link below."
 /* SPP Console messages */
 #define CN_NO_INTERSPPCONSOLE	TEXT("wWinMain(): WM_INTERSPPCONSOLE = %u - cannot register window message INTERSPPCONSOLE")
 #define CN_NO_INTERSPPAPPS		TEXT("wWinMain(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS")
-#define CN_NO_NOT_UNIQUE		TEXT("wWinMain(): Cannot start SmartPropoPlus\r\nAnother SmartPropoPlus process is already runing.")
+#define CN_NO_UNIQUE			TEXT("Cannot start a second SmartPropoPlus Session\r\nOnly one session allowed")
+#define CN_NO_UNIQUE_MAIN		TEXT("SmartPropoPlus already running")
+#define CN_NO_UNIQUE_CB			TEXT("Do not show this dialog again")
 #define CN_NO_BAD_MUTEX			TEXT("wWinMain(): Cannot create uniqueness mutex\r\nError code %u")
 #define CN_NO_DECODER			TEXT("Could not detect the encoding of the input signal\r\nTry to select the decoder manually")
 #define CN_NO_DECODER_HDR		TEXT("Encoding Detection")

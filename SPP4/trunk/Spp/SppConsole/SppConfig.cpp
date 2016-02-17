@@ -1367,6 +1367,41 @@ bool CSppConfig::Save(void)
 	return false;
 }
 
+// Get the state of "Hide Unique SPP Message"
+// Return:
+//   1: Hide
+//   0: Don't Hide
+//  -1: No data
+int CSppConfig::HideUnqMsg()
+{
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement(SPP_ROOT);
+	if (!root)
+		return  -1;
+	TiXmlHandle RootHandle(root);
+
+	// If Section 'General' does not exist - No data
+	TiXmlElement* General = RootHandle.FirstChild(SPP_GENERAL).ToElement();
+	if (!General)
+		return -1;
+
+	// Get  Hide Status
+	TiXmlElement* HideUnqMsg = RootHandle.FirstChild(SPP_GENERAL).FirstChild(SPP_UNQMSG).ToElement();
+	if (!HideUnqMsg)
+		return -1;
+
+	// Get the attribute
+	int val;
+	int result = HideUnqMsg->QueryIntAttribute(SPP_CHECKED, &val);
+	if (TIXML_SUCCESS != result)
+		return -1;
+	else
+		return val;
+}
+
+
 // Get the state of Pulse_SCP
 // Return:
 //   1: Monitor
@@ -1435,6 +1470,45 @@ int CSppConfig::MonitorChannels()
 		return val;
 }
 
+// Set the state of "Hide Unique SPP Message" to 1/0
+// Return true on success
+bool CSppConfig::HideUnqMsg(bool Hide)
+{
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement(SPP_ROOT);
+	if (!root)
+		return  false;
+	TiXmlHandle RootHandle(root);
+
+	// If Section 'General' does not exist - create it
+	TiXmlElement* General = RootHandle.FirstChild(SPP_GENERAL).ToElement();
+	if (!General)
+	{
+		General = new TiXmlElement(SPP_GENERAL);
+		root->LinkEndChild(General);
+	};
+
+	// Get or Create Hide status
+	TiXmlElement* HideUnqMsg = RootHandle.FirstChild(SPP_GENERAL).FirstChild(SPP_UNQMSG).ToElement();
+	if (!HideUnqMsg)
+	{
+		//  "Hide Unique Message" does not exist - create one
+		HideUnqMsg = new TiXmlElement(SPP_UNQMSG);
+		General->LinkEndChild(HideUnqMsg);
+	};
+
+	// Set attribute SPP_CHECKED to Hide status
+	if (Hide)
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "1");
+	else
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "0");
+
+	Save();
+
+	return true;
+}
 // Set the state of Pulse_SCP to 1/0
 // Return true on success
 bool CSppConfig::PulseScope(bool Monitor)
@@ -1442,33 +1516,33 @@ bool CSppConfig::PulseScope(bool Monitor)
 	lock_guard<recursive_mutex> lock(m_mx_General);
 
 	// Get handle of the root
-	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	TiXmlElement* root = m_doc.FirstChildElement(SPP_ROOT);
 	if (!root)
 		return  false;
-	TiXmlHandle RootHandle( root );
+	TiXmlHandle RootHandle(root);
 
 	// If Section 'General' does not exist - create it
-	TiXmlElement* General = RootHandle.FirstChild( SPP_GENERAL ).ToElement();
+	TiXmlElement* General = RootHandle.FirstChild(SPP_GENERAL).ToElement();
 	if (!General)
 	{
 		General = new TiXmlElement(SPP_GENERAL);
 		root->LinkEndChild(General);
 	};
-	
+
 	// Get or Create  Pulse_SCP
-	TiXmlElement* PulseScp = RootHandle.FirstChild( SPP_GENERAL ).FirstChild(SPP_PLSSCP).ToElement();
-	if (!PulseScp)
+	TiXmlElement* HideUnqMsg = RootHandle.FirstChild(SPP_GENERAL).FirstChild(SPP_PLSSCP).ToElement();
+	if (!HideUnqMsg)
 	{
 		//  Pulse_SCP does not exist - create one
-		PulseScp =  new TiXmlElement(SPP_PLSSCP);
-		General->LinkEndChild(PulseScp);
+		HideUnqMsg = new TiXmlElement(SPP_PLSSCP);
+		General->LinkEndChild(HideUnqMsg);
 	};
 
 	// Set attribute SPP_CHECKED to Pulse_SCP
 	if (Monitor)
-		PulseScp->SetAttribute(SPP_CHECKED, "1");
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "1");
 	else
-		PulseScp->SetAttribute(SPP_CHECKED, "0");
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "0");
 
 	Save();
 

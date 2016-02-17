@@ -1,7 +1,8 @@
 // User-defined messages
-UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;	// Message from the system tray
-UINT const WMAPP_SM_INIT = WM_APP + 2;			// State machine initialized
-UINT const WMAPP_SM_GUI  = WM_APP + 3;			// State machine Display GUI
+UINT const WMAPP_NOTIFYCALLBACK		= WM_APP + 1;	// Message from the system tray
+UINT const WMAPP_SM_INIT			= WM_APP + 2;	// State machine initialized
+UINT const WMAPP_SM_GUI				= WM_APP + 3;	// State machine Display GUI
+UINT const WM_INTERSPPAPPSGETUNIQ	= WM_APP + 4;	// State of the UNIQUE option
 
 
 
