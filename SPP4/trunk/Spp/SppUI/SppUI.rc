@@ -354,7 +354,7 @@ BEGIN
     40198                   "Log Pulses"
     40199                   "Check to start Display\r\nUn-check to stop"
     40200                   "Display Pulse Signal"
-    40201                   "Set SmartPropoPlus to its default configuration\r\nCurrent configuration will be losst!"
+    40201                   "Set SmartPropoPlus to its default configuration\r\nCurrent configuration will be lost!"
     40202                   "Reset Configuration"
 END
 

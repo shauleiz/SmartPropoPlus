@@ -619,7 +619,7 @@ LRESULT CALLBACK MainWindowProc(
 			break;
  
 		case WM_INTERSPPAPPSGETUNIQ:
-			if (ConfUniq(wParam, lParam) == 1)
+			if (ConfUniq((wParam == 1), (lParam == 1)) == 1)
 				return UNIQUE_MSG_HIDE;
 			else
  				return UNIQUE_MSG_SHOW;
@@ -1919,6 +1919,10 @@ void SetAvailableControls(UINT id, HWND hDlg)
 
 void SetvJoyMapping(UINT id)
 {
+	// Sanity check
+	if (id < 1 || id>16)
+		return;
+
 	// Axes
 	const UINT nAxes = 8;
 	DWORD dAxisMap = Conf->MapAxis(id);

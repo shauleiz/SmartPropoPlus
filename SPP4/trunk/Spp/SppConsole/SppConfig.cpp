@@ -386,6 +386,8 @@ DWORD CSppConfig::MapAxis(UINT id)
 void	CSppConfig::Map(UINT id, Mapping* GeneralMap)
 {
 	lock_guard<recursive_mutex> lock(m_mx_General);
+	if (id < 1 || id>16)
+		return;
 
 	MapAxis(id, *GeneralMap->pAxisMap);
 	MapButtons(id,  *GeneralMap->ButtonArray);
