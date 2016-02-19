@@ -371,6 +371,16 @@ LRESULT SppDlg::Reset(void)
     if (m_hrsrc.TabAdvnc)
         m_hrsrc.TabAdvnc->Reset();
 
+	// Reset GUI to Wizard mode
+	Show();
+	Iconified(false);
+
+	// Reset to not "Stopped" mode
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_STREAM, (WPARAM)TRUE, 0);
+
+	// Reset "Don't show again" to show the unique SPP process dialog box.
+ 	SendMessage(m_ConsoleWnd, WM_INTERSPPAPPSGETUNIQ, (WPARAM)TRUE, (LPARAM)FALSE);
+
     return TRUE;
 }
 
