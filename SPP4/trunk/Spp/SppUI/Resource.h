@@ -401,6 +401,7 @@
 #define IDS_I_CONF_CREATED				40212
 #define IDS_E_CONF_NOFOLDER				40213
 #define IDS_I_CONF_CREATEFOLDER			40214
+#define IDS_W_NO_MONITOR                40215
 
 // Next default values for new objects
 // 

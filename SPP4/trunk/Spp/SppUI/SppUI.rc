@@ -221,6 +221,7 @@ BEGIN
     40093                   "Audio Input"
     40094                   "SmartPropoPlus is currently paused - Press to activate"
     40095                   "SmartPropoPlus is currently active - Press to deactivate"
+	40215					"Cannot scan input - Channel polling thread is inactive"
 END
 
 STRINGTABLE

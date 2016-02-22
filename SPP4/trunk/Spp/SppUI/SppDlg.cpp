@@ -105,8 +105,8 @@ bool SppDlg::MsgLoop(void)
             return false;
         }
 
-        else if (!IsWindow(m_hDlg))
-            return true;
+        //else if (!IsWindow(m_hDlg))
+        //    return true;
 
         else if (!IsDialogMessage(m_hDlg, &msg)) 
         { 
@@ -1912,7 +1912,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case WM_DESTROY:
             DestroyWindow(hDlg);
             hDlg = NULL;
-//			PostQuitMessage(0);
+			PostQuitMessage(0);
             return (INT_PTR)TRUE;
 
     case WM_NOTIFY:

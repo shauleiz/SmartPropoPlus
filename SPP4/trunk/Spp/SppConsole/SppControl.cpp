@@ -270,7 +270,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Display the version of vJoy driver
 	vJoyDevicesVersion(hDialog);
 
-	// TODO: Test functions - remove later
+	// Monitor vJoy Device
 	if (MonitorOk)
 		StartPollingDevice(vJoyDevice); 
 
@@ -1280,7 +1280,7 @@ void SetMonitoring(HWND hDlg)
 
 HINSTANCE FilterPopulate(HWND hDlg)
 {
-	HINSTANCE h;
+	HINSTANCE h, hTmp;
 	//LPCTSTR * names;
 	//long filter_ver;
 	UINT			(CALLBACK * GetDllVersion)(void);
@@ -1294,7 +1294,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 
 
-	// TODO: Release former library
+	hTmp = hDllFilters;
 
 	// Get filter file name from config file
 	wstring wsFileName(Conf->FilterFile());
@@ -1338,12 +1338,6 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		return NULL;
 	};
 
-	//filter_ver = GetDllVersion();
-	//if (filter_ver < 0x30100) // TODO: Newer DLLs support wide characters
-	//{
-	//	SendMessage(hDlg, FILTER_VER, false, filter_ver);
-	//	return NULL;
-	//};
 
 	//// Build the list in the GUI
 	//		Get the number of filters
@@ -1366,8 +1360,8 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	UINT idSel = Conf->GetSelectedFilter();
 
 	// Get interface functions
-	pGetFilterNameByIndexA = (const char * (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
-	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndexW"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexA = (const char * (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndex");
+	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndexW");
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (CALLBACK *)(const int iFilter))GetProcAddress(h,"SelectFilterByIndex");
 	pGetIndexOfSelectedFilter = (const int  (CALLBACK *)(void))GetProcAddress(h,"GetIndexOfSelectedFilter");
@@ -1409,6 +1403,13 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		}
 	};
 	
+	// Release former library
+	if (hTmp)
+	{
+		FreeLibrary(hTmp);
+		hTmp = NULL;
+	}
+
 	LogMessage(INFO, IDS_I_FILTERDLLOK);
 	return h;
 }
@@ -1467,8 +1468,8 @@ void		SelectFilter(int FilterId)
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (WINAPI *)(const int iFilter))GetProcAddress(hDllFilters,"SelectFilterByIndex");
 	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
-	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(hDllFilters,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
-	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterNameByIndexW"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(hDllFilters,"GetFilterNameByIndex");
+	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterNameByIndexW"); 
 
 
 	int nFilters;
@@ -1711,7 +1712,7 @@ void thMonitor(bool * KeepAlive)
 
 
 		//  Compute the state of the Operation state machine and inform GUI
-		ComputeOperatState(); // TODO: Much tweeking
+		ComputeOperatState();
 
 		// Inform GUI of changes in the Start/Stop conditions
 		if (OperatStateMachine != oState)
@@ -2098,11 +2099,12 @@ bool isUnique(void)
 			else
 			{
 				config.pszVerificationText = CN_NO_UNIQUE_CB;
-				::TaskDialogIndirect(&config, &selectedButtonId,  &selectedRadioButtonId, &verificationChecked);
+				HRESULT hr = ::TaskDialogIndirect(&config, &selectedButtonId,  &selectedRadioButtonId, &verificationChecked);
 				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
 
 				// Instuct the existing process to change "Don't show again" option in the configuration file
-				res = SendMessageTimeout(hOtherWin, WM_INTERSPPAPPSGETUNIQ, 1, verificationChecked, SMTO_ABORTIFHUNG | SMTO_ERRORONEXIT, 100, NULL);
+				if (hr == S_OK)
+					res = SendMessageTimeout(hOtherWin, WM_INTERSPPAPPSGETUNIQ, 1, verificationChecked, SMTO_ABORTIFHUNG | SMTO_ERRORONEXIT, 100, NULL);
 
 			}
 			return false;
@@ -2127,9 +2129,8 @@ bool isUnique(void)
 	return true;
 }
 
-// TODO: Remove pragma and solve problem
-#pragma warning( push )
-#pragma warning( disable : 4996 )
+//#pragma warning( push )
+//#pragma warning( disable : 4996 )
 bool isAboveVistaSp1()
 {
 
@@ -2161,7 +2162,7 @@ bool isAboveVistaSp1()
 #endif // 0
 
 }
-#pragma warning( pop )
+//#pragma warning( pop )
 
 #ifdef _DEBUG
 const DWORD MS_VC_EXCEPTION=0x406D1388;
