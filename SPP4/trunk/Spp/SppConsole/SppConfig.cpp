@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Knownfolders.h"
 #include "Shlobj.h"
+#include "WinMessages.h"
+#include "Resource.h"
 #include "SmartPropoPlus.h"
 #include "public.h"
 #include "SppProcess.h"
@@ -8,7 +10,7 @@
 //#include <vld.h>
 
 
-CSppConfig::CSppConfig(LPTSTR FileName) 
+CSppConfig::CSppConfig(HWND hWnd, LPTSTR FileName)
 {
 	HRESULT hr = S_OK;
 	PWSTR path = NULL;
@@ -18,12 +20,16 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 	//const char *ErrorTxt;
 
 	lock_guard<recursive_mutex> lock(m_mx_General);
+	m_hPrntWnd = hWnd;
 	// Get the full path name of the config file and convert it to UTF8
 	hr  = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
 	if (hr != S_OK)
-		return;
+	{
+ 		return;
+		LogMessage(ERROR, IDS_E_CONF_NOFOLDER);
+	}
 
-	// TEST Only path = L"C:\\תיקיית ניסיון";
+	m_hInstance = GetModuleHandle(NULL);
 	w_full_path = path;
 	m_filename = w_full_path + TEXT("\\") + DEF_CONF_DIR + TEXT("\\") + FileName;
 	full_path = utf8_encode(w_full_path);
@@ -40,14 +46,16 @@ CSppConfig::CSppConfig(LPTSTR FileName)
 		w_full_path = w_full_path + TEXT("\\") + DEF_CONF_DIR;
 		CreateDirectory(w_full_path.c_str(), 0);
 		CreateDefaultConfig(&m_doc);
+		LogMessage(ERROR, IDS_I_CONF_CREATEFOLDER, w_full_path.c_str());
 	};
-	// TODO: Log operation
 
 
 	saved = Save();
 	if (!saved)
 		m_doc = NULL;
+	LogMessage(INFO, IDS_I_CONF_CREATED, FileName);
 }
+
 
 CSppConfig::~CSppConfig(void)
 {
@@ -378,6 +386,8 @@ DWORD CSppConfig::MapAxis(UINT id)
 void	CSppConfig::Map(UINT id, Mapping* GeneralMap)
 {
 	lock_guard<recursive_mutex> lock(m_mx_General);
+	if (id < 1 || id>16)
+		return;
 
 	MapAxis(id, *GeneralMap->pAxisMap);
 	MapButtons(id,  *GeneralMap->ButtonArray);
@@ -1359,6 +1369,41 @@ bool CSppConfig::Save(void)
 	return false;
 }
 
+// Get the state of "Hide Unique SPP Message"
+// Return:
+//   1: Hide
+//   0: Don't Hide
+//  -1: No data
+int CSppConfig::HideUnqMsg()
+{
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement(SPP_ROOT);
+	if (!root)
+		return  -1;
+	TiXmlHandle RootHandle(root);
+
+	// If Section 'General' does not exist - No data
+	TiXmlElement* General = RootHandle.FirstChild(SPP_GENERAL).ToElement();
+	if (!General)
+		return -1;
+
+	// Get  Hide Status
+	TiXmlElement* HideUnqMsg = RootHandle.FirstChild(SPP_GENERAL).FirstChild(SPP_UNQMSG).ToElement();
+	if (!HideUnqMsg)
+		return -1;
+
+	// Get the attribute
+	int val;
+	int result = HideUnqMsg->QueryIntAttribute(SPP_CHECKED, &val);
+	if (TIXML_SUCCESS != result)
+		return -1;
+	else
+		return val;
+}
+
+
 // Get the state of Pulse_SCP
 // Return:
 //   1: Monitor
@@ -1427,6 +1472,45 @@ int CSppConfig::MonitorChannels()
 		return val;
 }
 
+// Set the state of "Hide Unique SPP Message" to 1/0
+// Return true on success
+bool CSppConfig::HideUnqMsg(bool Hide)
+{
+	lock_guard<recursive_mutex> lock(m_mx_General);
+
+	// Get handle of the root
+	TiXmlElement* root = m_doc.FirstChildElement(SPP_ROOT);
+	if (!root)
+		return  false;
+	TiXmlHandle RootHandle(root);
+
+	// If Section 'General' does not exist - create it
+	TiXmlElement* General = RootHandle.FirstChild(SPP_GENERAL).ToElement();
+	if (!General)
+	{
+		General = new TiXmlElement(SPP_GENERAL);
+		root->LinkEndChild(General);
+	};
+
+	// Get or Create Hide status
+	TiXmlElement* HideUnqMsg = RootHandle.FirstChild(SPP_GENERAL).FirstChild(SPP_UNQMSG).ToElement();
+	if (!HideUnqMsg)
+	{
+		//  "Hide Unique Message" does not exist - create one
+		HideUnqMsg = new TiXmlElement(SPP_UNQMSG);
+		General->LinkEndChild(HideUnqMsg);
+	};
+
+	// Set attribute SPP_CHECKED to Hide status
+	if (Hide)
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "1");
+	else
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "0");
+
+	Save();
+
+	return true;
+}
 // Set the state of Pulse_SCP to 1/0
 // Return true on success
 bool CSppConfig::PulseScope(bool Monitor)
@@ -1434,33 +1518,33 @@ bool CSppConfig::PulseScope(bool Monitor)
 	lock_guard<recursive_mutex> lock(m_mx_General);
 
 	// Get handle of the root
-	TiXmlElement* root = m_doc.FirstChildElement( SPP_ROOT);
+	TiXmlElement* root = m_doc.FirstChildElement(SPP_ROOT);
 	if (!root)
 		return  false;
-	TiXmlHandle RootHandle( root );
+	TiXmlHandle RootHandle(root);
 
 	// If Section 'General' does not exist - create it
-	TiXmlElement* General = RootHandle.FirstChild( SPP_GENERAL ).ToElement();
+	TiXmlElement* General = RootHandle.FirstChild(SPP_GENERAL).ToElement();
 	if (!General)
 	{
 		General = new TiXmlElement(SPP_GENERAL);
 		root->LinkEndChild(General);
 	};
-	
+
 	// Get or Create  Pulse_SCP
-	TiXmlElement* PulseScp = RootHandle.FirstChild( SPP_GENERAL ).FirstChild(SPP_PLSSCP).ToElement();
-	if (!PulseScp)
+	TiXmlElement* HideUnqMsg = RootHandle.FirstChild(SPP_GENERAL).FirstChild(SPP_PLSSCP).ToElement();
+	if (!HideUnqMsg)
 	{
 		//  Pulse_SCP does not exist - create one
-		PulseScp =  new TiXmlElement(SPP_PLSSCP);
-		General->LinkEndChild(PulseScp);
+		HideUnqMsg = new TiXmlElement(SPP_PLSSCP);
+		General->LinkEndChild(HideUnqMsg);
 	};
 
 	// Set attribute SPP_CHECKED to Pulse_SCP
 	if (Monitor)
-		PulseScp->SetAttribute(SPP_CHECKED, "1");
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "1");
 	else
-		PulseScp->SetAttribute(SPP_CHECKED, "0");
+		HideUnqMsg->SetAttribute(SPP_CHECKED, "0");
 
 	Save();
 
@@ -1625,6 +1709,24 @@ int	CSppConfig::GetGeneralElemetsBool(const char * Element)
 		return val;
 }
 
+void	CSppConfig::LogMessage(int Severity, int Code, LPCTSTR Msg)
+{
+	if (!m_hPrntWnd)
+		return;
+
+	TCHAR pBuf[1000] = { NULL };
+	int len;
+
+	if (!Msg)
+	{
+		len = LoadString(m_hInstance, Code, reinterpret_cast<LPWSTR>(&pBuf), sizeof(pBuf) / sizeof(TCHAR));
+		if (len)
+			Msg = pBuf;
+	};
+
+	PostMessage(m_hPrntWnd, WMSPP_LOG_CONFIG + Severity, (WPARAM)Code, (LPARAM)Msg);
+
+}
 
 void CSppConfig::Test(void)
 {
@@ -1764,4 +1866,5 @@ TiXmlHandle	GetByKey(TiXmlHandle hParent, string Child, string Key, wstring Valu
 
 	return ModHandle;
 }
+
 

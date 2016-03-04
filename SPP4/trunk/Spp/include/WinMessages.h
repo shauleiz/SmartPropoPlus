@@ -1,7 +1,8 @@
 // User-defined messages
-UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;	// Message from the system tray
-UINT const WMAPP_SM_INIT = WM_APP + 2;			// State machine initialized
-UINT const WMAPP_SM_GUI  = WM_APP + 3;			// State machine Display GUI
+UINT const WMAPP_NOTIFYCALLBACK		= WM_APP + 1;	// Message from the system tray
+UINT const WMAPP_SM_INIT			= WM_APP + 2;	// State machine initialized
+UINT const WMAPP_SM_GUI				= WM_APP + 3;	// State machine Display GUI
+UINT const WM_INTERSPPAPPSGETUNIQ	= WM_APP + 4;	// State of the UNIQUE option
 
 
 
@@ -95,5 +96,6 @@ UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log message
 UINT const WMSPP_LOG_CNTRL	=				WMSPP_LOG_BASE + 0;				// Base value for log messages comming from SppControl
 UINT const WMSPP_LOG_AUDIO	=				WMSPP_LOG_BASE + 1000;			// Base value for log messages comming from SppAudio
 UINT const WMSPP_LOG_PRSC	=				WMSPP_LOG_BASE + 2000;			// Base value for log messages comming from SppProcess
+UINT const WMSPP_LOG_CONFIG =				WMSPP_LOG_BASE + 3000;			// Base value for log messages comming from SppConfig
 
 

@@ -82,6 +82,8 @@ int			SelectedvJoyDevice(void);
 void		SetAvailableControls(UINT id, HWND hDlg);
 void		SetThreadName(char* threadName);
 bool		isAboveVistaSp1();
+int			ConfUniq(bool config, bool hide);
+bool		isUnique(void);
 void		AudioLevelWatch();
 UINT		GetAudioQuality(bool);
 void		PulseScope(BOOL start);
@@ -141,16 +143,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		
 	/* Test if another SppControl is running */
-	HANDLE hMuxex;
-	if (hMuxex=OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXCONSOLE))
-	{	// another instance is already running and the second instance is NOT 
-		// launched iconified then Broadcast a message.
-		//TODO: if (!m_Iconified)
-			::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+	if (!isUnique())
 		return -2;
-	}
-	else
-		hMuxex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
 
 	// Create main window that will receive messages from other parts of the application
 	// and will relay the data to the dialog window.
@@ -192,7 +186,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	hMain = hwnd;
 
 	// Get Configuration file
-	Conf = new CSppConfig();
+	Conf = new CSppConfig(hMain);
 
 	// If Start mode is 'Normal' - get set up from configulation file
 	// Calculate the status of the GUI (Wizard/Iconified)
@@ -276,7 +270,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Display the version of vJoy driver
 	vJoyDevicesVersion(hDialog);
 
-	// TODO: Test functions - remove later
+	// Monitor vJoy Device
 	if (MonitorOk)
 		StartPollingDevice(vJoyDevice); 
 
@@ -512,13 +506,20 @@ LRESULT CALLBACK MainWindowProc(
 			LogMessageExt(uMsg-WMSPP_LOG_PRSC, (int)wParam, WMSPP_LOG_PRSC, (LPCTSTR)lParam);
 			break;
  
-		case WMSPP_LOG_AUDIO+INFO:
-		case WMSPP_LOG_AUDIO+WARN:
-		case WMSPP_LOG_AUDIO+ERR:
-		case WMSPP_LOG_AUDIO+FATAL:
-			LogMessageExt(uMsg-WMSPP_LOG_AUDIO, (int)wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
+		case WMSPP_LOG_AUDIO + INFO:
+		case WMSPP_LOG_AUDIO + WARN:
+		case WMSPP_LOG_AUDIO + ERR:
+		case WMSPP_LOG_AUDIO + FATAL:
+			LogMessageExt(uMsg - WMSPP_LOG_AUDIO, (int)wParam, WMSPP_LOG_AUDIO, (LPCTSTR)lParam);
 			break;
- 
+
+		case WMSPP_LOG_CONFIG + INFO:
+		case WMSPP_LOG_CONFIG + WARN:
+		case WMSPP_LOG_CONFIG + ERR:
+		case WMSPP_LOG_CONFIG + FATAL:
+			LogMessageExt(uMsg - WMSPP_LOG_CONFIG, (int)wParam, WMSPP_LOG_CONFIG, (LPCTSTR)lParam);
+			break;
+
 		case WMSPP_AUDIO_INSIG:
 			DbgObj->InputSignalReady((PBYTE)wParam, (PVOID)lParam);
 			break;
@@ -617,6 +618,12 @@ LRESULT CALLBACK MainWindowProc(
 				Spp->SetDecoderScanning(TRUE, FALSE, DECODER_TIMEOUT);
 			break;
  
+		case WM_INTERSPPAPPSGETUNIQ:
+			if (ConfUniq((wParam == 1), (lParam == 1)) == 1)
+				return UNIQUE_MSG_HIDE;
+			else
+ 				return UNIQUE_MSG_SHOW;
+
         default: 
             return DefWindowProc(hwnd, uMsg, wParam, lParam); 
     } 
@@ -673,9 +680,10 @@ bool		AppExit(void)
 
 	// Kill Log Window
 	if (hLog)
+	{
 		SendMessage(hLog, WM_DESTROY, 0, 0);
-	if (LogWin)
-		delete(LogWin);
+		hLog = NULL;
+	}
 
  	// Clean-up the Scope window
 	if (Spp)
@@ -706,6 +714,8 @@ bool		AppExit(void)
 	delete(Conf);
 	delete(Audio);
 	delete(DbgObj);
+	if (LogWin)
+		delete(LogWin);
 
 	return true;
 
@@ -931,7 +941,10 @@ void AudioLevelWatch()
 	wstring ch = L"";
 
 	if (!AudioId)
-		return; // TODO: Add log here - this is an error
+	{
+		LogMessage(ERROR, IDS_E_AUDIOID);
+		return;
+	}
 	// Initializing channel state
 	//if (isRight==-1)
 	//{
@@ -1267,7 +1280,7 @@ void SetMonitoring(HWND hDlg)
 
 HINSTANCE FilterPopulate(HWND hDlg)
 {
-	HINSTANCE h;
+	HINSTANCE h, hTmp;
 	//LPCTSTR * names;
 	//long filter_ver;
 	UINT			(CALLBACK * GetDllVersion)(void);
@@ -1281,7 +1294,7 @@ HINSTANCE FilterPopulate(HWND hDlg)
 
 
 
-	// TODO: Release former library
+	hTmp = hDllFilters;
 
 	// Get filter file name from config file
 	wstring wsFileName(Conf->FilterFile());
@@ -1325,12 +1338,6 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		return NULL;
 	};
 
-	//filter_ver = GetDllVersion();
-	//if (filter_ver < 0x30100) // TODO: Newer DLLs support wide characters
-	//{
-	//	SendMessage(hDlg, FILTER_VER, false, filter_ver);
-	//	return NULL;
-	//};
 
 	//// Build the list in the GUI
 	//		Get the number of filters
@@ -1353,8 +1360,8 @@ HINSTANCE FilterPopulate(HWND hDlg)
 	UINT idSel = Conf->GetSelectedFilter();
 
 	// Get interface functions
-	pGetFilterNameByIndexA = (const char * (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
-	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndexW"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexA = (const char * (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndex");
+	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterNameByIndexW");
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(h,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (CALLBACK *)(const int iFilter))GetProcAddress(h,"SelectFilterByIndex");
 	pGetIndexOfSelectedFilter = (const int  (CALLBACK *)(void))GetProcAddress(h,"GetIndexOfSelectedFilter");
@@ -1396,6 +1403,13 @@ HINSTANCE FilterPopulate(HWND hDlg)
 		}
 	};
 	
+	// Release former library
+	if (hTmp)
+	{
+		FreeLibrary(hTmp);
+		hTmp = NULL;
+	}
+
 	LogMessage(INFO, IDS_I_FILTERDLLOK);
 	return h;
 }
@@ -1454,8 +1468,8 @@ void		SelectFilter(int FilterId)
 	pGetFilterIdByIndex = (const int   (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterIdByIndex");
 	pSelectFilterByIndex = (const int  (WINAPI *)(const int iFilter))GetProcAddress(hDllFilters,"SelectFilterByIndex");
 	pProcessChannels = (PJS_CHANNELS (WINAPI * )(PJS_CHANNELS, int max, int min))GetProcAddress(hDllFilters,"ProcessChannels");
-	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(hDllFilters,"GetFilterNameByIndex"); // TODO: Add support to WCHAR
-	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterNameByIndexW"); // TODO: Add support to WCHAR
+	pGetFilterNameByIndexA = (const char *    (CALLBACK *)(const int i))GetProcAddress(hDllFilters,"GetFilterNameByIndex");
+	pGetFilterNameByIndexW = (LPCWSTR (CALLBACK *)(const int iFilter))GetProcAddress(hDllFilters,"GetFilterNameByIndexW"); 
 
 
 	int nFilters;
@@ -1602,16 +1616,6 @@ void	LogMessage(int Severity, int Code, LPCTSTR Msg)
 	if (!hLog)
 		return;
 
-	TCHAR pBuf[1000] = {NULL};
-	int len;
-
-	if (!Msg)
-	{
-		len = LoadString(g_hInstance, Code, reinterpret_cast< LPWSTR >( &pBuf ), sizeof(pBuf)/sizeof(TCHAR) );
-		if (len)
-			Msg = pBuf;
-	};
-
 	SendMessageTimeout(hLog , WMSPP_LOG_CNTRL + Severity, (WPARAM)Code, (LPARAM)Msg, SMTO_ABORTIFHUNG, 1000, NULL);
 }
 
@@ -1708,7 +1712,7 @@ void thMonitor(bool * KeepAlive)
 
 
 		//  Compute the state of the Operation state machine and inform GUI
-		ComputeOperatState(); // TODO: Much tweeking
+		ComputeOperatState();
 
 		// Inform GUI of changes in the Start/Stop conditions
 		if (OperatStateMachine != oState)
@@ -1916,6 +1920,10 @@ void SetAvailableControls(UINT id, HWND hDlg)
 
 void SetvJoyMapping(UINT id)
 {
+	// Sanity check
+	if (id < 1 || id>16)
+		return;
+
 	// Axes
 	const UINT nAxes = 8;
 	DWORD dAxisMap = Conf->MapAxis(id);
@@ -2013,9 +2021,116 @@ WORD	GetStartMode(LPTSTR lpCmdLine)
 	return out;
 }
 
-// TODO: Remove pragma and solve problem
-#pragma warning( push )
-#pragma warning( disable : 4996 )
+// This function  configures the "Don't Show again" for the message box 
+// that warns that there is another SPP process
+//
+// Parameters:
+//	config: If true then SET configuration. If false GET configuration.
+//  hide: Only if config==true: If true set option to hide dialog box
+int ConfUniq(bool config,  bool hide)
+{
+	// Configure only if config==true
+	if (config!=true)
+		return Conf->HideUnqMsg();
+
+	// Configure
+	Conf->HideUnqMsg(hide);
+	return 0;
+}
+
+
+// This function is responsible that ther is only one SPP process
+// 	+ Tries to open mutex MUTXCONSOLE.
+//  + If fails, creates this mutex.
+//		+ If fails : Displays an error dialog box and returns FALSE
+//		+ If succeeds : Returns TRUE
+//  + If succeeds to open this mutex it means another SPP process exists
+//		+ Display an error dialog box
+//		+ Send message WM_INTERSPPCONSOLE to existing process.
+//		+ Returns FALSE
+bool isUnique(void)
+{
+	HWND hOtherWin = NULL;
+	ULONG_PTR MsgResult = 0;
+	LRESULT res=0;
+	TCHAR msg[MAX_MSG_SIZE];
+
+	// Prepare a Task dialog box
+	TASKDIALOGCONFIG config = { sizeof(TASKDIALOGCONFIG) };
+	int selectedButtonId = 0;
+	int selectedRadioButtonId = 0;
+	BOOL verificationChecked = FALSE;
+	config.pszWindowTitle = SPP_MSG;
+	config.pszMainInstruction = CN_NO_UNIQUE_MAIN;
+	config.pszContent = CN_NO_UNIQUE;
+
+	// Get a handle to a mutex created by another SPP process
+	// If does not exists - No other process so skip the IPC and create such a mutex
+	HANDLE hMutex = OpenMutex(MUTEX_ALL_ACCESS, TRUE, MUTXCONSOLE);
+	
+	// Find the handle to the already existing Window
+	hOtherWin = FindWindow(MAIN_CLASS_NAME, MAIN_WND_TITLE);
+
+	// another instance is already running - communicate with it
+	if (hMutex && hOtherWin)
+	{	
+		// If exists, get the state of the "Don't show again" option
+		res = SendMessageTimeout(hOtherWin, WM_INTERSPPAPPSGETUNIQ, 0, 0, SMTO_ABORTIFHUNG | SMTO_ERRORONEXIT, 100, &MsgResult);
+
+		if (res)
+		{
+			// If the existing process does not support this message (Old version of SPP): Return 1, MsgResult==0;
+			//     Display dialog box:  NO "Don't show again" option
+			if (MsgResult == 0)
+			{
+				config.pszVerificationText = NULL;
+				::TaskDialogIndirect(&config, &selectedButtonId, &selectedRadioButtonId, &verificationChecked);
+				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+			}
+
+			// If the existing process support this message ( Return 1, MsgResult!=0;) then:
+			// If MsgResult==UNIQUE_MSG_HIDE then don't display dialog box
+			else if (MsgResult == UNIQUE_MSG_HIDE)
+				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+
+			// If the existing process support this message ( Return 1, MsgResult!=0;) then:
+			// If MsgResult!=UNIQUE_MSG_HIDE then display dialog box WITH "Don't show again" option
+			// And pass user selection to running process
+			else
+			{
+				config.pszVerificationText = CN_NO_UNIQUE_CB;
+				HRESULT hr = ::TaskDialogIndirect(&config, &selectedButtonId,  &selectedRadioButtonId, &verificationChecked);
+				::PostMessage(HWND_BROADCAST, WM_INTERSPPCONSOLE, 0, 0);
+
+				// Instuct the existing process to change "Don't show again" option in the configuration file
+				if (hr == S_OK)
+					res = SendMessageTimeout(hOtherWin, WM_INTERSPPAPPSGETUNIQ, 1, verificationChecked, SMTO_ABORTIFHUNG | SMTO_ERRORONEXIT, 100, NULL);
+
+			}
+			return false;
+		};
+
+		// If the existing process does not respond: Return 0 then ignore it and continue with this project.
+	}
+
+	// Single SPP Process - Create a mutex to secure its uniqueness
+	hMutex = CreateMutex(NULL, FALSE, MUTXCONSOLE);
+
+	// Test the handle to the mutex
+	if (!hMutex)
+	{
+		DWORD errcode =  GetLastError();
+		_stprintf_s(msg, MAX_MSG_SIZE, CN_NO_BAD_MUTEX, static_cast<UINT>(errcode));
+		::MessageBox(NULL, msg, SPP_MSG, MB_SYSTEMMODAL);
+		return false;
+	}
+
+
+	return true;
+}
+
+//#pragma warning( push )
+//#pragma warning( disable : 4996 )
 bool isAboveVistaSp1()
 {
 
@@ -2047,7 +2162,7 @@ bool isAboveVistaSp1()
 #endif // 0
 
 }
-#pragma warning( pop )
+//#pragma warning( pop )
 
 #ifdef _DEBUG
 const DWORD MS_VC_EXCEPTION=0x406D1388;

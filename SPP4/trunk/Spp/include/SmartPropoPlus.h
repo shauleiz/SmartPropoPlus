@@ -213,8 +213,19 @@ For further details please go to the SmartPropoPlus Home using the link below."
 /* SPP Console messages */
 #define CN_NO_INTERSPPCONSOLE	TEXT("wWinMain(): WM_INTERSPPCONSOLE = %u - cannot register window message INTERSPPCONSOLE")
 #define CN_NO_INTERSPPAPPS		TEXT("wWinMain(): WM_INTERSPPAPPS = %d - cannot register window message INTERSPPAPPS")
+#define CN_NO_UNIQUE			TEXT("Cannot start a second SmartPropoPlus Session\r\nOnly one session allowed")
+#define CN_NO_UNIQUE_MAIN		TEXT("SmartPropoPlus already running")
+#define CN_NO_UNIQUE_CB			TEXT("Do not show this dialog again")
+#define CN_NO_BAD_MUTEX			TEXT("wWinMain(): Cannot create uniqueness mutex\r\nError code %u")
 #define CN_NO_DECODER			TEXT("Could not detect the encoding of the input signal\r\nTry to select the decoder manually")
 #define CN_NO_DECODER_HDR		TEXT("Encoding Detection")
+#define CN_NO_TABCONTROL		TEXT("Cannot find the Tab-Control - Aborting...")
+#define CN_NO_TABCONTROL_HDR	TEXT("SmartPropoPlus Error")
+#define CN_NO_TABRECT			TEXT("Cannot find the Tab-Control graphical rectangle - Aborting...")
+#define CN_NO_TABRECT_HDR		TEXT("SmartPropoPlus Error")
+#define CN_ILL_DLLFILE			TEXT("This DLL File is not a valid Filter File")
+#define CN_ILL_DLLFILE_HDR		TEXT("Open Filter File")
+
 
 /* User Defined Window-Messages */
 #define WM_DBLLEFT	WM_APP+1

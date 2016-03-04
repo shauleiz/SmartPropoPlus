@@ -1,6 +1,6 @@
 #pragma once
 #define TIXML_USE_STL 1
-#include "..\TinyXml\TinyXml.h"	 // TODO: Fix the include path
+#include "TinyXml.h"
 #include <array>
 
 #ifdef X64
@@ -49,6 +49,7 @@
 #define SPP_GENERAL	"General"
 #define SPP_MONCHNL	"Monitor_CH"
 #define SPP_PLSSCP	"Pulse_SCP"
+#define SPP_UNQMSG	"Hide_Unique_Msg"
 #define SPP_SHOWLOG	"Show_Log"
 #define SPP_CHECKED	"Checked"
 #define SPP_BTNPREF	"Button"
@@ -62,7 +63,7 @@ class CSppConfig
 {
 public:
 	//CSppConfig(void);
-	CSppConfig(LPTSTR FileName = DEF_CONF_FILE);
+	CSppConfig(HWND m_hPrntWnd, LPTSTR FileName = DEF_CONF_FILE);
 	virtual 		~CSppConfig(void);
 
 	// vJoy
@@ -111,6 +112,8 @@ public:
 	bool			MonitorChannels(bool Monitor);
 	int				PulseScope();
 	bool			PulseScope(bool Monitor);
+	int				HideUnqMsg();
+	bool			HideUnqMsg(bool Hide);
 	int				ShowLog();
 	bool			ShowLog(bool Monitor);
 	bool			Wizard();
@@ -152,6 +155,8 @@ private:
 
 	int				GetGeneralElemetsBool(const char * Element);
 	bool			SetGeneralElemetsBool(const char * Element, bool Val);
+	void			LogMessage(int Severity, int Code, LPCTSTR Msg = NULL);
+
 
 
 private:
@@ -159,7 +164,8 @@ private:
 	recursive_mutex			m_mx_General;
 	FILE *					m_pFile;
 	wstring					m_filename;
-
+	HWND					m_hPrntWnd;
+	HMODULE					m_hInstance;
 };
 
 string utf8_encode(const wstring &wstr);

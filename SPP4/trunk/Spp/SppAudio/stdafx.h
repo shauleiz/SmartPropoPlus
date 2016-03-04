@@ -20,6 +20,3 @@
 #include <Windows.h>
 #include <Resource.h>
 
-
-
-// TODO: reference additional headers your program requires here

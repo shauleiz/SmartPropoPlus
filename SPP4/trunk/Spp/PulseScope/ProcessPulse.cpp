@@ -97,8 +97,10 @@ PULSESCOPE_API void WaveInfo2Scope(PULSE_INFO * Info, LPVOID Param)
 
 	// If Info is NULL - clear the info field of the Scope
 	if (!Info)
-		// TODO: Call CPulseScope::ClearWaveInfo()
+	{
+		((CPulseScope *)Param)->SetWaveInfo(NULL, 0);
 		return;
+	}
 
 	// Create a string and calculate size
 	// Channel:

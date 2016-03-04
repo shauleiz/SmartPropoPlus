@@ -1863,7 +1863,7 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 	rsize_t size = packetLength*m_CurrentWaveFormat.wBitsPerSample*m_CurrentWaveFormat.nChannels/8;
 	if (bMax<size)
 		return AUDCLNT_E_BUFFER_SIZE_ERROR;
-	memcpy_s(pBuffer, bMax, pDataIn, size); // TODO: Test for all combinations (Mono/16 bits)
+	memcpy_s(pBuffer, bMax, pDataIn, size);
 	*pBufLength = packetLength;
 
 

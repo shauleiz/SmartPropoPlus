@@ -392,8 +392,6 @@ BOOL CvJoyMonitor::EnumObjects( const DIDEVICEOBJECTINSTANCE* pdidoi)
     // Get the vJoy ID
     m_CurrentID = (pdidoi)->wReportId;
 
-    // TODO: More data colleting in the future ...
-
     return TRUE;
 }
 

@@ -328,8 +328,11 @@ SPPMAIN_API int  CSppProcess::GetJoystickCommQuality(void)
 SPPMAIN_API void  CSppProcess::SetDecoderScanning(BOOL Start, BOOL Forever, int Timeout)
 {
     // It is assumed that PollChannels() is running
-    if (!m_chMonitor) // TODO: Warning message
+	if (!m_chMonitor) 
+	{
+		LogMessage(WARN, IDS_W_NO_MONITOR);
         return;
+	}
 
     // Stop?
     if (!Start && m_DecoderStruct.running)
@@ -404,7 +407,7 @@ inline void  CSppProcess::GetEncoding(void)
     // Stop if not to run forever
     if (res == S_OK)
     {
-        SendMessage(m_hParentWnd, WMSPP_PRCS_DCDR,  (WPARAM)Decoder, 0);
+		SendMessageTimeout(m_hParentWnd, WMSPP_PRCS_DCDR,  (WPARAM)Decoder, 0, SMTO_NORMAL, 100, NULL);
         if (m_DecoderStruct.forever)
             m_DecoderStruct.rstbuf = TRUE;
         else
@@ -730,7 +733,6 @@ void CSppProcess::MonitorCapture(void)
                 LogMessage(ERR, IDS_E_STREAMFAIL);
             else
             {
-                // TODO: ReportChange();
                 m_tCapture =  new thread(CaptureAudioStatic, this);
                 if (!m_tCapture)
                     LogMessage(ERR, IDS_E_STREAMTHRDFAIL);
@@ -751,7 +753,7 @@ void CSppProcess::CaptureAudio(void)
     PBYTE	buffer=NULL;
     UINT	bSize=0;
     HRESULT	hr = S_OK;
-    UINT	bMax = 8000; // TODO: Change to dynamic size
+    UINT	bMax = 8000;
 
     buffer = new BYTE[bMax];
 
@@ -1009,8 +1011,7 @@ HRESULT	CSppProcess::ProcessWave(BYTE * pWavePacket, UINT32 packetLength)
 #endif
 
         // If valid pulse the process the pulse
-        // TODO (?): Very short pulses are ignored (Glitch)
-        if (PulseLength/*>3*/)
+        if (PulseLength)
         {
             lock_guard<recursive_mutex> lock_Decode(m_mx_Decode);
 
@@ -2698,7 +2699,7 @@ _inline double  CSppProcess::CalcThreshold(int value)
     return(threthold); 
 }
 
-// TODO: Normalize the calling functions to the range 0-32K
+
 void CSppProcess::Send2vJoy(int nChannels, int * Channel)
 {
     BOOL writeOk;
@@ -2736,11 +2737,11 @@ void CSppProcess::Send2vJoy(int nChannels, int * Channel)
             continue;
         if ((iMapped>MAX_JS_CH)||(ch[iMapped-1]<0)) // Test value - if (-1) value is illegal
             return;
-        writeOk =  SetAxisDelayed(32*ch[iMapped-1], HID_USAGE_X+i); // TODO: the normalization to default values should be done in the calling functions
+        writeOk =  SetAxisDelayed(32*ch[iMapped-1], HID_USAGE_X+i); // Normalization to default values
     }
 
     for (k=0; k<MAX_BUTTONS;k++)
-        writeOk =  SetBtnDelayed(ch[m_BtnMapping[k]-1]>511,k+1); // TODO: Replace 511 with some constant definition
+        writeOk =  SetBtnDelayed(ch[m_BtnMapping[k]-1]>BUTTON_TRIG_VAL,k+1); 
 
     // Feed structure to vJoy device rID
     BOOL updated = UpdateVJD(rID, &m_vJoyPosition);

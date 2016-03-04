@@ -109,6 +109,7 @@ typedef struct _DECODER_DETECT
 #define MAX_JS_CH	12
 #define MUTEX_STOP_START	_T("WaveIn Stopping and Starting are mutually exclusive")
 #define MAX_BUF_SIZE 1000
+#define BUTTON_TRIG_VAL 511
 
 
 

@@ -105,8 +105,8 @@ bool SppDlg::MsgLoop(void)
             return false;
         }
 
-        else if (!IsWindow(m_hDlg))
-            return true;
+        //else if (!IsWindow(m_hDlg))
+        //    return true;
 
         else if (!IsDialogMessage(m_hDlg, &msg)) 
         { 
@@ -371,6 +371,16 @@ LRESULT SppDlg::Reset(void)
     if (m_hrsrc.TabAdvnc)
         m_hrsrc.TabAdvnc->Reset();
 
+	// Reset GUI to Wizard mode
+	Show();
+	Iconified(false);
+
+	// Reset to not "Stopped" mode
+	SendMessage(m_ConsoleWnd, WMSPP_DLG_STREAM, (WPARAM)TRUE, 0);
+
+	// Reset "Don't show again" to show the unique SPP process dialog box.
+ 	SendMessage(m_ConsoleWnd, WM_INTERSPPAPPSGETUNIQ, (WPARAM)TRUE, (LPARAM)FALSE);
+
     return TRUE;
 }
 
@@ -383,16 +393,22 @@ int SppDlg::InitTabs(HWND hDlg)
 
     // Initialize structure that represents tabs
     m_hrsrc.hwndTab = GetDlgItem(hDlg,  IDC_TABS);
-    if (!m_hrsrc.hwndTab) // TODO: Add log
+	if (!m_hrsrc.hwndTab)
+	{	
+		MessageBox(hDlg, CN_NO_TABCONTROL, CN_NO_TABCONTROL_HDR, MB_OK | MB_ICONERROR | MB_TOPMOST);
         return 0;
+	}
             
     // Fix white background around tab icon
     SetWindowTheme(m_hrsrc.hwndTab, L" ", L" ");
 
     // Get the tab rectangle
     BOOL GotRect = GetWindowRect(m_hrsrc.hwndTab, &m_hrsrc.rcDisplay);
-    if (!GotRect) // TODO: Add log
+    if (!GotRect)
+	{
+		MessageBox(hDlg, CN_NO_TABRECT, CN_NO_TABRECT_HDR, MB_OK | MB_ICONERROR | MB_TOPMOST);
         return 0;
+	}
 
     // Create child dialogs and tabs
     tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM ;
@@ -780,11 +796,14 @@ void SppDlg::SetStreamingState(BOOL isProcessingAudio)
     SetStreamingButton(isProcessingAudio);
 
     // Show/Hide Tab control
+	int ShowState;
     if (isProcessingAudio)
-        ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), SW_SHOW);
+		ShowState = SW_SHOW;
     else
-        ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), SW_HIDE);
+		ShowState = SW_HIDE;
     
+	ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), ShowState);
+
 
     // Enable/Disable Info frame
     EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_SRC),  isProcessingAudio);
@@ -797,7 +816,34 @@ void SppDlg::SetStreamingState(BOOL isProcessingAudio)
     EnableWindow(GetDlgItem(m_hDlg,  IDS_JOY),  isProcessingAudio);
     EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_CHBITS),  isProcessingAudio);
     EnableWindow(GetDlgItem(m_hDlg,  IDS_DECODER_NCH),  isProcessingAudio);
-    // TODO: Enable/Disable all Progress bars
+    
+	// Enable/Disable all Progress bars
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH1), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH2), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH3), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH4), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH5), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH6), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH7), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CH8), ShowState);
+
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP1), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP2), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP3), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP4), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP5), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP6), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP7), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_CHPP8), ShowState);
+
+	ShowWindow(GetDlgItem(m_hDlg, IDC_X), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_Y), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_Z), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_RX), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_RY), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_RZ), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_SL0), ShowState);
+	ShowWindow(GetDlgItem(m_hDlg, IDC_SL1), ShowState);
 
     DisplayBackgroundImage(!isProcessingAudio);
 }
@@ -865,6 +911,8 @@ LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
         return MOD_FNAME_PPMN;
 	if (!_tcscmp(Type, MOD_TYPE_PPMW))
 		return MOD_FNAME_PPMW;
+	if (!_tcscmp(Type, MOD_TYPE_PPMT))
+		return MOD_FNAME_PPMT;
 	if (!_tcscmp(Type,MOD_TYPE_JR))
         return MOD_FNAME_JR;
     if (!_tcscmp(Type,MOD_TYPE_FUT))
@@ -1866,7 +1914,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case WM_DESTROY:
             DestroyWindow(hDlg);
             hDlg = NULL;
-//			PostQuitMessage(0);
+			PostQuitMessage(0);
             return (INT_PTR)TRUE;
 
     case WM_NOTIFY:
