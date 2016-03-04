@@ -567,10 +567,12 @@ void CSppProcess::StorePulse(UINT PulseLength, bool Negative)
 
 #pragma endregion
 
-        // Walkera PPM or normal PPM?
+        // Walkera PPM, Turnigy 9X PPM or normal PPM?
         if (avrage_separator > 90)
-            Type = MOD_TYPE_PPMW;
-        else
+            Type = MOD_TYPE_PPMW;	// Walkera
+        else if (avrage_separator < 66)
+			Type = MOD_TYPE_PPMT;	// Turnigy 9X
+		else
             Type = MOD_TYPE_PPM;
         
         return S_OK;// PPM OK
@@ -1548,10 +1550,10 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
   //#endif
 /*
   Process Pulse for Turnigy 9X PPM
-  This is just a permiscuous PPM that does not follow the PPM standard
-
   This is how it works:
-   ???
+  Cycle: 22.46mS
+  Separator: 0.30mS-0.34mS - In Normalized values: 	 57.6-65.3
+  Data Pulse: 0.68mS , 1.18mS, 1.68mS (Min, Mid, Max) 130.56,  226.56, 	322.56
   */
  void  CSppProcess::ProcessPulseTurnigy9XPpm(int width, BOOL input)
  {
@@ -1572,10 +1574,10 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 			 return;
 
 		 if (gDebugLevel >= 2 && gCtrlLogFile && !(_strtime_s(tbuffer, 10))/*&& !(i++%50)*/)
-			 fprintf(gCtrlLogFile, "\n%s - ProcessPulsePpm(width=%d, input=%d)", tbuffer, width, input);
+			 fprintf(gCtrlLogFile, "\n%s - ProcessPulseTurnigy9XPpm(width=%d, input=%d)", tbuffer, width, input);
 
 		 /* If pulse is a separator then go to the next one */
-		 if (width < PPM_SEP || former_sync)
+		 if (width < PPMT_SEP || former_sync)
 		 {
 			 prev_sep = true;
 			 former_sync = 0;
@@ -1584,7 +1586,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 		 };
 
 		 // Two separators in a row is an error - resseting
-		 if ((width < PPM_SEP) && prev_sep)
+		 if ((width < PPMT_SEP) && prev_sep)
 		 {
 			 prev_sep = true;
 			 m_nChannels = 0;
@@ -1594,7 +1596,7 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 
 
 		 /* sync is detected at the end of a very long pulse (over 200 samples = 4.5mSec) */
-		 if (/*sync == 0 && */width > PPM_TRIG) {
+		 if (/*sync == 0 && */width > PPMT_TRIG) {
 			 sync = 1;
 			 if (datacount)
 				 m_PosUpdateCounter++;
@@ -1628,16 +1630,14 @@ inline UINT CSppProcess::NormalizePulse(UINT Length)
 		 PrevWidth[datacount] = width;
 
 
-		 /* convert pulse width in samples to joystick position values (newdata)
-		 joystick position of 0 correspond to width over 100 samples (2.25mSec)
-		 joystick position of 1023 correspond to width under 30 samples (0.68mSec)*/
+		 /* convert pulse width in samples to joystick position values (newdata)  */
 		 if (input || m_JsChPostProc_selected != -1)
-			 newdata = (int)(1024 - (width + last_separator_width - 192.0) / (192.0) * 1024); /* JR */
+			 newdata = (int)(1024 - (width - PPMT_MIN) / (PPMT_MAX - PPMT_MIN) * 1024); /* JR */
 		 else
-			 newdata = (int)((width + last_separator_width - 192.0) / (192.0) * 1024);		/* Futaba */
+			 newdata = (int)((width - PPMT_MIN) / (PPMT_MAX - PPMT_MIN) * 1024);		/* Futaba */
 
 
-																							/* Trim values into 0-1023 boundries */
+		/* Trim values into 0-1023 boundries */
 		 if (newdata < 0) newdata = 0;
 		 else if (newdata > 1023) newdata = 1023;
 
