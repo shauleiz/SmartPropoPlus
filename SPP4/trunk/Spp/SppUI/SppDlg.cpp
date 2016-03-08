@@ -396,7 +396,7 @@ int SppDlg::InitTabs(HWND hDlg)
 	if (!m_hrsrc.hwndTab)
 	{	
 		MessageBox(hDlg, CN_NO_TABCONTROL, CN_NO_TABCONTROL_HDR, MB_OK | MB_ICONERROR | MB_TOPMOST);
-		return 0;
+        return 0;
 	}
             
     // Fix white background around tab icon
@@ -407,7 +407,7 @@ int SppDlg::InitTabs(HWND hDlg)
     if (!GotRect)
 	{
 		MessageBox(hDlg, CN_NO_TABRECT, CN_NO_TABRECT_HDR, MB_OK | MB_ICONERROR | MB_TOPMOST);
-		return 0;
+        return 0;
 	}
 
     // Create child dialogs and tabs
@@ -797,13 +797,13 @@ void SppDlg::SetStreamingState(BOOL isProcessingAudio)
 
     // Show/Hide Tab control
 	int ShowState;
-	if (isProcessingAudio)
+    if (isProcessingAudio)
 		ShowState = SW_SHOW;
     else
 		ShowState = SW_HIDE;
-
-	ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), ShowState);
     
+	ShowWindow(GetDlgItem(m_hDlg,  IDC_TABS), ShowState);
+
 
     // Enable/Disable Info frame
     EnableWindow(GetDlgItem(m_hDlg,  IDS_AUDIO_SRC),  isProcessingAudio);
@@ -911,6 +911,8 @@ LPCTSTR SppDlg::GetDecoderFullName(LPCTSTR Type)
         return MOD_FNAME_PPMN;
 	if (!_tcscmp(Type, MOD_TYPE_PPMW))
 		return MOD_FNAME_PPMW;
+	if (!_tcscmp(Type, MOD_TYPE_PPMT))
+		return MOD_FNAME_PPMT;
 	if (!_tcscmp(Type,MOD_TYPE_JR))
         return MOD_FNAME_JR;
     if (!_tcscmp(Type,MOD_TYPE_FUT))
