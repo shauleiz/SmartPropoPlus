@@ -1692,9 +1692,10 @@ HRESULT CSppAudio::StartCurrentStream(void)
 }
 
 
+#if 0
 HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 {
-	UINT32 packetLength=0, packetLengthNext=0;
+	UINT32 packetLength = 0, packetLengthNext = 0;
 	HRESULT hr = S_OK;
 	DWORD retval, flags;
 	BYTE *pDataIn;
@@ -1713,7 +1714,7 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 #pragma warning( disable : 6102 )
 
 	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL, m_LogAudioParam);
-	UINT32 pad=0;
+	UINT32 pad = 0;
 	do { // Loop on buffer until empty - Usually only once
 
 		// Get pointer to next data packet in capture buffer.
@@ -1727,7 +1728,7 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 			//LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr),m_LogParam);
 			packetLength = NULL;
 			return hr;
-		}; 
+		};
 
 #pragma warning( default : 6102 )
 
@@ -1752,7 +1753,7 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 		// ProcessWave exits when the buffer was read.
 		if (pPulseDataObj)
 		{
-			hr = pPulseDataObj->ProcessWave(pDataIn,packetLength); 
+			hr = pPulseDataObj->ProcessWave(pDataIn, packetLength);
 			if (FAILED(hr))
 			{
 				// In case of failure - continue
@@ -1790,6 +1791,8 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 
 	return hr;
 }
+
+#endif // 0
 
 // Call this method to get the next audio data
 // 
@@ -1847,12 +1850,8 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 	// Detect glitch in data (Unused in Vista)
 	if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
 	{
-		m_pCaptureClient->ReleaseBuffer(packetLength);
-		hr = AUDCLNT_E_BUFFER_ERROR;
-		LogMessage(WARN, IDS_W_PROCPACK_DISC, GetWasapiText(hr));
-		//LogStatus(PROCPACK_DISC,WARN,GetWasapiText(hr),m_LogParam);
-		//return 	hr;
-		hr = S_OK;
+		//m_pCaptureClient->ReleaseBuffer(packetLength);
+		LogMessage(WARN, IDS_W_PROCPACK_DISC, L"");
 	};
 
 
