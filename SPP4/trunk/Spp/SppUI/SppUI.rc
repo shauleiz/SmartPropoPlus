@@ -201,7 +201,10 @@ BEGIN
     40077                   "Request to restart audio streaming - OK"
     40078                   "Request to restart audio streaming - failed to start capture thread"
     40079                   "Failed to start audio streaming"
-END
+	40301					"Wait for next buffer event to be signaled - Timeout occured"
+	40302					"Wait for next buffer event to be signaled - Timeout occured"
+	40303					"Audio buffer smaller than packet"
+	END
 
 STRINGTABLE
 BEGIN

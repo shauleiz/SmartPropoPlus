@@ -402,13 +402,16 @@
 #define IDS_E_CONF_NOFOLDER				40213
 #define IDS_I_CONF_CREATEFOLDER			40214
 #define IDS_W_NO_MONITOR                40215
+#define IDS_W_PROCPACK_TIMEOUT          40301
+#define IDS_I_PROCPACK_PADDING          40302
+#define IDS_E_PROCPACK_TOOBIG           40303
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        202
-#define _APS_NEXT_COMMAND_VALUE         40301
+#define _APS_NEXT_COMMAND_VALUE         40304
 #define _APS_NEXT_CONTROL_VALUE         2000
 #define _APS_NEXT_SYMED_VALUE           202
 #endif

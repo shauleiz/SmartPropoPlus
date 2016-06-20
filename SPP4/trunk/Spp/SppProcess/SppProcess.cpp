@@ -767,12 +767,13 @@ void CSppProcess::CaptureAudio(void)
     while (m_waveRecording)
     {
         m_tCaptureActive = TRUE;
+
+		// Capture packet, copy it to buffer and release it
         hr = m_Audio->GetAudioPacket(buffer, &bSize, bMax);
         if (hr != S_OK)
         {
-            //if (hr = AUDCLNT_E_DEVICE_INVALIDATED)
-            //	break;
-            continue;
+			m_ChangeCapture = TRUE;
+            break;
         }
 
 
@@ -785,7 +786,7 @@ void CSppProcess::CaptureAudio(void)
 
         // Test buffer size and adjust if needed
         UINT currsize = bSize*m_WaveBitsPerSample*m_WaveNChannels/8;
-        if (currsize != bMax && currsize)
+        if (currsize > bMax)
         {
             delete [] (buffer);
             bMax = currsize;

@@ -1805,39 +1805,34 @@ HRESULT CSppAudio::ProcessAudioPacket(CPulseData * pPulseDataObj)
 //
 HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 {
-	UINT32 packetLength=0, packetLengthNext=0;
+	UINT32 packetLength = 0, packetLengthNext = 0;
 	HRESULT hr = S_OK;
 	DWORD retval, flags;
 	BYTE *pDataIn;
-	static UINT32 pad=0;
+	static UINT32 pad = 0;
 
-	// Skip the waiting if padding is waiting to be processed
-	if (!pad)
+	// Wait for next buffer event to be signaled.
+	retval = WaitForSingleObject(g_hAudioBufferReady, 2000);
+
+	//In case of timeout - break
+	if (retval == WAIT_TIMEOUT)
 	{
-		// Wait for next buffer event to be signaled.
-		retval = WaitForSingleObject(g_hAudioBufferReady, 2000);
+		LogMessage(WARN, IDS_W_PROCPACK_TIMEOUT, L"");
+		return S_FALSE;
+	};
 
-		//In case of timeout - continue
-		if (retval == WAIT_TIMEOUT)
-		{
-			return S_FALSE;
-		};
-	};		
-
-
-
+	// Audio Logger
 	LogAudio(ALOG_GETPCK, m_CurrentWaveFormat.wBitsPerSample, NULL, m_LogAudioParam);
+
 #pragma warning( disable : 6102 )
 	// Get pointer to next data packet in capture buffer.
 	pDataIn = 0;
 	flags = 0;
 	hr = m_pCaptureClient->GetBuffer(&pDataIn, &packetLength, &flags, NULL, NULL);
-	if (FAILED(hr) /*|| flags*/)
+	if (FAILED(hr))
 	{
 		m_pCaptureClient->ReleaseBuffer(packetLength);
 		LogMessage(ERR, IDS_E_PROCPACK_GETBUF, GetWasapiText(hr));
-		//LogStatus(PROCPACK_GETBUF,ERR,GetWasapiText(hr),m_LogParam);
-		packetLength = NULL;
 		return hr;
 	};
 #pragma warning( default : 6102 )
@@ -1847,10 +1842,9 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 		SendDbgInputSignal(pDataIn, packetLength, m_CurrentWaveFormat.nChannels, m_CurrentWaveFormat.wBitsPerSample);
 
 
-	// Detect glitch in data (Unused in Vista)
+	// Detect glitch in data (Unused in Vista) but do nothing about it
 	if (flags == AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)
 	{
-		//m_pCaptureClient->ReleaseBuffer(packetLength);
 		LogMessage(WARN, IDS_W_PROCPACK_DISC, L"");
 	};
 
@@ -1858,36 +1852,29 @@ HRESULT CSppAudio::GetAudioPacket(PBYTE pBuffer, PUINT pBufLength, UINT bMax)
 	// Log packets - usually just NO-OP
 	LogAudio(ALOG_PACK, packetLength*m_CurrentWaveFormat.nChannels, pDataIn, m_LogAudioParam);
 
-	// Export buffer to caller
-	rsize_t size = packetLength*m_CurrentWaveFormat.wBitsPerSample*m_CurrentWaveFormat.nChannels/8;
-	if (bMax<size)
+	// Calculate the size of the required buffer
+	rsize_t size = packetLength*m_CurrentWaveFormat.wBitsPerSample*m_CurrentWaveFormat.nChannels / 8;
+	if (bMax < size)
+	{ 
+		// Buffer is too small - abort
+		m_pCaptureClient->ReleaseBuffer(packetLength);
+		LogMessage(WARN, IDS_E_PROCPACK_TOOBIG, L"");
 		return AUDCLNT_E_BUFFER_SIZE_ERROR;
+	}
+
+
+	// Export buffer to caller and update packet length
 	memcpy_s(pBuffer, bMax, pDataIn, size);
 	*pBufLength = packetLength;
 
 
-	/* Release the buffer*/
+	/* Release the audio buffer */
 	hr = m_pCaptureClient->ReleaseBuffer(packetLength);
 	if (FAILED(hr))
 	{
-		// In case of failure - continue
+		// In case of failure - break
 		LogMessage(ERR, IDS_E_PROCPACK_RLS, GetWasapiText(hr));
-		//LogStatus(PROCPACK_RLS,ERR,GetWasapiText(hr),m_LogParam);
 		packetLength = NULL;
-		return hr;
-	};
-
-	// Test how many frames where left - usually none.
-	// See: http://social.msdn.microsoft.com/Forums/en-US/windowspro-audiodevelopment/thread/0d4a839d-2c10-49f6-965d-094b692af4f0
-	if (m_pAudioClient)
-		hr = m_pAudioClient->GetCurrentPadding(&pad);
-	else
-		return S_FALSE;
-
-	if (FAILED(hr))
-	{
-		LogMessage(ERR, IDS_E_PROCPACK_PADD, GetWasapiText(hr));
-		//LogStatus(PROCPACK_PADD,ERR,GetWasapiText(hr),m_LogParam);
 		return hr;
 	};
 

@@ -56,8 +56,9 @@ void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 
 	// Initialize
 	LRESULT lr;
+	SYSTEMTIME SystemTime;
 	HWND hEdit=NULL;
-	WCHAR prefix[6], prtcode[20], src[20];
+	WCHAR prefix[6], prtcode[20], src[20], PrtTime[30];
 	GETTEXTLENGTHEX tl;
 	CHARFORMAT cf;
 	tl.codepage =  CP_ACP;
@@ -110,7 +111,17 @@ void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 
 	SendMessage(hEdit,EM_SETCHARFORMAT, (WPARAM)SCF_SELECTION, (LPARAM)&cf);
 
+
+	// Calculate Time
+	GetLocalTime(&SystemTime);
+	swprintf_s(PrtTime, 30, L"%02d:%02d:%02d.%03d : ", SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
+
 	// Print one Line
+
+	// Time
+	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
+	SendMessage(hEdit,EM_SETSEL    , lr, lr);
+	SendMessage(hEdit,EM_REPLACESEL     , TRUE, (LPARAM)PrtTime);
 
 	// Prefix
 	lr = SendMessage(hEdit,EM_GETTEXTLENGTHEX   , (WPARAM)&tl,0);
