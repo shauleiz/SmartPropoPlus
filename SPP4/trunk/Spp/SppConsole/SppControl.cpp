@@ -76,6 +76,7 @@ void		thDialogBox(HWND hwnd);
 void		SetMonitoring(HWND hDlg);
 void		SetPulseScope(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
+UINT		GetSppVersion(HWND hDlg);
 UINT		vJoyDevicesVersion(HWND hDlg);
 void		SetvJoyMapping(UINT id);
 int			SelectedvJoyDevice(void);
@@ -269,6 +270,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Display the version of vJoy driver
 	vJoyDevicesVersion(hDialog);
+
+	// Display the version of this application
+	GetSppVersion(hDialog);
 
 	// Monitor vJoy Device
 	if (MonitorOk)
@@ -1783,6 +1787,50 @@ void thMonitor(bool * KeepAlive)
 	}; // while (*KeepAlive) 
 }
 
+// Get the file version of this executable
+// send message with version (as UINT: 00aabbcc = aa.bb.cc) to dialog box
+UINT GetSppVersion(HWND hDlg)
+{
+	// Get the full path of this program
+	WCHAR szExeFileName[MAX_PATH];
+	DWORD getfile = GetModuleFileName(NULL, szExeFileName, MAX_PATH);
+	if (!getfile)
+		return 0;
+
+	// Get the version structure
+	DWORD versize = GetFileVersionInfoSize(szExeFileName, NULL);
+	LPSTR verData = new char[versize];
+	BOOL verOk = GetFileVersionInfo(szExeFileName, 0, versize, verData);
+	if (!verOk)
+		return 0;
+
+	// Interprete the version structure
+	UINT   ver = 0, size = 0;
+	LPBYTE lpBuffer = NULL;
+	BYTE Hi, Mid, Lo, Bld;
+	if (VerQueryValue(verData, L"\\", (VOID FAR* FAR*)&lpBuffer, &size))
+	{
+		if (size)
+		{
+			VS_FIXEDFILEINFO *verInfo = (VS_FIXEDFILEINFO *)lpBuffer;
+
+			Hi = (verInfo->dwFileVersionMS >> 16) & 0xff;
+			Mid = (verInfo->dwFileVersionMS >> 0) & 0xff;
+			Lo = (verInfo->dwFileVersionLS >> 16) & 0xff;
+			Bld = (verInfo->dwFileVersionLS >> 0) & 0xff;
+			ver = (Hi << 24) + (Mid << 16) + (Lo << 8) + Bld;
+
+			// Send message to dialog box - Version
+			SendMessage(hDlg, SPPAPP_SETVER, ver, 0);
+			return ver;
+		}
+		else
+			return 0;
+	}
+	else
+		return 0;
+}
+
 // Connect to the vJoy interface
 // Get the vJoy driver version
 // send message with version (as UINT: 00aabbcc = aa.bb.cc) to dialog box
@@ -1944,6 +1992,7 @@ void SetvJoyMapping(UINT id)
 		Spp->MappingChanged(&Map, id); 
 	SendMessage(hDialog, WMSPP_MAP_UPDT, (WPARAM)&Map, 0);
 }
+
 
 // Send the status to the notification icon 
 void SetNotificationIcon(LPCTSTR Message)

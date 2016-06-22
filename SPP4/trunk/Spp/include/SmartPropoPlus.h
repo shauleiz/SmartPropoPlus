@@ -225,6 +225,7 @@ For further details please go to the SmartPropoPlus Home using the link below."
 #define CN_NO_TABRECT_HDR		TEXT("SmartPropoPlus Error")
 #define CN_ILL_DLLFILE			TEXT("This DLL File is not a valid Filter File")
 #define CN_ILL_DLLFILE_HDR		TEXT("Open Filter File")
+#define CN_SPP_DISP_VERSION		TEXT("SmartPropoPlus Version: %2u.%2u.%2u.%2u")
 
 
 /* User Defined Window-Messages */

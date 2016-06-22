@@ -60,9 +60,9 @@ int main(int argc, char **argv)
 	version = vbuf;
 
 	// Break the version number into its components
-	unsigned int major=0, mid=0, minor=0;
-	int nFields = sscanf_s(version, "v%u.%u.%u",&major, &mid, &minor) ;
-	if (nFields != 3) {
+	unsigned int major=0, mid=0, minor=0, bld=0;
+	int nFields = sscanf_s(version, "v%u.%u.%u.%u",&major, &mid, &minor, &bld) ;
+	if (nFields != 4) {
 		fprintf(stderr, "Version string corrupt\n");
 		exit(-4);
 	}
@@ -87,9 +87,9 @@ int main(int argc, char **argv)
 	fprintf(f, "#define VER_H_ %u\n", major);
 	fprintf(f, "#define VER_M_ %u\n", mid);
 	fprintf(f, "#define VER_L_ %u\n", minor);
-	fprintf(f, "#define BUILD %s\n", ncommits);
+	fprintf(f, "#define BUILD %u\n", bld);
  	fprintf(f, "\n");
-	fprintf(f, "#define FILEVER\t\t\t\t\"%u, %u, %u, %s\"\n", major, mid, minor, ncommits);
+	fprintf(f, "#define FILEVER\t\t\t\t\"%u, %u, %u, %u\"\n", major, mid, minor, bld);
 	fprintf(f, "#define PRODVER_TAG\t\t\t\"%s\"\n", version);
 	fprintf(f, "#define PRODVER_SHA1\t\t\"%s\"\n", sha);
  	fprintf(f, "\n");

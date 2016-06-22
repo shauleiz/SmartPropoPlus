@@ -110,7 +110,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -145,7 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <AdditionalDependencies>SppUI.lib;SppUI.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.lib;SppUI.res;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -184,7 +184,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
@@ -216,7 +216,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>

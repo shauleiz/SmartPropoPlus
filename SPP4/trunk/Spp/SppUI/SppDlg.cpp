@@ -1483,6 +1483,12 @@ void  SppDlg::vJoySetVer(UINT Ver)
 	((SppTabJoy *)m_hrsrc.TabJoy)->vJoySetVer(Ver);
 }
 
+// Set SmartPropoPlus Version information
+void  SppDlg::SppSetVer(UINT Ver)
+{
+	((SppTabAdv *)m_hrsrc.TabAdvnc)->DisplayVersionText(Ver);
+}
+
 // Add vJoy device entry to combo box
 // Set the id as item data
 void  SppDlg::vJoyDevAdd(UINT id)
@@ -2195,6 +2201,12 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case PULSE_SCOPE:
         DialogObj->SetPulseScope(wParam != 0); // Silly way to cast to bool
         break;
+
+
+	case SPPAPP_SETVER:
+		DialogObj->SppSetVer((UINT)wParam);
+		break;
+
 
     case VJOYDEV_ADD:
         DialogObj->vJoyDevAdd((UINT)wParam);

@@ -16,5 +16,6 @@ public:
 	void UpdateToolTip(LPVOID param);
 	void ResetRequest(void);
 	void Reset();
+	void DisplayVersionText(UINT SppVer);
 };
 

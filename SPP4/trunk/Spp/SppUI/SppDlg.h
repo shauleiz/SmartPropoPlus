@@ -74,6 +74,7 @@ public: // Called from window procedure
 	void AutoParams(WORD ctrl);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
 	void AudioAutoParams(WORD, WORD);
+	void SppSetVer(UINT Ver);
 	void vJoyDevAdd(UINT id);
 	void vJoySetVer(UINT Ver);
 	void vJoyDevSelect(UINT id);

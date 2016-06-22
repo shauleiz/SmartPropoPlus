@@ -1,12 +1,7 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by SppUI.rc
-
-#define APSTUDIO_HIDDEN_SYMBOLS
 #include <windows.h>
-#include <commctrl.h>
-#undef APSTUDIO_HIDDEN_SYMBOLS
-
 //
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
@@ -66,6 +61,9 @@
 #define IDC_STREAM                      1023
 #define IDC_AUD_AUTO                    1024
 #define IDC_CH_LOG                      1081
+#define IDC_STAT_SPPVER                 2001
+#define IDC_STAT_VJOYVER                2002
+#define IDC_STAT_SPPVER2                2002
 #define IDC_BTN_RESET                   40000
 #define IDC_OUT_CHANNELS                40000
 #define IDC_SPP_OUT                     40000
@@ -397,10 +395,10 @@
 #define IDC_TXT_SL1                     40208
 #define IDM_DISPLAY_WIZARD              40209
 #define IDC_STAT_FILTER                 40210
-#define IDS_E_AUDIOID					40211
-#define IDS_I_CONF_CREATED				40212
-#define IDS_E_CONF_NOFOLDER				40213
-#define IDS_I_CONF_CREATEFOLDER			40214
+#define IDS_E_AUDIOID                   40211
+#define IDS_I_CONF_CREATED              40212
+#define IDS_E_CONF_NOFOLDER             40213
+#define IDS_I_CONF_CREATEFOLDER         40214
 #define IDS_W_NO_MONITOR                40215
 #define IDS_W_PROCPACK_TIMEOUT          40301
 #define IDS_I_PROCPACK_PADDING          40302
@@ -411,8 +409,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        202
-#define _APS_NEXT_COMMAND_VALUE         40304
-#define _APS_NEXT_CONTROL_VALUE         2000
+#define _APS_NEXT_COMMAND_VALUE         40306
+#define _APS_NEXT_CONTROL_VALUE         2003
 #define _APS_NEXT_SYMED_VALUE           202
 #endif
 #endif

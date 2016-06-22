@@ -13,379 +13,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Menu
 //
 
-IDC_SPPCONSOLE MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "E&xit",                       105
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About ...",                  104
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About SppControl"
-FONT 8, "MS Shell Dlg", 0, 0, 0x1
-BEGIN
-    LTEXT           "SppControl, Version 1.0",-1,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2015",-1,42,26,114,8
-    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
-
-109 ACCELERATORS
-BEGIN
-    "?",            104,                    ASCII,  ALT
-    "/",            104,                    ASCII,  ALT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDI_SMALL               ICON                    "SppControl.ico"
-
-IDI_SPPCONSOLE          ICON                    "SppControl.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_ABOUTBOX AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    109                     "SPPCONTROL"
-    IDS_VJOY_FRM_TXT        "vJoy Device v"
-END
-
-STRINGTABLE
-BEGIN
-    40000                   "SppControl"
-    40001                   "Failed to start SppProcess"
-    40002                   "SppProcess started"
-    40003                   "No valid Filter file to load"
-    40004                   "Filter file loaded"
-    40005                   "Cannot use this Filter file - version is too old"
-    40006                   "Filter file - cannot get interface function"
-    40007                   "Filters were loaded correctly"
-    40008                   "Failed to select filter"
-    40009                   "Failed to select filter by index"
-    40010                   "Filter selected"
-    40011                   "vJoy device does not exist or is disabled"
-    40012                   "vJoy device version is too old"
-    40013                   "Enumerating devices"
-    40014                   "StartStreaming(): Could not stop current stream"
-    40015                   "StartStreaming(): Could not set default audio device"
-END
-
-STRINGTABLE
-BEGIN
-    40016                   "StartStreaming(): Could not initialize endpoint"
-    40017                   "StartStreaming(): Could not start current stream"
-    40018                   "StartStreaming(): Could not create capture thread"
-    40019                   "InitEndPoint(): Function called with ID=NULL"
-    40020                   "Initializing CPulseData Object"
-    40021                   "SetDefaultAudioDevice(): Selected ID - "
-    40022                   "SetDefaultAudioDevice(): Failed - "
-    40023                   "Enable/Disable audio device ID"
-    40024                   "IsCaptureDevice(): Failed to get device for ID - "
-    40025                   "IsCaptureDevice(): Endpoint not found for ID - "
-    40026                   "IsExternal(): Failed to get device for ID - "
-    40027                   "IsExternal(): Failed to activate topology for ID - "
-    40028                   "IsExternal(): Failed to connector for ID - "
-    40029                   "IsExternal(): Failed to get connector type for ID - "
-    40030                   "Failed to get device with error - "
-    40031                   "Failed to activate audio client with error - "
-END
-
-STRINGTABLE
-BEGIN
-    40032                   "Failed to get mix format with error - "
-    40033                   "Starting add capture device ID - "
-    40034                   "AddCaptureDevice(): Failed to get device for ID - "
-    40035                   "AddCaptureDevice(): Failed to get device state for ID - "
-    40036                   "AddCaptureDevice(): Failed to get device property store for ID - "
-    40037                   "AddCaptureDevice(): Failed to get device friendly name for ID - "
-    40038                   "Failed to register notification"
-    40039                   "GetChannelPeak():  Failed to get device for ID - "
-    40040                   "GetChannelPeak():  Failed to activate audio client for ID - "
-    40041                   "GetChannelPeak():  Failed to get mix format for ID - "
-    40042                   "GetChannelPeak():  Failed to initialize audio client for ID - "
-    40043                   "GetChannelPeak():  Failed to activate audio meter for ID - "
-    40044                   "GetChannelPeak():  Failed to get Metering Channel Count for ID - "
-    40045                   "GetChannelPeak():  Failed to get channel peak values for ID - "
-    40046                   "Failed to initialize audio client for ID - "
-    40047                   " Failed to activate audio meter for ID - "
-END
-
-STRINGTABLE
-BEGIN
-    40048                   "Failed to get Metering Channel Count for ID - "
-    40049                   "Failed to get channel peak values for ID - "
-    40050                   "StartStreaming(): Cannot stop current stream"
-    40051                   "StartStreaming(): Cannot set default audio device"
-    40052                   "StartStreaming(): Cannot initialize EndPoint"
-    40053                   "StartStreaming(): Cannot start current stream"
-    40054                   "InitEndPoint(): Function called with Id=NULL"
-    40055                   "InitEndPoint(): Failed to get device for ID - "
-    40056                   "InitEndPoint():  Failed to activate audio client for ID - "
-    40057                   "InitEndPoint():  Failed to get mix format for ID - "
-    40058                   "InitEndPoint(): Could not use 8-bit format, trying 16-bit format for ID - "
-    40059                   "InitEndPoint(): Format not supported for ID - "
-    40060                   "InitEndPoint(): Could not set event handle for ID - "
-    40061                   "InitEndPoint(): Could not get service for ID - "
-    40062                   "InitEndPoint(): Could not initialize EndPoint for ID - "
-    40063                   "StopCurrentStream(): Could not stop current stream"
-END
-
-STRINGTABLE
-BEGIN
-    40064                   "StartCurrentStream(): Could not start current stream"
-    40065                   "ProcessAudioPacket(): Failed to get buffer"
-    40066                   "ProcessAudioPacket(): Data discontinuity"
-    40067                   "ProcessAudioPacket(): Failed to process wave"
-    40068                   "ProcessAudioPacket(): Failed to release buffer"
-    40069                   "ProcessAudioPacket(): Failed to get current padding"
-    40070                   "InitPulseDataObj(): OK"
-    40071                   "InitPulseDataObj(): Could not Initialize"
-    40072                   "Request to restart audio streaming"
-    40073                   "No audio object - aborting request"
-    40074                   "No SPP processing object - aborting request"
-    40075                   "Failed to start audio streaming - aborting request"
-    40076                   "No endpoint ID to start streaming with - abort request"
-    40077                   "Request to restart audio streaming - OK"
-    40078                   "Request to restart audio streaming - failed to start capture thread"
-    40079                   "Failed to start audio streaming"
-	40301					"Wait for next buffer event to be signaled - Timeout occured"
-	40302					"Wait for next buffer event to be signaled - Timeout occured"
-	40303					"Audio buffer smaller than packet"
-	END
-
-STRINGTABLE
-BEGIN
-    40080                   "Failed to start capture thread"
-    40081                   "Capture thread - Started"
-    40082                   "Request to change audio source"
-    40083                   "Starting a new audio stream and a new Capture Thread"
-    40084                   "Capture thread - Starting"
-    40085                   "Capture thread - Ending"
-    40086                   "CU Status"
-    40087                   "press to minimize - SmartPropoPlus will function as usual"
-    40088                   "Connect your transmitter to this audio socket"
-    40089                   "Current default audio input"
-    40090                   "Type of Signal Decoding"
-    40091                   "Channel post-processing Filter"
-    40092                   "To change, select tab ""Filter"""
-    40093                   "Audio Input"
-    40094                   "SmartPropoPlus is currently paused - Press to activate"
-    40095                   "SmartPropoPlus is currently active - Press to deactivate"
-	40215					"Cannot scan input - Channel polling thread is inactive"
-END
-
-STRINGTABLE
-BEGIN
-    40096                   "Current Audio channel and bit rate"
-    40097                   "To change, select tab ""Transmitter"""
-    40098                   "Type of signal"
-    40099                   "Number of Transmitter Channels detected"
-    40100                   "Selected Filter"
-    40101                   "To change and map axes, select tab ""Joystick"""
-    40102                   "Target Joystick"
-    40103                   "Current status of SmartPropoPlus"
-    40104                   "Exit SmartPropoPlus ..."
-    40105                   "Level of transmitter channel 1"
-    40106                   "Level of transmitter channel 2"
-    40107                   "Level of transmitter channel 3"
-    40108                   "Level of transmitter channel 4"
-    40109                   "Level of transmitter channel 5"
-    40110                   "Level of transmitter channel 6"
-    40111                   "Level of transmitter channel 7"
-END
-
-STRINGTABLE
-BEGIN
-    40112                   "Level of transmitter channel 8"
-    40113                   "Level of Filter Output"
-    40114                   "Channel A"
-    40115                   "Channel B"
-    40116                   "Channel C"
-    40117                   "Channel D"
-    40118                   "Channel E"
-    40119                   "Channel F"
-    40120                   "Channel G"
-    40121                   "Channel H"
-    40122                   "Joystick axis monitor"
-    40123                   "Axis X"
-    40124                   "Axis Y"
-    40125                   "Axis Z"
-    40126                   "Axis RX"
-    40127                   "Axis RY"
-END
-
-STRINGTABLE
-BEGIN
-    40128                   "Axis RZ"
-    40129                   "Axis Slider 0"
-    40130                   "Axis Slider 1"
-    40131                   "SppProcess stopped"
-    40132                   "Failed to stop SppProcess"
-    40133                   "This will completely close SmartPropoPlus.\r\nIn most cases it is wiser to send it to sleep.\r\nAre you sure you want to quit SmartPropoPlus?"
-    40134                   "Quit SmartPropoPlus"
-    40135                   "Check to determine best bit rate (recommended)"
-    40136                   "Auto audio bit rate"
-    40137                   "Not Implemented"
-    40138                   "8 Bits per sample (Low resolution)"
-    40139                   "Select bit rate"
-    40140                   "16 Bits per sample (High resolution)"
-    40141                   "Select bit rate"
-    40142                   "Check to determin the active audio channel (recommended)"
-    40143                   "Auto audio channel"
-END
-
-STRINGTABLE
-BEGIN
-    40144                   "Select to use Left Audio channel as input"
-    40145                   "Left Channel"
-    40146                   "Select to use Right Audio channel as input"
-    40147                   "Right Channel"
-    40148                   "Dynamic audio level"
-    40149                   "Left Channel"
-    40150                   "Dynamic audio level"
-    40151                   "Right Channel"
-    40152                   "Dynamic audio level"
-    40153                   "IDS_T_LEVEL_M"
-    40154                   "Level of transmitter channel 9"
-    40155                   "Level of transmitter channel 10"
-    40156                   "Level of transmitter channel 11"
-    40157                   "Level of transmitter channel 12"
-    40158                   "Level of transmitter channel 13"
-    40159                   "Level of transmitter channel 14"
-END
-
-STRINGTABLE
-BEGIN
-    40160                   "Level of transmitter channel 15"
-    40161                   "Level of transmitter channel 16"
-    40162                   "Auto selection (Recommended)"
-    40163                   "Decoder Type"
-    40164                   "Evaluate signal for correct type"
-    40165                   "Decoder Type"
-    40166                   "Select a decoder that matches you Transmitter"
-    40167                   "PPM Transmitters"
-    40168                   "Select a decoder that matches you Transmitter"
-    40169                   "PCM Transmitters"
-    40170                   "This file contains one or more filters"
-    40171                   "Filter File"
-    40172                   "Click to select a filter file"
-    40173                   "Filter File"
-    40174                   "Check to use filter"
-    40175                   "Use/Ignore Filter"
-END
-
-STRINGTABLE
-BEGIN
-    40176                   "Select one of these filters then check above  checkbox"
-    40177                   "Active Filter"
-    40178                   "Enter Channel Number"
-    40179                   "Set R/C Channel to feed joystick axis X"
-    40180                   "Set R/C Channel to feed joystick axis Y"
-    40181                   "Set R/C Channel to feed joystick axis Z"
-    40182                   "Set R/C Channel to feed joystick axis RX"
-    40183                   "Set R/C Channel to feed joystick axis RY"
-    40184                   "Set R/C Channel to feed joystick axis RZ"
-    40185                   "Set R/C Channel to feed joystick axis SL0"
-    40186                   "Set R/C Channel to feed joystick axis SL1"
-    40187                   "Apply channel to axis mapping"
-    40188                   "Map joystick buttons"
-    40189                   "vJoy device that will be used with SmartPropoPlus"
-    40190                   "Target Device"
-    40191                   "Select R/C Channels to feed joystick buttons"
-END
-
-STRINGTABLE
-BEGIN
-    40192                   "Map joystick buttons"
-    40193                   "Click to display log window\r\nClick again to Hide it"
-    40194                   "Show Log Window"
-    40195                   "Click once to start logging\r\nClick again to stop and create a log file"
-    40196                   "Log Audio signal"
-    40197                   "Click once to start logging\r\nClick again to stop and create a log file"
-    40198                   "Log Pulses"
-    40199                   "Check to start Display\r\nUn-check to stop"
-    40200                   "Display Pulse Signal"
-    40201                   "Set SmartPropoPlus to its default configuration\r\nCurrent configuration will be lost!"
-    40202                   "Reset Configuration"
-END
-
-STRINGTABLE
-BEGIN
-    40211                   "Audio jack ID is missing"
-    40212                   "Configuration File Opened: "
-    40213                   "Cannot open folder for Config file - Aborting"
-    40214                   "Creating folder for Config file: "
-END
-
-#endif    // English (United States) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Neutral resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-#pragma code_page(1255)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
 IDM_ICON MENUEX
 BEGIN
     POPUP "",                               0,MFT_STRING,MFS_ENABLED
@@ -430,7 +57,7 @@ BEGIN
 END
 
 IDD_ADVANCED DIALOGEX 0, 0, 300, 186
-STYLE DS_SETFONT | DS_3DLOOK | DS_CENTER | WS_CHILD | WS_VISIBLE |/* WS_CLIPCHILDREN |*/ WS_SYSMENU
+STYLE DS_SETFONT | DS_3DLOOK | DS_CENTER | WS_CHILD | WS_VISIBLE | WS_SYSMENU
 FONT 8, "Ms Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "Show Log Window",1081,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,18,18,106,18
@@ -439,6 +66,7 @@ BEGIN
     CONTROL         "Record Pulse data to file",1019,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,18,64,106,18
     CONTROL         "Show Pulse Scope",IDC_PLS_SCOPE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,153,18,76,8
     PUSHBUTTON      "Reset",40000,18,106,106,14
+    LTEXT           "Static", IDC_STAT_SPPVER,7,170,286,10,SS_SUNKEN
 END
 
 IDD_AUDIO DIALOG 0, 0, 213, 90
@@ -473,7 +101,7 @@ BEGIN
 END
 
 IDD_DECODE DIALOG 0, 0, 285, 178
-STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_CHILD | /*WS_CLIPCHILDREN |*/ WS_SYSMENU
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_SYSMENU
 FONT 8, "Ms Shell Dlg"
 BEGIN
     CONTROL         "",40001,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | WS_BORDER,143,127,10,36,WS_EX_STATICEDGE
@@ -519,7 +147,7 @@ BEGIN
 END
 
 IDD_FILTER DIALOG 0, 0, 266, 156
-STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_VISIBLE | /*WS_CLIPCHILDREN |*/ WS_SYSMENU
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_VISIBLE | WS_SYSMENU
 FONT 8, "Ms Shell Dlg"
 BEGIN
     CONTROL         "",40013,"msctls_progress32",PBS_SMOOTH | PBS_VERTICAL | WS_BORDER,129,32,10,36,WS_EX_STATICEDGE
@@ -564,7 +192,7 @@ BEGIN
 END
 
 IDD_GENERAL DIALOG 0, 0, 384, 181
-STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_CHILD /*| WS_CLIPCHILDREN*/
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_CHILD
 FONT 8, "Ms Shell Dlg"
 BEGIN
     LTEXT           "Filter XXX (File YY.DLL)",40018,23,148,75,8
@@ -589,7 +217,7 @@ BEGIN
 END
 
 IDD_JOY DIALOGEX 0, 0, 300, 186
-STYLE DS_SETFONT | DS_3DLOOK | DS_CENTER | WS_CHILD | WS_VISIBLE /*| WS_CLIPCHILDREN*/ | WS_SYSMENU
+STYLE DS_SETFONT | DS_3DLOOK | DS_CENTER | WS_CHILD | WS_VISIBLE | WS_SYSMENU
 FONT 8, "Ms Shell Dlg", 0, 0, 0x0
 BEGIN
     GROUPBOX        "vJoy Device",IDC_VJOYNAME_FRM,150,2,139,30
@@ -827,6 +455,383 @@ IDB_GREYDOT             BITMAP                  ".\\bitmap4.bmp"
 IDB_REDDOT              BITMAP                  "bitmap1.bmp"
 
 #endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_SPPCONSOLE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       105
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About ...",                  104
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About SppControl"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "SppControl, Version 1.0",-1,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2015",-1,42,26,114,8
+    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+109 ACCELERATORS
+BEGIN
+    "?",            104,                    ASCII,  ALT
+    "/",            104,                    ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_SMALL               ICON                    "SppControl.ico"
+
+IDI_SPPCONSOLE          ICON                    "SppControl.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    109                     "SPPCONTROL"
+    IDS_VJOY_FRM_TXT        "vJoy Device v"
+END
+
+STRINGTABLE
+BEGIN
+    40000                   "SppControl"
+    40001                   "Failed to start SppProcess"
+    40002                   "SppProcess started"
+    40003                   "No valid Filter file to load"
+    40004                   "Filter file loaded"
+    40005                   "Cannot use this Filter file - version is too old"
+    40006                   "Filter file - cannot get interface function"
+    40007                   "Filters were loaded correctly"
+    40008                   "Failed to select filter"
+    40009                   "Failed to select filter by index"
+    40010                   "Filter selected"
+    40011                   "vJoy device does not exist or is disabled"
+    40012                   "vJoy device version is too old"
+    40013                   "Enumerating devices"
+    40014                   "StartStreaming(): Could not stop current stream"
+    40015                   "StartStreaming(): Could not set default audio device"
+END
+
+STRINGTABLE
+BEGIN
+    40016                   "StartStreaming(): Could not initialize endpoint"
+    40017                   "StartStreaming(): Could not start current stream"
+    40018                   "StartStreaming(): Could not create capture thread"
+    40019                   "InitEndPoint(): Function called with ID=NULL"
+    40020                   "Initializing CPulseData Object"
+    40021                   "SetDefaultAudioDevice(): Selected ID - "
+    40022                   "SetDefaultAudioDevice(): Failed - "
+    40023                   "Enable/Disable audio device ID"
+    40024                   "IsCaptureDevice(): Failed to get device for ID - "
+    40025                   "IsCaptureDevice(): Endpoint not found for ID - "
+    40026                   "IsExternal(): Failed to get device for ID - "
+    40027                   "IsExternal(): Failed to activate topology for ID - "
+    40028                   "IsExternal(): Failed to connector for ID - "
+    40029                   "IsExternal(): Failed to get connector type for ID - "
+    40030                   "Failed to get device with error - "
+    40031                   "Failed to activate audio client with error - "
+END
+
+STRINGTABLE
+BEGIN
+    40032                   "Failed to get mix format with error - "
+    40033                   "Starting add capture device ID - "
+    40034                   "AddCaptureDevice(): Failed to get device for ID - "
+    40035                   "AddCaptureDevice(): Failed to get device state for ID - "
+    40036                   "AddCaptureDevice(): Failed to get device property store for ID - "
+    40037                   "AddCaptureDevice(): Failed to get device friendly name for ID - "
+    40038                   "Failed to register notification"
+    40039                   "GetChannelPeak():  Failed to get device for ID - "
+    40040                   "GetChannelPeak():  Failed to activate audio client for ID - "
+    40041                   "GetChannelPeak():  Failed to get mix format for ID - "
+    40042                   "GetChannelPeak():  Failed to initialize audio client for ID - "
+    40043                   "GetChannelPeak():  Failed to activate audio meter for ID - "
+    40044                   "GetChannelPeak():  Failed to get Metering Channel Count for ID - "
+    40045                   "GetChannelPeak():  Failed to get channel peak values for ID - "
+    40046                   "Failed to initialize audio client for ID - "
+    40047                   " Failed to activate audio meter for ID - "
+END
+
+STRINGTABLE
+BEGIN
+    40048                   "Failed to get Metering Channel Count for ID - "
+    40049                   "Failed to get channel peak values for ID - "
+    40050                   "StartStreaming(): Cannot stop current stream"
+    40051                   "StartStreaming(): Cannot set default audio device"
+    40052                   "StartStreaming(): Cannot initialize EndPoint"
+    40053                   "StartStreaming(): Cannot start current stream"
+    40054                   "InitEndPoint(): Function called with Id=NULL"
+    40055                   "InitEndPoint(): Failed to get device for ID - "
+    40056                   "InitEndPoint():  Failed to activate audio client for ID - "
+    40057                   "InitEndPoint():  Failed to get mix format for ID - "
+    40058                   "InitEndPoint(): Could not use 8-bit format, trying 16-bit format for ID - "
+    40059                   "InitEndPoint(): Format not supported for ID - "
+    40060                   "InitEndPoint(): Could not set event handle for ID - "
+    40061                   "InitEndPoint(): Could not get service for ID - "
+    40062                   "InitEndPoint(): Could not initialize EndPoint for ID - "
+    40063                   "StopCurrentStream(): Could not stop current stream"
+END
+
+STRINGTABLE
+BEGIN
+    40064                   "StartCurrentStream(): Could not start current stream"
+    40065                   "ProcessAudioPacket(): Failed to get buffer"
+    40066                   "ProcessAudioPacket(): Data discontinuity"
+    40067                   "ProcessAudioPacket(): Failed to process wave"
+    40068                   "ProcessAudioPacket(): Failed to release buffer"
+    40069                   "ProcessAudioPacket(): Failed to get current padding"
+    40070                   "InitPulseDataObj(): OK"
+    40071                   "InitPulseDataObj(): Could not Initialize"
+    40072                   "Request to restart audio streaming"
+    40073                   "No audio object - aborting request"
+    40074                   "No SPP processing object - aborting request"
+    40075                   "Failed to start audio streaming - aborting request"
+    40076                   "No endpoint ID to start streaming with - abort request"
+    40077                   "Request to restart audio streaming - OK"
+    40078                   "Request to restart audio streaming - failed to start capture thread"
+    40079                   "Failed to start audio streaming"
+END
+
+STRINGTABLE
+BEGIN
+    40301                   "Wait for next buffer event to be signaled - Timeout occured"
+    40302                   "Wait for next buffer event to be signaled - Timeout occured"
+    40303                   "Audio buffer smaller than packet"
+END
+
+STRINGTABLE
+BEGIN
+    40080                   "Failed to start capture thread"
+    40081                   "Capture thread - Started"
+    40082                   "Request to change audio source"
+    40083                   "Starting a new audio stream and a new Capture Thread"
+    40084                   "Capture thread - Starting"
+    40085                   "Capture thread - Ending"
+    40086                   "CU Status"
+    40087                   "press to minimize - SmartPropoPlus will function as usual"
+    40088                   "Connect your transmitter to this audio socket"
+    40089                   "Current default audio input"
+    40090                   "Type of Signal Decoding"
+    40091                   "Channel post-processing Filter"
+    40092                   "To change, select tab ""Filter"""
+    40093                   "Audio Input"
+    40094                   "SmartPropoPlus is currently paused - Press to activate"
+    40095                   "SmartPropoPlus is currently active - Press to deactivate"
+END
+
+STRINGTABLE
+BEGIN
+    40211                   "Audio jack ID is missing"
+    40212                   "Configuration File Opened: "
+    40213                   "Cannot open folder for Config file - Aborting"
+    40214                   "Creating folder for Config file: "
+    40215                   "Cannot scan input - Channel polling thread is inactive"
+END
+
+STRINGTABLE
+BEGIN
+    40096                   "Current Audio channel and bit rate"
+    40097                   "To change, select tab ""Transmitter"""
+    40098                   "Type of signal"
+    40099                   "Number of Transmitter Channels detected"
+    40100                   "Selected Filter"
+    40101                   "To change and map axes, select tab ""Joystick"""
+    40102                   "Target Joystick"
+    40103                   "Current status of SmartPropoPlus"
+    40104                   "Exit SmartPropoPlus ..."
+    40105                   "Level of transmitter channel 1"
+    40106                   "Level of transmitter channel 2"
+    40107                   "Level of transmitter channel 3"
+    40108                   "Level of transmitter channel 4"
+    40109                   "Level of transmitter channel 5"
+    40110                   "Level of transmitter channel 6"
+    40111                   "Level of transmitter channel 7"
+END
+
+STRINGTABLE
+BEGIN
+    40112                   "Level of transmitter channel 8"
+    40113                   "Level of Filter Output"
+    40114                   "Channel A"
+    40115                   "Channel B"
+    40116                   "Channel C"
+    40117                   "Channel D"
+    40118                   "Channel E"
+    40119                   "Channel F"
+    40120                   "Channel G"
+    40121                   "Channel H"
+    40122                   "Joystick axis monitor"
+    40123                   "Axis X"
+    40124                   "Axis Y"
+    40125                   "Axis Z"
+    40126                   "Axis RX"
+    40127                   "Axis RY"
+END
+
+STRINGTABLE
+BEGIN
+    40128                   "Axis RZ"
+    40129                   "Axis Slider 0"
+    40130                   "Axis Slider 1"
+    40131                   "SppProcess stopped"
+    40132                   "Failed to stop SppProcess"
+    40133                   "This will completely close SmartPropoPlus.\r\nIn most cases it is wiser to send it to sleep.\r\nAre you sure you want to quit SmartPropoPlus?"
+    40134                   "Quit SmartPropoPlus"
+    40135                   "Check to determine best bit rate (recommended)"
+    40136                   "Auto audio bit rate"
+    40137                   "Not Implemented"
+    40138                   "8 Bits per sample (Low resolution)"
+    40139                   "Select bit rate"
+    40140                   "16 Bits per sample (High resolution)"
+    40141                   "Select bit rate"
+    40142                   "Check to determin the active audio channel (recommended)"
+    40143                   "Auto audio channel"
+END
+
+STRINGTABLE
+BEGIN
+    40144                   "Select to use Left Audio channel as input"
+    40145                   "Left Channel"
+    40146                   "Select to use Right Audio channel as input"
+    40147                   "Right Channel"
+    40148                   "Dynamic audio level"
+    40149                   "Left Channel"
+    40150                   "Dynamic audio level"
+    40151                   "Right Channel"
+    40152                   "Dynamic audio level"
+    40153                   "IDS_T_LEVEL_M"
+    40154                   "Level of transmitter channel 9"
+    40155                   "Level of transmitter channel 10"
+    40156                   "Level of transmitter channel 11"
+    40157                   "Level of transmitter channel 12"
+    40158                   "Level of transmitter channel 13"
+    40159                   "Level of transmitter channel 14"
+END
+
+STRINGTABLE
+BEGIN
+    40160                   "Level of transmitter channel 15"
+    40161                   "Level of transmitter channel 16"
+    40162                   "Auto selection (Recommended)"
+    40163                   "Decoder Type"
+    40164                   "Evaluate signal for correct type"
+    40165                   "Decoder Type"
+    40166                   "Select a decoder that matches you Transmitter"
+    40167                   "PPM Transmitters"
+    40168                   "Select a decoder that matches you Transmitter"
+    40169                   "PCM Transmitters"
+    40170                   "This file contains one or more filters"
+    40171                   "Filter File"
+    40172                   "Click to select a filter file"
+    40173                   "Filter File"
+    40174                   "Check to use filter"
+    40175                   "Use/Ignore Filter"
+END
+
+STRINGTABLE
+BEGIN
+    40176                   "Select one of these filters then check above  checkbox"
+    40177                   "Active Filter"
+    40178                   "Enter Channel Number"
+    40179                   "Set R/C Channel to feed joystick axis X"
+    40180                   "Set R/C Channel to feed joystick axis Y"
+    40181                   "Set R/C Channel to feed joystick axis Z"
+    40182                   "Set R/C Channel to feed joystick axis RX"
+    40183                   "Set R/C Channel to feed joystick axis RY"
+    40184                   "Set R/C Channel to feed joystick axis RZ"
+    40185                   "Set R/C Channel to feed joystick axis SL0"
+    40186                   "Set R/C Channel to feed joystick axis SL1"
+    40187                   "Apply channel to axis mapping"
+    40188                   "Map joystick buttons"
+    40189                   "vJoy device that will be used with SmartPropoPlus"
+    40190                   "Target Device"
+    40191                   "Select R/C Channels to feed joystick buttons"
+END
+
+STRINGTABLE
+BEGIN
+    40192                   "Map joystick buttons"
+    40193                   "Click to display log window\r\nClick again to Hide it"
+    40194                   "Show Log Window"
+    40195                   "Click once to start logging\r\nClick again to stop and create a log file"
+    40196                   "Log Audio signal"
+    40197                   "Click once to start logging\r\nClick again to stop and create a log file"
+    40198                   "Log Pulses"
+    40199                   "Check to start Display\r\nUn-check to stop"
+    40200                   "Display Pulse Signal"
+    40201                   "Set SmartPropoPlus to its default configuration\r\nCurrent configuration will be lost!"
+    40202                   "Reset Configuration"
+END
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

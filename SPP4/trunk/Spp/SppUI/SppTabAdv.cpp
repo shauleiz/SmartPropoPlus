@@ -81,6 +81,7 @@ void SppTabAdv::Reset()
 	PulseScope(IDC_PLS_SCOPE);
 }
 
+
 void  SppTabAdv::RecordPulse(WORD cb)
 {
 	// Get data
@@ -147,6 +148,26 @@ void SppTabAdv::UpdateToolTip(LPVOID param)
 
 }
 
+/* Display the SPP Version as static */
+void SppTabAdv::DisplayVersionText(UINT SppVer)
+{
+	// Convert to text
+	const auto StrSize = 100;
+	WCHAR SppVerStr[StrSize];
+	BYTE Hi, Mid, Low, Bld;
+	Hi = (SppVer >> 24) & 0xFF;
+	Mid = (SppVer >> 16) & 0xFF;
+	Low = (SppVer >> 8) & 0xFF;
+	Bld = (SppVer >> 0) & 0xFF;
+	_stprintf_s(SppVerStr, StrSize, CN_SPP_DISP_VERSION, Hi, Mid, Low, Bld);
+
+	// Get the Static controls
+	HWND hSppVerStat = GetDlgItem(m_hDlg, IDC_STAT_SPPVER);
+
+	// Write to Static controls
+	if (hSppVerStat && SppVerStr)
+		SetWindowText(hSppVerStat, SppVerStr);
+}
 
 INT_PTR CALLBACK MsgHndlTabAdvDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
