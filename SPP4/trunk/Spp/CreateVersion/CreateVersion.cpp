@@ -63,8 +63,12 @@ int main(int argc, char **argv)
 	unsigned int major=0, mid=0, minor=0, bld=0;
 	int nFields = sscanf_s(version, "v%u.%u.%u.%u",&major, &mid, &minor, &bld) ;
 	if (nFields != 4) {
-		fprintf(stderr, "Version string corrupt\n");
-		exit(-4);
+		nFields = sscanf_s(version, "v%u.%u.%u", &major, &mid, &minor);
+		if (nFields != 3) 
+		{
+			fprintf(stderr, "Version string corrupt\n");
+			exit(-4);
+		}
 	}
 
 	// Open output file
