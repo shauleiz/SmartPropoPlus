@@ -29,6 +29,21 @@ SppTabAdv::SppTabAdv(HINSTANCE hInstance, HWND TopDlgWnd) :  SppTab( hInstance, 
 {
 }
 
+
+// Update check box
+void  SppTabAdv::SetAudioLog(bool cb)
+{
+	// Set checkbox
+	HWND hChkBox = GetDlgItem(m_hDlg, IDC_CH_LOG);
+	if (!hChkBox)
+		return;
+
+	if (cb)
+		Button_SetCheck(hChkBox, BST_CHECKED);
+	else
+		Button_SetCheck(hChkBox, BST_UNCHECKED);
+}
+
 // Update check box
 void  SppTabAdv::SetPulseScope(bool cb)
 {

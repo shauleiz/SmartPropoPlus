@@ -74,6 +74,7 @@ void		DbgPulse(bool start);
 void		thMonitor(bool * KeepAlive);
 void		thDialogBox(HWND hwnd);
 void		SetMonitoring(HWND hDlg);
+void		SetAudioLog(HWND hDlg, WPARAM hide);
 void		SetPulseScope(HWND hDlg);
 int			vJoyDevicesPopulate(HWND hDlg);
 UINT		GetSppVersion(HWND hDlg);
@@ -422,6 +423,8 @@ LRESULT CALLBACK MainWindowProc(
 				LogWin->Show();
 			else
 				LogWin->Hide();
+
+			SetAudioLog(hDialog, wParam);
 			break;
 
 		//case WMSPP_DLG_RST:
@@ -1242,6 +1245,12 @@ void CaptureDevicesPopulate(HWND hDlg)
 		};
 	};
 
+}
+
+// Set the correct value to the Show Audio Log check box
+void SetAudioLog(HWND hDlg, WPARAM hide)
+{
+	SendMessage(hDlg, AUDIO_LOG, hide, 0);
 }
 
 // Pulse Scope setup from config file and send it to SppProcess

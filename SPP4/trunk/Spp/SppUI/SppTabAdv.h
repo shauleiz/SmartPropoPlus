@@ -8,6 +8,7 @@ public:
 	virtual ~SppTabAdv(void);
 	SppTabAdv(HINSTANCE hInstance, HWND TopDlgWnd);
 
+	void SetAudioLog(bool cb);
 	void SetPulseScope(bool cb);
 	void PulseScope(WORD cb);
 	void ShowLogWindow(WORD cb);

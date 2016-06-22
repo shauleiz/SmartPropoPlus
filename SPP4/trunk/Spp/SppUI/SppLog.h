@@ -16,6 +16,7 @@ public:
 	void Hide(void);
 	HWND GetWndHandle(void);
 	void LogAudioUnit(int Code, int source, int Severity, LPVOID Data=NULL);
+	HWND m_ConsoleWnd;
 
 
 private:

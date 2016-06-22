@@ -80,7 +80,7 @@
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)SppUI;..\Include;..\SppProcess;..\SppAudio;..\TinyXmll..\SppUI;$(SolutionDir)TinyXml</IncludePath>
     <ExecutablePath>C:\Users\Shaul\AppData\Local\Atlassian\SourceTree\git_local\bin;$(ExecutablePath)</ExecutablePath>
-    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -110,7 +110,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.res;SppUI.lib;Version.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -184,7 +184,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.res;SppUI.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>DEL $(ProjectDir)gen-versioninfo.h</Command>
@@ -216,7 +216,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SppUI.res;SppUI.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
+      <AdditionalDependencies>SppUI.res;SppUI.lib;Version.lib;%(AdditionalDependencies);Mincore.lib</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);X64</PreprocessorDefinitions>

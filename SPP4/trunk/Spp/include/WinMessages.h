@@ -90,7 +90,8 @@ UINT const WMSPP_DLG_RST	=			BASE_SUB+61;			// Inform that "Reset" button was pr
 UINT const WMSPP_JMON_POV	=			BASE_SUB+62;			// Inform of new POV status of a vJoy device
 UINT const WMSPP_JMON_STRT	=			BASE_SUB+63;			// Inform that polling stopped for a given vJoy device
 UINT const VJOYDEV_SETVER   =           BASE_SUB+64;			// Set Version of vJoy device driver 
-UINT const SPPAPP_SETVER =				BASE_SUB+65;			// Set Version of SmartPropoPlus application 
+UINT const SPPAPP_SETVER	=			BASE_SUB+65;			// Set Version of SmartPropoPlus application 
+UINT const AUDIO_LOG	    =			BASE_SUB+66;			// Signal the Advanced tag to show/hide the Audio Log window
 													// Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
 UINT const WMSPP_LOG_CNTRL	=				WMSPP_LOG_BASE + 0;				// Base value for log messages comming from SppControl

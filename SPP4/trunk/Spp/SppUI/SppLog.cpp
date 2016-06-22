@@ -26,6 +26,7 @@ SppLog::SppLog(void) : m_hLogDlg(NULL)
 SppLog::SppLog(HINSTANCE hInstance, HWND	ConsoleWnd)
 {
 	m_hInstance = hInstance;
+	m_ConsoleWnd = ConsoleWnd;
 	m_hLogDlg = CreateDialogParam((HINSTANCE)hInstance, MAKEINTRESOURCE(IDD_LOGDLG), NULL, DlgAudioLog,  (LPARAM)this);
 	//SetWindowLong(m_hLogDlg, GWL_STYLE, WS_CHILD);
 
@@ -188,9 +189,19 @@ INT_PTR CALLBACK  DlgAudioLog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
 		}
+		if (LOWORD(wParam) == IDC_BTN_CLOSELOG)
+		{
+			
+			SendMessage(DialogObj->m_ConsoleWnd, WMSPP_DLG_LOG, 0, 0);
+			return (INT_PTR)TRUE;
+		}
 		break;
 
 	case WMSPP_LOG_CNTRL+INFO:
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
 	case WMSPP_LOG_CNTRL+WARN:
 	case WMSPP_LOG_CNTRL+ERR:
 	case WMSPP_LOG_CNTRL+FATAL:

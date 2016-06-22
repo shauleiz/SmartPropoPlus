@@ -56,6 +56,7 @@ public: // Called from window procedure
 	void SetJoystickDevFrame(UCHAR iDev);
 	void SelChanged(WORD ListBoxId, HWND hListBox);
 	void CfgJoyMonitor(HWND);
+	void SetAudioLog(bool cb);
 	void SetPulseScope(bool cb);
 	void MonitorCh(bool cb);
 	void MonitorRawCh(WORD cb);

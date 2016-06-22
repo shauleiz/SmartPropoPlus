@@ -1178,6 +1178,23 @@ void  SppDlg::ClearChDisplay(UINT FirstChBar, UINT LastChBar, DWORD Color)
 
 };
 
+// Start/Stop The Audio Log window
+void  SppDlg::SetAudioLog(bool cb)
+{
+	((SppTabAdv *)m_hrsrc.TabAdvnc)->SetAudioLog(cb);
+
+	// Set checkbox
+	HWND hChkBox = GetDlgItem(m_hDlg, IDC_CH_LOG);
+	if (!hChkBox)
+		return;
+
+	if (cb)
+		Button_SetCheck(hChkBox, BST_CHECKED);
+	else
+		Button_SetCheck(hChkBox, BST_UNCHECKED);
+
+}
+
 // Start/Stop Pulse Scope
 void  SppDlg::SetPulseScope(bool cb)
 {
@@ -2201,6 +2218,10 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     case PULSE_SCOPE:
         DialogObj->SetPulseScope(wParam != 0); // Silly way to cast to bool
         break;
+
+	case AUDIO_LOG:
+        DialogObj->SetAudioLog(wParam != 0); // Silly way to cast to bool
+		break;
 
 
 	case SPPAPP_SETVER:
