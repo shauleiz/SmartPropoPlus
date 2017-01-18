@@ -45,6 +45,7 @@ PJS_CHANNELS ConvertEskyCCPMNew(PJS_CHANNELS, int max, int min);
 PJS_CHANNELS ConvertEskyCCPM3D(PJS_CHANNELS, int max, int min);
 PJS_CHANNELS ConvertVTail(PJS_CHANNELS, int max, int min);
 PJS_CHANNELS ConvertDeltaWing(PJS_CHANNELS, int max, int min);
+PJS_CHANNELS Null(PJS_CHANNELS, int max, int min);
 /* [NEW]
 Here you can add forward declaration for your own filter, following the following example:
 PJS_CHANNELS MyNewFilter(PJS_CHANNELS, int max, int min);
@@ -62,9 +63,11 @@ FilterItem ListOfFilters[] =
 	{110, (void *)ConvertEskyCCPM3D,	TEXT("CCPM: E-sky (6ch) 3D")},		// Contributed by Matthew Morrison
 	{102, (void *)ConvertVTail,			TEXT("V-Tail (Ch1+Ch4)")},
 	{103, (void *)ConvertDeltaWing,		TEXT("Delta Wing (Ch1+Ch2)")},
+	{104, (void *)Null,					TEXT("NULL Filter (Does nothing)") },
 	/* [NEW]
 	Here you can add entry for your own filter, following the following example:
-	{104, (void *)MyNewFilter,		"My New Filter - Example only"},*/
+	{104, (void *)MyNewFilter,		TEXT("My New Filter - Example only")},
+	*/
 	NULL
 };
 

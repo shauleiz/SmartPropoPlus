@@ -471,17 +471,17 @@ PJS_CHANNELS ConvertVTail(PJS_CHANNELS data, int max, int min)
 PJS_CHANNELS ConvertDeltaWing(PJS_CHANNELS data, int max, int min)
 {
 	static far JS_CHANNELS output;
-	static far int in_data[12]={0,0,0,0,0,0,0,0,0,0,0,0}, out_data[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+	static far int in_data[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 }, out_data[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
 	int ailerons, elevator;
 
 	// Copy input data to input buffer
-	for (int i=0; i<6; i++)
+	for (int i = 0; i<6; i++)
 		in_data[i] = data->value[i];
 
-	if (data->ch>=2)
+	if (data->ch >= 2)
 	{
-		ailerons = (max-min)/2+(in_data[0]-in_data[1])/4;
-		elevator = (in_data[0]+in_data[1])/2;
+		ailerons = (max - min) / 2 + (in_data[0] - in_data[1]) / 4;
+		elevator = (in_data[0] + in_data[1]) / 2;
 
 		out_data[0] = elevator;
 		out_data[1] = ailerons;
@@ -496,6 +496,26 @@ PJS_CHANNELS ConvertDeltaWing(PJS_CHANNELS data, int max, int min)
 		out_data[10] = in_data[10];
 		out_data[11] = in_data[11];
 	};
+
+	output.ch = data->ch;
+	output.value = out_data;
+
+	return &output;
+}
+
+/* NULL Filter */
+PJS_CHANNELS Null(PJS_CHANNELS data, int max, int min)
+{
+	static far JS_CHANNELS output;
+	static far int in_data[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 }, out_data[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+
+	// Copy input data to input buffer
+	int limit = 12;
+	if (data->ch < limit)
+		limit = data->ch;
+
+	for (int i = 0; i<limit; i++)
+		out_data[i] = data->value[i];
 
 	output.ch = data->ch;
 	output.value = out_data;
