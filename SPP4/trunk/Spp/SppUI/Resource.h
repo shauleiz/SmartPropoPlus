@@ -404,7 +404,7 @@
 #define IDS_I_PROCPACK_PADDING          40302
 #define IDS_E_PROCPACK_TOOBIG           40303
 #define IDC_BTN_CLOSELOG	            40304
-
+#define IDC_LIST_AUDIO					40305
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
