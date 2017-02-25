@@ -119,7 +119,6 @@ protected:
 	HRESULT StartCurrentStream(void);
 	HRESULT InitEndPoint(PVOID Id);
 	HRESULT CreateCuptureThread(PVOID Id);
-	HRESULT SetDefaultAudioDevice(PVOID Id);
 	HRESULT EnableAudioDevice(PVOID devID, bool Enable=true);
 	void	LogMessage(int Severity, int Code, LPCTSTR Msg=NULL);
 	void	LogMessageWithId(int Severity, int Code, LPVOID Id, LPCTSTR Msg=NULL);
@@ -152,7 +151,7 @@ public:
 	SPPINTERFACE_API bool		StartStreaming(PVOID Id/*, bool RightChannel=false*/);
 	SPPINTERFACE_API HRESULT	ProcessAudioPacket(CPulseData * pPulseDataObj);
 	SPPINTERFACE_API HRESULT	GetJackInfo(PVOID Id, KSJACK_DESCRIPTION *pJackDescData);
-	SPPINTERFACE_API DWORD	GetJackColor(PVOID Id);
+	SPPINTERFACE_API DWORD		GetJackColor(PVOID Id);
 	SPPINTERFACE_API bool		IsDisconnected(PVOID Id);
 	SPPINTERFACE_API bool		AudioChannelParamsChanged(UCHAR bits, TCHAR Channel);
 
@@ -168,6 +167,7 @@ public:
 	SPPINTERFACE_API void		StartDbgInputSignal(void);
 	SPPINTERFACE_API void		StopDbgInputSignal(void);
 	SPPINTERFACE_API float		GetChannelPeak(PVOID Id, int iChannel);
+	SPPINTERFACE_API HRESULT	SetDefaultAudioCaptureDevice(PVOID Id);
 
 
 

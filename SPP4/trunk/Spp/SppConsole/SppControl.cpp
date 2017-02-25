@@ -1192,6 +1192,7 @@ void CaptureDevicesPopulate(HWND hDlg)
 		// Send data to GUI
 		SendMessage(hDlg, POPULATE_JACKS, (WPARAM)&jack, 0);
 
+
 		// Record data in configuration file
 		Conf->AddAudioDevice(jack.id, jack.FriendlyName, jack.Default);
 
@@ -1242,6 +1243,10 @@ void CaptureDevicesPopulate(HWND hDlg)
 
 			if (Audio)
 				Audio->SetwBitsPerSample(BitRate);
+
+			// DEBUG
+			//Audio->SetDefaultAudioCaptureDevice((PVOID)jack.id);
+
 		};
 	};
 

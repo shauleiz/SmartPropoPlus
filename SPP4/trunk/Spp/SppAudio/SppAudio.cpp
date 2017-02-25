@@ -425,49 +425,29 @@ void CSppAudio::GetDefaultSetUp(PVOID Id)
 	
 }
 
-
-HRESULT CSppAudio::SetDefaultAudioDevice(PVOID devID)
-{	
-	IPolicyConfigVista *pPolicyConfigVista;
-	IPolicyConfig *pPolicyConfig;
+// Undocumented COM-interface IPolicyConfig 
+// Set the default Capture device
+HRESULT CSppAudio::SetDefaultAudioCaptureDevice(PVOID devID)
+{
+	IPolicyConfigVista *pPolicyConfig;
 	ERole reserved = eConsole;
-	HRESULT hr;
 
-
-	// WIndows 7 and up
-	if (IsWindows7OrLater())
+	HRESULT hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient),
+								  NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfig);
+	if (SUCCEEDED(hr))
 	{
-		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_ALL, __uuidof(IPolicyConfig), (LPVOID *)&pPolicyConfig);
-		if (SUCCEEDED(hr))
-		{
-			hr = pPolicyConfig->SetEndpointVisibility((LPCWSTR)devID, true);
-			hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
-			pPolicyConfig->Release();
-		};
+		hr = pPolicyConfig->SetDefaultEndpoint((LPCWSTR)devID, reserved);
+		pPolicyConfig->Release();
 	}
-	else
-	{ // Vista SP2
-		hr = CoCreateInstance(__uuidof(CPolicyConfigVistaClient), 
-			NULL, CLSCTX_ALL, __uuidof(IPolicyConfigVista), (LPVOID *)&pPolicyConfigVista);
-		if (SUCCEEDED(hr))
-		{
-			hr = pPolicyConfigVista->SetEndpointVisibility((LPCWSTR)devID, true);
-			hr = pPolicyConfigVista->SetDefaultEndpoint((LPCWSTR)devID, reserved);
-			pPolicyConfigVista->Release();
-		};
-	};
 
 	// Logging
 	if (SUCCEEDED(hr))
 	{
-		//LogStatus(CHANGE_DEFDEV,INFO,devID,m_LogParam);
 		LogMessageWithId(INFO, IDS_I_CHANGE_DEFDEV,devID);
 	}
 	else
 	{
-		//LogStatus(CHANGE_DEFDEV,WARN,GetWasapiText(hr),m_LogParam);
 		LogMessageWithId(WARN, IDS_W_CHANGE_DEFDEV, GetWasapiText(hr));
-
 	};
 
 	return hr;
@@ -1419,7 +1399,7 @@ SPPINTERFACE_API double CSppAudio::GetLoudestDevice(PVOID * Id)
 	// Get Peak value from all devices
 	for (UINT i=0; i<m_CaptureDevices.size(); i++)
 	{
-		SetDefaultAudioDevice((PVOID)m_CaptureDevices[i]->id);
+		SetDefaultAudioCaptureDevice(m_CaptureDevices[i]->id);
 		//Sleep(1000);
 		Value = GetDevicePeak((PVOID)m_CaptureDevices[i]->id);
 		EnableAudioDevice((PVOID)m_CaptureDevices[i]->id, false);
