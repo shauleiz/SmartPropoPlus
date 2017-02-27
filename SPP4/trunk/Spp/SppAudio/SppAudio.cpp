@@ -1085,7 +1085,7 @@ HRESULT	CSppAudio::DefaultDeviceChanged(EDataFlow flow, ERole role,LPCWSTR pwstr
 // Called (asynch) when Default device was changed
 {
 	// Send message to calling window indicating what happend
-	if (m_hPrntWnd && role == eMultimedia)
+	if (m_hPrntWnd && role == eConsole)
 		PostMessage(m_hPrntWnd, WMSPP_AUDIO_CHNG, (WPARAM)pwstrDeviceId, NULL);
 	return S_OK;
 }

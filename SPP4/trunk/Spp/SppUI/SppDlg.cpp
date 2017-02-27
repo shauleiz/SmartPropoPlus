@@ -1425,7 +1425,14 @@ void SppDlg::SetMappingData(Mapping * Map)
     ((SppTabJoy *)m_hrsrc.TabJoy)->SetMappingData(Map);
 }
 
+// Send clean-up instruction to audio tab
+void  SppDlg::CleanAudioList(void)
+{
+	((SppTabAudio *)m_hrsrc.TabAudio)->CleanAudioList();
+}
 
+// Send jack info to the audio tab
+// Display the Freandly Name & color of the default input jack
 void  SppDlg::AddLine2AudioList(jack_info * jack)
 {
     // Print jack name to summary
@@ -1438,6 +1445,9 @@ void  SppDlg::AddLine2AudioList(jack_info * jack)
             OnPaint();
         }		
     };
+
+	// Add jack to list in the audio tab
+	((SppTabAudio *)m_hrsrc.TabAudio)->AddLine2AudioList(jack);
 
 
     //// Audio jack must have at least one audio channel (mono)
@@ -2124,7 +2134,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 
     case REM_ALL_JACK:
-        // DialogObj->CleanAudioList();
+        DialogObj->CleanAudioList();
         break;
 
     case POPULATE_JACKS:

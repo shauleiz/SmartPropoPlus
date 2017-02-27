@@ -81,7 +81,7 @@ BEGIN
     LTEXT           "Static",IDC_STAT_SPPVER,7,170,286,10,SS_SUNKEN
 END
 
-IDD_AUDIO DIALOGEX 0, 0, 213, 160
+IDD_AUDIO DIALOGEX 0, 0, 213, 156
 STYLE DS_SETFONT | DS_CENTER | WS_CHILD
 FONT 8, "Ms Shell Dlg", 0, 0, 0x0
 BEGIN
@@ -101,7 +101,7 @@ BEGIN
     CONTROL         "Auto",1024,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,16,31,8
     CONTROL         "Auto",40145,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,117,16,31,8
     LISTBOX         IDC_LIST_AUDIO,11,97,186,49,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Select Input",-1,5,87,197,65
+    GROUPBOX        "Select Input",-1,5,85,197,71
 END
 
 IDD_BUTTONSDLG DIALOG 0, 0, 381, 155
@@ -400,29 +400,17 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_SMALL               ICON                    "SppControl.ico"
-
 IDI_ADVANCED            ICON                    ".\\AdvancedGrey.ico"
-
 IDI_AUDIO               ICON                    ".\\AudioJackBlue.ico"
-
 IDI_BACKGROUND          ICON                    ".\\BackGround.ico"
-
 IDI_DECODER             ICON                    ".\\RC-TxGreen.ico"
-
 IDI_FILTER              ICON                    ".\\FilterBlue.ico"
-
 IDI_JOYSTICK            ICON                    ".\\vJoyRed.ico"
-
 IDI_S0                  ICON                    "SppControlS0.ico"
-
 IDI_W10                 ICON                    "SppControlW10.ico"
-
 IDI_W7                  ICON                    ".\\SppControlW7.ico"
-
 IDI_W8                  ICON                    "SppControlW8.ico"
-
 IDI_SPPCONSOLE          ICON                    "SppControl.ico"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -442,7 +430,6 @@ BEGIN
 
     IDD_AUDIO, DIALOG
     BEGIN
-        BOTTOMMARGIN, 90
     END
 
     IDD_DECODE, DIALOG
@@ -469,34 +456,34 @@ END
 // AFX_DIALOG_LAYOUT
 //
 
-149 AFX_DIALOG_LAYOUT
+149 AFX_DIALOG_LAYOUT 
 BEGIN
-    0
+    0x0000
 END
 
-IDD_ADVANCED AFX_DIALOG_LAYOUT
+IDD_ADVANCED AFX_DIALOG_LAYOUT 
 BEGIN
-    0
+    0x0000
 END
 
-IDD_SPPDIAG AFX_DIALOG_LAYOUT
+IDD_SPPDIAG AFX_DIALOG_LAYOUT 
 BEGIN
-    0
+    0x0000
 END
 
-IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT 
 BEGIN
-    0
+    0x0000
 END
 
-IDD_LOGDLG AFX_DIALOG_LAYOUT
+IDD_LOGDLG AFX_DIALOG_LAYOUT 
 BEGIN
-    0
+    0x0000
 END
 
-IDD_AUDIO AFX_DIALOG_LAYOUT
+IDD_AUDIO AFX_DIALOG_LAYOUT 
 BEGIN
-    0
+    0x0000
 END
 
 
@@ -506,11 +493,8 @@ END
 //
 
 IDB_GREENDOT            BITMAP                  "bitmap2.bmp"
-
 IDB_GREYDOT             BITMAP                  ".\\bitmap4.bmp"
-
 IDB_REDDOT              BITMAP                  "bitmap1.bmp"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //

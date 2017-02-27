@@ -165,6 +165,25 @@ void SppTabAudio::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 	};
 }
 
+// Add audio jack to list of input audio jacks
+// If jack is the default one then it is selected and gets focus
+void SppTabAudio::AddLine2AudioList(jack_info * jack)
+{
+	HWND hAudioList = GetDlgItem(m_hDlg, IDC_LIST_AUDIO);
+	int pos = (int)SendMessage(hAudioList, LB_ADDSTRING, 0, (LPARAM)jack->FriendlyName);
+
+	// Select list item
+	if (jack->Default)
+		SendMessage(hAudioList, LB_SETCURSEL, pos, 0);
+
+}
+
+// Clean list of input audio jacks
+void SppTabAudio::CleanAudioList(void)
+{
+	HWND hAudioList = GetDlgItem(m_hDlg, IDC_LIST_AUDIO); 
+	SendMessage(hAudioList, LB_RESETCONTENT, 0, 0);
+}
 
 
 void SppTabAudio::AudioAutoParams(WORD Mask, WORD Flags)

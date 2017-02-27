@@ -1062,8 +1062,11 @@ wstring CSppConfig::GetAudioDeviceChannel(LPTSTR Id)
 {
 	lock_guard<recursive_mutex> lock(m_mx_General);
 
-	string Name = "";
+	if (!Id)
+		return L"";
 
+	string Name = "";
+	
 	TiXmlHandle h = GetAudioHandle(Id);
 	TiXmlText * Text = h.FirstChildElement(SPP_AUDCH).FirstChild().ToText();
 	if (Text)
