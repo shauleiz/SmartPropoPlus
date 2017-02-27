@@ -1123,13 +1123,17 @@ UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 {
 	lock_guard<recursive_mutex> lock(m_mx_General);
 
-	string Value = "0";
-	TiXmlHandle h = GetAudioHandle(Id);
-	TiXmlText * Text = h.FirstChildElement(SPP_AUDBR).FirstChild().ToText();
-	if (Text)
-		Value =  Text->ValueStr();
+	string Value = "0";	
 
-	return  std::stoi(Value,0,10);
+	TiXmlHandle h = GetAudioHandle(Id);
+	if (!h.Node())
+	{		
+		TiXmlText * Text = h.FirstChildElement(SPP_AUDBR).FirstChild().ToText();
+		if (Text)
+			Value = Text->ValueStr();
+	}
+
+	return  std::stoi(Value, 0, 10);
 }
 
 // FilterFile - Create/Replace the 'Filters' subtree
