@@ -996,6 +996,9 @@ TiXmlHandle CSppConfig::GetAudioHandle(LPTSTR Id)
 {
 	lock_guard<recursive_mutex> lock(m_mx_General);
 
+	if (!Id)
+		return  TiXmlHandle(0);
+
 	wstring str_Id = wstring(Id);
 
 	// Get handle of the root
@@ -1126,7 +1129,7 @@ UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 	string Value = "0";	
 
 	TiXmlHandle h = GetAudioHandle(Id);
-	if (!h.Node())
+	if (!Id)
 	{		
 		TiXmlText * Text = h.FirstChildElement(SPP_AUDBR).FirstChild().ToText();
 		if (Text)

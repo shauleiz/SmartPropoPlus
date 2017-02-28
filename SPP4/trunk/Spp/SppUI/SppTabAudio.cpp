@@ -132,6 +132,27 @@ void SppTabAudio::AudioChannelParams(void)
 
 }
 
+// Get the selected input audio jack 
+// Send it over to the application
+void SppTabAudio::AudioLineSelected(void)
+{
+	HWND hAudioList = GetDlgItem(m_hDlg, IDC_LIST_AUDIO);
+
+	// Get the selected item
+	int sel = (int)SendMessage(hAudioList, LB_GETCURSEL, 0, 0);
+	if (sel == LB_ERR)
+		return;
+
+	// Get selected item data (this is a pointer to the corresponding jack)
+	LRESULT item_data = SendMessage(hAudioList, LB_GETITEMDATA, sel , 0);
+	if (item_data == LB_ERR)
+		return;
+
+	// Send message: wParam: pointer to jack structure
+	SendMessage(m_TopDlgWnd, WMSPP_DLG_JACK, item_data, 0);
+
+}
+
 // Set the parameters of the audio (8/16 bits Left/Right/Mono)
 // If Bitrate = 0 then don't change
 // If Channel="" or Channel=NULL then don't change
@@ -170,7 +191,15 @@ void SppTabAudio::AudioChannelParams(UINT Bitrate, WCHAR Channel)
 void SppTabAudio::AddLine2AudioList(jack_info * jack)
 {
 	HWND hAudioList = GetDlgItem(m_hDlg, IDC_LIST_AUDIO);
+
+	// Insert an item
 	int pos = (int)SendMessage(hAudioList, LB_ADDSTRING, 0, (LPARAM)jack->FriendlyName);
+
+	// Create Data for this item
+	WCHAR * dup_id = _wcsdup(jack->id);
+	jack_info * dup_jack = new jack_info();
+	*dup_jack = *jack;
+	SendMessage(hAudioList, LB_SETITEMDATA, pos, (LPARAM)dup_jack);
 
 	// Select list item
 	if (jack->Default)
@@ -181,7 +210,26 @@ void SppTabAudio::AddLine2AudioList(jack_info * jack)
 // Clean list of input audio jacks
 void SppTabAudio::CleanAudioList(void)
 {
+
 	HWND hAudioList = GetDlgItem(m_hDlg, IDC_LIST_AUDIO); 
+	if (!hAudioList)
+		return;
+
+	// Get the number of lines in the list
+	int count = SendMessage(hAudioList, LB_GETCOUNT, 0, 0);
+	if (count == LB_ERR)
+		return;
+
+	// Remove data from all items in the list
+	PVOID pData;
+	for (int i = 0; i < count; i++)
+	{
+		pData = (PVOID)SendMessage(hAudioList, LB_GETITEMDATA, i, 0);
+		if (pData && (int)pData != LB_ERR)
+			delete(pData);
+	}
+
+	// Reset list content
 	SendMessage(hAudioList, LB_RESETCONTENT, 0, 0);
 }
 
@@ -322,6 +370,14 @@ INT_PTR CALLBACK MsgHndlTabAudioDlg(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			DialogObj->AutoParams(IDC_AUD_AUTO);
 			break;
 		}
+
+		if ((HIWORD(wParam) == LBN_SELCHANGE) && (LOWORD(wParam) == IDC_LIST_AUDIO))
+		{
+			DialogObj->AudioLineSelected();
+			break;
+		}
+
+		break;
 
 	case WM_NOTIFY:
 		// Tooltips

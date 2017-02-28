@@ -2285,6 +2285,7 @@ INT_PTR CALLBACK MsgHndlDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
         DialogObj->DecoderAuto(wParam != 0);
         break;
 
+	case WMSPP_DLG_JACK:
     case WMSPP_DLG_CHNL:
         return DialogObj->RelayToConsoleWnd(message,  wParam,  lParam);
 

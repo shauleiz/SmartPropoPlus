@@ -92,6 +92,7 @@ UINT const WMSPP_JMON_STRT	=			BASE_SUB+63;			// Inform that polling stopped for
 UINT const VJOYDEV_SETVER   =           BASE_SUB+64;			// Set Version of vJoy device driver 
 UINT const SPPAPP_SETVER	=			BASE_SUB+65;			// Set Version of SmartPropoPlus application 
 UINT const AUDIO_LOG	    =			BASE_SUB+66;			// Signal the Advanced tag to show/hide the Audio Log window
+UINT const WMSPP_DLG_JACK	=			BASE_SUB+67;			// Change selected in audio jack - The payload is wParam: pointer to jack structure 
 													// Log Messages
 UINT const WMSPP_LOG_BASE	=				WM_APP + 10000;					// Base value for log messages
 UINT const WMSPP_LOG_CNTRL	=				WMSPP_LOG_BASE + 0;				// Base value for log messages comming from SppControl

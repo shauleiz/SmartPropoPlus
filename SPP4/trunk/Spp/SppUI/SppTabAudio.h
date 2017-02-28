@@ -11,6 +11,7 @@ public:
 	void DisplayAudioLevels(PVOID Id, UINT Left, UINT Right);
 	void AutoParams(WORD ctrl);
 	void AudioChannelParams(void);
+	void AudioLineSelected(void);
 	void AudioChannelParams(UINT Bitrate, WCHAR Channel);
 	void AddLine2AudioList(jack_info * jack);
 	void CleanAudioList(void);
