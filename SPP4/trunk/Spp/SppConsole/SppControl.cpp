@@ -549,6 +549,7 @@ LRESULT CALLBACK MainWindowProc(
 
 		case WMSPP_DLG_JACK:
 			Audio->SetDefaultAudioCaptureDevice(((jack_info *)wParam)->id);
+			break;
 
 		case WMSPP_DLG_CHNL:
 			if ((UCHAR)wParam !=  Audio->GetwBitsPerSample())
