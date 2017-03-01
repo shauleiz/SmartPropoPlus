@@ -644,7 +644,9 @@ BEGIN
     40093                   "Audio Input"
     40094                   "SmartPropoPlus is currently paused - Press to activate"
     40095                   "SmartPropoPlus is currently active - Press to deactivate"
-END
+	40306					"Select an audio input where the transmitter is connected"
+	40307					"Audio Jack"
+	END
 
 STRINGTABLE
 BEGIN

@@ -405,12 +405,14 @@
 #define IDS_E_PROCPACK_TOOBIG           40303
 #define IDC_BTN_CLOSELOG	            40304
 #define IDC_LIST_AUDIO					40305
+#define IDS_I_LIST_JACK                 40306
+#define IDS_T_LIST_JACK                 40307
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        202
-#define _APS_NEXT_COMMAND_VALUE         40306
+#define _APS_NEXT_COMMAND_VALUE         40308
 #define _APS_NEXT_CONTROL_VALUE         2003
 #define _APS_NEXT_SYMED_VALUE           202
 #endif

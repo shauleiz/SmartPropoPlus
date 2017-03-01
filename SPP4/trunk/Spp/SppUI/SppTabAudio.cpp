@@ -11,7 +11,7 @@ INT_PTR CALLBACK	MsgHndlTabAudioDlg(HWND, UINT, WPARAM, LPARAM);
 
 static const int g_Controls[] = {
 		/* Audio Tab (IDD_AUDIO ) */
-		IDC_AUD_AUTO, IDC_AUD_8, IDC_AUD_16, IDC_CH_AUTO, IDC_LEFT, IDC_RIGHT, IDC_LEVEL_L, IDC_LEVEL_R, IDC_LEVEL_M,
+		IDC_AUD_AUTO, IDC_AUD_8, IDC_AUD_16, IDC_CH_AUTO, IDC_LEFT, IDC_RIGHT, IDC_LEVEL_L, IDC_LEVEL_R, IDC_LEVEL_M,  IDC_LIST_AUDIO,
 	};
 
 SppTabAudio::SppTabAudio(void)
@@ -326,6 +326,9 @@ void SppTabAudio::UpdateToolTip(LPVOID param)
 		DisplayToolTip(lpttt, IDS_I_LEVEL_M);
 		break;
 
+	case  IDC_LIST_AUDIO:  // Audio Jack: Select an input audio jack
+		DisplayToolTip(lpttt, IDS_I_LIST_JACK, IDS_T_LIST_JACK);
+		break;
 
 
 	default:
