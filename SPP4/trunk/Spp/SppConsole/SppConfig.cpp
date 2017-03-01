@@ -1129,12 +1129,9 @@ UINT CSppConfig::GetAudioDeviceBitRate(LPTSTR Id)
 	string Value = "0";	
 
 	TiXmlHandle h = GetAudioHandle(Id);
-	if (!Id)
-	{		
-		TiXmlText * Text = h.FirstChildElement(SPP_AUDBR).FirstChild().ToText();
-		if (Text)
-			Value = Text->ValueStr();
-	}
+	TiXmlText * Text = h.FirstChildElement(SPP_AUDBR).FirstChild().ToText();
+	if (Text)
+		Value = Text->ValueStr();
 
 	return  std::stoi(Value, 0, 10);
 }
