@@ -91,7 +91,10 @@ int main(int argc, char **argv)
 	fprintf(f, "#define VER_H_ %u\n", major);
 	fprintf(f, "#define VER_M_ %u\n", mid);
 	fprintf(f, "#define VER_L_ %u\n", minor);
-	fprintf(f, "#define BUILD %u\n", bld);
+	if (bld)
+		fprintf(f, "#define BUILD %u\n", bld);
+	else
+		fprintf(f, "#define BUILD %s\n", ncommits);
  	fprintf(f, "\n");
 	fprintf(f, "#define FILEVER\t\t\t\t\"%u, %u, %u, %u\"\n", major, mid, minor, bld);
 	fprintf(f, "#define PRODVER_TAG\t\t\t\"%s\"\n", version);
