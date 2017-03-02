@@ -115,7 +115,7 @@ void SppLog::LogAudioUnit(int Code, int source, int Severity, LPVOID Data)
 
 	// Calculate Time
 	GetLocalTime(&SystemTime);
-	swprintf_s(PrtTime, 30, L"%02d:%02d:%02d.%03d : ", SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
+	swprintf_s(PrtTime, 30, L"%02u:%02u:%02u.%03u : ", SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
 
 	// Print one Line
 

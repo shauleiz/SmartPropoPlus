@@ -216,7 +216,7 @@ void SppTabAudio::CleanAudioList(void)
 		return;
 
 	// Get the number of lines in the list
-	int count = SendMessage(hAudioList, LB_GETCOUNT, 0, 0);
+	int count = (int)SendMessage(hAudioList, LB_GETCOUNT, 0, 0);
 	if (count == LB_ERR)
 		return;
 
